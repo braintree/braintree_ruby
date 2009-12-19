@@ -1,0 +1,136 @@
+require File.dirname(__FILE__) + "/../spec_helper"
+
+describe Braintree::Transaction do
+  describe "self.create" do
+    it "raises an exception if hash includes an invalid key" do
+      expect do
+        Braintree::Transaction.create(:amount => "Joe", :invalid_key => "foo")
+      end.to raise_error(ArgumentError, "invalid keys: invalid_key")
+    end
+  end
+
+  describe "self.create_from_transparent_redirect" do
+    it "raises an exception if the query string is forged" do
+      expect do
+        Braintree::Transaction.create_from_transparent_redirect("forged=query_string")
+      end.to raise_error(Braintree::ForgedQueryString)
+    end
+  end
+
+  describe "self.create_transaction_url" do
+    it "returns the url" do
+      Braintree::Transaction.create_transaction_url.should == "http://localhost:3000/merchants/integration_merchant_id/transactions/all/create_via_transparent_redirect_request"
+    end
+  end
+
+  describe "self.submit_for_settlement" do
+    it "raises an ArgumentError if transaction_id is an invalid format" do
+      expect do
+        Braintree::Transaction.submit_for_settlement("invalid-transaction-id")
+      end.to raise_error(ArgumentError, "transaction_id is invalid")
+    end
+  end
+  
+  describe "initialize" do
+    it "sets up customer attributes in customer_details" do
+      transaction = Braintree::Transaction._new(
+        :customer => {
+          :id => "123",
+          :first_name => "Adam",
+          :last_name => "Taylor",
+          :company => "Ledner LLC",
+          :email => "adam.taylor@lednerllc.com",
+          :website => "lednerllc.com",
+          :phone => "1-999-652-4189 x56883",
+          :fax => "012-161-8055"
+        }
+      )
+      transaction.customer_details.id.should == "123"
+      transaction.customer_details.first_name.should == "Adam"
+      transaction.customer_details.last_name.should == "Taylor"
+      transaction.customer_details.company.should == "Ledner LLC"
+      transaction.customer_details.email.should == "adam.taylor@lednerllc.com"
+      transaction.customer_details.website.should == "lednerllc.com"
+      transaction.customer_details.phone.should == "1-999-652-4189 x56883"
+      transaction.customer_details.fax.should == "012-161-8055"
+    end
+    
+    it "sets up credit card attributes in credit_card_details" do
+      transaction = Braintree::Transaction._new(
+        :credit_card => {
+          :token => "mzg2",
+          :bin => "411111",
+          :last_4 => "1111",
+          :card_type => "Visa",
+          :expiration_month => "08",
+          :expiration_year => "2009",
+          :issuer_location => "US"
+        }
+      )
+      transaction.credit_card_details.token.should == "mzg2"
+      transaction.credit_card_details.bin.should == "411111"
+      transaction.credit_card_details.last_4.should == "1111"
+      transaction.credit_card_details.card_type.should == "Visa"
+      transaction.credit_card_details.expiration_month.should == "08"
+      transaction.credit_card_details.expiration_year.should == "2009"
+      transaction.credit_card_details.issuer_location.should == "US"
+    end
+
+    it "handles receiving custom as an empty string" do
+      transaction = Braintree::Transaction._new(
+        :custom => "\n    "
+      )
+    end
+  end
+  
+  describe "inspect" do
+    it "includes the id, type, amount, and status first" do
+      transaction = Braintree::Transaction._new(
+        :id => "1234",
+        :type => "sale",
+        :amount => "100.00",
+        :status => "authorized"
+      )
+      output = transaction.inspect
+      output.should include(%Q(#<Braintree::Transaction id: "1234", type: "sale", amount: "100.00", status: "authorized"))
+    end
+  end
+  
+  describe "==" do
+    it "returns true when it should" do
+      first = Braintree::Transaction._new(:id => 123)
+      second = Braintree::Transaction._new(:id => 123)
+      
+      first.should == second
+      second.should == first
+    end
+    
+    it "returns false when it should" do
+      first = Braintree::Transaction._new(:id => 123)
+      second = Braintree::Transaction._new(:id => 124)
+      
+      first.should_not == second
+      second.should_not == first      
+    end
+  end
+  
+  describe "new" do
+    it "is protected" do
+      expect do
+        Braintree::Transaction.new
+      end.to raise_error(NoMethodError, /protected method .new/)
+    end
+  end
+  
+  describe "refunded?" do
+    it "is true if the transaciton has been refunded" do
+      transaction = Braintree::Transaction._new(:refund_id => "123")
+      transaction.refunded?.should == true
+    end
+
+    it "is false if the transaciton has not been refunded" do
+      transaction = Braintree::Transaction._new(:refund_id => nil)
+      transaction.refunded?.should == false
+    end
+  end
+end
