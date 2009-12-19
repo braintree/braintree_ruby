@@ -1,0 +1,29 @@
+module Braintree
+  module BaseModule # :nodoc: all
+    module Methods
+      def return_object_or_raise(object_to_return)
+        result = yield
+        if result.success?
+          result.send object_to_return
+        else
+          raise ValidationsFailed
+        end
+      end
+
+      def set_instance_variables_from_hash(hash)
+        hash.each do |key, value|
+          instance_variable_set "@#{key}", value
+        end
+      end
+  
+      def singleton_class
+        class << self; self; end
+      end
+    end
+    
+    def self.included(klass)
+      klass.extend Methods
+    end
+    include Methods
+  end
+end
