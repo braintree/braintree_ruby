@@ -55,6 +55,9 @@ module Braintree
   #      :region => "IL",
   #      :postal_code => "60103",
   #      :country_name => "United States of America"
+  #    },
+  #    :custom_fields => {
+  #      :birthdate => "11/13/1954"
   #    }
   #  )
   #
@@ -64,7 +67,7 @@ module Braintree
   # a transaction can be stored in the vault by setting
   # <tt>transaction[options][store_in_vault]</tt> to true.
   #
-  #   transaction = Braintree::Transaction.create!(
+  #   transaction = Braintree::Transaction.sale!(
   #     :customer => {
   #       :first_name => "Adam",
   #       :last_name => "Williams"
@@ -81,6 +84,17 @@ module Braintree
   #   # => "865534"
   #   transaction.credit_card_details.token
   #   # => "6b6m"
+  #
+  # To also store the billing address in the vault, pass the
+  # +add_billing_address_to_payment_method+ option.
+  #
+  #   Braintree::Transaction.sale!(
+  #     # ...
+  #     :options => {
+  #       :store_in_vault => true
+  #       :add_billing_address_to_payment_method => true
+  #     }
+  #   )
   #
   # == Submitting for Settlement
   #
@@ -112,8 +126,10 @@ module Braintree
     
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
     attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id, :status
+    attr_reader :custom_fields
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
+    attr_reader :status_history
     # The response code from the processor.
     attr_reader :processor_response_code
     # Will either be "sale" or "credit"
@@ -345,7 +361,8 @@ module Braintree
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {:billing => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
         {:shipping => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
-        {:options => [:store_in_vault, :submit_for_settlement]}
+        {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method]},
+        {:custom_fields => :_any_key_}
       ]
     end
     
@@ -355,6 +372,7 @@ module Braintree
       @customer_details = CustomerDetails.new(@customer)
       @billing_details = AddressDetails.new(@billing)
       @shipping_details = AddressDetails.new(@shipping)
+      @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
     end
-  end  
+  end
 end

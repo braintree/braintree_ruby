@@ -16,9 +16,6 @@ unless defined?(SPEC_HELPER_LOADED)
   Braintree::Configuration.logger = Logger.new("/dev/null")
   Braintree::Configuration.logger.level = Logger::INFO
 
-  Spec::Runner.configure do |config|
-  end
-
   module SpecHelper
     def self.stub_time_dot_now(desired_time)
       Time.class_eval do

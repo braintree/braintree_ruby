@@ -22,6 +22,12 @@ Spec::Rake::SpecTask.new("spec:integration") do |t|
   t.spec_files = FileList["spec/integration/**/*_spec.rb"]
 end
 
+desc "run integration keeping the gateway server and sphinx running"
+task "start_servers_and_run_integration_specs" => [:start_gateway, :start_sphinx, "spec:integration", :stop_gateway, :stop_sphinx]
+
+desc "run integration tests after preping the gateway (including git clone and db reset), what the build needs to run"
+task "run_integration_specs_for_cruise" => [:prep_gateway, "spec:integration", :stop_gateway, :stop_sphinx]
+
 def configure_rdoc_task(t)
   t.main = "README.rdoc"
   t.rdoc_files.include("README.rdoc", "LICENSE", "lib/**/*.rb")
@@ -70,3 +76,60 @@ task :gem do
   Gem::Builder.new(gem_spec).build
 end
 
+require File.dirname(__FILE__) + "/lib/braintree/configuration.rb"
+
+CRUISE_BUILD = "CRUISE_BUILD=#{ENV['CRUISE_BUILD']}"
+GATEWAY_ROOT = File.dirname(__FILE__) + "/../gateway" unless defined?(GATEWAY_ROOT)
+Braintree::Configuration.environment = :development
+PID_FILE = "/tmp/gateway_server_#{Braintree::Configuration.port}.pid"
+
+task :prep_gateway do
+  Dir.chdir(GATEWAY_ROOT) do
+    sh "git pull"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} SPHINX_PORT=#{ENV['SPHINX_PORT']} rake db:migrate:reset --trace"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} SPHINX_PORT=#{ENV['SPHINX_PORT']} ruby script/populate_data"
+    Rake::Task[:start_gateway].invoke
+    Rake::Task[:start_sphinx].invoke
+  end
+end
+
+task :start_gateway do
+  Dir.chdir(GATEWAY_ROOT) do
+    spawn_server(PID_FILE, Braintree::Configuration.port, "integration")
+  end
+end
+
+task :start_sphinx do
+  Dir.chdir(GATEWAY_ROOT) do
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} SPHINX_PORT=#{ENV['SPHINX_PORT']} rake ts:rebuild --trace"
+  end  
+end
+
+task :stop_gateway do
+  Dir.chdir(GATEWAY_ROOT) do
+    shutdown_server(PID_FILE)
+  end
+end
+
+task :stop_sphinx do
+  Dir.chdir(GATEWAY_ROOT) do
+    sh "env RAILS_ENV=integration rake ts:stop --trace"
+  end
+end
+
+def spawn_server(pid_file, port, environment="test")
+  require File.dirname(__FILE__) + "/spec/hacks/tcp_socket"
+
+  FileUtils.rm(pid_file) if File.exist?(pid_file)
+  command = "mongrel_rails start --environment #{environment} --daemon --port #{port} --pid #{pid_file}"
+
+  sh command
+  puts "== waiting for web server - port: #{port}"
+  TCPSocket.wait_for_service :host => "127.0.0.1", :port => port
+end
+
+def shutdown_server(pid_file)
+  10.times { unless File.exists?(pid_file); sleep 1; end }
+  puts "\n== killing web server - pid: #{File.read(pid_file).to_i}"
+  Process.kill "TERM", File.read(pid_file).to_i
+end

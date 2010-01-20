@@ -644,7 +644,7 @@ describe Braintree::CreditCard do
   
   def create_credit_card_via_tr(regular_params, tr_params = {})
     response = nil
-    Net::HTTP.start("localhost", 3000) do |http|
+    Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
       request = Net::HTTP::Post.new("/" + Braintree::CreditCard.create_credit_card_url.split("/", 4)[3])
       request.add_field "Content-Type", "application/x-www-form-urlencoded"
       tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_params))
@@ -660,7 +660,7 @@ describe Braintree::CreditCard do
 
   def update_credit_card_via_tr(regular_params, tr_params = {})
     response = nil
-    Net::HTTP.start("localhost", 3000) do |http|
+    Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
       request = Net::HTTP::Post.new("/" + Braintree::CreditCard.update_credit_card_url.split("/", 4)[3])
       request.add_field "Content-Type", "application/x-www-form-urlencoded"
       tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_params))

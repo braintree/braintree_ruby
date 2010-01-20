@@ -58,7 +58,7 @@ module Braintree
     def self.port # :nodoc:
       case environment
       when :development
-        3000
+        ENV['GATEWAY_PORT'] || 3000
       when :production, :qa, :sandbox
         443
       end

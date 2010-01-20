@@ -28,7 +28,33 @@ describe Braintree::Util do
         )
       end.to raise_error(ArgumentError, "invalid keys: nested[nested_invalid], top_level_invalid")
     end
-    
+
+    it "does not raise an exception for wildcards" do
+      expect do
+        Braintree::Util.verify_keys(
+          [:allowed, {:custom_fields => :_any_key_}],
+          :allowed => "ok",
+          :custom_fields => {
+            :custom_allowed => "ok",
+            :custom_allowed2 => "also ok",
+          }
+        )
+      end.to_not raise_error
+    end
+
+    it "raise an exception for wildcards at different nesting" do
+      expect do
+        Braintree::Util.verify_keys(
+          [:allowed, {:custom_fields => :_any_key_}],
+          :allowed => {
+            :custom_fields => {
+              :bad_nesting => "very bad"
+            }
+          }
+        )
+      end.to raise_error(ArgumentError, "invalid keys: allowed[custom_fields][bad_nesting]")
+    end    
+
     it "raises an exception if a deeply nested hash contains an invalid key" do
       expect do
         Braintree::Util.verify_keys(
@@ -65,6 +91,12 @@ describe Braintree::Util do
         [:top_level, {:nested => [:nested_allowed, :nested_allowed2]}]
       ).should == ["nested[nested_allowed2]", "nested[nested_allowed]", "top_level"]
     end
+
+    it "allows wildcards with the :_any_key_ symbol" do
+      Braintree::Util._flatten_valid_keys(
+        [:top_level, {:nested => :_any_key_}]
+      ).should == ["nested[_any_key_]", "top_level"]
+    end
   end
 
   describe "self.extract_attribute_as_array" do
@@ -91,6 +123,11 @@ describe Braintree::Util do
     it "generates a query string from the hash" do
       hash = {:foo => {:key_one => "value_one", :key_two => "value_two"}}
       Braintree::Util.hash_to_query_string(hash).should == "foo%5Bkey_one%5D=value_one&foo%5Bkey_two%5D=value_two"
+    end
+    
+    it "works for nesting 2 levels deep" do
+      hash = {:foo => {:nested => {:key_one => "value_one", :key_two => "value_two"}}}
+      Braintree::Util.hash_to_query_string(hash).should == "foo%5Bnested%5D%5Bkey_one%5D=value_one&foo%5Bnested%5D%5Bkey_two%5D=value_two"
     end
   end
   

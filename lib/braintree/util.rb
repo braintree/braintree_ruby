@@ -59,7 +59,9 @@ module Braintree
     end
     
     def self.verify_keys(valid_keys, hash)
-      invalid_keys = _flatten_hash_keys(hash) - _flatten_valid_keys(valid_keys)
+      flattened_valid_keys = _flatten_valid_keys(valid_keys)
+      invalid_keys = _flatten_hash_keys(hash) - flattened_valid_keys
+      invalid_keys = _remove_wildcard_keys(flattened_valid_keys, invalid_keys)
       if invalid_keys.any?
         sorted = invalid_keys.sort_by { |k| k.to_s }.join(", ")
         raise ArgumentError, "invalid keys: #{sorted}"
@@ -71,7 +73,12 @@ module Braintree
         if key.is_a?(Hash)
           full_key = key.keys[0]
           full_key = (namespace ? "#{namespace}[#{full_key}]" : full_key)
-          result += _flatten_valid_keys(key.values[0], full_key)
+          nested_keys = key.values[0]
+          if nested_keys.is_a?(Array)
+            result += _flatten_valid_keys(nested_keys, full_key)
+          else
+            result << "#{full_key}[#{nested_keys}]"
+          end
         else
           result << (namespace ? "#{namespace}[#{key}]" : key.to_s)
         end
@@ -89,6 +96,17 @@ module Braintree
         end
         result
       end.sort
+    end
+
+    def self._remove_wildcard_keys(valid_keys, invalid_keys)
+      wildcard_keys = valid_keys.select { |k| k.include? "[_any_key_]" }
+      return invalid_keys if wildcard_keys.empty?
+      wildcard_keys.map! { |wk| wk.sub "[_any_key_]", "" }
+      invalid_keys.select do |invalid_key|
+        wildcard_keys.all? do |wildcard_key|
+          invalid_key.index(wildcard_key) != 0
+        end
+      end
     end
   end
 end

@@ -76,6 +76,24 @@ describe Braintree::Transaction do
       transaction.credit_card_details.issuer_location.should == "US"
     end
 
+    it "sets up history attributes in status_history" do
+      time = Time.utc(2010,1,14)
+      transaction = Braintree::Transaction._new(
+        :status_history => [
+          { :timestamp => time, :amount => "12.00", :transaction_source => "API", 
+            :user => "larry", :status => "authorized" },
+          { :timestamp => Time.utc(2010,1,15), :amount => "12.00", :transaction_source => "API",
+            :user => "curly", :status => "scheduled_for_settlement"}
+        ])
+      transaction.status_history.size.should == 2
+      transaction.status_history[0].user.should == "larry"
+      transaction.status_history[0].amount.should == "12.00"
+      transaction.status_history[0].status.should == "authorized"
+      transaction.status_history[0].transaction_source.should == "API"
+      transaction.status_history[0].timestamp.should == time
+      transaction.status_history[1].user.should == "curly"
+    end
+
     it "handles receiving custom as an empty string" do
       transaction = Braintree::Transaction._new(
         :custom => "\n    "

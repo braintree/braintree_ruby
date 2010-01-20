@@ -134,6 +134,18 @@ describe Braintree::Customer do
       result.customer.addresses[0].country_name.should == "United States of America"
     end
     
+    it "stores custom fields when valid" do
+      result = Braintree::Customer.create(
+        :first_name => "Bill",
+        :last_name => "Gates",
+        :custom_fields => {
+          :store_me => "custom value"
+        }
+      )
+      result.success?.should == true
+      result.customer.custom_fields[:store_me].should == "custom value"
+    end
+
     it "returns nested errors if credit card and/or billing address are invalid" do
       result = Braintree::Customer.create(
         :email => "invalid",
@@ -148,6 +160,18 @@ describe Braintree::Customer do
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
       result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Credit card number is invalid."
       result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_name)[0].message.should == "Country name is not an accepted country."
+    end
+
+    it "returns errors if custom_fields are not registered" do
+      result = Braintree::Customer.create(
+        :first_name => "Jack",
+        :last_name => "Kennedy",
+        :custom_fields => {
+          :spouse_name => "Jacqueline"
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:customer).on(:custom_fields)[0].message.should == "Custom field is invalid: spouse_name."
     end
   end
   
@@ -249,6 +273,22 @@ describe Braintree::Customer do
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2010"
+    end
+  end
+
+  describe "self.transactions" do
+    it "finds transactions for the given customer id" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2010"
+        }
+      )
+      transaction = customer.sale!(:amount => "100.00")
+      collection = Braintree::Customer.transactions(customer.id)
+      collection.current_page_number.should == 1
+      collection.total_items.should == 1
+      collection[0].should == transaction
     end
   end
 
@@ -453,14 +493,18 @@ describe Braintree::Customer do
       result = Braintree::Customer.update(
         customer.id,
         :first_name => "Mr. Joe",
-        :last_name => "Super Cool"
+        :last_name => "Super Cool",
+        :custom_fields => {
+          :store_me => "a value"
+        }
       )
       result.success?.should == true
       result.customer.id.should == customer.id
       result.customer.first_name.should == "Mr. Joe"
       result.customer.last_name.should == "Super Cool"
+      result.customer.custom_fields[:store_me].should == "a value"
     end
-    
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:email => "valid@email.com")
       result = Braintree::Customer.update(

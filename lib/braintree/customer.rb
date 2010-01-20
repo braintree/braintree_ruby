@@ -3,7 +3,7 @@ module Braintree
     include BaseModule
     
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
-      :phone, :updated_at, :website
+      :phone, :updated_at, :website, :custom_fields
   
     # Returns a PagedCollection of all customers stored in the vault. Due to race conditions, this method
     # may not reliably return all customers stored in the vault.
@@ -92,6 +92,17 @@ module Braintree
     def self.sale!(customer_id, transaction_attributes)
        return_object_or_raise(:transaction){ sale(customer_id, transaction_attributes) }
     end
+
+    # Returns a PagedCollection of transactions for the customer with the given +customer_id+.
+    def self.transactions(customer_id, options = {})
+      page_number = options[:page] || 1
+      response = Http.get "/customers/#{customer_id}/transactions?page=#{page_number}"
+      attributes = response[:credit_card_transactions]
+      attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
+        Transaction._new transaction_attributes
+      end
+      PagedCollection.new(attributes) { |page_number| Customer.transactions(customer_id, :page => page_number) }
+    end
     
     def self.update(customer_id, attributes)
       Util.verify_keys(_update_signature, attributes)
@@ -118,7 +129,7 @@ module Braintree
     end
     
     def credit(transaction_attributes)
-      Customer.credit(self.id, transaction_attributes)
+      Customer.credit(id, transaction_attributes)
     end
     
     def credit!(transaction_attributes)
@@ -140,22 +151,16 @@ module Braintree
     end
     
     def sale(transaction_attributes)
-      Customer.sale(self.id, transaction_attributes)
+      Customer.sale(id, transaction_attributes)
     end
     
     def sale!(transaction_attributes)
       return_object_or_raise(:transaction) { sale(transaction_attributes) }
     end
 
-    # Finds transactions associated to the customer. Returns a PagedCollection.
+    # Returns a PagedCollection of transactions for the customer.
     def transactions(options = {})
-      page_number = options[:page] || 1
-      response = Http.get "/customers/#{id}/transactions?page=#{page_number}"
-      attributes = response[:credit_card_transactions]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
-        Transaction._new transaction_attributes
-      end
-      PagedCollection.new(attributes) { |page_number| self.transactions(:page => page_number) }
+      Customer.transactions(id, options)
     end
 
     def update(attributes)
@@ -194,7 +199,8 @@ module Braintree
       credit_card_signature = CreditCard._create_signature - [:customer_id]
       [
         :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
-        {:credit_card => credit_card_signature}
+        {:credit_card => credit_card_signature},
+        {:custom_fields => :_any_key_}
       ]
     end
 
@@ -225,7 +231,7 @@ module Braintree
     end  
 
     def self._update_signature # :nodoc:
-      [ :company, :email, :fax, :first_name, :id, :last_name, :phone, :website ]
+      [ :company, :email, :fax, :first_name, :id, :last_name, :phone, :website, {:custom_fields => :_any_key_} ]
     end
   end
 end
