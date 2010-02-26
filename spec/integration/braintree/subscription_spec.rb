@@ -1,6 +1,23 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::Subscription do
+
+  TrialPlan = {
+    :description => "Plan for integration tests -- with trial",
+    :id => "integration_trial_plan",
+    :price => BigDecimal.new("43.21"),
+    :trial_period => true,
+    :trial_duration => 2,
+    :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
+  }
+
+  TriallessPlan = {
+    :description => "Plan for integration tests -- without a trial",
+    :id => "integration_trialless_plan",
+    :price => BigDecimal.new("12.34"),
+    :trial_period => false
+  }
+
   before(:each) do
     @credit_card = Braintree::Customer.create!(
       :credit_card => {
@@ -14,7 +31,7 @@ describe Braintree::Subscription do
     it "is successful with a miniumum of params" do
       result = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
-        :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+        :plan_id => TriallessPlan[:id]
       )
 
       date_format = /^\d{4}\D\d{1,2}\D\d{1,2}$/
@@ -36,7 +53,7 @@ describe Braintree::Subscription do
       new_id = rand(36**9).to_s(36)
       result = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
-        :plan_id => Braintree::Test::Plans::TriallessPlan[:id],
+        :plan_id => TriallessPlan[:id],
         :id => new_id
       )
 
@@ -50,7 +67,7 @@ describe Braintree::Subscription do
         it "with no trial" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+            :plan_id => TriallessPlan[:id]
           )
 
           result.subscription.trial_period.should == false
@@ -61,7 +78,7 @@ describe Braintree::Subscription do
         it "with a trial" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TrialPlan[:id]
+            :plan_id => TrialPlan[:id]
           )
 
           result.subscription.trial_period.should == true
@@ -72,7 +89,7 @@ describe Braintree::Subscription do
         it "can alter the trial period params" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+            :plan_id => TrialPlan[:id],
             :trial_duration => 5,
             :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Month
           )
@@ -85,7 +102,7 @@ describe Braintree::Subscription do
         it "can override the trial_period param" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+            :plan_id => TrialPlan[:id],
             :trial_period => false
           )
 
@@ -95,19 +112,19 @@ describe Braintree::Subscription do
         it "creates a transaction if no trial period" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+            :plan_id => TriallessPlan[:id]
           )
 
           result.subscription.transactions.size.should == 1
           result.subscription.transactions.first.should be_a(Braintree::Transaction)
-          result.subscription.transactions.first.amount.should == BigDecimal.new("12.34")
+          result.subscription.transactions.first.amount.should == TriallessPlan[:price]
           result.subscription.transactions.first.type.should == Braintree::Transaction::Type::Sale
         end
 
         it "doesn't create a transaction if there's a trial period" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TrialPlan[:id]
+            :plan_id => TrialPlan[:id]
           )
 
           result.subscription.transactions.size.should == 0
@@ -118,16 +135,16 @@ describe Braintree::Subscription do
         it "defaults to the plan's price" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TrialPlan[:id]
+            :plan_id => TrialPlan[:id]
           )
 
-          result.subscription.price.should == BigDecimal.new("43.21")
+          result.subscription.price.should == TrialPlan[:price]
         end
 
         it "can be overridden" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+            :plan_id => TrialPlan[:id],
             :price => 98.76
           )
 
@@ -140,7 +157,7 @@ describe Braintree::Subscription do
       it "has validation errors on id" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+          :plan_id => TrialPlan[:id],
           :id => "invalid token"
         )
         result.success?.should == false
@@ -151,14 +168,14 @@ describe Braintree::Subscription do
         duplicate_token = "duplicate_token_#{rand(36**8).to_s(36)}"
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+          :plan_id => TrialPlan[:id],
           :id => duplicate_token
         )
         result.success?.should == true
 
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+          :plan_id => TrialPlan[:id],
           :id => duplicate_token
         )
         result.success?.should == false
@@ -168,7 +185,7 @@ describe Braintree::Subscription do
       it "trial duration required" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+          :plan_id => TrialPlan[:id],
           :trial_period => true,
           :trial_duration => nil
         )
@@ -179,7 +196,7 @@ describe Braintree::Subscription do
       it "trial duration unit required" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+          :plan_id => TrialPlan[:id],
           :trial_period => true,
           :trial_duration_unit => nil
         )
@@ -194,7 +211,7 @@ describe Braintree::Subscription do
     it "finds a subscription" do
       result = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
-        :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+        :plan_id => TriallessPlan[:id]
       )
       result.success?.should == true
 
@@ -213,7 +230,7 @@ describe Braintree::Subscription do
       @subscription = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :price => 54.32,
-        :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+        :plan_id => TriallessPlan[:id]
       ).subscription
     end
 
@@ -223,12 +240,12 @@ describe Braintree::Subscription do
         result = Braintree::Subscription.update(@subscription.id,
           :id => new_id,
           :price => 9999.88,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id]
+          :plan_id => TrialPlan[:id]
         )
 
         result.success?.should == true
         result.subscription.id.should =~ /#{new_id}/
-        result.subscription.plan_id.should == Braintree::Test::Plans::TrialPlan[:id]
+        result.subscription.plan_id.should == TrialPlan[:id]
         result.subscription.price.should == BigDecimal.new("9999.88")
       end
 
@@ -239,8 +256,7 @@ describe Braintree::Subscription do
 
         result.success?.should == true
         result.subscription.price.to_f.should == @subscription.price.to_f + 1
-        result.subscription.transactions.size.should == 
-          @subscription.transactions.size + 1
+        result.subscription.transactions.size.should == @subscription.transactions.size + 1
       end
 
       it "doesn't prorate if price decreases" do
@@ -250,8 +266,7 @@ describe Braintree::Subscription do
 
         result.success?.should == true
         result.subscription.price.to_f.should == @subscription.price.to_f - 1
-        result.subscription.transactions.size.should == 
-          @subscription.transactions.size
+        result.subscription.transactions.size.should == @subscription.transactions.size
       end
     end
 
@@ -259,7 +274,7 @@ describe Braintree::Subscription do
       before(:each) do
         @subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id]
+          :plan_id => TrialPlan[:id]
         ).subscription
       end
 
@@ -293,7 +308,7 @@ describe Braintree::Subscription do
         duplicate_id = "new_id_#{rand(36**6).to_s(36)}"
         duplicate = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => Braintree::Test::Plans::TrialPlan[:id],
+          :plan_id => TrialPlan[:id],
           :id => duplicate_id
         )
         result = Braintree::Subscription.update(
@@ -308,7 +323,7 @@ describe Braintree::Subscription do
         subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :price => 54.32,
-          :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+          :plan_id => TriallessPlan[:id]
         ).subscription
 
         result = Braintree::Subscription.cancel(subscription.id)
@@ -329,7 +344,7 @@ describe Braintree::Subscription do
       subscription = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :price => 54.32,
-        :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+        :plan_id => TriallessPlan[:id]
       ).subscription
 
       result = Braintree::Subscription.cancel(subscription.id)
@@ -347,7 +362,7 @@ describe Braintree::Subscription do
       subscription = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :price => 54.32,
-        :plan_id => Braintree::Test::Plans::TriallessPlan[:id]
+        :plan_id => TriallessPlan[:id]
       ).subscription
 
       result = Braintree::Subscription.cancel(subscription.id)

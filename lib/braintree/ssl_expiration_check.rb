@@ -18,15 +18,15 @@ module Braintree
     end
 
     def self.production_expiration_date # :nodoc:
-      Date.new(2012, 1, 8)
+      Date.civil(2012, 1, 8)
     end
 
     def self.sandbox_expiration_date # :nodoc:
-      Date.new(2010, 12, 1)
+      Date.civil(2010, 12, 1)
     end
 
     def self.qa_expiration_date # :nodoc:
-      Date.new(2010, 12, 1)
+      Date.civil(2010, 12, 1)
     end
   end
 end

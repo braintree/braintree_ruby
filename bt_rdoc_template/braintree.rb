@@ -54,6 +54,7 @@ BODY = <<-END_BODY
     <h3>Files</h3>
     <ul>
       <li><a href="BASE_URL/files/README_rdoc.html">README</a></li>
+      <li><a href="BASE_URL/files/CHANGELOG_rdoc.html">CHANGELOG</a></li>
       <li><a href="BASE_URL/files/LICENSE.html">LICENSE</a></li>
     </ul>
   </div>

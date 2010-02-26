@@ -392,9 +392,7 @@ module Braintree
 
     def _init(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
-      if self.amount
-        instance_variable_set :@amount, BigDecimal.new(self.amount)
-      end
+      @amount = Util.to_big_decimal(amount)
       @credit_card_details = CreditCardDetails.new(@credit_card)
       @customer_details = CustomerDetails.new(@customer)
       @billing_details = AddressDetails.new(@billing)

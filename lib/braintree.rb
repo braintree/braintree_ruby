@@ -1,5 +1,6 @@
 require 'bigdecimal'
 require "cgi"
+require "date"
 require "digest/sha1"
 require "logger"
 require "net/http"

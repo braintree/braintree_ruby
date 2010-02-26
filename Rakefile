@@ -47,7 +47,7 @@ end
 
 def configure_rdoc_task(t)
   t.main = "README.rdoc"
-  t.rdoc_files.include("README.rdoc", "LICENSE", "lib/**/*.rb")
+  t.rdoc_files.include("README.rdoc", "CHANGELOG.rdoc", "LICENSE", "lib/**/*.rb")
   t.title = "Braintree Ruby Documentation"
 end
 
@@ -132,6 +132,13 @@ task :stop_sphinx do
   Dir.chdir(GATEWAY_ROOT) do
     sh "env RAILS_ENV=integration rake ts:stop --trace"
   end
+end
+
+desc 'Cleans generated files'
+task :clean do
+  rm_f Dir.glob('*.gem').join(" ")
+  rm_rf "bt_rdoc"
+  rm_rf "rdoc"
 end
 
 def spawn_server(pid_file, port, environment="test")

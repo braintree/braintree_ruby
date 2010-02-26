@@ -1,0 +1,18 @@
+== 1.1.1
+
+* Added explicit require for date to fix missing initialize (thanks jherdman[http://github.com/jherdman])
+* Allow Transaction price and Subscription amount as BigDecimals (as well as Strings)
+* Ruby 1.9 bug fixes (thanks Leo Shemesh)
+
+== 1.1.0
+
+* Recurring billing support
+
+== 1.0.1
+
+* Custom fields support
+* Transaction status history support
+
+== 1.0.0
+
+* Initial release

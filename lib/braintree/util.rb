@@ -29,16 +29,15 @@ module Braintree
     end
 
     def self.symbolize_keys(hash)
-      hash.each do |key, value|
-        hash.delete(key)
-        hash[key.to_sym] = value
+      hash.inject({}) do |new_hash, (key, value)|
         if value.is_a?(Hash)
-          symbolize_keys(value)
+          value = symbolize_keys(value)
         elsif value.is_a?(Array) && value.all? { |v| v.is_a?(Hash) }
-          value.each { |v| symbolize_keys(v) }
+          value = value.map { |v| symbolize_keys(v) }
         end
+
+        new_hash.merge(key.to_sym => value)
       end
-      hash
     end
 
     def self.raise_exception_for_status_code(status_code)
@@ -55,6 +54,17 @@ module Braintree
         raise DownForMaintenanceError
       else
         raise UnexpectedError, "Unexpected HTTP_RESPONSE #{status_code.to_i}"
+      end
+    end
+
+    def self.to_big_decimal(decimal)
+      case decimal
+      when BigDecimal, NilClass
+        decimal
+      when String
+        BigDecimal.new(decimal)
+      else
+        raise ArgumentError, "Argument must be a String or BigDecimal"
       end
     end
 

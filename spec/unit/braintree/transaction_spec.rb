@@ -99,6 +99,17 @@ describe Braintree::Transaction do
         :custom => "\n    "
       )
     end
+
+    it "accepts amount as either a String or a BigDecimal" do
+      Braintree::Transaction._new(:amount => "12.34").amount.should == BigDecimal.new("12.34")
+      Braintree::Transaction._new(:amount => BigDecimal.new("12.34")).amount.should == BigDecimal.new("12.34")
+    end
+
+    it "blows up if amount is not a string or BigDecimal" do
+      expect {
+        Braintree::Transaction._new(:amount => 12.34)
+      }.to raise_error(/Argument must be a String or BigDecimal/)
+    end
   end
 
   describe "inspect" do

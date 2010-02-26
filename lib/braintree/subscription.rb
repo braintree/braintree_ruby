@@ -94,9 +94,7 @@ module Braintree
 
     def _init(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
-      if self.price
-        instance_variable_set :@price, BigDecimal.new(self.price)
-      end  
+      @price = Util.to_big_decimal(price)
     end
 
     def self._update_signature # :nodoc:

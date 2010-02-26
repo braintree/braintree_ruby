@@ -1,6 +1,26 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::Util do
+  describe "self.symbolize_keys" do
+    it "does not modify the hash" do
+      original = {"a" => "b", "c" => "d"}
+      new = Braintree::Util.symbolize_keys(original)
+
+      original["a"].should == "b"
+      new[:a].should == "b"
+    end
+
+    it "symbolizes nested keys" do
+      hash = {"a" => {"b" => {"c" => "d" }}}
+      Braintree::Util.symbolize_keys(hash).should == {:a => {:b => {:c => "d"}}}
+    end
+
+    it "symbolizes nested keys in arrays" do
+      hash = {"a" => ["b" => {"c" => "d" }]}
+      Braintree::Util.symbolize_keys(hash).should == {:a => [:b => {:c => "d"}]}
+    end
+  end
+
   describe "self.verify_keys" do
     it "raises an exception if the hash contains an invalid key" do
       expect do
@@ -170,6 +190,25 @@ describe Braintree::Util do
     end
   end
 
+  describe "self.to_big_decimal" do
+    it "returns the BigDecimal when given a BigDecimal" do
+      Braintree::Util.to_big_decimal(BigDecimal.new("12.34")).should == BigDecimal.new("12.34")
+    end
+
+    it "returns a BigDecimal when given a string" do
+      Braintree::Util.to_big_decimal("12.34").should == BigDecimal.new("12.34")
+    end
+
+    it "returns nil when given nil" do
+      Braintree::Util.to_big_decimal(nil).should be_nil
+    end
+
+    it "blows up when not given a String or BigDecimal" do
+      expect {
+        Braintree::Util.to_big_decimal(12.34)
+      }.to raise_error(/Argument must be a String or BigDecimal/)
+    end
+  end
 
   describe "self.url_encode" do
     it "url encodes the given text" do

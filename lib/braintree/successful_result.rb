@@ -27,7 +27,7 @@ module Braintree
 
     def inspect # :nodoc:
       inspected_attributes = @attrs.map { |attr| "#{attr}:#{send(attr).inspect}" }
-      "#<#{self.class} #{inspected_attributes}>"
+      "#<#{self.class} #{inspected_attributes.join(" ")}>"
     end
 
     # Always returns true.
