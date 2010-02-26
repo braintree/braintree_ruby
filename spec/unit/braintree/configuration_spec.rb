@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::Configuration do
-  
+
   before do
     @original_merchant_id = Braintree::Configuration.merchant_id
     @original_public_key = Braintree::Configuration.public_key
@@ -11,11 +11,11 @@ describe Braintree::Configuration do
 
   after do
     Braintree::Configuration.merchant_id = @original_merchant_id
-    Braintree::Configuration.public_key  = @original_public_key 
+    Braintree::Configuration.public_key  = @original_public_key
     Braintree::Configuration.private_key = @original_private_key
     Braintree::Configuration.environment = @original_environment
   end
-  
+
   describe "self.base_merchant_path" do
     it "returns /merchants/{merchant_id}" do
       Braintree::Configuration.base_merchant_path.should == "/merchants/integration_merchant_id"
@@ -70,7 +70,7 @@ describe Braintree::Configuration do
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.environment needs to be set")
     end
   end
-  
+
   describe "self.environment=" do
     it "raises an exception if the environment is invalid" do
       expect do
@@ -78,7 +78,7 @@ describe Braintree::Configuration do
       end.to raise_error(ArgumentError, ":invalid_environment is not a valid environment")
     end
   end
-  
+
   describe "self.logger" do
     it "defaults to logging to stdout with log_level info" do
       begin
@@ -99,7 +99,7 @@ describe Braintree::Configuration do
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.merchant_id needs to be set")
     end
   end
-  
+
   describe "self.public_key" do
     it "raises an exception if it hasn't been set yet" do
       Braintree::Configuration.instance_variable_set(:@public_key, nil)
@@ -137,12 +137,12 @@ describe Braintree::Configuration do
 
   describe "self.protocol" do
     it "is http for development" do
-      Braintree::Configuration.environment = :development      
+      Braintree::Configuration.environment = :development
       Braintree::Configuration.protocol.should == "http"
     end
 
     it "is https for production" do
-      Braintree::Configuration.environment = :production      
+      Braintree::Configuration.environment = :production
       Braintree::Configuration.protocol.should == "https"
     end
 
@@ -169,7 +169,7 @@ describe Braintree::Configuration do
       Braintree::Configuration.server.should == "sandbox.braintreegateway.com"
     end
   end
-  
+
   describe "self.ssl?" do
     it "returns false for development" do
       Braintree::Configuration.environment = :development
@@ -186,5 +186,5 @@ describe Braintree::Configuration do
       Braintree::Configuration.ssl?.should == true
     end
   end
-  
+
 end

@@ -7,7 +7,8 @@ module Braintree
     def self.check_dates # :nodoc:
       {
         "QA" => qa_expiration_date,
-        "Sandbox" => sandbox_expiration_date
+        "Sandbox" => sandbox_expiration_date,
+        "Production" => production_expiration_date
       }.each do |host, expiration_date|
         if Date.today + (3 * 30) > expiration_date
           Configuration.logger.warn "[Braintree] The SSL Certificate for the #{host} environment will expire on #{expiration_date}. Please check for an updated client library."
@@ -16,6 +17,9 @@ module Braintree
       @ssl_expiration_dates_checked = true
     end
 
+    def self.production_expiration_date # :nodoc:
+      Date.new(2012, 1, 8)
+    end
 
     def self.sandbox_expiration_date # :nodoc:
       Date.new(2010, 12, 1)

@@ -1,7 +1,7 @@
 module Braintree
   # The ErrorCodes module provides constants for validation errors.
   # The constants should be used to check for a specific validation error in a ValidationErrorCollection.
-  # The error messages returned from the server may change, but the codes will remain the same. 
+  # The error messages returned from the server may change, but the codes will remain the same.
   module ErrorCodes
     module Address
       CannotBeBlank = "81801"
@@ -35,7 +35,7 @@ module Braintree
       ExpirationYearIsInvalid = "81713"
       NumberIsRequired = "81714"
       NumberIsInvalid = "81715"
-      NumberInvalidLength = "81716"
+      NumberHasInvalidLength = "81716"
       NumberMustBeTestNumber = "81717"
       TokenInvalid = "91718"
       TokenIsInUse = "91719"
@@ -62,7 +62,19 @@ module Braintree
       WebsiteIsTooLong = "81615"
       WebsiteIsInvalid = "81616"
     end
-    
+
+    module Subscription
+      CannotEditCanceledSubscription = "81901"
+      IdIsInUse =  "81902"
+      PriceCannotBeBlank = "81903"
+      PriceFormatIsInvalid = "81904"
+      StatusIsCanceled = "81905"
+      TokenFormatIsInvalid = "81906"
+      TrialDurationFormatIsInvalid =  "81907"
+      TrialDurationIsRequired = "81908"
+      TrialDurationUnitIsInvalid =  "81909"
+    end
+
     module Transaction
       AmountCannotBeNegative = "81501"
       AmountIsRequired = "81502"
@@ -73,6 +85,7 @@ module Braintree
       CannotSubmitForSettlement = "91507"
       CreditCardIsRequired = "91508"
       CustomerDefaultPaymentMethodCardTypeIsNotAccepted = "81509"
+      CustomFieldIsInvalid = "91526"
       CustomerIdIsInvalid = "91510"
       CustomerDoesNotHaveCreditCard = "91511"
       HasAlreadyBeenRefunded = "91512"

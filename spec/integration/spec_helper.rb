@@ -10,7 +10,7 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     GATEWAY_SERVER_PORT = 3000
     GATEWAY_PID_FILE = "/tmp/gateway_server_#{Braintree::Configuration.port}.pid"
     SPHINX_PID_FILE = "#{GATEWAY_ROOT}/log/searchd.integration.pid"
-    
+
     gateway_already_started = File.exist?(GATEWAY_PID_FILE)
     sphinx_already_started = File.exist?(SPHINX_PID_FILE)
     config.before(:suite) do

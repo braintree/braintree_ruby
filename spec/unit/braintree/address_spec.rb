@@ -5,19 +5,19 @@ describe Braintree::Address do
     it "returns true if given an address with the same id and customer_id" do
       first = Braintree::Address._new(:customer_id => "c1", :id => 'a1')
       second = Braintree::Address._new(:customer_id => "c1", :id => "a1")
-      
+
       first.should == second
       second.should == first
     end
-    
+
     it "returns false if given an address with a different id and the same customer_id" do
       first = Braintree::Address._new(:customer_id => "c1", :id => "a1")
       second = Braintree::Address._new(:customer_id => "c1", :id => "not a1")
-      
+
       first.should_not == second
       second.should_not == first
     end
-    
+
     it "returns false if given an address with a different customer_id and the same id" do
       first = Braintree::Address._new(:customer_id => "c1", :id => "a1")
       second = Braintree::Address._new(:customer_id => "not c1", :id => "a1")
@@ -51,7 +51,7 @@ describe Braintree::Address do
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end
-  
+
   describe "self.update" do
     it "raises an exception if hash includes an invalid key" do
       expect do
@@ -67,7 +67,7 @@ describe Braintree::Address do
       end.to raise_error(ArgumentError, "customer_id contains invalid characters")
     end
   end
-  
+
   describe "self.new" do
     it "is protected" do
       expect do

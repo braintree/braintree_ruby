@@ -7,7 +7,7 @@ module Braintree
     def initialize(attributes)
       set_instance_variables_from_hash attributes
     end
-    
+
     def inspect # :nodoc:
       "#<#{self.class} (#{code}) #{message}>"
     end

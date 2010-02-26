@@ -6,7 +6,7 @@ describe Braintree::Customer do
       output = Braintree::Customer._new({:first_name => 'Dan', :id => '1234'}).inspect
       output.should include("#<Braintree::Customer id: \"1234\",")
     end
-    
+
     it "includes all customer attributes" do
       customer = Braintree::Customer._new(
         :company => "Company",
@@ -31,7 +31,7 @@ describe Braintree::Customer do
       output.should include(%Q(updated_at: #{customer.updated_at.inspect}))
     end
   end
-    
+
   describe "self.create" do
     it "raises an exception if hash includes an invalid key" do
       expect do
@@ -39,7 +39,7 @@ describe Braintree::Customer do
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end
-  
+
   describe "self.update" do
     it "raises an exception if hash includes an invalid key" do
       expect do
@@ -60,19 +60,19 @@ describe Braintree::Customer do
     it "returns true when given a customer with the same id" do
       first = Braintree::Customer._new(:id => 123)
       second = Braintree::Customer._new(:id => 123)
-      
+
       first.should == second
       second.should == first
     end
-    
+
     it "returns false when given a customer with a different id" do
       first = Braintree::Customer._new(:id => 123)
       second = Braintree::Customer._new(:id => 124)
-      
+
       first.should_not == second
       second.should_not == first
     end
-    
+
     it "returns false when not given a customer" do
       customer = Braintree::Customer._new(:id => 123)
       customer.should_not == "not a customer"
@@ -92,7 +92,7 @@ describe Braintree::Customer do
       customer.credit_cards[1].token.should == "pm2"
     end
   end
-  
+
   describe "new" do
     it "is protected" do
       expect do

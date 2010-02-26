@@ -6,7 +6,7 @@ module Braintree
         if result.success?
           result.send object_to_return
         else
-          raise ValidationsFailed
+          raise ValidationsFailed.new(result)
         end
       end
 
@@ -15,12 +15,12 @@ module Braintree
           instance_variable_set "@#{key}", value
         end
       end
-  
+
       def singleton_class
         class << self; self; end
       end
     end
-    
+
     def self.included(klass)
       klass.extend Methods
     end

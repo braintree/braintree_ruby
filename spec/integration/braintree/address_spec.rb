@@ -28,7 +28,7 @@ describe Braintree::Address do
       result.address.postal_code.should == "60622"
       result.address.country_name.should == "United States of America"
     end
-    
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
       result = Braintree::Address.create(
@@ -72,7 +72,7 @@ describe Braintree::Address do
       address.postal_code.should == "60623"
       address.country_name.should == "United States of America"
     end
-    
+
     it "raises a ValidationsFailed if invalid" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
       expect do
@@ -83,7 +83,7 @@ describe Braintree::Address do
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
-  
+
   describe "self.delete" do
     it "deletes the address given a customer id and an address id" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
@@ -103,7 +103,7 @@ describe Braintree::Address do
       end.to raise_error(Braintree::NotFoundError)
     end
   end
-  
+
   describe "self.find" do
     it "finds the address given a customer and an address id" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
@@ -116,7 +116,7 @@ describe Braintree::Address do
       address = Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
       Braintree::Address.find(customer.id, address.id).should == address
     end
-    
+
     it "raises a NotFoundError if it cannot be found because of customer id" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
       address = Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
@@ -137,7 +137,7 @@ describe Braintree::Address do
         "address for customer \"#{customer.id}\" with id \"invalid\" not found")
     end
   end
-  
+
   describe "self.update" do
     it "raises NotFoundError if the address can't be found" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
@@ -176,7 +176,7 @@ describe Braintree::Address do
       result.address.postal_code.should == "60621"
       result.address.country_name.should == "United States of America"
     end
-    
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:last_name => "Miller")
       address = Braintree::Address.create!(
@@ -232,7 +232,7 @@ describe Braintree::Address do
       updated_address.postal_code.should == "60621"
       updated_address.country_name.should == "United States of America"
     end
-    
+
     it "raises a ValidationsFailed invalid" do
       customer = Braintree::Customer.create!(:last_name => "Miller")
       address = Braintree::Address.create!(
@@ -250,7 +250,7 @@ describe Braintree::Address do
     end
   end
 
-  
+
   describe "delete" do
     it "deletes the address" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
@@ -261,7 +261,7 @@ describe Braintree::Address do
       end.to raise_error(Braintree::NotFoundError)
     end
   end
-  
+
   describe "update" do
     it "returns a success response and updates the address if valid" do
       customer = Braintree::Customer.create!(:last_name => "Miller")
@@ -291,7 +291,7 @@ describe Braintree::Address do
       address.postal_code.should == "60621"
       address.country_name.should == "United States of America"
     end
-    
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:last_name => "Miller")
       address = Braintree::Address.create!(
@@ -334,7 +334,7 @@ describe Braintree::Address do
       address.postal_code.should == "60621"
       address.country_name.should == "United States of America"
     end
-    
+
     it "raises a ValidationsFailed invalid" do
       customer = Braintree::Customer.create!(:last_name => "Miller")
       address = Braintree::Address.create!(

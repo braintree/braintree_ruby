@@ -2,8 +2,8 @@ module Braintree
   class Transaction
     class AddressDetails # :nodoc:
       include BaseModule
-      
-      attr_reader :first_name, :last_name, :company,
+
+      attr_reader :id, :first_name, :last_name, :company,
         :street_address, :extended_address, :locality, :region,
         :postal_code, :country_name
 

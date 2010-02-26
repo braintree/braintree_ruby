@@ -13,7 +13,7 @@ describe Braintree::Util do
         Braintree::Util.verify_keys([:allowed], :allowed => "ok", :disallowed => "bad", "also_invalid" => true)
       end.to raise_error(ArgumentError, "invalid keys: also_invalid, disallowed")
     end
-    
+
     it "raises an exception if a nested hash contains an invalid key" do
       expect do
         Braintree::Util.verify_keys(
@@ -53,7 +53,7 @@ describe Braintree::Util do
           }
         )
       end.to raise_error(ArgumentError, "invalid keys: allowed[custom_fields][bad_nesting]")
-    end    
+    end
 
     it "raises an exception if a deeply nested hash contains an invalid key" do
       expect do
@@ -74,7 +74,7 @@ describe Braintree::Util do
       end.to raise_error(ArgumentError, "invalid keys: nested[deeply_allowed][real_deep_invalid], nested[nested_invalid], top_level_invalid")
     end
   end
-  
+
   describe "self._flatten_hash_keys" do
     it "flattens hash keys" do
       Braintree::Util._flatten_hash_keys(:nested => {
@@ -124,13 +124,13 @@ describe Braintree::Util do
       hash = {:foo => {:key_one => "value_one", :key_two => "value_two"}}
       Braintree::Util.hash_to_query_string(hash).should == "foo%5Bkey_one%5D=value_one&foo%5Bkey_two%5D=value_two"
     end
-    
+
     it "works for nesting 2 levels deep" do
       hash = {:foo => {:nested => {:key_one => "value_one", :key_two => "value_two"}}}
       Braintree::Util.hash_to_query_string(hash).should == "foo%5Bnested%5D%5Bkey_one%5D=value_one&foo%5Bnested%5D%5Bkey_two%5D=value_two"
     end
   end
-  
+
   describe "self.parse_query_string" do
     it "parses the query string" do
       query_string = "foo=bar%20baz&hash=a1b2c3"
@@ -150,7 +150,7 @@ describe Braintree::Util do
         Braintree::Util.raise_exception_for_status_code(403)
       end.to raise_error(Braintree::AuthorizationError)
     end
-    
+
     it "raises a ServerError if the server 500's" do
       expect do
         Braintree::Util.raise_exception_for_status_code(500)
@@ -162,7 +162,7 @@ describe Braintree::Util do
         Braintree::Util.raise_exception_for_status_code(503)
       end.to raise_error(Braintree::DownForMaintenanceError)
     end
-    
+
     it "raises an UnexpectedError if some other code is returned" do
       expect do
         Braintree::Util.raise_exception_for_status_code(600)
@@ -170,7 +170,7 @@ describe Braintree::Util do
     end
   end
 
-  
+
   describe "self.url_encode" do
     it "url encodes the given text" do
       Braintree::Util.url_encode("foo?bar").should == "foo%3Fbar"

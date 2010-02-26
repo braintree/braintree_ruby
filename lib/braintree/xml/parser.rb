@@ -48,7 +48,7 @@ module Braintree
               ""
             elsif value.nil? || value['nil'] == 'true'
               nil
-            # If the type is the only element which makes it then 
+            # If the type is the only element which makes it then
             # this still makes the value nil, except if type is
             # a XML node(where type['value'] is a Hash)
             elsif value['type'] && value.size == 1 && !value['type'].is_a?(::Hash)

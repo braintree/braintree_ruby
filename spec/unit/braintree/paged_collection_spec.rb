@@ -14,7 +14,7 @@ describe "Braintree::PagedCollection" do
       collection[3].should == nil
     end
   end
-  
+
   describe "each" do
     it "iterates over the contents" do
       expected = ["apples", "bananas", "cherries"]
@@ -28,7 +28,7 @@ describe "Braintree::PagedCollection" do
       actual.should == expected
     end
   end
-  
+
   describe "first" do
     it "returns the first element" do
       collection = Braintree::PagedCollection.new(
@@ -37,7 +37,7 @@ describe "Braintree::PagedCollection" do
       collection.first.should == "apples"
     end
   end
-  
+
   describe "initialize" do
     it "initializes attributes as expected" do
       collection = Braintree::PagedCollection.new(
@@ -64,7 +64,7 @@ describe "Braintree::PagedCollection" do
       collection.last_page?.should == false
     end
   end
-  
+
   describe "next_page" do
     it "returns the next page of results" do
       collection = Braintree::PagedCollection.new(
@@ -73,20 +73,20 @@ describe "Braintree::PagedCollection" do
           :total_items => 2
         ) do |page_num|
         "contents of page #{page_num}"
-      end      
+      end
       collection.next_page.should == "contents of page 2"
     end
-    
+
     it "returns nil if on last page" do
       collection = Braintree::PagedCollection.new(
           :current_page_number => 2,
           :page_size => 2,
           :total_items => 4
-        )      
+        )
       collection.next_page.should == nil
     end
   end
-  
+
   describe "next_page_number" do
     it "returns the next page number when not on the last page" do
       collection = Braintree::PagedCollection.new(
@@ -96,17 +96,17 @@ describe "Braintree::PagedCollection" do
       )
       collection.next_page_number.should == 3
     end
-    
+
     it "returns nil when on the last page" do
       collection = Braintree::PagedCollection.new(
         :current_page_number => 1,
         :page_size => 1,
         :total_items => 1
       )
-      collection.next_page_number.should == nil      
+      collection.next_page_number.should == nil
     end
   end
-  
+
   describe "total_pages" do
     it "calculates the total number of pages when total items is not evenly divisible by page size" do
       collection = Braintree::PagedCollection.new(
@@ -124,5 +124,5 @@ describe "Braintree::PagedCollection" do
       collection.total_pages.should == 4
     end
   end
-  
+
 end

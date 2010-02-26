@@ -14,12 +14,30 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6}$/
       result.transaction.type.should == "sale"
-      result.transaction.amount.should == Braintree::Test::TransactionAmounts::Authorize
+      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
+      result.transaction.credit_card_details.customer_location.should == "US"
     end
-    
+
+    it "returns processor response code and text if declined" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.id.should =~ /^\w{6}$/
+      result.transaction.type.should == "sale"
+      result.transaction.status.should == "processor_declined"
+      result.transaction.processor_response_code.should == "2000"
+      result.transaction.processor_response_text.should == "Do Not Honor"
+    end
+
     it "can create custom fields" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -67,7 +85,7 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.params.should == {:transaction => {:type => 'sale', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
     end
-    
+
     it "returns errors if validations fail (tests many errors at once for spec speed)" do
       params = {
         :transaction => {
@@ -91,9 +109,8 @@ describe Braintree::Transaction do
       result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
       result.errors.for(:transaction).on(:payment_method_token)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodTokenIsInvalid
       result.errors.for(:transaction).on(:type)[0].code.should == Braintree::ErrorCodes::Transaction::TypeIsInvalid
-
     end
-    
+
     it "returns an error if amount is negative" do
       params = {
         :transaction => {
@@ -117,7 +134,7 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsInvalid
     end
-    
+
     it "returns an error if type is not given" do
       params = {
         :transaction => {
@@ -128,7 +145,7 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.errors.for(:transaction).on(:type)[0].code.should == Braintree::ErrorCodes::Transaction::TypeIsRequired
     end
-    
+
     it "returns an error if no credit card is given" do
       params = {
         :transaction => {
@@ -138,7 +155,7 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CreditCardIsRequired
     end
-    
+
     it "returns an error if the given payment method token doesn't belong to the customer" do
       customer = Braintree::Customer.create!(
         :credit_card => {
@@ -169,12 +186,12 @@ describe Braintree::Transaction do
       )
       transaction.id.should =~ /^\w{6}$/
       transaction.type.should == "sale"
-      transaction.amount.should == Braintree::Test::TransactionAmounts::Authorize
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
     end
-    
+
     it "raises a ValidationsFailed if invalid" do
       expect do
         Braintree::Transaction.create!(
@@ -201,7 +218,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6}$/
       result.transaction.type.should == "sale"
-      result.transaction.amount.should == Braintree::Test::TransactionAmounts::Authorize
+      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -253,7 +270,7 @@ describe Braintree::Transaction do
       transaction.id.should =~ /\A\w{6}\z/
       transaction.type.should == "sale"
       transaction.status.should == "authorized"
-      transaction.amount.should == "100.00"
+      transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
       transaction.created_at.between?(Time.now - 5, Time.now).should == true
@@ -291,7 +308,7 @@ describe Braintree::Transaction do
       transaction.shipping_details.postal_code.should == "60103"
       transaction.shipping_details.country_name.should == "United States of America"
     end
-    
+
     it "can store customer and credit card in the vault" do
       result = Braintree::Transaction.sale(
         :amount => "100",
@@ -347,6 +364,8 @@ describe Braintree::Transaction do
       transaction.customer_details.id.should =~ /\A\d{6,7}\z/
       transaction.vault_customer.id.should == transaction.customer_details.id
       credit_card = Braintree::CreditCard.find(transaction.vault_credit_card.token)
+      transaction.billing_details.id.should == credit_card.billing_address.id
+      transaction.vault_billing_address.id.should == credit_card.billing_address.id
       credit_card.billing_address.first_name.should == "Carl"
       credit_card.billing_address.last_name.should == "Jones"
       credit_card.billing_address.company.should == "Braintree"
@@ -356,6 +375,50 @@ describe Braintree::Transaction do
       credit_card.billing_address.region.should == "IL"
       credit_card.billing_address.postal_code.should == "60622"
       credit_card.billing_address.country_name.should == "United States of America"
+    end
+
+    it "can store the shipping address in the vault" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :customer => {
+          :first_name => "Adam",
+          :last_name => "Williams"
+        },
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :shipping => {
+          :first_name => "Carl",
+          :last_name => "Jones",
+          :company => "Braintree",
+          :street_address => "123 E Main St",
+          :extended_address => "Suite 403",
+          :locality => "Chicago",
+          :region => "IL",
+          :postal_code => "60622",
+          :country_name => "United States of America"
+        },
+        :options => {
+          :store_in_vault => true,
+          :store_shipping_address_in_vault => true,
+        }
+      )
+      result.success?.should == true
+      transaction = result.transaction
+      transaction.customer_details.id.should =~ /\A\d{6,7}\z/
+      transaction.vault_customer.id.should == transaction.customer_details.id
+      transaction.vault_shipping_address.id.should == transaction.vault_customer.addresses[0].id
+      shipping_address = transaction.vault_customer.addresses[0]
+      shipping_address.first_name.should == "Carl"
+      shipping_address.last_name.should == "Jones"
+      shipping_address.company.should == "Braintree"
+      shipping_address.street_address.should == "123 E Main St"
+      shipping_address.extended_address.should == "Suite 403"
+      shipping_address.locality.should == "Chicago"
+      shipping_address.region.should == "IL"
+      shipping_address.postal_code.should == "60622"
+      shipping_address.country_name.should == "United States of America"
     end
 
     it "submits for settlement if given transaction[options][submit_for_settlement]" do
@@ -372,7 +435,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.status.should == "submitted_for_settlement"
     end
-    
+
     it "can specify the customer id and payment method token" do
       customer_id = "customer_#{rand(1000000)}"
       payment_mehtod_token = "credit_card_#{rand(1000000)}"
@@ -399,7 +462,7 @@ describe Braintree::Transaction do
       transaction.credit_card_details.token.should == payment_mehtod_token
       transaction.vault_credit_card.token.should == payment_mehtod_token
     end
-    
+
     it "returns an error result if validations fail" do
       params = {
         :transaction => {
@@ -428,12 +491,12 @@ describe Braintree::Transaction do
       )
       transaction.id.should =~ /^\w{6}$/
       transaction.type.should == "sale"
-      transaction.amount.should == Braintree::Test::TransactionAmounts::Authorize
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
     end
-    
+
     it "raises a ValidationsFailed if invalid" do
       expect do
         Braintree::Transaction.sale!(
@@ -468,10 +531,10 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "999.99")
       result.success?.should == true
-      result.transaction.amount.should == "999.99"
+      result.transaction.amount.should == BigDecimal.new("999.99")
       result.transaction.status.should == "submitted_for_settlement"
       result.transaction.updated_at.between?(Time.now - 5, Time.now).should == true
     end
@@ -484,7 +547,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "1000.01")
       result.success?.should == false
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
@@ -527,13 +590,13 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       expect do
         Braintree::Transaction.submit_for_settlement!(transaction.id, "1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
-  
+
   describe "self.credit" do
     it "returns a successful result with type=credit if successful" do
       result = Braintree::Transaction.credit(
@@ -546,12 +609,12 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6}$/
       result.transaction.type.should == "credit"
-      result.transaction.amount.should == Braintree::Test::TransactionAmounts::Authorize
+      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
     end
-    
+
     it "returns an error result if validations fail" do
       params = {
         :transaction => {
@@ -568,7 +631,7 @@ describe Braintree::Transaction do
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
   end
-  
+
   describe "self.credit!" do
     it "returns the transaction if valid" do
       transaction = Braintree::Transaction.credit!(
@@ -580,12 +643,12 @@ describe Braintree::Transaction do
       )
       transaction.id.should =~ /^\w{6}$/
       transaction.type.should == "credit"
-      transaction.amount.should == Braintree::Test::TransactionAmounts::Authorize
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
     end
-    
+
     it "raises a ValidationsFailed if invalid" do
       expect do
         Braintree::Transaction.credit!(
@@ -598,7 +661,7 @@ describe Braintree::Transaction do
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
-  
+
   describe "self.create_from_transparent_redirect" do
     it "returns a successful result if successful" do
       params = {
@@ -620,15 +683,15 @@ describe Braintree::Transaction do
       result.success?.should == true
       transaction = result.transaction
       transaction.type.should == "sale"
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
     end
-    
+
     it "can put any param in tr_data" do
       params = {
-        
+
       }
       tr_data_params = {
         :transaction => {
@@ -679,7 +742,7 @@ describe Braintree::Transaction do
       transaction.id.should =~ /\A\w{6}\z/
       transaction.type.should == "sale"
       transaction.status.should == "authorized"
-      transaction.amount.should == "100.00"
+      transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
       transaction.created_at.between?(Time.now - 5, Time.now).should == true
@@ -717,7 +780,7 @@ describe Braintree::Transaction do
       transaction.shipping_details.postal_code.should == "60103"
       transaction.shipping_details.country_name.should == "United States of America"
     end
-    
+
     it "returns an error result if validations fail" do
       params = {
         :transaction => {
@@ -740,7 +803,7 @@ describe Braintree::Transaction do
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
   end
-  
+
   describe "self.find" do
     it "finds the transaction with the given id" do
       result = Braintree::Transaction.create(
@@ -793,7 +856,7 @@ describe Braintree::Transaction do
     end
   end
 
-  describe "void!" do
+  describe "self.void!" do
     it "returns the transaction if successful" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -820,17 +883,18 @@ describe Braintree::Transaction do
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
-  
+
   describe "refund" do
     it "returns a successful result if successful" do
-      transaction = find_transaction_to_refund
+      transaction = create_transaction_to_refund
+      transaction.status.should == "settled"
       result = transaction.refund
       result.success?.should == true
       result.new_transaction.type.should == "credit"
     end
 
     it "returns an error if already refunded" do
-      transaction = find_transaction_to_refund
+      transaction = create_transaction_to_refund
       result = transaction.refund
       result.success?.should == true
       result = transaction.refund
@@ -874,10 +938,10 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       result = transaction.submit_for_settlement("999.99")
       result.success?.should == true
-      transaction.amount.should == "999.99"
+      transaction.amount.should == BigDecimal.new("999.99")
     end
 
     it "updates the transaction attributes" do
@@ -888,10 +952,10 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       result = transaction.submit_for_settlement("999.99")
       result.success?.should == true
-      transaction.amount.should == "999.99"
+      transaction.amount.should == BigDecimal.new("999.99")
       transaction.status.should == "submitted_for_settlement"
       transaction.updated_at.between?(Time.now - 5, Time.now).should == true
     end
@@ -904,7 +968,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       result = transaction.submit_for_settlement("1000.01")
       result.success?.should == false
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
@@ -934,13 +998,13 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == "1000.00"
+      transaction.amount.should == BigDecimal.new("1000.00")
       expect do
         transaction.submit_for_settlement!("1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
-  
+
   describe "search" do
     describe "advanced" do
       it "pretty much works in one big fell swoop/hash" do
@@ -1026,12 +1090,12 @@ describe Braintree::Transaction do
         transactions = Braintree::Transaction.search "1111"
         transactions.total_items.should > 0
       end
-    
+
       it "is paged" do
         transactions = Braintree::Transaction.search "1111", :page => 2
         transactions.current_page_number.should == 2
       end
-    
+
       it "can traverse pages" do
         transactions = Braintree::Transaction.search "1111", :page => 1
         transactions.next_page.current_page_number.should == 2
@@ -1054,7 +1118,7 @@ describe Braintree::Transaction do
       transaction.status_history[1].status.should == "submitted_for_settlement"
     end
   end
-  
+
   describe "vault_credit_card" do
     it "returns the Braintree::CreditCard if the transaction credit card is stored in the vault" do
       customer = Braintree::Customer.create!(
@@ -1066,7 +1130,7 @@ describe Braintree::Transaction do
       transaction = customer.credit_cards[0].sale(:amount => "100.00").transaction
       transaction.vault_credit_card.should == customer.credit_cards[0]
     end
-    
+
     it "returns nil if the transaction credit card is not stored in the vault" do
       transaction = Braintree::Transaction.create!(
         :amount => "100.00",
@@ -1091,7 +1155,7 @@ describe Braintree::Transaction do
       transaction = customer.credit_cards[0].sale(:amount => "100.00").transaction
       transaction.vault_customer.should == customer
     end
-    
+
     it "returns nil if the transaction customer is not stored in the vault" do
       transaction = Braintree::Transaction.create!(
         :amount => "100.00",
@@ -1104,7 +1168,7 @@ describe Braintree::Transaction do
       transaction.vault_customer.should == nil
     end
   end
-  
+
   describe "void" do
     it "returns a successful result if successful" do
       result = Braintree::Transaction.create(
@@ -1178,15 +1242,23 @@ describe Braintree::Transaction do
       request.body = Braintree::Util.hash_to_query_string(params)
       response = http.request(request)
     end
-    query_string = response["Location"].split("?", 2).last  
+    query_string = response["Location"].split("?", 2).last
     query_string
   end
 
-  def find_transaction_to_refund
-    settled_transactions = Braintree::Transaction.search "settled"
-    found = settled_transactions.detect do |t|
-      t.status == "settled" && !t.refunded?
-    end
-    found || raise("unfortunately your test is not as you intended because we could not find a settled transaction that hasn't already been refunded")
+  def create_transaction_to_refund
+    transaction = Braintree::Transaction.sale!(
+      :amount => Braintree::Test::TransactionAmounts::Authorize,
+      :credit_card => {
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009"
+      },
+      :options => {
+        :submit_for_settlement => true
+      }
+    )
+
+    response = Braintree::Http.put "/transactions/#{transaction.id}/settle"
+    Braintree::Transaction.find(transaction.id)
   end
 end

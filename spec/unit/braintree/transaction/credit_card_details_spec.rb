@@ -11,6 +11,21 @@ describe Braintree::Transaction::CreditCardDetails do
     end
   end
 
+  describe "inspect" do
+    it "inspects" do
+      details = Braintree::Transaction::CreditCardDetails.new(
+        :bin => "123456",
+        :card_type => "Visa",
+        :expiration_month => "05",
+        :expiration_year => "2012",
+        :last_4 => "6789",
+        :token => "token",
+        :customer_location => "US"
+      )
+      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", customer_location: "US">)
+    end
+  end
+
   describe "masked_number" do
     it "concatenates the bin, some *'s, and the last_4" do
       details = Braintree::Transaction::CreditCardDetails.new(

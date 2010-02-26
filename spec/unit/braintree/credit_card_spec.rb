@@ -21,41 +21,41 @@ describe Braintree::CreditCard do
     it "returns the url" do
       Braintree::CreditCard.create_credit_card_url.should == "http://localhost:3000/merchants/integration_merchant_id/payment_methods/all/create_via_transparent_redirect_request"
     end
-  end  
+  end
 
   describe "==" do
     it "returns true if given a credit card with the same token" do
       first = Braintree::CreditCard._new(:token => 123)
       second = Braintree::CreditCard._new(:token => 123)
-      
+
       first.should == second
       second.should == first
     end
-    
+
     it "returns false if given a credit card with a different token" do
       first = Braintree::CreditCard._new(:token => 123)
       second = Braintree::CreditCard._new(:token => 124)
-      
+
       first.should_not == second
-      second.should_not == first      
+      second.should_not == first
     end
-    
+
     it "returns false if not given a credit card" do
       credit_card = Braintree::CreditCard._new(:token => 123)
       credit_card.should_not == "not a credit card"
     end
   end
-  
+
   describe "default?" do
     it "is true if the credit card is the default credit card for the customer" do
       Braintree::CreditCard._new(:default => true).default?.should == true
     end
-    
+
     it "is false if the credit card is not the default credit card for the customer" do
       Braintree::CreditCard._new(:default => false).default?.should == false
     end
   end
-  
+
   describe "expired?" do
     it "is true if the payment method is this year and the month has passed" do
       SpecHelper.stub_time_dot_now(Time.mktime(2009, 10, 20)) do
@@ -63,18 +63,18 @@ describe Braintree::CreditCard do
         expired_pm.expired?.should == true
       end
     end
-    
+
     it "is true if the payment method is in a previous year" do
       expired_pm = Braintree::CreditCard._new(:expiration_month => "12", :expiration_year => (Time.now.year - 1).to_s)
       expired_pm.expired?.should == true
     end
-    
+
     it "is false if the payment method is not expired" do
       not_expired_pm = Braintree::CreditCard._new(:expiration_month => "01", :expiration_year => (Time.now.year + 1).to_s)
       not_expired_pm.expired?.should == false
     end
   end
-  
+
   describe "inspect" do
     it "includes the token first" do
       output = Braintree::CreditCard._new(:token => "cc123").inspect
@@ -108,7 +108,7 @@ describe Braintree::CreditCard do
       output.should include(%Q(created_at: #{credit_card.created_at.inspect}))
     end
   end
-  
+
   describe "masked_number" do
     it "uses the bin and last_4 to build the masked number" do
       credit_card = Braintree::CreditCard._new(
@@ -118,7 +118,7 @@ describe Braintree::CreditCard do
       credit_card.masked_number.should == "510510******5100"
     end
   end
-  
+
   describe "self.update" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
@@ -126,7 +126,7 @@ describe Braintree::CreditCard do
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end
-  
+
   describe "self.new" do
     it "is protected" do
       expect do

@@ -17,7 +17,7 @@ END
 END
       Braintree::Http._format_and_sanitize_body_for_log(input_xml).should == expected_xml
     end
-    
+
     it "sanitizes credit card number and cvv" do
       input_xml = <<-END
 <customer>
@@ -27,7 +27,7 @@ END
   <cvv>123</cvv>
 </customer>
       END
-      
+
       expected_xml = <<-END
 [Braintree] <customer>
 [Braintree]   <first-name>Joe</first-name>

@@ -14,7 +14,7 @@ module Braintree
       attr_accessor :logger
       attr_writer :merchant_id, :public_key, :private_key
     end
-  
+
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
         (class << self; self; end).send(:define_method, attribute) do
@@ -25,11 +25,11 @@ module Braintree
       end
     end
     expectant_reader :environment, :merchant_id, :public_key, :private_key
-  
+
     def self.base_merchant_url # :nodoc:
       "#{protocol}://#{server}:#{port}#{base_merchant_path}"
     end
-  
+
     def self.base_merchant_path # :nodoc:
       "/merchants/#{Braintree::Configuration.merchant_id}"
     end
@@ -42,19 +42,19 @@ module Braintree
         File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "securetrust_ca.crt"))
       end
     end
- 
-    # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt> 
+
+    # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
       unless [:development, :qa, :sandbox, :production].include?(env)
         raise ArgumentError, "#{env.inspect} is not a valid environment"
       end
       @environment = env
     end
-  
+
     def self.logger # :nodoc:
       @logger ||= _default_logger
     end
-  
+
     def self.port # :nodoc:
       case environment
       when :development
@@ -63,11 +63,11 @@ module Braintree
         443
       end
     end
-  
+
     def self.protocol # :nodoc:
       ssl? ? "https" : "http"
     end
-  
+
     def self.server # :nodoc:
       case environment
       when :development
@@ -75,25 +75,25 @@ module Braintree
       when :production
         "www.braintreegateway.com"
       when :qa
-        "qa.braintreegateway.com"
+        "qa-master.braintreegateway.com"
       when :sandbox
         "sandbox.braintreegateway.com"
-      end    
-    end  
-    
+      end
+    end
+
     def self.ssl? # :nodoc:
       case environment
       when :development
         false
       when :production, :qa, :sandbox
         true
-      end    
+      end
     end
-  
+
     def self._default_logger # :nodoc:
       logger = Logger.new(STDOUT)
       logger.level = Logger::INFO
       logger
-    end  
+    end
   end
 end

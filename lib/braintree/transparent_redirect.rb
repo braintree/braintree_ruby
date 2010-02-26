@@ -38,6 +38,20 @@ module Braintree
       _data(params)
     end
 
+    def self.parse_and_validate_query_string(query_string) # :nodoc:
+      params = Util.symbolize_keys(Util.parse_query_string(query_string))
+      query_string_without_hash = query_string[/(.*)&hash=.*/, 1]
+      if _hash(query_string_without_hash) == params[:hash]
+        if params[:http_status] == '200'
+          params
+        else
+          Util.raise_exception_for_status_code(params[:http_status])
+        end
+      else
+        raise ForgedQueryString
+      end
+    end
+
     # Returns the tr_data string for creating a transaction.
     def self.transaction_data(params)
       Util.verify_keys(TransactionSignature, params)
@@ -78,20 +92,6 @@ module Braintree
       _data(params)
     end
 
-    def self.parse_and_validate_query_string(query_string) # :nodoc:
-      params = Util.symbolize_keys(Util.parse_query_string(query_string))
-      query_string_without_hash = query_string[/(.*)&hash=.*/, 1]
-      if _hash(query_string_without_hash) == params[:hash]
-        if params[:http_status] == '200'
-          params
-        else
-          Util.raise_exception_for_status_code(params[:http_status])
-        end
-      else
-        raise ForgedQueryString
-      end
-    end
-
     def self._data(params) # :nodoc:
       raise ArgumentError, "expected params to contain :redirect_url" unless params[:redirect_url]
       tr_data_segment = Util.hash_to_query_string(params.merge(
@@ -102,7 +102,7 @@ module Braintree
       tr_data_hash = _hash(tr_data_segment)
       "#{tr_data_hash}|#{tr_data_segment}"
     end
-    
+
     def self._hash(string) # :nodoc:
       ::Braintree::Digest.hexdigest(string)
     end

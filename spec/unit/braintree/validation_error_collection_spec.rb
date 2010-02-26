@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::ValidationErrorCollection do
-  
+
   describe "initialize" do
     it "builds an error object given an array of hashes" do
       hash = {:errors => [{ :attribute => "some model attribute", :code => 1, :message => "bad juju" }]}
@@ -12,7 +12,7 @@ describe Braintree::ValidationErrorCollection do
       error.message.should == "bad juju"
     end
   end
-  
+
   describe "for" do
     it "provides access to nested errors" do
       hash = {
@@ -64,7 +64,7 @@ describe Braintree::ValidationErrorCollection do
       errors.inspect.should == "#<Braintree::ValidationErrorCollection errors:[(code1) message1], level1:[(code2) message2], level1/level2:[(code3) message3]>"
     end
   end
-  
+
   describe "on" do
     it "returns an array of errors on the given attribute" do
       errors = Braintree::ValidationErrorCollection.new(:errors => [
@@ -75,14 +75,14 @@ describe Braintree::ValidationErrorCollection do
       errors.on("name").size.should == 2
       errors.on("name").map{ |e| e.code }.should == [1, 2]
     end
-    
+
     it "has indifferent access" do
       errors = Braintree::ValidationErrorCollection.new(:errors => [
         { :attribute => "name", :code => 3, :message => "is too long" },
       ])
       errors.on(:name).size.should == 1
       errors.on(:name)[0].code.should == 3
-      
+
     end
   end
 
@@ -124,5 +124,5 @@ describe Braintree::ValidationErrorCollection do
       errors.deep_size.should == 5
     end
   end
-  
+
 end

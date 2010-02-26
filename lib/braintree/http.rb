@@ -1,6 +1,6 @@
 module Braintree
   module Http # :nodoc:
-    
+
     def self.delete(path)
       response = _http_do Net::HTTP::Delete, path
       if response.code.to_i == 200
@@ -9,7 +9,7 @@ module Braintree
         Util.raise_exception_for_status_code(response.code)
       end
     end
-    
+
     def self.get(path)
       response = _http_do Net::HTTP::Get, path
       if response.code.to_i == 200
@@ -18,7 +18,7 @@ module Braintree
         Util.raise_exception_for_status_code(response.code)
       end
     end
-    
+
     def self.post(path, params = nil)
       response = _http_do Net::HTTP::Post, path, _build_xml(params)
       if response.code.to_i == 200 || response.code.to_i == 201 || response.code.to_i == 422
@@ -27,7 +27,7 @@ module Braintree
         Util.raise_exception_for_status_code(response.code)
       end
     end
-    
+
     def self.put(path, params = nil)
       response = _http_do Net::HTTP::Put, path, _build_xml(params)
       if response.code.to_i == 200 || response.code.to_i == 201 || response.code.to_i == 422
@@ -41,7 +41,7 @@ module Braintree
       return nil if params.nil?
       Braintree::Xml.hash_to_xml params
     end
-    
+
     def self._http_do(http_verb, path, body = nil)
       connection = Net::HTTP.new(Configuration.server, Configuration.port)
       if Configuration.ssl?
@@ -80,11 +80,11 @@ module Braintree
         raise UnexpectedError, "expected a gzip'd response"
       end
     end
-    
+
     def self._current_time
       Time.now.utc.strftime("%d/%b/%Y %H:%M:%S %Z")
     end
-    
+
     def self._format_and_sanitize_body_for_log(input_xml)
       formatted_xml = input_xml.gsub(/^/, "[Braintree] ")
       formatted_xml = formatted_xml.gsub(/<number>(.{6}).+?(.{4})<\/number>/, '<number>\1******\2</number>')

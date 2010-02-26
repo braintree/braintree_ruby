@@ -1,4 +1,4 @@
-module Braintree 
+module Braintree
   # A SuccessfulResult will be returned from non-bang methods when
   # validations pass. It will provide access to the created resource.
   # For example, when creating a customer, SuccessfulResult will
@@ -13,7 +13,7 @@ module Braintree
   #   end
   class SuccessfulResult
     include BaseModule
-  
+
     def initialize(attributes = {}) # :nodoc:
       @attrs = attributes.keys
       singleton_class.class_eval do
@@ -22,7 +22,7 @@ module Braintree
             value
           end
         end
-      end  
+      end
     end
 
     def inspect # :nodoc:

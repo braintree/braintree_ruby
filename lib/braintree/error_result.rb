@@ -1,4 +1,4 @@
-module Braintree 
+module Braintree
   # An ErrorResult will be returned from non-bang methods when
   # validations fail. It will provide access to the params passed
   # to the server. The params are primarily useful for re-populaing
@@ -16,9 +16,9 @@ module Braintree
   #     end
   #   end
   class ErrorResult
-  
-    attr_reader :credit_card_verification, :errors, :params 
-  
+
+    attr_reader :credit_card_verification, :errors, :params
+
     def initialize(data) # :nodoc:
       @params = data[:params]
       if data[:verification]
@@ -30,7 +30,7 @@ module Braintree
     def inspect # :nodoc:
       "#<#{self.class} params:{...} errors:<#{@errors._inner_inspect}>>"
     end
-    
+
     # Always returns false.
     def success?
       false

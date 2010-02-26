@@ -25,22 +25,22 @@ describe Braintree::TransparentRedirect do
     it "returns the parsed query string params if the hash is valid" do
       query_string_without_hash = "one=1&two=2&http_status=200"
       hash = Braintree::Digest.hexdigest(query_string_without_hash)
-      
+
       query_string_with_hash = "#{query_string_without_hash}&hash=#{hash}"
       result = Braintree::TransparentRedirect.parse_and_validate_query_string query_string_with_hash
       result.should == {:one => "1", :two => "2", :http_status => "200", :hash => hash}
     end
-    
+
     it "raises Braintree::ForgedQueryString if the hash param is not valid" do
       query_string_without_hash = "one=1&two=2"
       hash = Digest::SHA1.hexdigest("invalid#{query_string_without_hash}")
-      
+
       query_string_with_hash = "#{query_string_without_hash}&hash=#{hash}"
       expect do
         Braintree::TransparentRedirect.parse_and_validate_query_string query_string_with_hash
       end.to raise_error(Braintree::ForgedQueryString)
     end
-    
+
     it "raises Braintree::ForgedQueryString if hash is missing from the query string" do
       expect do
         Braintree::TransparentRedirect.parse_and_validate_query_string "query_string=without_a_hash"
@@ -58,7 +58,7 @@ describe Braintree::TransparentRedirect do
         Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=403")
       end.to raise_error(Braintree::AuthorizationError)
     end
-    
+
     it "raises a ServerError if the server 500's" do
       expect do
         Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=500")
@@ -70,7 +70,7 @@ describe Braintree::TransparentRedirect do
         Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=503")
       end.to raise_error(Braintree::DownForMaintenanceError)
     end
-    
+
     it "raises an UnexpectedError if some other code is returned" do
       expect do
         Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=600")
@@ -86,7 +86,7 @@ describe Braintree::TransparentRedirect do
         )
       end.to raise_error(ArgumentError, "invalid keys: transaction[invalid_key]")
     end
-    
+
     it "raises an exception if not given a type" do
       expect do
         Braintree::TransparentRedirect.transaction_data(
@@ -95,7 +95,7 @@ describe Braintree::TransparentRedirect do
         )
       end.to raise_error(ArgumentError, "expected transaction[type] of sale or credit, was: nil")
     end
-    
+
     it "raises an exception if not given a type of sale or credit" do
       expect do
         Braintree::TransparentRedirect.transaction_data(
@@ -114,14 +114,14 @@ describe Braintree::TransparentRedirect do
         )
       end.to raise_error(ArgumentError, "invalid keys: credit_card[invalid_key]")
     end
-    
+
     it "raises an exception if not given a payment_method_token" do
       expect do
         Braintree::TransparentRedirect.update_credit_card_data({})
       end.to raise_error(ArgumentError, "expected params to contain :payment_method_token of payment method to update")
     end
   end
-  
+
   describe "self.update_customer_data" do
     it "raises an exception if any keys are invalid" do
       expect do
@@ -145,7 +145,7 @@ describe Braintree::TransparentRedirect do
       end.to raise_error(ArgumentError, "expected params to contain :redirect_url")
     end
   end
-  
+
   def add_hash_to_query_string(query_string_without_hash)
     hash = Braintree::TransparentRedirect._hash(query_string_without_hash)
     query_string_without_hash + "&hash=" + hash

@@ -15,7 +15,7 @@ module Braintree
         "symbol"   => Proc.new { |symbol| symbol.to_s },
         "datetime" => Proc.new { |time| time.xmlschema },
       }
-      
+
       def self.hash_to_xml(hash)
         root, contents = hash.keys[0], hash.values[0]
 
@@ -60,7 +60,7 @@ module Braintree
         end
 
       end
-      
+
       def self._array_to_xml(array, options = {})
         raise "expected all elements to be hashes" unless array.all? { |e| e.is_a?(Hash) }
         raise "expected options[:root]" unless options[:root]

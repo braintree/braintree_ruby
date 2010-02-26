@@ -23,10 +23,27 @@ Spec::Rake::SpecTask.new("spec:integration") do |t|
 end
 
 desc "run integration keeping the gateway server and sphinx running"
-task "start_servers_and_run_integration_specs" => [:start_gateway, :start_sphinx, "spec:integration", :stop_gateway, :stop_sphinx]
+task :start_servers_and_run_integration_specs do
+  begin
+    Rake::Task["start_gateway"].invoke
+    Rake::Task["start_sphinx"].invoke
+    Rake::Task["spec:integration"].invoke
+  ensure
+    Rake::Task["stop_gateway"].invoke
+    Rake::Task["stop_sphinx"].invoke
+  end
+end
 
 desc "run integration tests after preping the gateway (including git clone and db reset), what the build needs to run"
-task "run_integration_specs_for_cruise" => [:prep_gateway, "spec:integration", :stop_gateway, :stop_sphinx]
+task :run_integration_specs_for_cruise do
+  begin
+    Rake::Task["prep_gateway"].invoke
+    Rake::Task["spec:integration"].invoke
+  ensure
+    Rake::Task["stop_gateway"].invoke
+    Rake::Task["stop_sphinx"].invoke
+  end
+end
 
 def configure_rdoc_task(t)
   t.main = "README.rdoc"
@@ -102,7 +119,7 @@ end
 task :start_sphinx do
   Dir.chdir(GATEWAY_ROOT) do
     sh "env RAILS_ENV=integration #{CRUISE_BUILD} SPHINX_PORT=#{ENV['SPHINX_PORT']} rake ts:rebuild --trace"
-  end  
+  end
 end
 
 task :stop_gateway do

@@ -6,7 +6,7 @@ describe Braintree::Xml::Libxml do
       xml = "<root><foo type=\"integer\">123</foo></root>"
       Braintree::Xml::Libxml.parse(xml).should == {"root"=>{"foo"=>{"__content__"=>"123", "type"=>"integer"}}}
     end
-    
+
     it "works with dashes or underscores" do
       xml = <<-END
         <root>
@@ -16,7 +16,7 @@ describe Braintree::Xml::Libxml do
       END
       Braintree::Xml::Libxml.parse(xml).should == {"root"=>{"dash-es"=>{}, "under_scores"=>{}}}
     end
-    
+
     it "uses nil if nil=true, otherwise uses empty string" do
       xml = <<-END
         <root>
@@ -26,7 +26,7 @@ describe Braintree::Xml::Libxml do
       END
       Braintree::Xml::Libxml.parse(xml).should == {"root"=>{"a_nil_value"=>{"nil"=>"true"}, "an_empty_string"=>{}}}
     end
-    
+
     it "typecasts dates and times" do
       xml = <<-END
         <root>
@@ -35,7 +35,7 @@ describe Braintree::Xml::Libxml do
       END
       Braintree::Xml::Libxml.parse(xml).should == {"root"=>{"created-at"=>{"__content__"=>"2009-10-28T10:19:49Z", "type"=>"datetime"}}}
     end
-      
+
     it "builds an array if type=array" do
       xml = <<-END
         <root>

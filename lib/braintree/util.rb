@@ -15,7 +15,7 @@ module Braintree
         end
       end.sort * '&'
     end
-    
+
     def self.parse_query_string(qs)
       qs.split('&').inject({}) do |result, couplet|
         pair = couplet.split('=')
@@ -23,7 +23,7 @@ module Braintree
         result
       end
     end
-    
+
     def self.url_encode(text)
       CGI.escape text.to_s
     end
@@ -37,10 +37,10 @@ module Braintree
         elsif value.is_a?(Array) && value.all? { |v| v.is_a?(Hash) }
           value.each { |v| symbolize_keys(v) }
         end
-      end 
+      end
       hash
     end
-    
+
     def self.raise_exception_for_status_code(status_code)
       case status_code.to_i
       when 401
@@ -57,7 +57,7 @@ module Braintree
         raise UnexpectedError, "Unexpected HTTP_RESPONSE #{status_code.to_i}"
       end
     end
-    
+
     def self.verify_keys(valid_keys, hash)
       flattened_valid_keys = _flatten_valid_keys(valid_keys)
       invalid_keys = _flatten_hash_keys(hash) - flattened_valid_keys
@@ -67,7 +67,7 @@ module Braintree
         raise ArgumentError, "invalid keys: #{sorted}"
       end
     end
-    
+
     def self._flatten_valid_keys(valid_keys, namespace = nil)
       valid_keys.inject([]) do |result, key|
         if key.is_a?(Hash)
@@ -85,7 +85,7 @@ module Braintree
         result
       end.sort
     end
-    
+
     def self._flatten_hash_keys(hash, namespace = nil)
       hash.inject([]) do |result, (key, value)|
         full_key = (namespace ? "#{namespace}[#{key}]" : key.to_s)

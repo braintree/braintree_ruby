@@ -6,7 +6,7 @@ describe Braintree::Customer do
       first_page = Braintree::Customer.all
       first_page.current_page_number.should == 1
     end
-    
+
     it "can get the next_page" do
       first_page = Braintree::Customer.all
       first_page.current_page_number.should == 1
@@ -55,12 +55,12 @@ describe Braintree::Customer do
       result.customer.created_at.between?(Time.now - 10, Time.now).should == true
       result.customer.updated_at.between?(Time.now - 10, Time.now).should == true
     end
-    
+
     it "can create without any attributes" do
       result = Braintree::Customer.create
       result.success?.should == true
     end
-    
+
     it "returns an error response if invalid" do
       result = Braintree::Customer.create(
         :email => "@invalid.com"
@@ -100,7 +100,7 @@ describe Braintree::Customer do
       result.success?.should == false
       result.credit_card_verification.status.should == "processor_declined"
     end
-    
+
     it "can create a customer, payment method, and billing address at the same time" do
       result = Braintree::Customer.create(
         :first_name => "Mike",
@@ -133,7 +133,7 @@ describe Braintree::Customer do
       result.customer.addresses[0].postal_code.should == "60622"
       result.customer.addresses[0].country_name.should == "United States of America"
     end
-    
+
     it "stores custom fields when valid" do
       result = Braintree::Customer.create(
         :first_name => "Bill",
@@ -174,7 +174,7 @@ describe Braintree::Customer do
       result.errors.for(:customer).on(:custom_fields)[0].message.should == "Custom field is invalid: spouse_name."
     end
   end
-  
+
   describe "self.create!" do
     it "returns the customer if successful" do
       customer = Braintree::Customer.create!(
@@ -185,19 +185,19 @@ describe Braintree::Customer do
       customer.first_name.should == "Jim"
       customer.last_name.should == "Smith"
     end
-    
+
     it "can create without any attributes" do
       customer = Braintree::Customer.create!
       customer.id.should =~ /\d+/
     end
-    
+
     it "raises an exception if not successful" do
       expect do
         Braintree::Customer.create!(:email => "@foo.com")
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
-  
+
   describe "self.credit" do
     it "creates a credit transaction for given customer id, returning a result object" do
       customer = Braintree::Customer.create!(
@@ -208,7 +208,7 @@ describe Braintree::Customer do
       )
       result = Braintree::Customer.credit(customer.id, :amount => "100.00")
       result.success?.should == true
-      result.transaction.amount.should == "100.00"
+      result.transaction.amount.should == BigDecimal.new("100.00")
       result.transaction.type.should == "credit"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -227,7 +227,7 @@ describe Braintree::Customer do
         }
       )
       transaction = Braintree::Customer.credit!(customer.id, :amount => "100.00")
-      transaction.amount.should == "100.00"
+      transaction.amount.should == BigDecimal.new("100.00")
       transaction.type.should == "credit"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -236,7 +236,7 @@ describe Braintree::Customer do
       transaction.credit_card_details.expiration_date.should == "05/2010"
     end
   end
-  
+
   describe "self.sale" do
     it "creates a sale transaction for given customer id, returning a result object" do
       customer = Braintree::Customer.create!(
@@ -247,7 +247,7 @@ describe Braintree::Customer do
       )
       result = Braintree::Customer.sale(customer.id, :amount => "100.00")
       result.success?.should == true
-      result.transaction.amount.should == "100.00"
+      result.transaction.amount.should == BigDecimal.new("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -266,7 +266,7 @@ describe Braintree::Customer do
         }
       )
       transaction = Braintree::Customer.sale!(customer.id, :amount => "100.00")
-      transaction.amount.should == "100.00"
+      transaction.amount.should == BigDecimal.new("100.00")
       transaction.type.should == "sale"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -305,7 +305,7 @@ describe Braintree::Customer do
         :amount => "100.00"
       )
       result.success?.should == true
-      result.transaction.amount.should == "100.00"
+      result.transaction.amount.should == BigDecimal.new("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -314,7 +314,7 @@ describe Braintree::Customer do
       result.transaction.credit_card_details.expiration_date.should == "05/2010"
     end
   end
-  
+
   describe "sale!" do
     it "returns the created sale tranaction if valid" do
       customer = Braintree::Customer.create!(
@@ -324,7 +324,7 @@ describe Braintree::Customer do
         }
       )
       transaction = customer.sale!(:amount => "100.00")
-      transaction.amount.should == "100.00"
+      transaction.amount.should == BigDecimal.new("100.00")
       transaction.type.should == "sale"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -349,7 +349,7 @@ describe Braintree::Customer do
       collection[0].should == transaction
     end
   end
-  
+
   describe "credit" do
     it "creates a credit transaction using the customer, returning a result object" do
       customer = Braintree::Customer.create!(
@@ -362,7 +362,7 @@ describe Braintree::Customer do
         :amount => "100.00"
       )
       result.success?.should == true
-      result.transaction.amount.should == "100.00"
+      result.transaction.amount.should == BigDecimal.new("100.00")
       result.transaction.type.should == "credit"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -371,7 +371,7 @@ describe Braintree::Customer do
       result.transaction.credit_card_details.expiration_date.should == "05/2010"
     end
   end
-  
+
   describe "credit!" do
     it "returns the created credit tranaction if valid" do
       customer = Braintree::Customer.create!(
@@ -381,7 +381,7 @@ describe Braintree::Customer do
         }
       )
       transaction = customer.credit!(:amount => "100.00")
-      transaction.amount.should == "100.00"
+      transaction.amount.should == BigDecimal.new("100.00")
       transaction.type.should == "credit"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -416,7 +416,7 @@ describe Braintree::Customer do
       customer.fax.should == "614.555.5656"
       customer.website.should == "www.johndoe.com"
     end
-    
+
     it "can pass any attribute through tr_data" do
       customer_id = "customer_#{rand(1_000_000)}"
       tr_data_params = {
@@ -445,7 +445,7 @@ describe Braintree::Customer do
       customer.website.should == "www.johndoe.com"
     end
   end
-  
+
   describe "delete" do
     it "deletes the customer" do
      result = Braintree::Customer.create(
@@ -461,7 +461,7 @@ describe Braintree::Customer do
       end.to raise_error(Braintree::NotFoundError)
     end
   end
-  
+
 
   describe "self.find" do
     it "finds the customer with the given id" do
@@ -483,7 +483,7 @@ describe Braintree::Customer do
       end.to raise_error(Braintree::NotFoundError, 'customer with id "invalid-id" not found')
     end
   end
-  
+
   describe "self.update" do
     it "updates the customer with the given id if successful" do
       customer = Braintree::Customer.create!(
@@ -515,8 +515,8 @@ describe Braintree::Customer do
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
     end
   end
-  
-  describe "self.update!" do 
+
+  describe "self.update!" do
     it "returns the updated customer if successful" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
@@ -531,7 +531,7 @@ describe Braintree::Customer do
       updated_customer.last_name.should == "Super Cool"
       updated_customer.updated_at.between?(Time.now - 5, Time.now).should == true
     end
-    
+
     it "raises an error if unsuccessful" do
       customer = Braintree::Customer.create!(:email => "valid@email.com")
       expect do
@@ -539,7 +539,7 @@ describe Braintree::Customer do
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
-    
+
   describe "update" do
     it "updates the customer" do
       customer = Braintree::Customer.create!(
@@ -556,7 +556,7 @@ describe Braintree::Customer do
       updated_customer.first_name.should == "Mr. Joe"
       updated_customer.last_name.should == "Super Cool"
     end
-    
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(
         :email => "valid@email.com"
@@ -568,8 +568,8 @@ describe Braintree::Customer do
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
     end
   end
-  
-  describe "update!" do 
+
+  describe "update!" do
     it "returns the customer and updates the customer if successful" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
@@ -583,7 +583,7 @@ describe Braintree::Customer do
       customer.last_name.should == "Super Cool"
       customer.updated_at.between?(Time.now - 5, Time.now).should == true
     end
-    
+
     it "raises an error if unsuccessful" do
       customer = Braintree::Customer.create!(
         :email => "valid@email.com"
@@ -687,7 +687,7 @@ describe Braintree::Customer do
       request.body = Braintree::Util.hash_to_query_string(params)
       response = http.request(request)
     end
-    query_string = response["Location"].split("?", 2).last  
+    query_string = response["Location"].split("?", 2).last
     query_string
   end
 
@@ -703,6 +703,6 @@ describe Braintree::Customer do
       request.body = Braintree::Util.hash_to_query_string({ :tr_data => tr_data }.merge(regular_params))
       response = http.request(request)
     end
-    query_string = response["Location"].split("?", 2).last  
+    query_string = response["Location"].split("?", 2).last
   end
 end

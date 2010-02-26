@@ -56,23 +56,32 @@ describe Braintree::SSLExpirationCheck do
 
     # We assume that testing logging for one is good enough for all, so we won't duplicate those tests from above
     it "checks the sandbox cert" do
-        Braintree::SSLExpirationCheck.stub(:sandbox_expiration_date).and_return(Date.today)
-        output = StringIO.new
-        Braintree::Configuration.logger = Logger.new(output)
-        Braintree::Configuration.logger.level = Logger::WARN
+      Braintree::SSLExpirationCheck.stub(:sandbox_expiration_date).and_return(Date.today)
+      output = StringIO.new
+      Braintree::Configuration.logger = Logger.new(output)
+      Braintree::Configuration.logger.level = Logger::WARN
 
-        Braintree::SSLExpirationCheck.check_dates
+      Braintree::SSLExpirationCheck.check_dates
 
-        output.string.should match(/\[Braintree\] The SSL Certificate for the Sandbox environment will expire on \d{4}-\d{2}-\d{2}\. Please check for an updated client library\./)
+      output.string.should match(/\[Braintree\] The SSL Certificate for the Sandbox environment will expire on \d{4}-\d{2}-\d{2}\. Please check for an updated client library\./)
     end
 
-    xit "Patrick -- waiting on a production box -- checks the production server cert"
+    it "checks the production server cert" do
+      Braintree::SSLExpirationCheck.stub(:production_expiration_date).and_return(Date.today)
+      output = StringIO.new
+      Braintree::Configuration.logger = Logger.new(output)
+      Braintree::Configuration.logger.level = Logger::WARN
+
+      Braintree::SSLExpirationCheck.check_dates
+
+      output.string.should match(/\[Braintree\] The SSL Certificate for the Production environment will expire on \d{4}-\d{2}-\d{2}\. Please check for an updated client library\./)
+    end
   end
 
   describe "production_expiration_date" do
-    xit "Patrick -- waiting on a production box -- is the date the production cert expires" do
+    it "is the date the production cert expires" do
       Braintree::SSLExpirationCheck.production_expiration_date.should be_a(Date)
-      Braintree::SSLExpirationCheck.qa_expiration_date.should == fetch_expiration_date(PRODUCTION)
+      Braintree::SSLExpirationCheck.production_expiration_date.should == fetch_expiration_date(PRODUCTION)
     end
   end
 

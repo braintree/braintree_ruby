@@ -13,7 +13,7 @@ module Braintree
       ensure
         ::LibXML::XML.default_keep_blanks = old_keep_blanks_setting
       end
-      
+
       def self._node_to_hash(node, hash = {})
         if node.text?
           raise ::LibXML::XML::Error if node.content.length >= LIB_XML_LIMIT

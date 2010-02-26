@@ -20,7 +20,7 @@ describe Braintree::Http do
       end.to raise_error(Braintree::AuthorizationError)
     end
   end
-  
+
   describe "self._http_do" do
     it "logs one line of info to the logger" do
       begin
@@ -124,7 +124,7 @@ describe Braintree::Http do
         end
       end
 
-      xit "Patrick: waiting on a production box - accepts the certificate on the production server" do
+      it "accepts the certificate on the production server" do
         begin
           original_env = Braintree::Configuration.environment
           Braintree::Configuration.environment = :production
@@ -143,7 +143,7 @@ describe Braintree::Http do
           Braintree::Configuration.stub(:base_merchant_path).and_return("/")
           original_ca_file = Braintree::Configuration.ca_file
           Braintree::Configuration.stub(:ca_file).and_return(nil)
-          
+
           expect { Braintree::Http._http_do(Net::HTTP::Get, "/login") }.to raise_error(Braintree::SSLCertificateError)
         ensure
           Braintree::Configuration.environment = original_env

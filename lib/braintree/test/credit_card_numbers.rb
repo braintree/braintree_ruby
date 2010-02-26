@@ -43,7 +43,7 @@ module Braintree
         Visa       = "4222222222222"
         Numbers    = [AmEx, Discover, MasterCard, Visa]
       end
-  
+
       All = AmExes + Discovers + MasterCards + Visas
     end
   end

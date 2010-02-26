@@ -8,7 +8,7 @@ unless defined?(SPEC_HELPER_LOADED)
   braintree_lib = "#{project_root}/lib"
   $LOAD_PATH << braintree_lib
   require "braintree"
-  
+
   Braintree::Configuration.environment = :development
   Braintree::Configuration.merchant_id = "integration_merchant_id"
   Braintree::Configuration.public_key = "integration_public_key"
@@ -21,7 +21,7 @@ unless defined?(SPEC_HELPER_LOADED)
       Time.class_eval do
         class << self
           alias original_now now
-        end  
+        end
       end
       (class << Time; self; end).class_eval do
         define_method(:now) { desired_time }
@@ -31,8 +31,8 @@ unless defined?(SPEC_HELPER_LOADED)
       Time.class_eval do
         class << self
           alias now original_now
-        end  
-      end  
+        end
+      end
     end
   end
 end

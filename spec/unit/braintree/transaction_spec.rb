@@ -30,7 +30,7 @@ describe Braintree::Transaction do
       end.to raise_error(ArgumentError, "transaction_id is invalid")
     end
   end
-  
+
   describe "initialize" do
     it "sets up customer attributes in customer_details" do
       transaction = Braintree::Transaction._new(
@@ -54,7 +54,7 @@ describe Braintree::Transaction do
       transaction.customer_details.phone.should == "1-999-652-4189 x56883"
       transaction.customer_details.fax.should == "012-161-8055"
     end
-    
+
     it "sets up credit card attributes in credit_card_details" do
       transaction = Braintree::Transaction._new(
         :credit_card => {
@@ -64,7 +64,7 @@ describe Braintree::Transaction do
           :card_type => "Visa",
           :expiration_month => "08",
           :expiration_year => "2009",
-          :issuer_location => "US"
+          :customer_location => "US"
         }
       )
       transaction.credit_card_details.token.should == "mzg2"
@@ -73,14 +73,14 @@ describe Braintree::Transaction do
       transaction.credit_card_details.card_type.should == "Visa"
       transaction.credit_card_details.expiration_month.should == "08"
       transaction.credit_card_details.expiration_year.should == "2009"
-      transaction.credit_card_details.issuer_location.should == "US"
+      transaction.credit_card_details.customer_location.should == "US"
     end
 
     it "sets up history attributes in status_history" do
       time = Time.utc(2010,1,14)
       transaction = Braintree::Transaction._new(
         :status_history => [
-          { :timestamp => time, :amount => "12.00", :transaction_source => "API", 
+          { :timestamp => time, :amount => "12.00", :transaction_source => "API",
             :user => "larry", :status => "authorized" },
           { :timestamp => Time.utc(2010,1,15), :amount => "12.00", :transaction_source => "API",
             :user => "curly", :status => "scheduled_for_settlement"}
@@ -100,7 +100,7 @@ describe Braintree::Transaction do
       )
     end
   end
-  
+
   describe "inspect" do
     it "includes the id, type, amount, and status first" do
       transaction = Braintree::Transaction._new(
@@ -110,28 +110,28 @@ describe Braintree::Transaction do
         :status => "authorized"
       )
       output = transaction.inspect
-      output.should include(%Q(#<Braintree::Transaction id: "1234", type: "sale", amount: "100.00", status: "authorized"))
+      output.should include(%Q(#<Braintree::Transaction id: "1234", type: "sale", amount: "100.0", status: "authorized"))
     end
   end
-  
+
   describe "==" do
     it "returns true when it should" do
       first = Braintree::Transaction._new(:id => 123)
       second = Braintree::Transaction._new(:id => 123)
-      
+
       first.should == second
       second.should == first
     end
-    
+
     it "returns false when it should" do
       first = Braintree::Transaction._new(:id => 123)
       second = Braintree::Transaction._new(:id => 124)
-      
+
       first.should_not == second
-      second.should_not == first      
+      second.should_not == first
     end
   end
-  
+
   describe "new" do
     it "is protected" do
       expect do
@@ -139,7 +139,7 @@ describe Braintree::Transaction do
       end.to raise_error(NoMethodError, /protected method .new/)
     end
   end
-  
+
   describe "refunded?" do
     it "is true if the transaciton has been refunded" do
       transaction = Braintree::Transaction._new(:refund_id => "123")

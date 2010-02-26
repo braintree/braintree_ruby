@@ -9,7 +9,7 @@ module Braintree
   #      :number => "5105105105105100",
   #      :expiration_date => "05/2012"
   #    }
-  #  ) 
+  #  )
   #
   # Full example:
   #
@@ -118,12 +118,12 @@ module Braintree
   #   )
   class Transaction
     include BaseModule
-    
+
     module Type # :nodoc:
       Credit = "credit" # :nodoc:
       Sale = "sale" # :nodoc:
     end
-    
+
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
     attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id, :status
     attr_reader :custom_fields
@@ -132,6 +132,8 @@ module Braintree
     attr_reader :status_history
     # The response code from the processor.
     attr_reader :processor_response_code
+    # The response text from the processor.
+    attr_reader :processor_response_text
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at
@@ -140,7 +142,7 @@ module Braintree
       Util.verify_keys(_create_signature, attributes)
       _do_create "/transactions", :transaction => attributes
     end
-    
+
     def self.create!(attributes)
       return_object_or_raise(:transaction) { create(attributes) }
     end
@@ -154,12 +156,12 @@ module Braintree
     def self.create_transaction_url
       "#{Braintree::Configuration.base_merchant_url}/transactions/all/create_via_transparent_redirect_request"
     end
-   
-    # Creates a credit transaction. 
+
+    # Creates a credit transaction.
     def self.credit(attributes)
       create(attributes.merge(:type => 'credit'))
     end
-    
+
     def self.credit!(attributes)
       return_object_or_raise(:transaction) { credit(attributes) }
     end
@@ -177,11 +179,11 @@ module Braintree
     def self.sale(attributes)
       create(attributes.merge(:type => 'sale'))
     end
-    
+
     def self.sale!(attributes)
       return_object_or_raise(:transaction) { sale(attributes) }
     end
-    
+
     # Returns a PagedCollection of transactions matching the search query.
     # If <tt>query</tt> is a string, the search will be a basic search.
     # If <tt>query</tt> is a hash, the search will be an advanced search.
@@ -231,21 +233,25 @@ module Braintree
     def initialize(attributes) # :nodoc:
       _init attributes
     end
-    
+
     # True if <tt>other</tt> has the same id.
     def ==(other)
       id == other.id
     end
-    
+
     def inspect # :nodoc:
       first = [:id, :type, :amount, :status]
       order = first + (self.class._attributes - first)
       nice_attributes = order.map do |attr|
-        "#{attr}: #{send(attr).inspect}"
+        if attr == :amount
+          self.amount ? "amount: #{self.amount.to_s("F").inspect}" : "amount: nil"
+        else  
+          "#{attr}: #{send(attr).inspect}"
+        end
       end
       "#<#{self.class} #{nice_attributes.join(', ')}>"
     end
-    
+
     # Creates a credit transaction that refunds this transaction.
     def refund
       response = Http.post "/transactions/#{id}/refund"
@@ -258,7 +264,7 @@ module Braintree
         raise UnexpectedError, "expected :transaction or :api_error_response"
       end
     end
-    
+
     # Returns true if the transaction has been refunded. False otherwise.
     def refunded?
       !@refund_id.nil?
@@ -280,7 +286,16 @@ module Braintree
     def submit_for_settlement!(amount = nil)
       return_object_or_raise(:transaction) { submit_for_settlement(amount) }
     end
-    
+
+    # If this transaction was stored in the vault, or created from vault records,
+    # vault_billing_address will return the associated Braintree::Address. Because the
+    # vault billing address can be updated after the transaction was created, the attributes
+    # on vault_billing_address may not match the attributes on billing_details.
+    def vault_billing_address
+      return nil if billing_details.id.nil?
+      Address.find(customer_details.id, billing_details.id)
+    end
+
     # If this transaction was stored in the vault, or created from vault records,
     # vault_credit_card will return the associated Braintree::CreditCard. Because the
     # vault credit card can be updated after the transaction was created, the attributes
@@ -289,7 +304,7 @@ module Braintree
       return nil if credit_card_details.token.nil?
       CreditCard.find(credit_card_details.token)
     end
-    
+
     # If this transaction was stored in the vault, or created from vault records,
     # vault_customer will return the associated Braintree::Customer. Because the
     # vault customer can be updated after the transaction was created, the attributes
@@ -298,7 +313,16 @@ module Braintree
       return nil if customer_details.id.nil?
       Customer.find(customer_details.id)
     end
-    
+
+    # If this transaction was stored in the vault, or created from vault records,
+    # vault_shipping_address will return the associated Braintree::Address. Because the
+    # vault shipping address can be updated after the transaction was created, the attributes
+    # on vault_shipping_address may not match the attributes on shipping_details.
+    def vault_shipping_address
+      return nil if shipping_details.id.nil?
+      Address.find(customer_details.id, shipping_details.id)
+    end
+
     # Voids the transaction.
     def void
       response = Http.put "/transactions/#{id}/void"
@@ -320,9 +344,9 @@ module Braintree
       protected :new
       def _new(*args) # :nodoc:
         self.new *args
-      end  
+      end
     end
-    
+
     def self._do_create(url, params) # :nodoc:
       response = Http.post url, params
       if response[:transaction]
@@ -333,19 +357,19 @@ module Braintree
         raise UnexpectedError, "expected :transaction or :api_error_response"
       end
     end
-    
+
     def self._advanced_search(query, options) # :nodoc:
       page = options[:page] || 1
       response = Http.post "/transactions/advanced_search?page=#{Util.url_encode(page)}", :search => query
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      PagedCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }      
+      PagedCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
     end
 
     def self._attributes # :nodoc:
       [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :type, :updated_at]
     end
-    
+
     def self._basic_search(query, options) # :nodoc:
       page = options[:page] || 1
       response = Http.get "/transactions/all/search?q=#{Util.url_encode(query)}&page=#{Util.url_encode(page)}"
@@ -353,7 +377,7 @@ module Braintree
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
       PagedCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
     end
-    
+
     def self._create_signature # :nodoc:
       [
         :amount, :customer_id, :order_id, :payment_method_token, :type,
@@ -361,13 +385,16 @@ module Braintree
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {:billing => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
         {:shipping => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
-        {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method]},
+        {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault]},
         {:custom_fields => :_any_key_}
       ]
     end
-    
+
     def _init(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
+      if self.amount
+        instance_variable_set :@amount, BigDecimal.new(self.amount)
+      end
       @credit_card_details = CreditCardDetails.new(@credit_card)
       @customer_details = CustomerDetails.new(@customer)
       @billing_details = AddressDetails.new(@billing)

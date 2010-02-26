@@ -6,7 +6,7 @@ describe Braintree::Xml do
       hash = Braintree::Xml.hash_from_xml("<root><foo type=\"integer\">123</foo></root>")
       hash.should == {:root => {:foo => 123}}
     end
-    
+
     it "works with dashes or underscores" do
       xml = <<-END
         <root>
@@ -14,11 +14,11 @@ describe Braintree::Xml do
           <under_scores />
         </root>
       END
-      
+
       hash = Braintree::Xml.hash_from_xml(xml)
       hash.should == {:root => {:dash_es => "", :under_scores => ""}}
     end
-    
+
     it "uses nil if nil=true, otherwise uses empty string" do
       xml = <<-END
         <root>
@@ -29,7 +29,7 @@ describe Braintree::Xml do
       hash = Braintree::Xml.hash_from_xml(xml)
       hash.should == {:root => {:a_nil_value => nil, :an_empty_string => ""}}
     end
-    
+
     it "typecasts dates and times" do
       hash = Braintree::Xml.hash_from_xml <<-END
         <root>
@@ -38,7 +38,7 @@ describe Braintree::Xml do
       END
       hash.should == {:root => {:created_at => Time.utc(2009, 10, 28, 10, 19, 49)}}
     end
-    
+
     it "builds an array if type=array" do
       hash = Braintree::Xml.hash_from_xml <<-END
         <root>
@@ -50,7 +50,7 @@ describe Braintree::Xml do
       END
       hash.should == {:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]}}
     end
-    
+
     it "turns 1 and true to boolean if type = boolean" do
       hash = Braintree::Xml.hash_from_xml <<-END
         <root>
@@ -66,7 +66,7 @@ describe Braintree::Xml do
         :uncasted_true => "true"
       }}
     end
-    
+
     it "handles values that are arrays of hashes" do
       hash = Braintree::Xml.hash_from_xml("
         <container>
@@ -78,42 +78,42 @@ describe Braintree::Xml do
       hash.should == {:container => {:elem => [{:value => "one"}, {:value => "two"}, {:value => "three"}]}}
     end
   end
-  
+
   describe "self.hash_to_xml" do
     def verify_to_xml_and_back(hash)
       Braintree::Xml.hash_from_xml(Braintree::Xml.hash_to_xml(hash)).should == hash
     end
-    
+
     it "works for a simple case" do
       hash = {:root => {:foo => "foo_value", :bar => "bar_value"}}
       verify_to_xml_and_back hash
     end
-    
+
     it "works for arrays" do
       hash = {:root => {:items => [{:name => "first"}, {:name => "second"}]}}
       verify_to_xml_and_back hash
     end
-    
+
     it "type casts booleans" do
       hash = {:root => {:string_true => "true", :bool_true => true, :bool_false => false, :string_false => "false"}}
       verify_to_xml_and_back hash
     end
-    
+
     it "type casts time" do
       hash = {:root => {:a_time => Time.utc(2009, 10, 28, 1, 2, 3), :a_string_that_looks_like_time => "2009-10-28T10:19:49Z"}}
       verify_to_xml_and_back hash
     end
-    
+
     it "can distinguish nil from empty string" do
       hash = {:root => {:an_empty_string => "", :a_nil_value => nil}}
       verify_to_xml_and_back hash
     end
-    
+
     it "includes the encoding" do
       xml = Braintree::Xml.hash_to_xml(:root => {:root => "bar"})
       xml.should include("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
     end
-    
+
     it "works for only a root node and a string" do
       hash = {:id => "123"}
       verify_to_xml_and_back hash

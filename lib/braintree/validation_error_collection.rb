@@ -20,7 +20,7 @@ module Braintree
   #   #=> [#<Braintree::ValidationError (91803) Country name is not an accepted country.>]
   class ValidationErrorCollection
     include Enumerable
-  
+
     def initialize(data) # :nodoc:
       @errors = data[:errors].map { |hash| Braintree::ValidationError.new(hash) }
       @nested = {}
@@ -29,7 +29,7 @@ module Braintree
         @nested[key] = ValidationErrorCollection.new(data[key])
       end
     end
-    
+
     # Accesses the error at the given index.
     def [](index)
       @errors[index]
@@ -38,7 +38,7 @@ module Braintree
     def deep_size # :nodoc:
       size + @nested.values.inject(0) { |count, error_collection| count + error_collection.deep_size }
     end
-  
+
     # Iterates over errors at the current level. Nested errors will not be yielded.
     def each(&block)
       @errors.each(&block)
@@ -58,11 +58,11 @@ module Braintree
     def on(attribute)
       @errors.select { |error| error.attribute == attribute.to_s }
     end
-  
+
     # The number of errors at this level. This does not include nested errors.
     def size
       @errors.size
-    end  
+    end
 
     def _inner_inspect(scope = []) # :nodoc:
       all = []
@@ -75,6 +75,6 @@ module Braintree
       end
       all.join(", ")
     end
-  end  
+  end
 end
 

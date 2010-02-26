@@ -23,6 +23,10 @@ describe Braintree::Digest do
         Braintree::Configuration.private_key = original_key
       end
     end
+
+    it "doesn't blow up if message is nil" do
+      expect { Braintree::Digest.hexdigest(nil) }.to_not raise_error
+    end
   end
 end
 
