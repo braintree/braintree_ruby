@@ -57,6 +57,12 @@ Example of using bang method:
 We recommend using the bang methods when you assume that the data is valid and do not expect validations to fail.
 Otherwise, we recommend using the non-bang methods.
 
+== Tests
+
+The unit specs can be run by anyone on any system, but the integration specs are meant to be run against a local development
+server of our gateway code.  These integration specs are not meant for public consumption and will likely fail if run on
+your system.
+
 == License
 
 See the LICENSE file.
