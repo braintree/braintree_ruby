@@ -25,7 +25,8 @@ describe Braintree::Configuration do
   describe "self.base_merchant_url" do
     it "returns the expected url for the development env" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.base_merchant_url.should == "http://localhost:3000/merchants/integration_merchant_id"
+      port = Braintree::Configuration.port
+      Braintree::Configuration.base_merchant_url.should == "http://localhost:#{port}/merchants/integration_merchant_id"
     end
 
     it "returns the expected url for the sandbox env" do
@@ -129,9 +130,18 @@ describe Braintree::Configuration do
       Braintree::Configuration.port.should == 443
     end
 
-    it "is 3000 for development" do
+    it "is 3000 or GATEWAY_PORT environment variable for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.port.should == 3000
+      old_gateway_port = ENV['GATEWAY_PORT']
+      begin
+        ENV['GATEWAY_PORT'] = nil
+        Braintree::Configuration.port.should == 3000
+
+        ENV['GATEWAY_PORT'] = '1234'
+        Braintree::Configuration.port.should == '1234'
+      ensure
+        ENV['GATEWAY_PORT'] = old_gateway_port
+      end
     end
   end
 
