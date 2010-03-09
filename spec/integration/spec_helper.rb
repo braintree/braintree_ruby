@@ -7,7 +7,6 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   Spec::Runner.configure do |config|
     CLIENT_LIB_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
     GATEWAY_ROOT = File.expand_path("#{CLIENT_LIB_ROOT}/../gateway")
-    GATEWAY_SERVER_PORT = 3000
     GATEWAY_PID_FILE = "/tmp/gateway_server_#{Braintree::Configuration.port}.pid"
     SPHINX_PID_FILE = "#{GATEWAY_ROOT}/log/searchd.integration.pid"
 
