@@ -745,8 +745,8 @@ describe Braintree::Transaction do
       transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
-      transaction.created_at.between?(Time.now - 5, Time.now).should == true
-      transaction.updated_at.between?(Time.now - 5, Time.now).should == true
+      transaction.created_at.between?(Time.now - 60, Time.now).should == true
+      transaction.updated_at.between?(Time.now - 60, Time.now).should == true
       transaction.credit_card_details.bin.should == "510510"
       transaction.credit_card_details.last_4.should == "5100"
       transaction.credit_card_details.masked_number.should == "510510******5100"
