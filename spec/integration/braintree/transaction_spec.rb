@@ -38,6 +38,16 @@ describe Braintree::Transaction do
       result.transaction.processor_response_text.should == "Do Not Honor"
     end
 
+    it "returns some error if customer_id is invalid" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :customer_id => 123456789
+      )
+      result.success?.should == false
+      result.errors.for(:transaction).on(:customer_id)[0].code.should == "91510"
+    end
+
     it "can create custom fields" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -192,17 +202,20 @@ describe Braintree::Transaction do
       transaction.credit_card_details.expiration_date.should == "05/2009"
     end
 
-    it "raises a ValidationsFailed if invalid" do
+    it "raises a validationsfailed if invalid" do
       expect do
-        Braintree::Transaction.create!(
+        braintree::transaction.create!(
           :type => "sale",
           :amount => nil,
           :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :number => braintree::test::creditcardnumbers::visa,
             :expiration_date => "05/2009"
           }
         )
-      end.to raise_error(Braintree::ValidationsFailed)
+      end.to raise_error(braintree::validationsfailed)
+    end
+
+    xit "Patrick: raises something if customer_id is invalid" do
     end
   end
 
