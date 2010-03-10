@@ -204,18 +204,15 @@ describe Braintree::Transaction do
 
     it "raises a validationsfailed if invalid" do
       expect do
-        braintree::transaction.create!(
+        Braintree::Transaction.create!(
           :type => "sale",
           :amount => nil,
           :credit_card => {
-            :number => braintree::test::creditcardnumbers::visa,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
           }
         )
-      end.to raise_error(braintree::validationsfailed)
-    end
-
-    xit "Patrick: raises something if customer_id is invalid" do
+      end.to raise_error(Braintree::ValidationsFailed)
     end
   end
 
