@@ -130,6 +130,8 @@ module Braintree
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
     attr_reader :status_history
+    # The authorization code from the processor.
+    attr_reader :processor_authorization_code
     # The response code from the processor.
     attr_reader :processor_response_code
     # The response text from the processor.
@@ -245,7 +247,7 @@ module Braintree
       nice_attributes = order.map do |attr|
         if attr == :amount
           self.amount ? "amount: #{self.amount.to_s("F").inspect}" : "amount: nil"
-        else  
+        else
           "#{attr}: #{send(attr).inspect}"
         end
       end

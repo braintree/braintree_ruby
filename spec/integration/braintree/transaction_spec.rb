@@ -15,6 +15,7 @@ describe Braintree::Transaction do
       result.transaction.id.should =~ /^\w{6}$/
       result.transaction.type.should == "sale"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.processor_authorization_code.should_not be_nil
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
