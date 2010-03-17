@@ -61,6 +61,18 @@ describe Braintree::Customer do
       result.success?.should == true
     end
 
+    it "supports utf-8" do
+      first_name = "Jos\303\251"
+      last_name = "Mu\303\261oz"
+      result = Braintree::Customer.create(:first_name => first_name, :last_name => last_name)
+      result.success?.should == true
+      result.customer.first_name.should == first_name
+      result.customer.last_name.should == last_name
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.first_name.should == first_name
+      found_customer.last_name.should == last_name
+    end
+
     it "returns an error response if invalid" do
       result = Braintree::Customer.create(
         :email => "@invalid.com"
