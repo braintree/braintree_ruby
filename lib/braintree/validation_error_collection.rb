@@ -35,7 +35,11 @@ module Braintree
       @errors[index]
     end
 
-    def deep_size # :nodoc:
+    def deep_errors
+      ([@errors] + @nested.values.map { |error_collection| error_collection.deep_errors }).flatten
+    end
+
+    def deep_size
       size + @nested.values.inject(0) { |count, error_collection| count + error_collection.deep_size }
     end
 
