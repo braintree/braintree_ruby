@@ -39,6 +39,22 @@ describe Braintree::Transaction do
       result.transaction.processor_response_text.should == "Do Not Honor"
     end
 
+    it "accepts credit card expiration month and expiration year" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "05",
+          :expiration_year => "2011"
+        }
+      )
+      result.success?.should == true
+      result.transaction.credit_card_details.expiration_month.should == "05"
+      result.transaction.credit_card_details.expiration_year.should == "2011"
+      result.transaction.credit_card_details.expiration_date.should == "05/2011"
+    end
+
     it "returns some error if customer_id is invalid" do
       result = Braintree::Transaction.create(
         :type => "sale",

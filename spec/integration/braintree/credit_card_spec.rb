@@ -25,6 +25,21 @@ describe Braintree::CreditCard do
       credit_card.expiration_date.should == "05/2009"
     end
 
+    it "can provide expiration month and year separately" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_month => "05",
+        :expiration_year => "2012"
+      )
+      result.success?.should == true
+      credit_card = result.credit_card
+      credit_card.expiration_month.should == "05"
+      credit_card.expiration_year.should == "2012"
+      credit_card.expiration_date.should == "05/2012"
+    end
+
     it "can specify the desired token" do
       token = "token_#{rand(1_000_000)}"
       customer = Braintree::Customer.create!
@@ -252,6 +267,25 @@ describe Braintree::CreditCard do
       updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
       updated_credit_card.expiration_date.should == "06/2013"
       updated_credit_card.cardholder_name.should == "New Holder"
+    end
+
+    it "can pass expiration_month and expiration_year" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+      update_result = Braintree::CreditCard.update(credit_card.token,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_month => "07",
+        :expiration_year => "2011"
+      )
+      update_result.success?.should == true
+      update_result.credit_card.should == credit_card
+      update_result.credit_card.expiration_month.should == "07"
+      update_result.credit_card.expiration_year.should == "2011"
+      update_result.credit_card.expiration_date.should == "07/2011"
     end
 
     it "verifies the update if options[verify_card]=true" do
