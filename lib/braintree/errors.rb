@@ -1,8 +1,14 @@
 module Braintree
   # Provides access to errors from an ErrorResult.
   class Errors
+    include Enumerable
+
     def initialize(data = {}) # :nodoc:
       @errors = ValidationErrorCollection.new(data.merge(:errors => []))
+    end
+
+    def each(&block)
+      @errors.deep_errors.each(&block)
     end
 
     # Accesses validation errors for the given +scope+.
