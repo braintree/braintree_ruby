@@ -61,6 +61,18 @@ describe Braintree::Customer do
       result.success?.should == true
     end
 
+    it "supports utf-8" do
+      first_name = "Jos\303\251"
+      last_name = "Mu\303\261oz"
+      result = Braintree::Customer.create(:first_name => first_name, :last_name => last_name)
+      result.success?.should == true
+      result.customer.first_name.should == first_name
+      result.customer.last_name.should == last_name
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.first_name.should == first_name
+      found_customer.last_name.should == last_name
+    end
+
     it "returns an error response if invalid" do
       result = Braintree::Customer.create(
         :email => "@invalid.com"
@@ -475,6 +487,24 @@ describe Braintree::Customer do
       customer.id.should == result.customer.id
       customer.first_name.should == "Joe"
       customer.last_name.should == "Cool"
+    end
+
+    it "works for a blank customer" do
+      created_customer = Braintree::Customer.create!
+      found_customer = Braintree::Customer.find(created_customer.id)
+      found_customer.id.should == created_customer.id
+    end
+
+    it "raises an ArgumentError if customer_id is not a string" do
+      expect do
+        Braintree::Customer.find(Object.new)
+      end.to raise_error(ArgumentError, "customer_id should be a string")
+    end
+
+    it "raises an ArgumentError if customer_id is blank" do
+      expect do
+        Braintree::Customer.find("")
+      end.to raise_error(ArgumentError, "customer_id cannot be blank")
     end
 
     it "raises a NotFoundError exception if customer cannot be found" do

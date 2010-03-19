@@ -22,22 +22,11 @@ Spec::Rake::SpecTask.new("spec:integration") do |t|
   t.spec_files = FileList["spec/integration/**/*_spec.rb"]
 end
 
-desc "run integration keeping the gateway server and sphinx running"
-task :start_servers_and_run_integration_specs do
-  begin
-    Rake::Task["start_gateway"].invoke
-    Rake::Task["start_sphinx"].invoke
-    Rake::Task["spec:integration"].invoke
-  ensure
-    Rake::Task["stop_gateway"].invoke
-    Rake::Task["stop_sphinx"].invoke
-  end
-end
-
-desc "run integration tests after preping the gateway (including git clone and db reset), what the build needs to run"
-task :run_integration_specs_for_cruise do
+desc "run specs after preping the gateway"
+task :run_specs_for_cruise do
   begin
     Rake::Task["prep_gateway"].invoke
+    Rake::Task["spec:unit"].invoke
     Rake::Task["spec:integration"].invoke
   ensure
     Rake::Task["stop_gateway"].invoke

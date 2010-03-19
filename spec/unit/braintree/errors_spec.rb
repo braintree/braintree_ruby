@@ -54,6 +54,23 @@ describe Braintree::Errors do
     end
   end
 
+  describe "each" do
+    it "yields errors at all levels" do
+      errors = Braintree::Errors.new(
+        :level1 => {
+          :errors => [{:code => "1", :attribute => "attr", :message => "message"}],
+          :level2 => {
+            :errors => [
+              {:code => "2", :attribute => "attr2", :message => "message2"},
+              {:code => "3", :attribute => "attr3", :message => "message3"}
+            ],
+          }
+        }
+      )
+      errors.map { |e| e.code }.sort.should == %w[1 2 3]
+    end
+  end
+
   describe "size" do
     it "returns the number of validation errors at the first level if only has one level" do
       errors = Braintree::Errors.new(

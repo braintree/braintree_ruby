@@ -15,6 +15,7 @@ describe Braintree::Transaction do
       result.transaction.id.should =~ /^\w{6}$/
       result.transaction.type.should == "sale"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.processor_authorization_code.should_not be_nil
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -36,6 +37,32 @@ describe Braintree::Transaction do
       result.transaction.status.should == "processor_declined"
       result.transaction.processor_response_code.should == "2000"
       result.transaction.processor_response_text.should == "Do Not Honor"
+    end
+
+    it "accepts credit card expiration month and expiration year" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "05",
+          :expiration_year => "2011"
+        }
+      )
+      result.success?.should == true
+      result.transaction.credit_card_details.expiration_month.should == "05"
+      result.transaction.credit_card_details.expiration_year.should == "2011"
+      result.transaction.credit_card_details.expiration_date.should == "05/2011"
+    end
+
+    it "returns some error if customer_id is invalid" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :customer_id => 123456789
+      )
+      result.success?.should == false
+      result.errors.for(:transaction).on(:customer_id)[0].code.should == "91510"
     end
 
     it "can create custom fields" do
@@ -192,7 +219,7 @@ describe Braintree::Transaction do
       transaction.credit_card_details.expiration_date.should == "05/2009"
     end
 
-    it "raises a ValidationsFailed if invalid" do
+    it "raises a validationsfailed if invalid" do
       expect do
         Braintree::Transaction.create!(
           :type => "sale",
@@ -282,6 +309,7 @@ describe Braintree::Transaction do
       transaction.avs_error_response_code.should == nil
       transaction.avs_postal_code_response_code.should == "M"
       transaction.avs_street_address_response_code.should == "M"
+      transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
       transaction.customer_details.company.should == "Braintree Payment Solutions"
@@ -745,8 +773,8 @@ describe Braintree::Transaction do
       transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
-      transaction.created_at.between?(Time.now - 5, Time.now).should == true
-      transaction.updated_at.between?(Time.now - 5, Time.now).should == true
+      transaction.created_at.between?(Time.now - 60, Time.now).should == true
+      transaction.updated_at.between?(Time.now - 60, Time.now).should == true
       transaction.credit_card_details.bin.should == "510510"
       transaction.credit_card_details.last_4.should == "5100"
       transaction.credit_card_details.masked_number.should == "510510******5100"
@@ -754,6 +782,7 @@ describe Braintree::Transaction do
       transaction.avs_error_response_code.should == nil
       transaction.avs_postal_code_response_code.should == "M"
       transaction.avs_street_address_response_code.should == "M"
+      transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
       transaction.customer_details.company.should == "Braintree Payment Solutions"

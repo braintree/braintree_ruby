@@ -1,3 +1,13 @@
+== 1.1.2
+
+* allow passing expiration_month and expiration_year separately
+* updated Customer.find to raise an ArgumentError if given an invalid id
+* added error code for transaction amounts that are too large
+* include Enumerable in Braintree::Errors to iterate over all validation errors
+* added processor_authorization_code attr_reader to Braintree::Transaction
+* added cvv_response_code attr_reader to Braintree::Transaction
+* added deep_errors method to Braintree::ValidationErrorCollection to get errors at every level of nesting
+
 == 1.1.1
 
 * Added explicit require for date to fix missing initialize (thanks jherdman[http://github.com/jherdman])

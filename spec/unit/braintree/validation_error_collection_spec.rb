@@ -125,4 +125,24 @@ describe Braintree::ValidationErrorCollection do
     end
   end
 
+  describe "deep_errors" do
+    it "returns errors from all levels" do
+      errors = Braintree::ValidationErrorCollection.new(
+        :errors => [
+          { :attribute => "one", :code => 1, :message => "bad juju" },
+          { :attribute => "two", :code => 2, :message => "bad juju" }],
+        :nested => {
+          :errors => [{ :attribute => "three", :code => 3, :message => "badder juju"}],
+          :nested_again => {
+            :errors => [{ :attribute => "four", :code => 4, :message => "badder juju"}]
+          }
+        },
+        :same_level => {
+          :errors => [{ :attribute => "five", :code => 5, :message => "badder juju"}],
+        }
+      )
+      errors.deep_errors.map { |e| e.code }.sort.should == [1, 2, 3, 4, 5]
+    end
+  end
+
 end

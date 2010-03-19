@@ -127,9 +127,12 @@ module Braintree
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
     attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id, :status
     attr_reader :custom_fields
+    attr_reader :cvv_response_code
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
     attr_reader :status_history
+    # The authorization code from the processor.
+    attr_reader :processor_authorization_code
     # The response code from the processor.
     attr_reader :processor_response_code
     # The response text from the processor.
@@ -245,7 +248,7 @@ module Braintree
       nice_attributes = order.map do |attr|
         if attr == :amount
           self.amount ? "amount: #{self.amount.to_s("F").inspect}" : "amount: nil"
-        else  
+        else
           "#{attr}: #{send(attr).inspect}"
         end
       end
@@ -381,7 +384,7 @@ module Braintree
     def self._create_signature # :nodoc:
       [
         :amount, :customer_id, :order_id, :payment_method_token, :type,
-        {:credit_card => [:token, :cvv, :expiration_date, :number]},
+        {:credit_card => [:token, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {:billing => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
         {:shipping => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},

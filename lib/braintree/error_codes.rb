@@ -79,6 +79,7 @@ module Braintree
       AmountCannotBeNegative = "81501"
       AmountIsRequired = "81502"
       AmountIsInvalid = "81503"
+      AmountIsTooLarge = "81528"
       CannotBeVoided = "91504"
       CannotRefundCredit = "91505"
       CannotRefundUnlessSettled = "91506"
