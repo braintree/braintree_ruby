@@ -79,6 +79,8 @@ module Braintree
     end
 
     def self.find(customer_id)
+      raise ArgumentError, "customer_id should be a string" unless customer_id.is_a?(String)
+      raise ArgumentError, "customer_id cannot be blank" if customer_id.to_s == ""
       response = Http.get("/customers/#{customer_id}")
       new(response[:customer])
     rescue NotFoundError

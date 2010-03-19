@@ -309,6 +309,7 @@ describe Braintree::Transaction do
       transaction.avs_error_response_code.should == nil
       transaction.avs_postal_code_response_code.should == "M"
       transaction.avs_street_address_response_code.should == "M"
+      transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
       transaction.customer_details.company.should == "Braintree Payment Solutions"
@@ -781,6 +782,7 @@ describe Braintree::Transaction do
       transaction.avs_error_response_code.should == nil
       transaction.avs_postal_code_response_code.should == "M"
       transaction.avs_street_address_response_code.should == "M"
+      transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
       transaction.customer_details.company.should == "Braintree Payment Solutions"

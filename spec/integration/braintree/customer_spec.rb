@@ -489,6 +489,24 @@ describe Braintree::Customer do
       customer.last_name.should == "Cool"
     end
 
+    it "works for a blank customer" do
+      created_customer = Braintree::Customer.create!
+      found_customer = Braintree::Customer.find(created_customer.id)
+      found_customer.id.should == created_customer.id
+    end
+
+    it "raises an ArgumentError if customer_id is not a string" do
+      expect do
+        Braintree::Customer.find(Object.new)
+      end.to raise_error(ArgumentError, "customer_id should be a string")
+    end
+
+    it "raises an ArgumentError if customer_id is blank" do
+      expect do
+        Braintree::Customer.find("")
+      end.to raise_error(ArgumentError, "customer_id cannot be blank")
+    end
+
     it "raises a NotFoundError exception if customer cannot be found" do
       expect do
         Braintree::Customer.find("invalid-id")

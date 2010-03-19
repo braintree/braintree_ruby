@@ -127,6 +127,7 @@ module Braintree
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
     attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id, :status
     attr_reader :custom_fields
+    attr_reader :cvv_response_code
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
     attr_reader :status_history
