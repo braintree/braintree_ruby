@@ -198,10 +198,11 @@ describe Braintree::Subscription do
           :payment_method_token => @credit_card.token,
           :plan_id => TrialPlan[:id],
           :trial_period => true,
+          :trial_duration => 2,
           :trial_duration_unit => nil
         )
         result.success?.should == false
-        result.errors.for(:subscription)[0].message.should == "Trial Duration Unit is invalid."
+        result.errors.for(:subscription).on(:trial_duration_unit)[0].message.should == "Trial Duration Unit is invalid."
       end
 
     end
