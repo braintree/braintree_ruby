@@ -13,7 +13,7 @@ module Braintree
       Month = "month"
     end
 
-    attr_reader :price, :plan_id, :id, :status, :payment_method_token
+    attr_reader :price, :plan_id, :id, :status, :payment_method_token, :merchant_account_id
     attr_reader :first_billing_date, :next_billing_date, :billing_period_start_date, :billing_period_end_date
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
@@ -61,6 +61,7 @@ module Braintree
     def self._create_signature # :nodoc:
       [
         :id,
+        :merchant_account_id,
         :payment_method_token,
         :plan_id,
         :price,
@@ -100,6 +101,7 @@ module Braintree
     def self._update_signature # :nodoc:
       [
         :id,
+        :merchant_account_id,
         :plan_id,
         :price
       ]

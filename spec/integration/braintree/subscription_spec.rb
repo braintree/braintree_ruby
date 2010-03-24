@@ -62,6 +62,29 @@ describe Braintree::Subscription do
       result.subscription.id.should == new_id
     end
 
+    context "merchant_account_id" do
+      it "defaults to the default merchant account if no merchant_account_id is provided" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id]
+        )
+
+        result.success?.should == true
+        result.subscription.merchant_account_id.should == "sandbox_credit_card"
+      end
+
+      it "allows setting the merchant_account_id" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :merchant_account_id => "sandbox_credit_card_non_default"
+        )
+
+        result.success?.should == true
+        result.subscription.merchant_account_id.should == "sandbox_credit_card_non_default"
+      end
+    end
+
     context "trial period" do
       context "defaults to the plan's trial period settings" do
         it "with no trial" do
@@ -233,6 +256,17 @@ describe Braintree::Subscription do
         :price => 54.32,
         :plan_id => TriallessPlan[:id]
       ).subscription
+    end
+
+    context "merchant_account_id" do
+      it "allows changing the merchant_account_id" do
+        result = Braintree::Subscription.update(@subscription.id,
+          :merchant_account_id => "sandbox_credit_card_non_default"
+        )
+
+        result.success?.should == true
+        result.subscription.merchant_account_id.should == "sandbox_credit_card_non_default"
+      end
     end
 
     context "when successful" do
