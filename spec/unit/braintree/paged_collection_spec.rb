@@ -125,4 +125,54 @@ describe "Braintree::PagedCollection" do
     end
   end
 
+  context "custom matchers" do
+    require 'enumerator'
+
+    DummyItem = Struct.new(:id)
+
+    def paged_collection(items, page_size)
+      pages = []
+      items.each_slice(page_size) do |slice|
+        pages << slice
+      end
+
+      _build_collection(pages, page_size, items.size, 1)
+    end
+
+    def _build_collection(paged_items, page_size, total_size, current_page)
+      Braintree::PagedCollection.new(:items => paged_items[current_page - 1], :total_items => total_size, :page_size => page_size, :current_page_number => current_page) do |page|
+        _build_collection(paged_items, page_size, total_size, page)
+      end
+    end
+
+    describe "include_on_any_page" do
+      it "finds a match in a simple collection" do
+        element = DummyItem.new(123)
+        collection = paged_collection([element], 10)
+
+        collection.should include_on_any_page(element)
+      end
+
+      it "does not find a match in a simple collection" do
+        element = DummyItem.new(1)
+        collection = paged_collection([DummyItem.new(2)], 10)
+
+        collection.should_not include_on_any_page(element)
+      end
+
+      it "finds a match on a subsequent page" do
+        element = DummyItem.new(1)
+        collection = paged_collection([DummyItem.new(2), element], 1)
+
+        collection.should include_on_any_page(element)
+      end
+
+      it "does not find a match on a subsequent page" do
+        element = DummyItem.new(1)
+        collection = paged_collection([DummyItem.new(2), DummyItem.new(3)], 1)
+
+        collection.should_not include_on_any_page(element)
+      end
+    end
+  end
 end

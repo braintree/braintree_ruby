@@ -46,6 +46,16 @@ module Braintree
       raise NotFoundError, "subscription with id #{id.inspect} not found"
     end
 
+    def self.search(page=1, &block)
+      search = SubscriptionSearch.new
+      block.call(search)
+
+      response = Http.post "/subscriptions/advanced_search?page=#{page}", {:search => search.to_hash}
+      attributes = response[:subscriptions]
+      attributes[:items] = Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| new(attrs) }
+      PagedCollection.new(attributes) { |page_number| Subscription.search(page_number, &block) }
+    end
+
     def self.update(subscription_id, attributes)
       Util.verify_keys(_update_signature, attributes)
       response = Http.put "/subscriptions/#{subscription_id}", :subscription => attributes
