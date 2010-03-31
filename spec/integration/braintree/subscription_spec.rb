@@ -530,6 +530,27 @@ describe Braintree::Subscription do
 
     context "multiple_value_fields" do
       context "includes" do
+        it "matches all values if none are specified" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.is TriallessPlan[:id]
+          end
+
+          collection.should include_on_any_page(subscription1)
+          collection.should include_on_any_page(subscription2)
+        end
+
         it "returns only matching results" do
           subscription1 = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
