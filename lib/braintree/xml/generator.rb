@@ -62,7 +62,6 @@ module Braintree
       end
 
       def self._array_to_xml(array, options = {})
-        raise "expected all elements to be hashes" unless array.all? { |e| e.is_a?(Hash) }
         raise "expected options[:root]" unless options[:root]
         raise "expected options[:builder]" unless options[:builder]
         options[:indent] ||= 2
@@ -71,7 +70,13 @@ module Braintree
           options[:builder].tag!(root, :type => "array")
         else
           options[:builder].tag!(root, :type => "array") do
-            array.each { |e| _convert_to_xml(e, options.merge(:root => "item", :skip_instruct => true)) }
+            array.each do |e|
+              if e.is_a?(Hash)
+                _convert_to_xml(e, options.merge(:root => "item", :skip_instruct => true))
+              else
+                options[:builder].tag!("item", e)
+              end
+            end
           end
         end
       end

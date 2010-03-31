@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::Subscription do
-
   TrialPlan = {
     :description => "Plan for integration tests -- with trial",
     :id => "integration_trial_plan",
@@ -396,7 +395,7 @@ describe Braintree::Subscription do
       }.to raise_error(Braintree::NotFoundError, 'subscription with id "noSuchSubscription" not found')
     end
 
-    it "cannot be canceled if already canceld" do
+    it "cannot be canceled if already canceled" do
       subscription = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :price => 54.32,
@@ -414,108 +413,135 @@ describe Braintree::Subscription do
   end
 
   describe "self.search" do
-    context "is statement" do
-      it "returns paged collection with matching results" do
-        trialless_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TriallessPlan[:id]
-        ).subscription
+    context "search_fields" do
+      context "is statement" do
+        it "returns paged collection with matching results" do
+          trialless_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
 
-        trial_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TrialPlan[:id]
-        ).subscription
+          trial_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TrialPlan[:id]
+          ).subscription
 
-        collection = Braintree::Subscription.search do |search|
-          search.plan_id.is TriallessPlan[:id]
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.is TriallessPlan[:id]
+          end
+
+          collection.should include_on_any_page(trialless_subscription)
+          collection.should_not include_on_any_page(trial_subscription)
         end
+      end
 
-        collection.should include_on_any_page(trialless_subscription)
-        collection.should_not include_on_any_page(trial_subscription)
+      context "is_not statement" do
+        it "returns paged collection without matching results" do
+          trialless_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          trial_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TrialPlan[:id]
+          ).subscription
+
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.is_not TriallessPlan[:id]
+          end
+
+          collection.should_not include_on_any_page(trialless_subscription)
+          collection.should include_on_any_page(trial_subscription)
+        end
+      end
+
+      context "ends_with statement" do
+        it "returns paged collection with matching results" do
+          trialless_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          trial_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TrialPlan[:id]
+          ).subscription
+
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.ends_with "trial_plan"
+          end
+
+          collection.should include_on_any_page(trial_subscription)
+          collection.should_not include_on_any_page(trialless_subscription)
+        end
+      end
+
+      context "starts_with statement" do
+        it "returns paged collection with matching results" do
+          trialless_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          trial_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TrialPlan[:id]
+          ).subscription
+
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.starts_with "integration_trial_p"
+          end
+
+          collection.should include_on_any_page(trial_subscription)
+          collection.should_not include_on_any_page(trialless_subscription)
+        end
+      end
+
+      context "contains statement" do
+        it "returns paged collection with matching results" do
+          trialless_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          trial_subscription = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TrialPlan[:id]
+          ).subscription
+
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.contains "trial_p"
+          end
+
+          collection.should include_on_any_page(trial_subscription)
+          collection.should_not include_on_any_page(trialless_subscription)
+        end
       end
     end
 
-    context "is_not statement" do
-      it "returns paged collection without matching results" do
-        trialless_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TriallessPlan[:id]
-        ).subscription
+    context "multiple_value_fields" do
+      context "includes" do
+        it "returns only matching results" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
 
-        trial_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TrialPlan[:id]
-        ).subscription
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
 
-        collection = Braintree::Subscription.search do |search|
-          search.plan_id.is_not TriallessPlan[:id]
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.status.includes Braintree::Subscription::Status::Active
+          end
+
+          collection.should include_on_any_page(subscription1)
+          collection.should_not include_on_any_page(subscription2)
         end
-
-        collection.should_not include_on_any_page(trialless_subscription)
-        collection.should include_on_any_page(trial_subscription)
-      end
-    end
-
-    context "ends_with statement" do
-      it "returns paged collection with matching results" do
-        trialless_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TriallessPlan[:id]
-        ).subscription
-
-        trial_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TrialPlan[:id]
-        ).subscription
-
-        collection = Braintree::Subscription.search do |search|
-          search.plan_id.ends_with "trial_plan"
-        end
-
-        collection.should include_on_any_page(trial_subscription)
-        collection.should_not include_on_any_page(trialless_subscription)
-      end
-    end
-
-    context "starts_with statement" do
-      it "returns paged collection with matching results" do
-        trialless_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TriallessPlan[:id]
-        ).subscription
-
-        trial_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TrialPlan[:id]
-        ).subscription
-
-        collection = Braintree::Subscription.search do |search|
-          search.plan_id.starts_with "integration_trial_p"
-        end
-
-        collection.should include_on_any_page(trial_subscription)
-        collection.should_not include_on_any_page(trialless_subscription)
-      end
-    end
-
-    context "contains statement" do
-      it "returns paged collection with matching results" do
-        trialless_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TriallessPlan[:id]
-        ).subscription
-
-        trial_subscription = Braintree::Subscription.create(
-          :payment_method_token => @credit_card.token,
-          :plan_id => TrialPlan[:id]
-        ).subscription
-
-        collection = Braintree::Subscription.search do |search|
-          search.plan_id.contains "trial_p"
-        end
-
-        collection.should include_on_any_page(trial_subscription)
-        collection.should_not include_on_any_page(trialless_subscription)
       end
     end
   end

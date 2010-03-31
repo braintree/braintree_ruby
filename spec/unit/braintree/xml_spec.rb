@@ -94,6 +94,11 @@ describe Braintree::Xml do
       verify_to_xml_and_back hash
     end
 
+    it "works for arrays of strings" do
+      hash = {:root => {:items => ["first", "second"]}}
+      verify_to_xml_and_back hash
+    end
+
     it "type casts booleans" do
       hash = {:root => {:string_true => "true", :bool_true => true, :bool_false => false, :string_false => "false"}}
       verify_to_xml_and_back hash
