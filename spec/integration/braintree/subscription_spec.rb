@@ -414,6 +414,14 @@ describe Braintree::Subscription do
 
   describe "self.search" do
     context "search_fields" do
+      it "correctly returns a result with no matches" do
+        collection = Braintree::Subscription.search do |search|
+          search.plan_id.is "not_a_real_plan_id"
+        end
+
+        collection.items.size.should == 0
+      end
+
       context "is statement" do
         it "returns paged collection with matching results" do
           trialless_subscription = Braintree::Subscription.create(

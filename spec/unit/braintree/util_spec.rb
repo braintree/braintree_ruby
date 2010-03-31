@@ -137,6 +137,12 @@ describe Braintree::Util do
       result = Braintree::Util.extract_attribute_as_array(hash, :foo)
       result.should == ["one", "two"]
     end
+
+    it "returns empty array if the attribute is not in the hash" do
+      hash = {:foo => ["one", "two"], :bar => :baz}
+      result = Braintree::Util.extract_attribute_as_array(hash, :quz)
+      result.should == []
+    end
   end
 
   describe "self.hash_to_query_string" do
