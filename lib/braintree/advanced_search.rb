@@ -3,8 +3,8 @@ module Braintree
     class SearchNode
       def self.operators(*operator_names)
         operator_names.each do |operator|
-          define_method(operator) do |*values|
-            @parent.add_criteria(@node_name, value_handler(operator, values))
+          define_method(operator) do |value|
+            @parent.add_criteria(@node_name, operator => value.to_s)
           end
         end
       end
@@ -16,14 +16,19 @@ module Braintree
 
     class TextNode < SearchNode
       operators :is, :is_not, :ends_with, :starts_with, :contains
-
-      def value_handler(operator, values)
-        {operator => values.first}
-      end
     end
 
     class MultipleValueNode < SearchNode
-      operators :includes
+      def includes(*values)
+        values.flatten!
+
+        unless allowed_values.nil?
+          bad_values = values - allowed_values
+          raise ArgumentError.new("Invalid argument(s) for #{@node_name}: #{bad_values.join(", ")}") if bad_values.any?
+        end
+
+        @parent.add_criteria(@node_name, values)
+      end
 
       def initialize(name, parent, options)
         super(name, parent)
@@ -32,17 +37,6 @@ module Braintree
 
       def allowed_values
         @options[:allows]
-      end
-
-      def value_handler(operator, values)
-        values.flatten!
-
-        unless allowed_values.nil?
-          bad_values = values - allowed_values
-          raise ArgumentError.new("Invalid argument(s) for #{@node_name}: #{bad_values.join(", ")}") if bad_values.any?
-        end
-
-        values
       end
     end
 
