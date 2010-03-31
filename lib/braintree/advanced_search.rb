@@ -25,8 +25,24 @@ module Braintree
     class MultipleValueNode < SearchNode
       operators :includes
 
+      def initialize(name, parent, options)
+        super(name, parent)
+        @options = options
+      end
+
+      def allowed_values
+        @options[:allows]
+      end
+
       def value_handler(operator, values)
-        [*values].flatten
+        values.flatten!
+
+        unless allowed_values.nil?
+          bad_values = values - allowed_values
+          raise ArgumentError.new("Invalid argument(s) for #{@node_name}: #{bad_values.join(", ")}") if bad_values.any?
+        end
+
+        values
       end
     end
 
@@ -38,9 +54,9 @@ module Braintree
       end
     end
 
-    def self.multiple_value_field(field)
+    def self.multiple_value_field(field, options={})
       define_method(field) do
-        MultipleValueNode.new(field, self)
+        MultipleValueNode.new(field, self, options)
       end
     end
 

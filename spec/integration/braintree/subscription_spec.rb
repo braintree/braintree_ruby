@@ -542,6 +542,48 @@ describe Braintree::Subscription do
           collection.should include_on_any_page(subscription1)
           collection.should_not include_on_any_page(subscription2)
         end
+
+        it "returns only matching results given an argument list" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.status.includes Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled
+          end
+
+          collection.should include_on_any_page(subscription1)
+          collection.should include_on_any_page(subscription2)
+        end
+
+        it "returns only matching results given an array" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.status.includes [Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled]
+          end
+
+          collection.should include_on_any_page(subscription1)
+          collection.should include_on_any_page(subscription2)
+        end
       end
     end
   end
