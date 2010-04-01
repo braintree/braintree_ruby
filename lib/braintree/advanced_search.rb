@@ -19,7 +19,7 @@ module Braintree
     end
 
     class MultipleValueNode < SearchNode
-      def includes(*values)
+      def in(*values)
         values.flatten!
 
         unless allowed_values.nil?

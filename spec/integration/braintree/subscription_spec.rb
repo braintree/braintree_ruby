@@ -529,7 +529,7 @@ describe Braintree::Subscription do
     end
 
     context "multiple_value_fields" do
-      context "includes" do
+      context "in" do
         it "matches all values if none are specified" do
           subscription1 = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
@@ -565,7 +565,7 @@ describe Braintree::Subscription do
           Braintree::Subscription.cancel(subscription2.id)
 
           collection = Braintree::Subscription.search do |search|
-            search.status.includes Braintree::Subscription::Status::Active
+            search.status.in Braintree::Subscription::Status::Active
           end
 
           collection.should include_on_any_page(subscription1)
@@ -586,7 +586,7 @@ describe Braintree::Subscription do
           Braintree::Subscription.cancel(subscription2.id)
 
           collection = Braintree::Subscription.search do |search|
-            search.status.includes Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled
+            search.status.in Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled
           end
 
           collection.should include_on_any_page(subscription1)
@@ -607,7 +607,7 @@ describe Braintree::Subscription do
           Braintree::Subscription.cancel(subscription2.id)
 
           collection = Braintree::Subscription.search do |search|
-            search.status.includes [Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled]
+            search.status.in [Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled]
           end
 
           collection.should include_on_any_page(subscription1)

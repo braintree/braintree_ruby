@@ -18,7 +18,7 @@ describe Braintree::Subscription do
     it "only allows specified values for status" do
       lambda do
         Braintree::Subscription.search do |search|
-          search.status.includes "Hammer"
+          search.status.in "Hammer"
         end
       end.should raise_error(ArgumentError)
     end

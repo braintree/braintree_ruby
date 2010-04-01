@@ -7,7 +7,7 @@ module Braintree
         search = SubscriptionSearch.new
 
         lambda do
-          search.status.includes(
+          search.status.in(
             Subscription::Status::Active,
             Subscription::Status::Canceled,
             Subscription::Status::PastDue
