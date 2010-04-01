@@ -1,12 +1,18 @@
+== 1.1.3
+
+* Fixed a bug with empty search results
+* Added support for appending to user agent
+* Finding a customer using id as an integer will now work (even though customer ids are actually strings)
+
 == 1.1.2
 
-* allow passing expiration_month and expiration_year separately
-* updated Customer.find to raise an ArgumentError if given an invalid id
-* added error code for transaction amounts that are too large
-* include Enumerable in Braintree::Errors to iterate over all validation errors
-* added processor_authorization_code attr_reader to Braintree::Transaction
-* added cvv_response_code attr_reader to Braintree::Transaction
-* added deep_errors method to Braintree::ValidationErrorCollection to get errors at every level of nesting
+* Allow passing expiration_month and expiration_year separately
+* Updated Customer.find to raise an ArgumentError if given an invalid id
+* Added error code for transaction amounts that are too large
+* Include Enumerable in Braintree::Errors to iterate over all validation errors
+* Added processor_authorization_code attr_reader to Braintree::Transaction
+* Added cvv_response_code attr_reader to Braintree::Transaction
+* Added deep_errors method to Braintree::ValidationErrorCollection to get errors at every level of nesting
 
 == 1.1.1
 
