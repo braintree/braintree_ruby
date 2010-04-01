@@ -191,11 +191,7 @@ module Braintree
     end
 
     def self._create_signature # :nodoc:
-      [
-        :customer_id, :cardholder_name, :cvv, :number, :expiration_date, :expiration_month, :expiration_year, :token,
-        {:options => [:verify_card]},
-        {:billing_address => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :region, :postal_code, :street_address]}
-      ]
+      _update_signature + [:customer_id]
     end
 
     def self._new(*args) # :nodoc:
@@ -226,9 +222,9 @@ module Braintree
 
     def self._update_signature # :nodoc:
       [
-        :cardholder_name, :cvv, :number, :expiration_date, :expiration_month, :expiration_year, :token,
+        :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
         {:options => [:verify_card]},
-        {:billing_address => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :region, :postal_code, :street_address]}
+        {:billing_address => [:company, :country_name, :extended_address, :first_name, :last_name, :locality, :postal_code, :region, :street_address]}
       ]
     end
 

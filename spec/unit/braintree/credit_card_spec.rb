@@ -9,6 +9,18 @@ describe Braintree::CreditCard do
     end
   end
 
+  describe "self.create_signature" do
+    it "should include customer_id" do
+      Braintree::CreditCard._create_signature.should include(:customer_id)
+    end
+  end
+
+  describe "self.update_signature" do
+    it "should not include customer_id" do
+      Braintree::CreditCard._update_signature.should_not include(:customer_id)
+    end
+  end
+
   describe "self.create_from_transparent_redirect" do
     it "raises an exception if the query string is forged" do
       expect do

@@ -498,13 +498,13 @@ describe Braintree::Customer do
     it "raises an ArgumentError if customer_id is not a string" do
       expect do
         Braintree::Customer.find(Object.new)
-      end.to raise_error(ArgumentError, "customer_id should be a string")
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
     end
 
     it "raises an ArgumentError if customer_id is blank" do
       expect do
         Braintree::Customer.find("")
-      end.to raise_error(ArgumentError, "customer_id cannot be blank")
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
     end
 
     it "raises a NotFoundError exception if customer cannot be found" do

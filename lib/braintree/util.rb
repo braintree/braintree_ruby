@@ -1,7 +1,7 @@
 module Braintree
   module Util # :nodoc:
     def self.extract_attribute_as_array(hash, attribute)
-      value = hash.delete(attribute)
+      value = hash.has_key?(attribute) ? hash.delete(attribute) : []
       value.is_a?(Array) ? value : [value]
     end
 

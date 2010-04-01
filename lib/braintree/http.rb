@@ -53,7 +53,7 @@ module Braintree
       connection.start do |http|
         request = http_verb.new("#{Configuration.base_merchant_path}#{path}")
         request["Accept"] = "application/xml"
-        request["User-Agent"] = "Braintree Ruby Gem #{Braintree::Version::String}"
+        request["User-Agent"] = Configuration.user_agent
         request["Accept-Encoding"] = "gzip"
         request["X-ApiVersion"] = Configuration::API_VERSION
         request.basic_auth Configuration.public_key, Configuration.private_key
