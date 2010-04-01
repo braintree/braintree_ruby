@@ -197,4 +197,19 @@ describe Braintree::Configuration do
     end
   end
 
+  describe "self.user_agent" do
+    after :each do
+      Braintree::Configuration.custom_user_agent = nil
+    end
+
+    it "appends the default user_agent with the given value" do
+      Braintree::Configuration.custom_user_agent = "ActiveMerchant 1.2.3"
+      Braintree::Configuration.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)"
+    end
+
+    it "does not append anything if there is no custom_user_agent" do
+      Braintree::Configuration.custom_user_agent = nil
+      Braintree::Configuration.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String}"
+    end
+  end
 end

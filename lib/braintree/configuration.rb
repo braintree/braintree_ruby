@@ -90,6 +90,15 @@ module Braintree
       end
     end
 
+    def self.custom_user_agent=(custom_user_agent)
+      @custom_user_agent = custom_user_agent
+    end
+
+    def self.user_agent
+      base_user_agent = "Braintree Ruby Gem #{Braintree::Version::String}"
+      @custom_user_agent ? "#{base_user_agent} (#{@custom_user_agent})" : base_user_agent
+    end
+
     def self._default_logger # :nodoc:
       logger = Logger.new(STDOUT)
       logger.level = Logger::INFO
