@@ -215,7 +215,7 @@ describe Braintree::Subscription do
           :trial_duration => nil
         )
         result.success?.should == false
-        result.errors.for(:subscription)[0].message.should == "Trial Duration is required."
+        result.errors.for(:subscription).on(:trial_duration)[0].message.should == "Trial Duration is required."
       end
 
       it "trial duration unit required" do
