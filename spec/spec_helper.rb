@@ -49,6 +49,23 @@ unless defined?(SPEC_HELPER_LOADED)
         raise "did not receive a valid tr response: #{response.body[0,1000].inspect}"
       end
     end
+
+    def self.using_configuration(config = {}, &block)
+      original_values = {}
+      [:merchant_id, :public_key, :private_key].each do |key|
+        if config[key]
+          original_values[key] = Braintree::Configuration.send(key)
+          Braintree::Configuration.send("#{key}=", config[key])
+        end
+      end
+      begin
+        yield
+      ensure
+        original_values.each do |key, value|
+          Braintree::Configuration.send("#{key}=", value)
+        end
+      end
+    end
   end
 end
 
