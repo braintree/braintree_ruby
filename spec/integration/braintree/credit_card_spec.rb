@@ -581,6 +581,27 @@ describe Braintree::CreditCard do
       credit_card.expiration_date.should == "05/2012"
     end
 
+    it "returns associated subscriptions with the credit card" do
+      customer = Braintree::Customer.create.customer
+      credit_card = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      ).credit_card
+
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => credit_card.token,
+        :plan_id => "integration_trialless_plan",
+        :price => "1.00"
+      ).subscription
+
+      found_card = Braintree::CreditCard.find(credit_card.token)
+      found_card.subscriptions.first.id.should == subscription.id
+      found_card.subscriptions.first.plan_id.should == "integration_trialless_plan"
+      found_card.subscriptions.first.payment_method_token.should == credit_card.token
+      found_card.subscriptions.first.price.should == BigDecimal.new("1.00")
+    end
+
     it "raises a NotFoundError exception if payment method cannot be found" do
       expect do
         Braintree::CreditCard.find("invalid-token")

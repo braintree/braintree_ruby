@@ -3,7 +3,7 @@ module Braintree
     include BaseModule # :nodoc:
 
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-      :expiration_year, :last_4, :token, :updated_at
+      :expiration_year, :last_4, :subscriptions, :token, :updated_at
 
     def self.create(attributes)
       if attributes.has_key?(:expiration_date) && (attributes.has_key?(:expiration_month) || attributes.has_key?(:expiration_year))
@@ -99,6 +99,7 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       _init attributes
+      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription.new(subscription_hash) }
     end
 
     # Creates a credit transaction for this credit card.

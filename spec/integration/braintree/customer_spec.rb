@@ -495,6 +495,27 @@ describe Braintree::Customer do
       customer.last_name.should == "Cool"
     end
 
+    it "returns associated subscriptions" do
+      customer = Braintree::Customer.create.customer
+      credit_card = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      ).credit_card
+
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => credit_card.token,
+        :plan_id => "integration_trialless_plan",
+        :price => "1.00"
+      ).subscription
+
+      found_customer = Braintree::Customer.find(customer.id)
+      found_customer.credit_cards.first.subscriptions.first.id.should == subscription.id
+      found_customer.credit_cards.first.subscriptions.first.plan_id.should == "integration_trialless_plan"
+      found_customer.credit_cards.first.subscriptions.first.payment_method_token.should == credit_card.token
+      found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal.new("1.00")
+    end
+
     it "works for a blank customer" do
       created_customer = Braintree::Customer.create!
       found_customer = Braintree::Customer.find(created_customer.id)
