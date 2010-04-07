@@ -1,4 +1,25 @@
 module Braintree
+  # == Creating a Subscription
+  #
+  # At minimum, a plan_id and payment_method_token are required. Any other values not
+  # provided will be defaulted to the plan's values:
+  #
+  #  Braintree::Subscription.create(
+  #    :payment_method_token => "my_token",
+  #    :plan_id => "my_plan"
+  #  )
+  #
+  # Full example:
+  #
+  #  Braintree::Subscription.create(
+  #    :id => "my_id",
+  #    :payment_method_token => "my_token",
+  #    :plan_id => "my_plan",
+  #    :price => "1.00",
+  #    :trial_period => true,
+  #    :trial_duration => "2",
+  #    :trial_duration_unit => Subscription::TrialDurationUnit::Day
+  #  )
   class Subscription
     include BaseModule
 
@@ -46,6 +67,22 @@ module Braintree
       raise NotFoundError, "subscription with id #{id.inspect} not found"
     end
 
+    # Allows searching on subscriptions. There are two types of fields that are searchable: text and
+    # multiple value fields. Searchable text fields are:
+    # - plan_id
+    # - days_past_due
+    #
+    # Searchable multiple value fields are:
+    # - status
+    #
+    # For text fields, you can search using the following operators: is, is_not, starts_with, ends_with
+    # and contains. For mutiple value fields, you can search using the in operator. An example:
+    #
+    #  Subscription.search do |s|
+    #    s.plan_id.starts_with "abc"
+    #    s.days_past_due.is "30"
+    #    s.status.in [Subscription::Status::PastDue]
+    #  end
     def self.search(page=1, &block)
       search = SubscriptionSearch.new
       block.call(search)

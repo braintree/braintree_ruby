@@ -66,6 +66,7 @@ BODY = <<-END_BODY
       <li><a href="BASE_URL/classes/Braintree/Customer.html">Customer</a></li>
       <li><a href="BASE_URL/classes/Braintree/CreditCard.html">CreditCard</a></li>
       <li><a href="BASE_URL/classes/Braintree/Address.html">Address</a></li>
+      <li><a href="BASE_URL/classes/Braintree/Subscription.html">Subscription</a></li>
     </ul>
   </div>
 
