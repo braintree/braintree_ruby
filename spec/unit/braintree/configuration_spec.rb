@@ -44,21 +44,21 @@ describe Braintree::Configuration do
     it "qa" do
       Braintree::Configuration.environment = :qa
       ca_file = Braintree::Configuration.ca_file
-      ca_file.should match(/valicert_ca.crt$/)
+      ca_file.should match(/sandbox_braintreegateway_com.ca.crt$/)
       File.exists?(ca_file).should == true
     end
 
     it "sandbox" do
       Braintree::Configuration.environment = :sandbox
       ca_file = Braintree::Configuration.ca_file
-      ca_file.should match(/valicert_ca.crt$/)
+      ca_file.should match(/sandbox_braintreegateway_com.ca.crt$/)
       File.exists?(ca_file).should == true
     end
 
     it "production" do
       Braintree::Configuration.environment = :production
       ca_file = Braintree::Configuration.ca_file
-      ca_file.should match(/securetrust_ca.crt$/)
+      ca_file.should match(/www_braintreegateway_com.ca.crt$/)
       File.exists?(ca_file).should == true
     end
   end
