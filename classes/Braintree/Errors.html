@@ -679,6 +679,7 @@ pre {
       <li><a href="../.././classes/Braintree/Customer.html">Customer</a></li>
       <li><a href="../.././classes/Braintree/CreditCard.html">CreditCard</a></li>
       <li><a href="../.././classes/Braintree/Address.html">Address</a></li>
+      <li><a href="../.././classes/Braintree/Subscription.html">Subscription</a></li>
     </ul>
   </div>
 
@@ -745,22 +746,27 @@ href="ErrorResult.html">ErrorResult</a>.
 <div class="sectiontitle">Public Instance Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000007"></a><b>for</b>(scope)
+<a name="M000009"></a><b>each</b>(&amp;block)
+</div><!-- end class=title -->
+</div><!-- end class=method -->
+<div class="method">
+<div class="title">
+<a name="M000010"></a><b>for</b>(scope)
 </div><!-- end class=title -->
 <div class="description"> <p>
-Accesses validation errors <a href="Errors.html#M000007">for</a> the given
+Accesses validation errors <a href="Errors.html#M000010">for</a> the given
 <tt>scope</tt>.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000008"></a><b>size</b>()
+<a name="M000011"></a><b>size</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns the total number of validation errors at all levels of nesting. For
 example, if creating a customer with a credit card and a billing address,
-and each of the customer, credit card, and billing address has 1 error,
-this method will return 3.
+and <a href="Errors.html#M000009">each</a> of the customer, credit card,
+and billing address has 1 error, this method will return 3.
 </p> </div>
 </div><!-- end class=method -->
 </div><!-- end grid_13 -->

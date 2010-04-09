@@ -679,6 +679,7 @@ pre {
       <li><a href="../.././classes/Braintree/Customer.html">Customer</a></li>
       <li><a href="../.././classes/Braintree/CreditCard.html">CreditCard</a></li>
       <li><a href="../.././classes/Braintree/Address.html">Address</a></li>
+      <li><a href="../.././classes/Braintree/Subscription.html">Subscription</a></li>
     </ul>
   </div>
 
@@ -733,8 +734,8 @@ pre {
   <div class="description">
     <h2>Creating a <a href="Transaction.html">Transaction</a></h2>
 <p>
-At minimum, an amount, <a href="Transaction.html#M000013">credit</a> card
-number, and <a href="Transaction.html#M000013">credit</a> card expiration
+At minimum, an amount, <a href="Transaction.html#M000016">credit</a> card
+number, and <a href="Transaction.html#M000016">credit</a> card expiration
 date are required. Minimalistic example:
 </p>
 <pre>
@@ -800,7 +801,7 @@ Full example:
 </pre>
 <h2>Storing in the Vault</h2>
 <p>
-The customer and <a href="Transaction.html#M000013">credit</a> card
+The customer and <a href="Transaction.html#M000016">credit</a> card
 information used for a transaction can be stored in the vault by setting
 <tt>transaction[options][store_in_vault]</tt> to true.
 </p>
@@ -847,7 +848,7 @@ than the authorized amount.
 <p>
 A transaction can be submitted for settlement when created by setting
 transaction[options][<a
-href="Transaction.html#M000019">submit_for_settlement</a>] to true.
+href="Transaction.html#M000022">submit_for_settlement</a>] to true.
 </p>
 <pre>
   transaction = Braintree::Transaction.sale!(
@@ -936,6 +937,13 @@ href="Transaction.html#M000019">submit_for_settlement</a>] to true.
 <td class='attr-rw'>
 [R]
 </td>
+<td class='attr-name'>cvv_response_code</td>
+<td class='attr-desc'></td>
+</tr>
+<tr>
+<td class='attr-rw'>
+[R]
+</td>
 <td class='attr-name'>id</td>
 <td class='attr-desc'></td>
 </tr>
@@ -945,6 +953,16 @@ href="Transaction.html#M000019">submit_for_settlement</a>] to true.
 </td>
 <td class='attr-name'>order_id</td>
 <td class='attr-desc'></td>
+</tr>
+<tr>
+<td class='attr-rw'>
+[R]
+</td>
+<td class='attr-name'>processor_authorization_code</td>
+<td class='attr-desc'>
+The authorization code from the processor.
+
+</td>
 </tr>
 <tr>
 <td class='attr-rw'>
@@ -993,8 +1011,8 @@ The response text from the processor.
 </td>
 <td class='attr-name'>type</td>
 <td class='attr-desc'>
-Will either be &quot;<a href="Transaction.html#M000016">sale</a>&quot; or
-&quot;<a href="Transaction.html#M000013">credit</a>&quot;
+Will either be &quot;<a href="Transaction.html#M000019">sale</a>&quot; or
+&quot;<a href="Transaction.html#M000016">credit</a>&quot;
 
 </td>
 </tr>
@@ -1011,44 +1029,44 @@ Will either be &quot;<a href="Transaction.html#M000016">sale</a>&quot; or
 <div class="sectiontitle">Public Class Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000009"></a><b>create</b>(attributes)
+<a name="M000012"></a><b>create</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000010"></a><b>create!</b>(attributes)
+<a name="M000013"></a><b>create!</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000011"></a><b>create_from_transparent_redirect</b>(query_string)
+<a name="M000014"></a><b>create_from_transparent_redirect</b>(query_string)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000012"></a><b>create_transaction_url</b>()
+<a name="M000015"></a><b>create_transaction_url</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
-The URL to use to <a href="Transaction.html#M000009">create</a>
+The URL to use to <a href="Transaction.html#M000012">create</a>
 transactions via transparent redirect.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000013"></a><b>credit</b>(attributes)
+<a name="M000016"></a><b>credit</b>(attributes)
 </div><!-- end class=title -->
 <div class="description"> <p>
-Creates a <a href="Transaction.html#M000013">credit</a> transaction.
+Creates a <a href="Transaction.html#M000016">credit</a> transaction.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000014"></a><b>credit!</b>(attributes)
+<a name="M000017"></a><b>credit!</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000015"></a><b>find</b>(id)
+<a name="M000018"></a><b>find</b>(id)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Finds the transaction with the given id. Raises a <a
@@ -1058,34 +1076,34 @@ cannot be found.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000016"></a><b>sale</b>(attributes)
+<a name="M000019"></a><b>sale</b>(attributes)
 </div><!-- end class=title -->
 <div class="description"> <p>
-Creates a <a href="Transaction.html#M000016">sale</a> transaction.
+Creates a <a href="Transaction.html#M000019">sale</a> transaction.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000017"></a><b>sale!</b>(attributes)
+<a name="M000020"></a><b>sale!</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000018"></a><b>search</b>(query, options = {})
+<a name="M000021"></a><b>search</b>(query, options = {})
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns a <a href="PagedCollection.html">PagedCollection</a> of
-transactions matching the <a href="Transaction.html#M000018">search</a>
+transactions matching the <a href="Transaction.html#M000021">search</a>
 query. If <tt>query</tt> is a string, the <a
-href="Transaction.html#M000018">search</a> will be a basic <a
-href="Transaction.html#M000018">search</a>. If <tt>query</tt> is a hash,
-the <a href="Transaction.html#M000018">search</a> will be an advanced <a
-href="Transaction.html#M000018">search</a>.
+href="Transaction.html#M000021">search</a> will be a basic <a
+href="Transaction.html#M000021">search</a>. If <tt>query</tt> is a hash,
+the <a href="Transaction.html#M000021">search</a> will be an advanced <a
+href="Transaction.html#M000021">search</a>.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000019"></a><b>submit_for_settlement</b>(transaction_id, amount = nil)
+<a name="M000022"></a><b>submit_for_settlement</b>(transaction_id, amount = nil)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Submits transaction with <tt>transaction_id</tt> for settlement.
@@ -1093,12 +1111,12 @@ Submits transaction with <tt>transaction_id</tt> for settlement.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000020"></a><b>submit_for_settlement!</b>(transaction_id, amount = nil)
+<a name="M000023"></a><b>submit_for_settlement!</b>(transaction_id, amount = nil)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000021"></a><b>void</b>(transaction_id)
+<a name="M000024"></a><b>void</b>(transaction_id)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Voids the transaction with the given <tt>transaction_id</tt>
@@ -1106,14 +1124,14 @@ Voids the transaction with the given <tt>transaction_id</tt>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000022"></a><b>void!</b>(transaction_id)
+<a name="M000025"></a><b>void!</b>(transaction_id)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <hr />
 <div class="sectiontitle">Public Instance Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000023"></a><b>==</b>(other)
+<a name="M000026"></a><b>==</b>(other)
 </div><!-- end class=title -->
 <div class="description"> <p>
 True if <tt>other</tt> has the same id.
@@ -1121,16 +1139,16 @@ True if <tt>other</tt> has the same id.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000024"></a><b>refund</b>()
+<a name="M000027"></a><b>refund</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
-Creates a <a href="Transaction.html#M000013">credit</a> transaction that
+Creates a <a href="Transaction.html#M000016">credit</a> transaction that
 refunds this transaction.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000025"></a><b>refunded?</b>()
+<a name="M000028"></a><b>refunded?</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns true if the transaction has been refunded. False otherwise.
@@ -1138,7 +1156,7 @@ Returns true if the transaction has been refunded. False otherwise.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000026"></a><b>submit_for_settlement</b>(amount = nil)
+<a name="M000029"></a><b>submit_for_settlement</b>(amount = nil)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Submits the transaction for settlement.
@@ -1146,66 +1164,66 @@ Submits the transaction for settlement.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000027"></a><b>submit_for_settlement!</b>(amount = nil)
+<a name="M000030"></a><b>submit_for_settlement!</b>(amount = nil)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000028"></a><b>vault_billing_address</b>()
+<a name="M000031"></a><b>vault_billing_address</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 If this transaction was stored in the vault, or created from vault records,
-<a href="Transaction.html#M000028">vault_billing_address</a> will return
+<a href="Transaction.html#M000031">vault_billing_address</a> will return
 the associated <a href="Address.html">Braintree::Address</a>. Because the
 vault billing address can be updated after the transaction was created, the
-attributes on <a href="Transaction.html#M000028">vault_billing_address</a>
+attributes on <a href="Transaction.html#M000031">vault_billing_address</a>
 may not match the attributes on billing_details.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000029"></a><b>vault_credit_card</b>()
+<a name="M000032"></a><b>vault_credit_card</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 If this transaction was stored in the vault, or created from vault records,
-<a href="Transaction.html#M000029">vault_credit_card</a> will return the
+<a href="Transaction.html#M000032">vault_credit_card</a> will return the
 associated <a href="CreditCard.html">Braintree::CreditCard</a>. Because the
-vault <a href="Transaction.html#M000013">credit</a> card can be updated
+vault <a href="Transaction.html#M000016">credit</a> card can be updated
 after the transaction was created, the attributes on <a
-href="Transaction.html#M000029">vault_credit_card</a> may not match the
+href="Transaction.html#M000032">vault_credit_card</a> may not match the
 attributes on credit_card_details.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000030"></a><b>vault_customer</b>()
+<a name="M000033"></a><b>vault_customer</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 If this transaction was stored in the vault, or created from vault records,
-<a href="Transaction.html#M000030">vault_customer</a> will return the
+<a href="Transaction.html#M000033">vault_customer</a> will return the
 associated <a href="Customer.html">Braintree::Customer</a>. Because the
 vault customer can be updated after the transaction was created, the
-attributes on <a href="Transaction.html#M000030">vault_customer</a> may not
+attributes on <a href="Transaction.html#M000033">vault_customer</a> may not
 match the attributes on customer_details.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000031"></a><b>vault_shipping_address</b>()
+<a name="M000034"></a><b>vault_shipping_address</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 If this transaction was stored in the vault, or created from vault records,
-<a href="Transaction.html#M000031">vault_shipping_address</a> will return
+<a href="Transaction.html#M000034">vault_shipping_address</a> will return
 the associated <a href="Address.html">Braintree::Address</a>. Because the
 vault shipping address can be updated after the transaction was created,
 the attributes on <a
-href="Transaction.html#M000031">vault_shipping_address</a> may not match
+href="Transaction.html#M000034">vault_shipping_address</a> may not match
 the attributes on shipping_details.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000032"></a><b>void</b>()
+<a name="M000035"></a><b>void</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 Voids the transaction.
@@ -1213,7 +1231,7 @@ Voids the transaction.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000033"></a><b>void!</b>()
+<a name="M000036"></a><b>void!</b>()
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 </div><!-- end grid_13 -->

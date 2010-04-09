@@ -679,6 +679,7 @@ pre {
       <li><a href="../.././classes/Braintree/Customer.html">Customer</a></li>
       <li><a href="../.././classes/Braintree/CreditCard.html">CreditCard</a></li>
       <li><a href="../.././classes/Braintree/Address.html">Address</a></li>
+      <li><a href="../.././classes/Braintree/Subscription.html">Subscription</a></li>
     </ul>
   </div>
 
@@ -729,6 +730,35 @@ pre {
 <div class="grid_12">
 <h1>Class: Braintree::Subscription</h1>
 
+  <hr />
+  <div class="description">
+    <h2>Creating a <a href="Subscription.html">Subscription</a></h2>
+<p>
+At minimum, a plan_id and payment_method_token are required. Any other
+values not provided will be defaulted to the plan&#8216;s values:
+</p>
+<pre>
+ Braintree::Subscription.create(
+   :payment_method_token =&gt; &quot;my_token&quot;,
+   :plan_id =&gt; &quot;my_plan&quot;
+ )
+</pre>
+<p>
+Full example:
+</p>
+<pre>
+ Braintree::Subscription.create(
+   :id =&gt; &quot;my_id&quot;,
+   :payment_method_token =&gt; &quot;my_token&quot;,
+   :plan_id =&gt; &quot;my_plan&quot;,
+   :price =&gt; &quot;1.00&quot;,
+   :trial_period =&gt; true,
+   :trial_duration =&gt; &quot;2&quot;,
+   :trial_duration_unit =&gt; Subscription::TrialDurationUnit::Day
+ )
+</pre>
+
+  </div>
 
 
 
@@ -768,6 +798,13 @@ pre {
 [R]
 </td>
 <td class='attr-name'>id</td>
+<td class='attr-desc'></td>
+</tr>
+<tr>
+<td class='attr-rw'>
+[R]
+</td>
+<td class='attr-name'>merchant_account_id</td>
 <td class='attr-desc'></td>
 </tr>
 <tr>
@@ -839,17 +876,17 @@ pre {
 <div class="sectiontitle">Public Class Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000103"></a><b>cancel</b>(subscription_id)
+<a name="M000118"></a><b>cancel</b>(subscription_id)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000104"></a><b>create</b>(attributes)
+<a name="M000119"></a><b>create</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000105"></a><b>find</b>(id)
+<a name="M000120"></a><b>find</b>(id)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Finds the subscription with the given id. Raises a <a
@@ -859,14 +896,53 @@ cannot be found.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000106"></a><b>update</b>(subscription_id, attributes)
+<a name="M000121"></a><b>search</b>(page=1, &amp;block)
+</div><!-- end class=title -->
+<div class="description"> <p>
+Allows searching on subscriptions. There are two types of fields that are
+searchable: text and multiple value fields. Searchable text fields are:
+</p>
+<ul>
+<li>plan_id
+
+</li>
+<li>days_past_due
+
+</li>
+</ul>
+<p>
+Searchable multiple value fields are:
+</p>
+<ul>
+<li>status
+
+</li>
+</ul>
+<p>
+For text fields, you can <a href="Subscription.html#M000121">search</a>
+using the following operators: is, is_not, starts_with, ends_with and
+contains. For mutiple value fields, you can <a
+href="Subscription.html#M000121">search</a> using the in operator. An
+example:
+</p>
+<pre>
+ Subscription.search do |s|
+   s.plan_id.starts_with &quot;abc&quot;
+   s.days_past_due.is &quot;30&quot;
+   s.status.in [Subscription::Status::PastDue]
+ end
+</pre> </div>
+</div><!-- end class=method -->
+<div class="method">
+<div class="title">
+<a name="M000122"></a><b>update</b>(subscription_id, attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <hr />
 <div class="sectiontitle">Public Instance Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000107"></a><b>==</b>(other)
+<a name="M000123"></a><b>==</b>(other)
 </div><!-- end class=title -->
 <div class="description"> <p>
 True if <tt>other</tt> has the same id.
