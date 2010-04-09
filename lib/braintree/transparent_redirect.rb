@@ -41,12 +41,15 @@ module Braintree
     def self.parse_and_validate_query_string(query_string) # :nodoc:
       params = Util.symbolize_keys(Util.parse_query_string(query_string))
       query_string_without_hash = query_string[/(.*)&hash=.*/, 1]
+
+      if params[:http_status] == nil
+        raise UnexpectedError, "expected query string to have an http_status param"
+      elsif params[:http_status] != '200'
+        Util.raise_exception_for_status_code(params[:http_status])
+      end
+
       if _hash(query_string_without_hash) == params[:hash]
-        if params[:http_status] == '200'
-          params
-        else
-          Util.raise_exception_for_status_code(params[:http_status])
-        end
+        params
       else
         raise ForgedQueryString
       end

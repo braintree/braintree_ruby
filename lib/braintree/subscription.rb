@@ -1,4 +1,25 @@
 module Braintree
+  # == Creating a Subscription
+  #
+  # At minimum, a plan_id and payment_method_token are required. Any other values not
+  # provided will be defaulted to the plan's values:
+  #
+  #  Braintree::Subscription.create(
+  #    :payment_method_token => "my_token",
+  #    :plan_id => "my_plan"
+  #  )
+  #
+  # Full example:
+  #
+  #  Braintree::Subscription.create(
+  #    :id => "my_id",
+  #    :payment_method_token => "my_token",
+  #    :plan_id => "my_plan",
+  #    :price => "1.00",
+  #    :trial_period => true,
+  #    :trial_duration => "2",
+  #    :trial_duration_unit => Subscription::TrialDurationUnit::Day
+  #  )
   class Subscription
     include BaseModule
 
@@ -13,7 +34,7 @@ module Braintree
       Month = "month"
     end
 
-    attr_reader :price, :plan_id, :id, :status, :payment_method_token
+    attr_reader :price, :plan_id, :id, :status, :payment_method_token, :merchant_account_id
     attr_reader :first_billing_date, :next_billing_date, :billing_period_start_date, :billing_period_end_date
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
@@ -46,6 +67,32 @@ module Braintree
       raise NotFoundError, "subscription with id #{id.inspect} not found"
     end
 
+    # Allows searching on subscriptions. There are two types of fields that are searchable: text and
+    # multiple value fields. Searchable text fields are:
+    # - plan_id
+    # - days_past_due
+    #
+    # Searchable multiple value fields are:
+    # - status
+    #
+    # For text fields, you can search using the following operators: is, is_not, starts_with, ends_with
+    # and contains. For mutiple value fields, you can search using the in operator. An example:
+    #
+    #  Subscription.search do |s|
+    #    s.plan_id.starts_with "abc"
+    #    s.days_past_due.is "30"
+    #    s.status.in [Subscription::Status::PastDue]
+    #  end
+    def self.search(page=1, &block)
+      search = SubscriptionSearch.new
+      block.call(search)
+
+      response = Http.post "/subscriptions/advanced_search?page=#{page}", {:search => search.to_hash}
+      attributes = response[:subscriptions]
+      attributes[:items] = Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| new(attrs) }
+      PagedCollection.new(attributes) { |page_number| Subscription.search(page_number, &block) }
+    end
+
     def self.update(subscription_id, attributes)
       Util.verify_keys(_update_signature, attributes)
       response = Http.put "/subscriptions/#{subscription_id}", :subscription => attributes
@@ -61,6 +108,7 @@ module Braintree
     def self._create_signature # :nodoc:
       [
         :id,
+        :merchant_account_id,
         :payment_method_token,
         :plan_id,
         :price,
@@ -100,6 +148,7 @@ module Braintree
     def self._update_signature # :nodoc:
       [
         :id,
+        :merchant_account_id,
         :plan_id,
         :price
       ]

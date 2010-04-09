@@ -416,8 +416,11 @@ describe Braintree::Customer do
           :website => "www.johndoe.com"
         }
       }
-      query_string_response = create_customer_via_tr(params)
+
+      tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge({}))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.create_customer_url, tr_data, params)
       result = Braintree::Customer.create_from_transparent_redirect(query_string_response)
+
       result.success?.should == true
       customer = result.customer
       customer.first_name.should == "John"
@@ -443,8 +446,11 @@ describe Braintree::Customer do
           :website => "www.johndoe.com"
         }
       }
-      query_string_response = create_customer_via_tr({}, tr_data_params)
+
+      tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.create_customer_url, tr_data, {})
       result = Braintree::Customer.create_from_transparent_redirect(query_string_response)
+
       result.success?.should == true
       customer = result.customer
       customer.id.should == customer_id
@@ -487,6 +493,27 @@ describe Braintree::Customer do
       customer.id.should == result.customer.id
       customer.first_name.should == "Joe"
       customer.last_name.should == "Cool"
+    end
+
+    it "returns associated subscriptions" do
+      customer = Braintree::Customer.create.customer
+      credit_card = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      ).credit_card
+
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => credit_card.token,
+        :plan_id => "integration_trialless_plan",
+        :price => "1.00"
+      ).subscription
+
+      found_customer = Braintree::Customer.find(customer.id)
+      found_customer.credit_cards.first.subscriptions.first.id.should == subscription.id
+      found_customer.credit_cards.first.subscriptions.first.plan_id.should == "integration_trialless_plan"
+      found_customer.credit_cards.first.subscriptions.first.payment_method_token.should == credit_card.token
+      found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal.new("1.00")
     end
 
     it "works for a blank customer" do
@@ -651,8 +678,11 @@ describe Braintree::Customer do
       tr_data_params = {
         :customer_id => original_customer.id
       }
-      query_string_response = update_customer_via_tr(params, tr_data_params)
+
+      tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, params)
       result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
+
       result.success?.should == true
       customer = result.customer
       customer.id.should == original_customer.id
@@ -689,8 +719,11 @@ describe Braintree::Customer do
           :website => "new.website.com"
         }
       }
-      query_string_response = update_customer_via_tr({}, tr_data_params)
+
+      tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, {})
       result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
+
       result.success?.should == true
       customer = result.customer
       customer.id.should == new_customer_id
@@ -702,37 +735,5 @@ describe Braintree::Customer do
       customer.fax.should == "999.222.3333"
       customer.website.should == "new.website.com"
     end
-  end
-
-  def create_customer_via_tr(regular_params, tr_data_params = {})
-    response = nil
-    Net::HTTP.start(Braintree::Configuration.server, Braintree::Configuration.port) do |http|
-      request = Net::HTTP::Post.new("/" + Braintree::Customer.create_customer_url.split("/", 4)[3])
-      request.add_field "Content-Type", "application/x-www-form-urlencoded"
-      params = {
-        :tr_data => Braintree::TransparentRedirect.create_customer_data(
-          {:redirect_url => "http://testing.com"}.merge(tr_data_params)
-        )
-      }.merge(regular_params)
-      request.body = Braintree::Util.hash_to_query_string(params)
-      response = http.request(request)
-    end
-    query_string = response["Location"].split("?", 2).last
-    query_string
-  end
-
-  def update_customer_via_tr(regular_params, tr_data_params = {})
-    raise "need a customer_id (of the customer to update) in tr_data_params" unless tr_data_params[:customer_id]
-    response = nil
-    Net::HTTP.start(Braintree::Configuration.server, Braintree::Configuration.port) do |http|
-      request = Net::HTTP::Post.new("/" + Braintree::Customer.update_customer_url.split("/", 4)[3])
-      request.add_field "Content-Type", "application/x-www-form-urlencoded"
-      tr_data = Braintree::TransparentRedirect.update_customer_data(
-        {:redirect_url => "http://testing.com"}.merge(tr_data_params)
-      )
-      request.body = Braintree::Util.hash_to_query_string({ :tr_data => tr_data }.merge(regular_params))
-      response = http.request(request)
-    end
-    query_string = response["Location"].split("?", 2).last
   end
 end

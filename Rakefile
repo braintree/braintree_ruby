@@ -23,7 +23,7 @@ Spec::Rake::SpecTask.new("spec:integration") do |t|
 end
 
 desc "run specs after preping the gateway"
-task :run_specs_for_cruise do
+task :cruise do
   begin
     Rake::Task["prep_gateway"].invoke
     Rake::Task["spec:unit"].invoke

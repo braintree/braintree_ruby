@@ -13,4 +13,14 @@ describe Braintree::Subscription do
       }.to raise_error(/Argument must be a String or BigDecimal/)
     end
   end
+
+  describe "self.search" do
+    it "only allows specified values for status" do
+      lambda do
+        Braintree::Subscription.search do |search|
+          search.status.in "Hammer"
+        end
+      end.should raise_error(ArgumentError)
+    end
+  end
 end

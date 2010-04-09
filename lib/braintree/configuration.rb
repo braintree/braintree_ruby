@@ -37,9 +37,9 @@ module Braintree
     def self.ca_file # :nodoc:
       case environment
       when :qa, :sandbox
-        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "valicert_ca.crt"))
+        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "sandbox_braintreegateway_com.ca.crt"))
       when :production
-        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "securetrust_ca.crt"))
+        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "www_braintreegateway_com.ca.crt"))
       end
     end
 

@@ -207,7 +207,8 @@ describe Braintree::CreditCard do
           :customer_id => customer.id
         }
       }
-      query_string_response = create_credit_card_via_tr(params, tr_data_params)
+      tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == true
       credit_card = result.credit_card
@@ -234,7 +235,8 @@ describe Braintree::CreditCard do
           :customer_id => customer.id
         }
       }
-      query_string_response = create_credit_card_via_tr(params, tr_data_params)
+      tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == false
       result.params[:customer_id] == customer.id
@@ -439,7 +441,8 @@ describe Braintree::CreditCard do
           :token => new_token
         }
       }
-      query_string_response = update_credit_card_via_tr(params, tr_data_params)
+      tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.update_credit_card_url, tr_data, params)
       result = Braintree::CreditCard.update_from_transparent_redirect(query_string_response)
       result.success?.should == true
       credit_card = result.credit_card
@@ -576,6 +579,27 @@ describe Braintree::CreditCard do
       credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       credit_card.token.should == result.credit_card.token
       credit_card.expiration_date.should == "05/2012"
+    end
+
+    it "returns associated subscriptions with the credit card" do
+      customer = Braintree::Customer.create.customer
+      credit_card = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      ).credit_card
+
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => credit_card.token,
+        :plan_id => "integration_trialless_plan",
+        :price => "1.00"
+      ).subscription
+
+      found_card = Braintree::CreditCard.find(credit_card.token)
+      found_card.subscriptions.first.id.should == subscription.id
+      found_card.subscriptions.first.plan_id.should == "integration_trialless_plan"
+      found_card.subscriptions.first.payment_method_token.should == credit_card.token
+      found_card.subscriptions.first.price.should == BigDecimal.new("1.00")
     end
 
     it "raises a NotFoundError exception if payment method cannot be found" do
@@ -825,38 +849,6 @@ describe Braintree::CreditCard do
           :expiration_date => "invalid/date"
         )
       end.to raise_error(Braintree::ValidationsFailed)
-    end
-  end
-
-  def create_credit_card_via_tr(regular_params, tr_params = {})
-    response = nil
-    Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
-      request = Net::HTTP::Post.new("/" + Braintree::CreditCard.create_credit_card_url.split("/", 4)[3])
-      request.add_field "Content-Type", "application/x-www-form-urlencoded"
-      tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_params))
-      request.body = Braintree::Util.hash_to_query_string({:tr_data => tr_data}.merge(regular_params))
-      response = http.request(request)
-    end
-    if response.code.to_i == 303
-      query_string = response["Location"].split("?", 2).last
-    else
-      raise "did not receive a valid tr response: #{response.body[0,1000].inspect}"
-    end
-  end
-
-  def update_credit_card_via_tr(regular_params, tr_params = {})
-    response = nil
-    Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
-      request = Net::HTTP::Post.new("/" + Braintree::CreditCard.update_credit_card_url.split("/", 4)[3])
-      request.add_field "Content-Type", "application/x-www-form-urlencoded"
-      tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_params))
-      request.body = Braintree::Util.hash_to_query_string({:tr_data => tr_data}.merge(regular_params))
-      response = http.request(request)
-    end
-    if response.code.to_i == 303
-      query_string = response["Location"].split("?", 2).last
-    else
-      raise "did not receive a valid tr response: #{response.body[0,1000].inspect}"
     end
   end
 end

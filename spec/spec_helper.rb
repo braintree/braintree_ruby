@@ -34,5 +34,39 @@ unless defined?(SPEC_HELPER_LOADED)
         end
       end
     end
+
+    def self.simulate_form_post_for_tr(url, tr_data_string, form_data_hash)
+      response = nil
+      Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
+        request = Net::HTTP::Post.new("/" + url.split("/", 4)[3])
+        request.add_field "Content-Type", "application/x-www-form-urlencoded"
+        request.body = Braintree::Util.hash_to_query_string({:tr_data => tr_data_string}.merge(form_data_hash))
+        response = http.request(request)
+      end
+      if response.code.to_i == 303
+        response["Location"].split("?", 2).last
+      else
+        raise "did not receive a valid tr response: #{response.body[0,1000].inspect}"
+      end
+    end
+
+    def self.using_configuration(config = {}, &block)
+      original_values = {}
+      [:merchant_id, :public_key, :private_key].each do |key|
+        if config[key]
+          original_values[key] = Braintree::Configuration.send(key)
+          Braintree::Configuration.send("#{key}=", config[key])
+        end
+      end
+      begin
+        yield
+      ensure
+        original_values.each do |key, value|
+          Braintree::Configuration.send("#{key}=", value)
+        end
+      end
+    end
   end
 end
+
+Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}

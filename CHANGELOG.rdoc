@@ -1,3 +1,10 @@
+== 1.2.0
+
+* Added Subscription search
+* Updated production CA SSL certificate authority
+* Updated credit cards to include associated subscriptions when finding in vault
+* Fixed bug where we used to raise a "forged query string" exception when we were down for maintenance.
+
 == 1.1.3
 
 * Fixed a bug with empty search results

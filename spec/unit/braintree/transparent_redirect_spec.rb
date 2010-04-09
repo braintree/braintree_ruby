@@ -32,7 +32,7 @@ describe Braintree::TransparentRedirect do
     end
 
     it "raises Braintree::ForgedQueryString if the hash param is not valid" do
-      query_string_without_hash = "one=1&two=2"
+      query_string_without_hash = "http_status=200&one=1&two=2"
       hash = Digest::SHA1.hexdigest("invalid#{query_string_without_hash}")
 
       query_string_with_hash = "#{query_string_without_hash}&hash=#{hash}"
@@ -43,7 +43,7 @@ describe Braintree::TransparentRedirect do
 
     it "raises Braintree::ForgedQueryString if hash is missing from the query string" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string "query_string=without_a_hash"
+        Braintree::TransparentRedirect.parse_and_validate_query_string "http_status=200&query_string=without_a_hash"
       end.to raise_error(Braintree::ForgedQueryString)
     end
 
@@ -57,6 +57,12 @@ describe Braintree::TransparentRedirect do
       expect do
         Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=403")
       end.to raise_error(Braintree::AuthorizationError)
+    end
+
+    it "raises an UnexpectedError if http_status is not in query string" do
+      expect do
+        Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("no_http_status=x")
+      end.to raise_error(Braintree::UnexpectedError, "expected query string to have an http_status param")
     end
 
     it "raises a ServerError if the server 500's" do

@@ -706,8 +706,10 @@ describe Braintree::Transaction do
           :type => "sale"
         }
       }
-      query_string_response = create_transaction_via_tr(params, tr_data_params)
+      tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
       result = Braintree::Transaction.create_from_transparent_redirect(query_string_response)
+
       result.success?.should == true
       transaction = result.transaction
       transaction.type.should == "sale"
@@ -764,8 +766,10 @@ describe Braintree::Transaction do
           }
         }
       }
-      query_string_response = create_transaction_via_tr(params, tr_data_params)
+      tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
       result = Braintree::Transaction.create_from_transparent_redirect(query_string_response)
+
       transaction = result.transaction
       transaction.id.should =~ /\A\w{6}\z/
       transaction.type.should == "sale"
@@ -825,8 +829,10 @@ describe Braintree::Transaction do
           :type => "sale"
         }
       }
-      query_string_response = create_transaction_via_tr(params, tr_data_params)
+      tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
       result = Braintree::Transaction.create_from_transparent_redirect(query_string_response)
+
       result.success?.should == false
       result.params[:transaction].should == {:amount => "", :type => "sale", :credit_card => {:expiration_date => "05/2009"}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
@@ -1258,21 +1264,6 @@ describe Braintree::Transaction do
         transaction.void!
       end.to raise_error(Braintree::ValidationsFailed)
     end
-  end
-
-  def create_transaction_via_tr(params, tr_data_params)
-    response = nil
-    Net::HTTP.start(Braintree::Configuration.server, Braintree::Configuration.port) do |http|
-      request = Net::HTTP::Post.new("/" + Braintree::Transaction.create_transaction_url.split("/", 4)[3])
-      request.add_field "Content-Type", "application/x-www-form-urlencoded"
-      params = {
-        :tr_data => Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://testing.com"}.merge(tr_data_params))
-      }.merge(params)
-      request.body = Braintree::Util.hash_to_query_string(params)
-      response = http.request(request)
-    end
-    query_string = response["Location"].split("?", 2).last
-    query_string
   end
 
   def create_transaction_to_refund

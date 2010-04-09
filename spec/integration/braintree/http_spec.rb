@@ -67,6 +67,23 @@ describe Braintree::Http do
       end
     end
 
+    describe "user_agent" do
+      after do
+        Braintree::Configuration.custom_user_agent = nil
+      end
+
+      it "sets the User-Agent header using the default user agent" do
+        response = Braintree::Http.get("/test/headers")
+        response[:headers][:HTTP_USER_AGENT].should == "Braintree Ruby Gem #{Braintree::Version::String}"
+      end
+
+      it "sets the User-Agent header using a customer user agent" do
+        Braintree::Configuration.custom_user_agent = "ActiveMerchant 1.2.3"
+        response = Braintree::Http.get("/test/headers")
+        response[:headers][:HTTP_USER_AGENT].should == "Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)"
+      end
+    end
+
     describe "ssl verification" do
       it "rejects when the certificate isn't verified by our certificate authority (self-signed)" do
         begin

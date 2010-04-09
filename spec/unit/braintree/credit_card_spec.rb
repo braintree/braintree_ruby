@@ -24,7 +24,7 @@ describe Braintree::CreditCard do
   describe "self.create_from_transparent_redirect" do
     it "raises an exception if the query string is forged" do
       expect do
-        Braintree::CreditCard.create_from_transparent_redirect("forged=query_string")
+        Braintree::CreditCard.create_from_transparent_redirect("http_status=200&forged=query_string")
       end.to raise_error(Braintree::ForgedQueryString)
     end
   end
