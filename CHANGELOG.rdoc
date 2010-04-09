@@ -3,7 +3,7 @@
 * Added Subscription search
 * Updated production CA SSL certificate authority
 * Updated credit cards to include associated subscriptions when finding in vault
-* Changed exception raised when validating an invalid query string
+* Fixed bug where we used to raise a "forged query string" exception when we were down for maintenance.
 
 == 1.1.3
 
