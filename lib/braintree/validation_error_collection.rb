@@ -35,6 +35,8 @@ module Braintree
       @errors[index]
     end
 
+    # Returns an array of ValidationError objects at this level and all nested levels in the error
+    # hierarchy
     def deep_errors
       ([@errors] + @nested.values.map { |error_collection| error_collection.deep_errors }).flatten
     end
@@ -61,6 +63,11 @@ module Braintree
     # Returns an array of ValidationError objects on the given attribute.
     def on(attribute)
       @errors.select { |error| error.attribute == attribute.to_s }
+    end
+
+    # Returns an array of ValidationError objects at the given level in the error hierarchy
+    def shallow_errors
+      @errors.dup
     end
 
     # The number of errors at this level. This does not include nested errors.
