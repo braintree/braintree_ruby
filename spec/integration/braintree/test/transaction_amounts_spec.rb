@@ -10,7 +10,7 @@ describe Braintree::Test::TransactionAmounts do
           :expiration_date => "12/2012"
         }
       )
-      transaction.status.should == "authorized"
+      transaction.status.should == Braintree::Transaction::Status::Authorized
     end
   end
 
@@ -23,7 +23,7 @@ describe Braintree::Test::TransactionAmounts do
           :expiration_date => "12/2012"
         }
       )
-      transaction.status.should == "processor_declined"
+      transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
   end
 end

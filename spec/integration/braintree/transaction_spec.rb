@@ -34,7 +34,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6}$/
       result.transaction.type.should == "sale"
-      result.transaction.status.should == "processor_declined"
+      result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result.transaction.processor_response_code.should == "2000"
       result.transaction.processor_response_text.should == "Do Not Honor"
     end
@@ -296,7 +296,7 @@ describe Braintree::Transaction do
       transaction = result.transaction
       transaction.id.should =~ /\A\w{6}\z/
       transaction.type.should == "sale"
-      transaction.status.should == "authorized"
+      transaction.status.should == Braintree::Transaction::Status::Authorized
       transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
@@ -461,7 +461,7 @@ describe Braintree::Transaction do
         }
       )
       result.success?.should == true
-      result.transaction.status.should == "submitted_for_settlement"
+      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
     end
 
     it "can specify the customer id and payment method token" do
@@ -563,7 +563,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "999.99")
       result.success?.should == true
       result.transaction.amount.should == BigDecimal.new("999.99")
-      result.transaction.status.should == "submitted_for_settlement"
+      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       result.transaction.updated_at.between?(Time.now - 5, Time.now).should == true
     end
 
@@ -606,7 +606,7 @@ describe Braintree::Transaction do
         }
       )
       transaction = Braintree::Transaction.submit_for_settlement!(original_transaction.id)
-      transaction.status.should == "submitted_for_settlement"
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       transaction.id.should == original_transaction.id
     end
 
@@ -773,7 +773,7 @@ describe Braintree::Transaction do
       transaction = result.transaction
       transaction.id.should =~ /\A\w{6}\z/
       transaction.type.should == "sale"
-      transaction.status.should == "authorized"
+      transaction.status.should == Braintree::Transaction::Status::Authorized
       transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
@@ -874,7 +874,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.void(transaction.id)
       result.success?.should == true
       result.transaction.id.should == transaction.id
-      result.transaction.status.should == "voided"
+      result.transaction.status.should == Braintree::Transaction::Status::Voided
     end
 
     it "returns an error result if unsuccessful" do
@@ -902,7 +902,7 @@ describe Braintree::Transaction do
       )
       returned_transaction = Braintree::Transaction.void!(transaction.id)
       returned_transaction.should == transaction
-      returned_transaction.status.should == "voided"
+      returned_transaction.status.should == Braintree::Transaction::Status::Voided
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
@@ -922,7 +922,7 @@ describe Braintree::Transaction do
   describe "refund" do
     it "returns a successful result if successful" do
       transaction = create_transaction_to_refund
-      transaction.status.should == "settled"
+      transaction.status.should == Braintree::Transaction::Status::Settled
       result = transaction.refund
       result.success?.should == true
       result.new_transaction.type.should == "credit"
@@ -991,7 +991,7 @@ describe Braintree::Transaction do
       result = transaction.submit_for_settlement("999.99")
       result.success?.should == true
       transaction.amount.should == BigDecimal.new("999.99")
-      transaction.status.should == "submitted_for_settlement"
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       transaction.updated_at.between?(Time.now - 5, Time.now).should == true
     end
 
@@ -1021,7 +1021,7 @@ describe Braintree::Transaction do
         }
       )
       transaction = original_transaction.submit_for_settlement!
-      transaction.status.should == "submitted_for_settlement"
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       transaction.id.should == original_transaction.id
     end
 
@@ -1149,8 +1149,8 @@ describe Braintree::Transaction do
       )
       transaction.submit_for_settlement!
       transaction.status_history.size.should == 2
-      transaction.status_history[0].status.should == "authorized"
-      transaction.status_history[1].status.should == "submitted_for_settlement"
+      transaction.status_history[0].status.should == Braintree::Transaction::Status::Authorized
+      transaction.status_history[1].status.should == Braintree::Transaction::Status::SubmittedForSettlement
     end
   end
 
@@ -1216,7 +1216,7 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.status.should == "authorized"
+      transaction.status.should == Braintree::Transaction::Status::Authorized
       void_result = transaction.void
       void_result.success?.should == true
       void_result.transaction.should == transaction
@@ -1231,7 +1231,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         }
       )
-      transaction.status.should == "processor_declined"
+      transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result = transaction.void
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotBeVoided
@@ -1248,7 +1248,7 @@ describe Braintree::Transaction do
         }
       )
       transaction.void!.should == transaction
-      transaction.status.should == "voided"
+      transaction.status.should == Braintree::Transaction::Status::Voided
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
@@ -1259,7 +1259,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         }
       )
-      transaction.status.should == "processor_declined"
+      transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       expect do
         transaction.void!
       end.to raise_error(Braintree::ValidationsFailed)

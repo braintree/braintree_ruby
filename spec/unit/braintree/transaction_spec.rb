@@ -82,14 +82,14 @@ describe Braintree::Transaction do
       transaction = Braintree::Transaction._new(
         :status_history => [
           { :timestamp => time, :amount => "12.00", :transaction_source => "API",
-            :user => "larry", :status => "authorized" },
+            :user => "larry", :status => Braintree::Transaction::Status::Authorized },
           { :timestamp => Time.utc(2010,1,15), :amount => "12.00", :transaction_source => "API",
             :user => "curly", :status => "scheduled_for_settlement"}
         ])
       transaction.status_history.size.should == 2
       transaction.status_history[0].user.should == "larry"
       transaction.status_history[0].amount.should == "12.00"
-      transaction.status_history[0].status.should == "authorized"
+      transaction.status_history[0].status.should == Braintree::Transaction::Status::Authorized
       transaction.status_history[0].transaction_source.should == "API"
       transaction.status_history[0].timestamp.should == time
       transaction.status_history[1].user.should == "curly"
@@ -119,7 +119,7 @@ describe Braintree::Transaction do
         :id => "1234",
         :type => "sale",
         :amount => "100.00",
-        :status => "authorized"
+        :status => Braintree::Transaction::Status::Authorized
       )
       output = transaction.inspect
       output.should include(%Q(#<Braintree::Transaction id: "1234", type: "sale", amount: "100.0", status: "authorized"))

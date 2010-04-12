@@ -67,7 +67,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true}
       )
       result.success?.should == false
-      result.credit_card_verification.status.should == "processor_declined"
+      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result.credit_card_verification.processor_response_code.should == "2000"
       result.credit_card_verification.processor_response_text.should == "Do Not Honor"
       result.credit_card_verification.cvv_response_code.should == "I"
@@ -362,7 +362,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true}
       )
       update_result.success?.should == false
-      update_result.credit_card_verification.status.should == "processor_declined"
+      update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
     it "can update the billing address" do
@@ -856,7 +856,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true}
       )
       update_result.success?.should == false
-      update_result.credit_card_verification.status.should == "processor_declined"
+      update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
     it "can update the billing address" do

@@ -26,13 +26,15 @@ The Braintree gem provides integration access to the Braintree Gateway.
   )
 
   if result.success?
-    if result.transaction.status == "authorized"
+    if result.transaction.status == Braintree::Transaction::Status::Authorized
       puts "sucess!: #{result.transaction.id}"
     else
-      puts "Error processing transaction: #{result.transaction.processor_response_code} #{result.transaction.processor_response_text}"
+      puts "Error processing transaction:"
+      puts "  code: #{result.transaction.processor_response_code}"
+      puts "  text: #{result.transaction.processor_response_text}"
     end
   else
-    puts result.errors.inspect
+    p result.errors
   end
 
 == Bang Methods
