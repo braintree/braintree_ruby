@@ -755,15 +755,25 @@ The Braintree gem provides integration access to the Braintree Gateway.
   Braintree::Configuration.public_key = &quot;a_public_key&quot;
   Braintree::Configuration.private_key = &quot;a_private_key&quot;
 
-  transaction = Braintree::Transaction.sale!(
-    :amount =&gt; &quot;100.00&quot;,
+  result = Braintree::Transaction.sale(
+    :amount =&gt; &quot;1000.00&quot;,
     :credit_card =&gt; {
       :number =&gt; &quot;5105105105105100&quot;,
       :expiration_date =&gt; &quot;05/12&quot;
     }
   )
-  puts &quot;Transaction ID: #{transaction.id}&quot;
-  puts &quot;Status: #{transaction.status}&quot;
+
+  if result.success?
+    if result.transaction.status == Braintree::Transaction::Status::Authorized
+      puts &quot;sucess!: #{result.transaction.id}&quot;
+    else
+      puts &quot;Error processing transaction:&quot;
+      puts &quot;  code: #{result.transaction.processor_response_code}&quot;
+      puts &quot;  text: #{result.transaction.processor_response_text}&quot;
+    end
+  else
+    p result.errors
+  end
 </pre>
 <h2>Bang Methods</h2>
 <p>
