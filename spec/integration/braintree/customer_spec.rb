@@ -110,7 +110,7 @@ describe Braintree::Customer do
         }
       )
       result.success?.should == false
-      result.credit_card_verification.status.should == "processor_declined"
+      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
     it "can create a customer, payment method, and billing address at the same time" do

@@ -224,7 +224,7 @@ module Braintree
     def self._update_signature # :nodoc:
       [
         :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
-        {:options => [:verify_card]},
+        {:options => [:make_default, :verify_card]},
         {:billing_address => [:company, :country_name, :extended_address, :first_name, :last_name, :locality, :postal_code, :region, :street_address]}
       ]
     end

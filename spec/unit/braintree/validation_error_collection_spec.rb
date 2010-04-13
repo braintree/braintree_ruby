@@ -145,4 +145,31 @@ describe Braintree::ValidationErrorCollection do
     end
   end
 
+  describe "shallow_errors" do
+    it "returns errors on one level" do
+      errors = Braintree::ValidationErrorCollection.new(
+        :errors => [
+          { :attribute => "one", :code => 1, :message => "bad juju" },
+          { :attribute => "two", :code => 2, :message => "bad juju" }],
+        :nested => {
+          :errors => [{ :attribute => "three", :code => 3, :message => "badder juju"}],
+          :nested_again => {
+            :errors => [{ :attribute => "four", :code => 4, :message => "badder juju"}]
+          }
+        }
+      )
+      errors.shallow_errors.map {|e| e.code}.should == [1, 2]
+      errors.for(:nested).shallow_errors.map {|e| e.code}.should == [3]
+    end
+
+    it "returns an clone of the real array" do
+      errors = Braintree::ValidationErrorCollection.new(
+        :errors => [
+          { :attribute => "one", :code => 1, :message => "bad juju" },
+          { :attribute => "two", :code => 2, :message => "bad juju" }]
+      )
+      errors.shallow_errors.pop
+      errors.shallow_errors.map {|e| e.code}.should == [1, 2]
+    end
+  end
 end

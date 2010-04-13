@@ -119,6 +119,19 @@ module Braintree
   class Transaction
     include BaseModule
 
+    module Status
+      Authorizing = 'authorizing'
+      Authorized = 'authorized'
+      GatewayRejected = 'gateway_rejected'
+      Failed = 'failed'
+      ProcessorDeclined = 'processor_declined'
+      Settled = 'settled'
+      SettlementFailed = 'settlement_failed'
+      SubmittedForSettlement = 'submitted_for_settlement'
+      Unknown = 'unknown'
+      Voided = 'voided'
+    end
+
     module Type # :nodoc:
       Credit = "credit" # :nodoc:
       Sale = "sale" # :nodoc:
