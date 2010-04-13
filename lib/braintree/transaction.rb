@@ -138,18 +138,20 @@ module Braintree
     end
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
-    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id, :status
+    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id
     attr_reader :custom_fields
     attr_reader :cvv_response_code
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
-    attr_reader :status_history
     # The authorization code from the processor.
     attr_reader :processor_authorization_code
     # The response code from the processor.
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    # See Transaction::Status
+    attr_reader :status
+    attr_reader :status_history
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at
