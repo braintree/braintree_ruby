@@ -1,3 +1,10 @@
+== 1.2.1
+
+* Added ValidationErrorCollection#shallow_errors to get all of the ValidationErrors at a given level in the error hierarchy
+* Added the ability to make a credit card the default card for a customer
+* Added constants for transaction statuses
+* Updated Quick Start in README.rdoc to show a workflow with error checking
+
 == 1.2.0
 
 * Added Subscription search
