@@ -766,7 +766,7 @@ The Braintree gem provides integration access to the Braintree Gateway.
 
   if result.success?
     if result.transaction.status == Braintree::Transaction::Status::Authorized
-      puts &quot;sucess!: #{result.transaction.id}&quot;
+      puts &quot;success!: #{result.transaction.id}&quot;
     else
       puts &quot;Error processing transaction:&quot;
       puts &quot;  code: #{result.transaction.processor_response_code}&quot;
