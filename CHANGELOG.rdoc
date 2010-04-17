@@ -1,3 +1,5 @@
+* Added credit_card[cardholder_name] to allowed transaction params and CreditCardDetails (thanks chrismcc[http://github.com/chrismcc])
+
 == 1.2.1
 
 * Added ValidationErrorCollection#shallow_errors to get all of the ValidationErrors at a given level in the error hierarchy

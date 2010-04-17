@@ -256,6 +256,7 @@ describe Braintree::Transaction do
         :amount => "100.00",
         :order_id => "123",
         :credit_card => {
+          :cardholder_name => "The Cardholder",
           :number => "5105105105105100",
           :expiration_date => "05/2011",
           :cvv => "123"
@@ -303,6 +304,7 @@ describe Braintree::Transaction do
       transaction.created_at.between?(Time.now - 5, Time.now).should == true
       transaction.updated_at.between?(Time.now - 5, Time.now).should == true
       transaction.credit_card_details.bin.should == "510510"
+      transaction.credit_card_details.cardholder_name.should == "The Cardholder"
       transaction.credit_card_details.last_4.should == "5100"
       transaction.credit_card_details.masked_number.should == "510510******5100"
       transaction.credit_card_details.card_type.should == "MasterCard"
@@ -729,6 +731,7 @@ describe Braintree::Transaction do
           :order_id => "123",
           :type => "sale",
           :credit_card => {
+            :cardholder_name => "The Cardholder",
             :number => "5105105105105100",
             :expiration_date => "05/2011",
             :cvv => "123"
@@ -781,6 +784,7 @@ describe Braintree::Transaction do
       transaction.updated_at.between?(Time.now - 60, Time.now).should == true
       transaction.credit_card_details.bin.should == "510510"
       transaction.credit_card_details.last_4.should == "5100"
+      transaction.credit_card_details.cardholder_name.should == "The Cardholder"
       transaction.credit_card_details.masked_number.should == "510510******5100"
       transaction.credit_card_details.card_type.should == "MasterCard"
       transaction.avs_error_response_code.should == nil
