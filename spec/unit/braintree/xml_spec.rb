@@ -123,5 +123,15 @@ describe Braintree::Xml do
       hash = {:id => "123"}
       verify_to_xml_and_back hash
     end
+
+    it "escapes keys and values" do
+      hash = { "ke<y" => "val>ue" }
+      Braintree::Xml.hash_to_xml(hash).should include("<ke&lt;y>val&gt;ue</ke&lt;y>")
+    end
+
+    it "escapes nested keys and values" do
+      hash = { "top<" => { "ke<y" => "val>ue" } }
+      Braintree::Xml.hash_to_xml(hash).gsub(/\s/, '').should include("<top&lt;><ke&lt;y>val&gt;ue</ke&lt;y></top&lt;>")
+    end
   end
 end

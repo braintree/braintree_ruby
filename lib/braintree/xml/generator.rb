@@ -21,7 +21,7 @@ module Braintree
 
         if contents.is_a?(String)
           builder = Builder::XmlMarkup.new
-          builder.__send__(root) { |b| b.text! contents }
+          builder.__send__(_xml_escape(root)) { |b| b.text! contents }
         else
           _convert_to_xml contents, :root => root
         end
@@ -32,7 +32,7 @@ module Braintree
         options[:indent] ||= 2
         options[:builder] ||= Builder::XmlMarkup.new(:indent => options[:indent])
         options[:builder].instruct! unless options.delete(:skip_instruct)
-        root = options[:root].to_s.tr("_", "-")
+        root = _xml_escape(options[:root])
 
         options[:builder].__send__(:method_missing, root) do
           hash_to_convert.each do |key, value|
@@ -44,14 +44,12 @@ module Braintree
             else
               type_name = XML_TYPE_NAMES[value.class.name]
 
-              key = key.to_s.tr("_", "-")
-
               attributes = ((value.nil? || type_name.nil?) ? {} : { :type => type_name })
               if value.nil?
                 attributes[:nil] = true
               end
 
-              options[:builder].tag!(key,
+              options[:builder].tag!(_xml_escape(key),
                 XML_FORMATTING[type_name] ? XML_FORMATTING[type_name].call(value) : value,
                 attributes
               )
@@ -79,6 +77,10 @@ module Braintree
             end
           end
         end
+      end
+
+      def self._xml_escape(key)
+        key.to_s.tr("_", "-").to_xs
       end
     end
   end
