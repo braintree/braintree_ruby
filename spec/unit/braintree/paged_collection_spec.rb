@@ -32,6 +32,14 @@ describe "Braintree::PagedCollection" do
     end
   end
 
+  describe "length" do
+    it "returns the total number of items" do
+      collection = Braintree::PagedCollection.new(:total_items => 23)
+      collection.size.should == 23
+      collection.length.should == 23
+    end
+  end
+
   describe "_last_page?" do
     it "returns true if the page is the last page" do
       collection = Braintree::PagedCollection.new(:current_page_number => 3, :page_size => 50, :total_items => 150)
