@@ -639,7 +639,7 @@ describe Braintree::CreditCard do
   describe "self.expired" do
     it "finds expired payment methods, paginated" do
       collection = Braintree::CreditCard.expired
-      collection.size.should > 0
+      collection._approximate_size.should > 0
       collection.all? { |pm| pm.expired?.should == true }
     end
   end
@@ -648,7 +648,7 @@ describe Braintree::CreditCard do
     it "finds payment methods expiring between the given dates" do
       next_year = Time.now.year + 1
       collection = Braintree::CreditCard.expiring_between(Time.mktime(next_year, 1), Time.mktime(next_year, 12))
-      collection.size.should > 0
+      collection._approximate_size.should > 0
       collection.all? { |pm| pm.expired?.should == false }
       collection.all? { |pm| pm.expiration_year.should == next_year.to_s }
     end

@@ -419,7 +419,7 @@ describe Braintree::Subscription do
           search.plan_id.is "not_a_real_plan_id"
         end
 
-        collection.size.should == 0
+        collection._approximate_size.should == 0
       end
 
       context "is statement" do

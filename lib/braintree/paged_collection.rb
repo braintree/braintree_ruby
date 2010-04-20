@@ -24,11 +24,6 @@ module Braintree
       @items.first
     end
 
-    def size
-      @total_items
-    end
-    alias :length :size
-
     # Returns true if the page is the last page. False otherwise.
     def _last_page?
       @current_page_number == _total_pages
@@ -40,6 +35,12 @@ module Braintree
         return nil
       end
       @paging_block.call(@current_page_number + 1)
+    end
+
+    # The size of a paged collection is only approximate due to race conditions when pulling back results.  This method
+    # should be avoided.
+    def _approximate_size
+      @total_items
     end
 
     # Returns the total number of pages.

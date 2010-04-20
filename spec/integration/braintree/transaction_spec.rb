@@ -1119,7 +1119,6 @@ describe Braintree::Transaction do
           }
         )
         search_results = Braintree::Transaction.search(:transaction_id => {:is => transaction.id})
-        search_results.size.should == 1
         search_results.first.should == transaction
       end
     end
@@ -1127,15 +1126,15 @@ describe Braintree::Transaction do
     describe "basic" do
       it "returns transactions matching the given search terms" do
         transactions = Braintree::Transaction.search "1111"
-        transactions.size.should > 0
+        transactions._approximate_size.should > 0
       end
 
       it "can iterate over the entire collection" do
         transactions = Braintree::Transaction.search "411111"
-        transactions.size.should > 100
+        transactions._approximate_size.should > 100
 
         transaction_ids = transactions.map {|t| t.id }.uniq.compact
-        transaction_ids.size.should == transactions.size
+        transaction_ids.size.should == transactions._approximate_size
       end
     end
   end

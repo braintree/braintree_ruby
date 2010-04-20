@@ -4,10 +4,10 @@ describe Braintree::Customer do
   describe "self.all" do
     it "gets more than a page of customers" do
       customers = Braintree::Customer.all
-      customers.size.should > 100
+      customers._approximate_size.should > 100
 
       customer_ids = customers.map {|c| c.id }.uniq.compact
-      customer_ids.size.should == customers.size
+      customer_ids.size.should == customers._approximate_size
     end
   end
 
@@ -294,7 +294,6 @@ describe Braintree::Customer do
       )
       transaction = customer.sale!(:amount => "100.00")
       collection = Braintree::Customer.transactions(customer.id)
-      collection.size.should == 1
       collection.first.should == transaction
     end
   end
@@ -351,7 +350,6 @@ describe Braintree::Customer do
       )
       transaction = customer.sale!(:amount => "100.00")
       collection = customer.transactions
-      collection.size.should == 1
       collection.first.should == transaction
     end
   end
