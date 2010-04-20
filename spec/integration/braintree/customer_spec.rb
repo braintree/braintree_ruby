@@ -300,7 +300,7 @@ describe Braintree::Customer do
       collection = Braintree::Customer.transactions(customer.id)
       collection.current_page_number.should == 1
       collection.total_items.should == 1
-      collection[0].should == transaction
+      collection.first.should == transaction
     end
   end
 
@@ -358,7 +358,7 @@ describe Braintree::Customer do
       collection = customer.transactions
       collection.current_page_number.should == 1
       collection.total_items.should == 1
-      collection[0].should == transaction
+      collection.first.should == transaction
     end
   end
 

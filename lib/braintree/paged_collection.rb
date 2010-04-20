@@ -10,14 +10,13 @@ module Braintree
       @paging_block = block
     end
 
-    # Returns the item from the current page at the given +index+.
-    def [](index)
-      @items[index]
-    end
-
     # Yields each item on the current page.
     def each(&block)
-      @items.each(&block)
+      page = self
+      until page.nil?
+        page.items.each(&block)
+        page = page.next_page
+      end
     end
 
     # Returns the first item from the current page.
@@ -41,6 +40,10 @@ module Braintree
     # The next page number. Returns +nil+ if on the last page.
     def next_page_number
       last_page? ? nil : current_page_number + 1
+    end
+
+    def size
+      total_items
     end
 
     # Returns the total number of pages.

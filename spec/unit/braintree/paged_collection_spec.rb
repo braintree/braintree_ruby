@@ -6,20 +6,14 @@ describe "Braintree::PagedCollection" do
     collection.detect { |item| item == "a" }.should == "a"
   end
 
-  describe "[]" do
-    it "returns the element at the given index" do
-      collection = Braintree::PagedCollection.new(:items => ["one", "two", "three"])
-      collection[0].should == "one"
-      collection[2].should == "three"
-      collection[3].should == nil
-    end
-  end
-
   describe "each" do
     it "iterates over the contents" do
       expected = ["apples", "bananas", "cherries"]
       collection = Braintree::PagedCollection.new(
-        :items => expected
+        :current_page_number => 1,
+        :items => expected,
+        :page_size => 5,
+        :total_items => expected.size
       )
       actual = []
       collection.each do |item|
