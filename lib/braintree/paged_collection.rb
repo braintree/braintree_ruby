@@ -15,6 +15,10 @@ module Braintree
       _next_page.each(&block) unless _last_page?
     end
 
+    def empty?
+      @items.empty?
+    end
+
     # Returns the first item from the current page.
     def first
       @items.first

@@ -23,6 +23,28 @@ describe "Braintree::PagedCollection" do
     end
   end
 
+  describe "empty?" do
+    it "returns true if there are no items" do
+      collection = Braintree::PagedCollection.new(
+        :current_page_number => 1,
+        :items => [],
+        :page_size => 5,
+        :total_items => 0
+      )
+      collection.should be_empty
+    end
+
+    it "returns false if there are items" do
+      collection = Braintree::PagedCollection.new(
+        :current_page_number => 1,
+        :items => ["one"],
+        :page_size => 5,
+        :total_items => 1
+      )
+      collection.should_not be_empty
+    end
+  end
+
   describe "first" do
     it "returns the first element" do
       collection = Braintree::PagedCollection.new(
