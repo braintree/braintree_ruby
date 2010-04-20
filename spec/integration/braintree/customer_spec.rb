@@ -2,16 +2,12 @@ require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::Customer do
   describe "self.all" do
-    it "returns page 1 if page isn't specified" do
-      first_page = Braintree::Customer.all
-      first_page.current_page_number.should == 1
-    end
+    it "gets more than a page of customers" do
+      customers = Braintree::Customer.all
+      customers.size.should > 100
 
-    it "can get the next_page" do
-      first_page = Braintree::Customer.all
-      first_page.current_page_number.should == 1
-      second_page = first_page.next_page
-      second_page.current_page_number.should == 2
+      customer_ids = customers.map {|c| c.id }.uniq.compact
+      customer_ids.size.should == customers.size
     end
   end
 
@@ -298,8 +294,7 @@ describe Braintree::Customer do
       )
       transaction = customer.sale!(:amount => "100.00")
       collection = Braintree::Customer.transactions(customer.id)
-      collection.current_page_number.should == 1
-      collection.total_items.should == 1
+      collection.size.should == 1
       collection.first.should == transaction
     end
   end
@@ -356,8 +351,7 @@ describe Braintree::Customer do
       )
       transaction = customer.sale!(:amount => "100.00")
       collection = customer.transactions
-      collection.current_page_number.should == 1
-      collection.total_items.should == 1
+      collection.size.should == 1
       collection.first.should == transaction
     end
   end

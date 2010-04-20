@@ -3,7 +3,7 @@ module Braintree
     include BaseModule
     include Enumerable
 
-    attr_reader :current_page_number, :items, :next_page_number, :page_size, :previous_page_number, :total_items
+    attr_reader :_items
 
     def initialize(attributes, &block) # :nodoc:
       set_instance_variables_from_hash attributes
@@ -12,11 +12,9 @@ module Braintree
 
     # Yields each item on the current page.
     def each(&block)
-      page = self
-      until page.nil?
-        page.items.each(&block)
-        page = page.next_page
-      end
+      @items.each(&block)
+
+      _next_page.each(&block) unless _last_page?
     end
 
     # Returns the first item from the current page.
@@ -25,31 +23,26 @@ module Braintree
     end
 
     # Returns true if the page is the last page. False otherwise.
-    def last_page?
-      current_page_number == total_pages
+    def _last_page?
+      @current_page_number == _total_pages
     end
 
     # Retrieves the next page of records.
-    def next_page
-      if last_page?
+    def _next_page
+      if _last_page?
         return nil
       end
-      @paging_block.call(next_page_number)
-    end
-
-    # The next page number. Returns +nil+ if on the last page.
-    def next_page_number
-      last_page? ? nil : current_page_number + 1
+      @paging_block.call(@current_page_number + 1)
     end
 
     def size
-      total_items
+      @total_items
     end
 
     # Returns the total number of pages.
-    def total_pages
-      total = total_items / page_size
-      if total_items % page_size != 0
+    def _total_pages
+      total = @total_items / @page_size
+      if @total_items % @page_size != 0
         total += 1
       end
       total

@@ -1119,30 +1119,20 @@ describe Braintree::Transaction do
           }
         )
         search_results = Braintree::Transaction.search(:transaction_id => {:is => transaction.id})
-        search_results.total_items.should == 1
+        search_results.size.should == 1
         search_results.first.should == transaction
       end
     end
 
     describe "basic" do
-      it "returns paged transactions matching the given search terms" do
+      it "returns transactions matching the given search terms" do
         transactions = Braintree::Transaction.search "1111"
-        transactions.total_items.should > 0
-      end
-
-      it "is paged" do
-        transactions = Braintree::Transaction.search "1111", :page => 2
-        transactions.current_page_number.should == 2
-      end
-
-      it "can traverse pages" do
-        transactions = Braintree::Transaction.search "1111", :page => 1
-        transactions.next_page.current_page_number.should == 2
+        transactions.size.should > 0
       end
 
       it "can iterate over the entire collection" do
         transactions = Braintree::Transaction.search "411111"
-        transactions.size.should >= 100
+        transactions.size.should > 100
 
         transaction_ids = transactions.map {|t| t.id }.uniq.compact
         transaction_ids.size.should == transactions.size
