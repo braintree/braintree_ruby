@@ -8,7 +8,7 @@ module Braintree
   # By default, the logger will log to +STDOUT+. The log level is set to info.
   # The logger can be set to any Logger object.
   module Configuration
-    API_VERSION = "1" # :nodoc:
+    API_VERSION = "2" # :nodoc:
 
     class << self
       attr_accessor :logger

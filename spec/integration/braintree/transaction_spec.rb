@@ -31,7 +31,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         }
       )
-      result.success?.should == true
+      result.success?.should == false
       result.transaction.id.should =~ /^\w{6}$/
       result.transaction.type.should == "sale"
       result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
@@ -42,7 +42,7 @@ describe Braintree::Transaction do
     it "accepts credit card expiration month and expiration year" do
       result = Braintree::Transaction.create(
         :type => "sale",
-        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_month => "05",
@@ -585,13 +585,13 @@ describe Braintree::Transaction do
     end
 
     it "returns an error result if status is not authorized" do
-      transaction = Braintree::Transaction.sale!(
+      transaction = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
         }
-      )
+      ).transaction
       result = Braintree::Transaction.submit_for_settlement(transaction.id)
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement
@@ -882,13 +882,13 @@ describe Braintree::Transaction do
     end
 
     it "returns an error result if unsuccessful" do
-      transaction = Braintree::Transaction.sale!(
+      transaction = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         }
-      )
+      ).transaction
       result = Braintree::Transaction.void(transaction.id)
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotBeVoided
@@ -910,13 +910,13 @@ describe Braintree::Transaction do
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
-      transaction = Braintree::Transaction.sale!(
+      transaction = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         }
-      )
+      ).transaction
       expect do
         Braintree::Transaction.void!(transaction.id)
       end.to raise_error(Braintree::ValidationsFailed)
@@ -1225,13 +1225,13 @@ describe Braintree::Transaction do
     end
 
     it "returns an error result if unsuccessful" do
-      transaction = Braintree::Transaction.sale!(
+      transaction = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         }
-      )
+      ).transaction
       transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result = transaction.void
       result.success?.should == false
@@ -1253,13 +1253,13 @@ describe Braintree::Transaction do
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
-      transaction = Braintree::Transaction.sale!(
+      transaction = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         }
-      )
+      ).transaction
       transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       expect do
         transaction.void!
