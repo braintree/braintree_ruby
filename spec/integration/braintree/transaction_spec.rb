@@ -996,7 +996,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       transaction.amount.should == BigDecimal.new("999.99")
       transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      transaction.updated_at.between?(Time.now - 5, Time.now).should == true
+      transaction.updated_at.between?(Time.now - 60, Time.now).should == true
     end
 
     it "returns an error result if unsuccessful" do
