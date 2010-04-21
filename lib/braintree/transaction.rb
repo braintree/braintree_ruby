@@ -202,7 +202,7 @@ module Braintree
       return_object_or_raise(:transaction) { sale(attributes) }
     end
 
-    # Returns a PagedCollection of transactions matching the search query.
+    # Returns a ResourceCollection of transactions matching the search query.
     # If <tt>query</tt> is a string, the search will be a basic search.
     # If <tt>query</tt> is a hash, the search will be an advanced search.
     def self.search(query, options = {})
@@ -381,7 +381,7 @@ module Braintree
       response = Http.post "/transactions/advanced_search?page=#{Util.url_encode(page)}", :search => query
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      PagedCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
     end
 
     def self._attributes # :nodoc:
@@ -393,7 +393,7 @@ module Braintree
       response = Http.get "/transactions/all/search?q=#{Util.url_encode(query)}&page=#{Util.url_encode(page)}"
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      PagedCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
     end
 
     def self._create_signature # :nodoc:

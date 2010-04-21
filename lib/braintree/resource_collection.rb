@@ -1,5 +1,5 @@
 module Braintree
-  class PagedCollection
+  class ResourceCollection
     include BaseModule
     include Enumerable
 
@@ -37,7 +37,7 @@ module Braintree
       @paging_block.call(@current_page_number + 1)
     end
 
-    # The size of a paged collection is only approximate due to race conditions when pulling back results.  This method
+    # The size of a resource collection is only approximate due to race conditions when pulling back results.  This method
     # should be avoided.
     def _approximate_size
       @total_items

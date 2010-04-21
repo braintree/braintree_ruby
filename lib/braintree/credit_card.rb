@@ -37,7 +37,7 @@ module Braintree
       return_object_or_raise(:transaction) { credit(token, transaction_attributes) }
     end
 
-    # Returns a PagedCollection of expired credit cards.
+    # Returns a ResourceCollection of expired credit cards.
     def self.expired(options = {})
       page_number = options[:page] || 1
       response = Http.get("/payment_methods/all/expired?page=#{page_number}")
@@ -45,10 +45,10 @@ module Braintree
       attributes[:items] = Util.extract_attribute_as_array(attributes, :credit_card).map do |payment_method_attributes|
         new payment_method_attributes
       end
-      PagedCollection.new(attributes) { |page_number| CreditCard.expired(:page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| CreditCard.expired(:page => page_number) }
     end
 
-    # Returns a PagedCollection of credit cards expiring between +start_date+ and +end_date+ inclusive.
+    # Returns a ResourceCollection of credit cards expiring between +start_date+ and +end_date+ inclusive.
     # Only the month and year of the start and end dates are used.
     def self.expiring_between(start_date, end_date, options = {})
       page_number = options[:page] || 1
@@ -57,7 +57,7 @@ module Braintree
       attributes[:items] = Util.extract_attribute_as_array(attributes, :credit_card).map do |payment_method_attributes|
         new payment_method_attributes
       end
-      PagedCollection.new(attributes) { |page_number| CreditCard.expiring_between(start_date, end_date, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| CreditCard.expiring_between(start_date, end_date, :page => page_number) }
     end
 
     # Finds the credit card with the given +token+. Raises a NotFoundError if it cannot be found.

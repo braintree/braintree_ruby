@@ -423,7 +423,7 @@ describe Braintree::Subscription do
       end
 
       context "is statement" do
-        it "returns paged collection with matching results" do
+        it "returns resource collection with matching results" do
           trialless_subscription = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
             :plan_id => TriallessPlan[:id]
@@ -444,7 +444,7 @@ describe Braintree::Subscription do
       end
 
       context "is_not statement" do
-        it "returns paged collection without matching results" do
+        it "returns resource collection without matching results" do
           trialless_subscription = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
             :plan_id => TriallessPlan[:id]
@@ -465,7 +465,7 @@ describe Braintree::Subscription do
       end
 
       context "ends_with statement" do
-        it "returns paged collection with matching results" do
+        it "returns resource collection with matching results" do
           trialless_subscription = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
             :plan_id => TriallessPlan[:id]
@@ -486,7 +486,7 @@ describe Braintree::Subscription do
       end
 
       context "starts_with statement" do
-        it "returns paged collection with matching results" do
+        it "returns resource collection with matching results" do
           trialless_subscription = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
             :plan_id => TriallessPlan[:id]
@@ -507,7 +507,7 @@ describe Braintree::Subscription do
       end
 
       context "contains statement" do
-        it "returns paged collection with matching results" do
+        it "returns resource collection with matching results" do
           trialless_subscription = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
             :plan_id => TriallessPlan[:id]

@@ -90,7 +90,7 @@ module Braintree
       response = Http.post "/subscriptions/advanced_search?page=#{page}", {:search => search.to_hash}
       attributes = response[:subscriptions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| new(attrs) }
-      PagedCollection.new(attributes) { |page_number| Subscription.search(page_number, &block) }
+      ResourceCollection.new(attributes) { |page_number| Subscription.search(page_number, &block) }
     end
 
     def self.update(subscription_id, attributes)
