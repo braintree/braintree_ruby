@@ -116,6 +116,10 @@ module Braintree
   #       :submit_for_settlement => true
   #     }
   #   )
+  #
+  # == More Information
+  #
+  # For more detailed documentation on Transactions, see http://www.braintreepaymentsolutions.com/gateway/transaction-api
   class Transaction
     include BaseModule
 

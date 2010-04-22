@@ -1,4 +1,8 @@
 module Braintree
+  # == More Information
+  #
+  # For more detailed documentation on CreditCards, see http://www.braintreepaymentsolutions.com/gateway/credit-card-api
+  # For more detailed documentation on CreditCard verification, see http://www.braintreepaymentsolutions.com/gateway/credit-card-verification-api
   class CreditCard
     include BaseModule # :nodoc:
 

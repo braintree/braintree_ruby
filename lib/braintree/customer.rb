@@ -1,4 +1,7 @@
 module Braintree
+  # == More Information
+  #
+  # For more detailed documentation on Customers, see http://www.braintreepaymentsolutions.com/gateway/customer-api
   class Customer
     include BaseModule
 

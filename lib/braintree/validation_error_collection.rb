@@ -18,6 +18,10 @@ module Braintree
   #   #=> [#<Braintree::ValidationError (81715) Credit card number is invalid.>]
   #   result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_name)
   #   #=> [#<Braintree::ValidationError (91803) Country name is not an accepted country.>]
+  #
+  # == More Information
+  #
+  # For more detailed documentation on ValidationErrors, see http://www.braintreepaymentsolutions.com/gateway/validation-errors
   class ValidationErrorCollection
     include Enumerable
 

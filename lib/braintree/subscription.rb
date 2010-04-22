@@ -20,6 +20,10 @@ module Braintree
   #    :trial_duration => "2",
   #    :trial_duration_unit => Subscription::TrialDurationUnit::Day
   #  )
+  #
+  # == More Information
+  #
+  # For more detailed documentation on Subscriptions, see http://www.braintreepaymentsolutions.com/gateway/subscription-api
   class Subscription
     include BaseModule
 
