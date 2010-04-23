@@ -689,7 +689,7 @@ pre {
       <li><a href=".././classes/Braintree/Configuration.html">Configuration</a></li>
       <li><a href=".././classes/Braintree/ErrorResult.html">ErrorResult</a></li>
       <li><a href=".././classes/Braintree/Errors.html">Errors</a></li>
-      <li><a href=".././classes/Braintree/PagedCollection.html">PagedCollection</a></li>
+      <li><a href=".././classes/Braintree/ResourceCollection.html">ResourceCollection</a></li>
       <li><a href=".././classes/Braintree/SuccessfulResult.html">SuccessfulResult</a></li>
       <li><a href=".././classes/Braintree/Test/CreditCardNumbers.html">Test::CreditCardNumbers</a></li>
       <li><a href=".././classes/Braintree/Test/TransactionAmounts.html">Test::TransactionAmounts</a></li>
@@ -733,7 +733,22 @@ pre {
 
   <hr />
   <div class="description">
-    <h2>1.2.1</h2>
+    <h2>2.0.0</h2>
+<ul>
+<li>Updated success? on transaction responses to return false on declined
+transactions
+
+</li>
+<li>Search results now include Enumerable and will automatically paginate data
+
+</li>
+<li>Added credit_card[cardholder_name] to allowed transaction params and
+CreditCardDetails (thanks <a
+href="http://github.com/chrismcc">chrismcc</a>)
+
+</li>
+</ul>
+<h2>1.2.1</h2>
 <ul>
 <li>Added ValidationErrorCollection#shallow_errors to get all of the
 ValidationErrors at a given level in the error hierarchy

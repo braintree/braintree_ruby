@@ -689,7 +689,7 @@ pre {
       <li><a href=".././classes/Braintree/Configuration.html">Configuration</a></li>
       <li><a href=".././classes/Braintree/ErrorResult.html">ErrorResult</a></li>
       <li><a href=".././classes/Braintree/Errors.html">Errors</a></li>
-      <li><a href=".././classes/Braintree/PagedCollection.html">PagedCollection</a></li>
+      <li><a href=".././classes/Braintree/ResourceCollection.html">ResourceCollection</a></li>
       <li><a href=".././classes/Braintree/SuccessfulResult.html">SuccessfulResult</a></li>
       <li><a href=".././classes/Braintree/Test/CreditCardNumbers.html">Test::CreditCardNumbers</a></li>
       <li><a href=".././classes/Braintree/Test/TransactionAmounts.html">Test::TransactionAmounts</a></li>
@@ -765,13 +765,11 @@ The Braintree gem provides integration access to the Braintree Gateway.
   )
 
   if result.success?
-    if result.transaction.status == Braintree::Transaction::Status::Authorized
-      puts &quot;success!: #{result.transaction.id}&quot;
-    else
-      puts &quot;Error processing transaction:&quot;
-      puts &quot;  code: #{result.transaction.processor_response_code}&quot;
-      puts &quot;  text: #{result.transaction.processor_response_text}&quot;
-    end
+    puts &quot;success!: #{result.transaction.id}&quot;
+  elsif result.transaction
+    puts &quot;Error processing transaction:&quot;
+    puts &quot;  code: #{result.transaction.processor_response_code}&quot;
+    puts &quot;  text: #{result.transaction.processor_response_text}&quot;
   else
     p result.errors
   end
@@ -789,7 +787,7 @@ raise a ValidationsFailed exception.
 Example of using non-bang method:
 </p>
 <pre>
-  result = Braintree::Customer.create!(:first_name =&gt; &quot;Josh&quot;)
+  result = Braintree::Customer.create(:first_name =&gt; &quot;Josh&quot;)
   if result.success?
     puts &quot;Created customer #{result.customer.id}
   else

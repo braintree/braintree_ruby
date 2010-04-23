@@ -689,7 +689,7 @@ pre {
       <li><a href="../.././classes/Braintree/Configuration.html">Configuration</a></li>
       <li><a href="../.././classes/Braintree/ErrorResult.html">ErrorResult</a></li>
       <li><a href="../.././classes/Braintree/Errors.html">Errors</a></li>
-      <li><a href="../.././classes/Braintree/PagedCollection.html">PagedCollection</a></li>
+      <li><a href="../.././classes/Braintree/ResourceCollection.html">ResourceCollection</a></li>
       <li><a href="../.././classes/Braintree/SuccessfulResult.html">SuccessfulResult</a></li>
       <li><a href="../.././classes/Braintree/Test/CreditCardNumbers.html">Test::CreditCardNumbers</a></li>
       <li><a href="../.././classes/Braintree/Test/TransactionAmounts.html">Test::TransactionAmounts</a></li>
@@ -755,6 +755,13 @@ A collection of validation errors.
   result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_name)
   #=&gt; [#&lt;Braintree::ValidationError (91803) Country name is not an accepted country.&gt;]
 </pre>
+<h2>More Information</h2>
+<p>
+For more detailed documentation <a
+href="ValidationErrorCollection.html#M000072">on</a> ValidationErrors, see
+<a
+href="http://www.braintreepaymentsolutions.com/gateway/validation-errors">www.braintreepaymentsolutions.com/gateway/validation-errors</a>
+</p>
 
   </div>
 
@@ -765,7 +772,7 @@ A collection of validation errors.
 <div class="sectiontitle">Public Instance Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000074"></a><b>[]</b>(index)
+<a name="M000067"></a><b>[]</b>(index)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Accesses the error at the given index.
@@ -773,7 +780,7 @@ Accesses the error at the given index.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000075"></a><b>deep_errors</b>()
+<a name="M000068"></a><b>deep_errors</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns an array of <a href="ValidationError.html">ValidationError</a>
@@ -782,12 +789,12 @@ objects at this level and all nested levels in the error hierarchy
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000076"></a><b>deep_size</b>()
+<a name="M000069"></a><b>deep_size</b>()
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000077"></a><b>each</b>(&amp;block)
+<a name="M000070"></a><b>each</b>(&amp;block)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Iterates over errors at the current level. Nested errors will not be
@@ -796,7 +803,7 @@ yielded.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000078"></a><b>for</b>(nested_key)
+<a name="M000071"></a><b>for</b>(nested_key)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns a <a
@@ -807,17 +814,17 @@ errors nested under the given key.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000079"></a><b>on</b>(attribute)
+<a name="M000072"></a><b>on</b>(attribute)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns an array of <a href="ValidationError.html">ValidationError</a>
-objects <a href="ValidationErrorCollection.html#M000079">on</a> the given
+objects <a href="ValidationErrorCollection.html#M000072">on</a> the given
 attribute.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000080"></a><b>shallow_errors</b>()
+<a name="M000073"></a><b>shallow_errors</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns an array of <a href="ValidationError.html">ValidationError</a>
@@ -826,7 +833,7 @@ objects at the given level in the error hierarchy
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000081"></a><b>size</b>()
+<a name="M000074"></a><b>size</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 The number of errors at this level. This does not include nested errors.
