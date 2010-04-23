@@ -71,6 +71,16 @@ module Braintree
       raise NotFoundError, "subscription with id #{id.inspect} not found"
     end
 
+    def self.retry_charge(subscription_id, amount=nil)
+      attributes = {
+        :amount => amount,
+        :subscription_id => subscription_id,
+        :type => Transaction::Type::Sale
+      }
+
+      Transaction.send(:_do_create, "/transactions", :transaction => attributes)
+    end
+
     # Allows searching on subscriptions. There are two types of fields that are searchable: text and
     # multiple value fields. Searchable text fields are:
     # - plan_id

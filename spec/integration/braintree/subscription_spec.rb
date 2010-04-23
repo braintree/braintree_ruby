@@ -616,4 +616,38 @@ describe Braintree::Subscription do
       end
     end
   end
+
+  describe "self.retry_charge" do
+    it "is successful with only subscription id" do
+      subscription = Braintree::Subscription.search do |search|
+        search.status.in Braintree::Subscription::Status::PastDue
+      end.first
+
+      result = Braintree::Subscription.retry_charge(subscription.id)
+
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == subscription.price
+      transaction.processor_authorization_code.should_not be_nil
+      transaction.type.should == Braintree::Transaction::Type::Sale
+      transaction.status.should == Braintree::Transaction::Status::Authorized
+    end
+
+    it "is successful with subscription id and amount" do
+      subscription = Braintree::Subscription.search do |search|
+        search.status.in Braintree::Subscription::Status::PastDue
+      end.first
+
+      result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize)
+
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.processor_authorization_code.should_not be_nil
+      transaction.type.should == Braintree::Transaction::Type::Sale
+      transaction.status.should == Braintree::Transaction::Status::Authorized
+    end
+  end
 end
