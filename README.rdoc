@@ -26,13 +26,11 @@ The Braintree gem provides integration access to the Braintree Gateway.
   )
 
   if result.success?
-    if result.transaction.status == Braintree::Transaction::Status::Authorized
-      puts "success!: #{result.transaction.id}"
-    else
-      puts "Error processing transaction:"
-      puts "  code: #{result.transaction.processor_response_code}"
-      puts "  text: #{result.transaction.processor_response_text}"
-    end
+    puts "success!: #{result.transaction.id}"
+  elsif result.transaction
+    puts "Error processing transaction:"
+    puts "  code: #{result.transaction.processor_response_code}"
+    puts "  text: #{result.transaction.processor_response_text}"
   else
     p result.errors
   end
@@ -45,7 +43,7 @@ the created or updated resource, or it will raise a ValidationsFailed exception.
 
 Example of using non-bang method:
 
-  result = Braintree::Customer.create!(:first_name => "Josh")
+  result = Braintree::Customer.create(:first_name => "Josh")
   if result.success?
     puts "Created customer #{result.customer.id}
   else

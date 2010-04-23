@@ -53,20 +53,20 @@ BODY = <<-END_BODY
   <div class="box">
     <h3>Files</h3>
     <ul>
-      <li><a href="BASE_URL/files/README_rdoc.html">README</a></li>
       <li><a href="BASE_URL/files/CHANGELOG_rdoc.html">CHANGELOG</a></li>
       <li><a href="BASE_URL/files/LICENSE.html">LICENSE</a></li>
+      <li><a href="BASE_URL/files/README_rdoc.html">README</a></li>
     </ul>
   </div>
 
   <div class="box">
     <h3>Resources</h3>
     <ul>
-      <li><a href="BASE_URL/classes/Braintree/Transaction.html">Transaction</a></li>
-      <li><a href="BASE_URL/classes/Braintree/Customer.html">Customer</a></li>
-      <li><a href="BASE_URL/classes/Braintree/CreditCard.html">CreditCard</a></li>
       <li><a href="BASE_URL/classes/Braintree/Address.html">Address</a></li>
+      <li><a href="BASE_URL/classes/Braintree/CreditCard.html">CreditCard</a></li>
+      <li><a href="BASE_URL/classes/Braintree/Customer.html">Customer</a></li>
       <li><a href="BASE_URL/classes/Braintree/Subscription.html">Subscription</a></li>
+      <li><a href="BASE_URL/classes/Braintree/Transaction.html">Transaction</a></li>
     </ul>
   </div>
 
@@ -74,15 +74,16 @@ BODY = <<-END_BODY
     <h3>Classes</h3>
     <ul>
       <li><a href="BASE_URL/classes/Braintree/Configuration.html">Configuration</a></li>
-      <li><a href="BASE_URL/classes/Braintree/SuccessfulResult.html">SuccessfulResult</a></li>
       <li><a href="BASE_URL/classes/Braintree/ErrorResult.html">ErrorResult</a></li>
       <li><a href="BASE_URL/classes/Braintree/Errors.html">Errors</a></li>
-      <li><a href="BASE_URL/classes/Braintree/ValidationErrorCollection.html">ValidationErrorCollection</a></li>
-      <li><a href="BASE_URL/classes/Braintree/PagedCollection.html">PagedCollection</a></li>
-      <li><a href="BASE_URL/classes/Braintree/TransparentRedirect.html">TransparentRedirect</a></li>
-      <li><a href="BASE_URL/classes/Braintree/Version.html">Version</a></li>
+      <li><a href="BASE_URL/classes/Braintree/ResourceCollection.html">ResourceCollection</a></li>
+      <li><a href="BASE_URL/classes/Braintree/SuccessfulResult.html">SuccessfulResult</a></li>
       <li><a href="BASE_URL/classes/Braintree/Test/CreditCardNumbers.html">Test::CreditCardNumbers</a></li>
       <li><a href="BASE_URL/classes/Braintree/Test/TransactionAmounts.html">Test::TransactionAmounts</a></li>
+      <li><a href="BASE_URL/classes/Braintree/Transaction/Status.html">Transaction::Status</a></li>
+      <li><a href="BASE_URL/classes/Braintree/TransparentRedirect.html">TransparentRedirect</a></li>
+      <li><a href="BASE_URL/classes/Braintree/ValidationErrorCollection.html">ValidationErrorCollection</a></li>
+      <li><a href="BASE_URL/classes/Braintree/Version.html">Version</a></li>
     </ul>
   </div>
 
@@ -90,25 +91,25 @@ BODY = <<-END_BODY
     <h3>Error Codes</h3>
     <ul>
       <li><a href="BASE_URL/classes/Braintree/ErrorCodes.html">ErrorCodes</a></li>
-      <li><a href="BASE_URL/classes/Braintree/ErrorCodes/Transaction.html">ErrorCodes::Transaction</a></li>
-      <li><a href="BASE_URL/classes/Braintree/ErrorCodes/Customer.html">ErrorCodes::Customer</a></li>
-      <li><a href="BASE_URL/classes/Braintree/ErrorCodes/CreditCard.html">ErrorCodes::CreditCard</a></li>
       <li><a href="BASE_URL/classes/Braintree/ErrorCodes/Address.html">ErrorCodes::Address</a></li>
+      <li><a href="BASE_URL/classes/Braintree/ErrorCodes/CreditCard.html">ErrorCodes::CreditCard</a></li>
+      <li><a href="BASE_URL/classes/Braintree/ErrorCodes/Customer.html">ErrorCodes::Customer</a></li>
+      <li><a href="BASE_URL/classes/Braintree/ErrorCodes/Transaction.html">ErrorCodes::Transaction</a></li>
     </ul>
   </div>
 
   <div class="box">
     <h3>Exceptions</h3>
     <ul>
-      <li><a href="BASE_URL/classes/Braintree/BraintreeError.html">BraintreeError</a></li>
       <li><a href="BASE_URL/classes/Braintree/AuthenticationError.html">AuthenticationError</a></li>
       <li><a href="BASE_URL/classes/Braintree/AuthorizationError.html">AuthorizationError</a></li>
+      <li><a href="BASE_URL/classes/Braintree/BraintreeError.html">BraintreeError</a></li>
       <li><a href="BASE_URL/classes/Braintree/ConfigurationError.html">ConfigurationError</a></li>
       <li><a href="BASE_URL/classes/Braintree/DownForMaintenanceError.html">DownForMaintenanceError</a></li>
       <li><a href="BASE_URL/classes/Braintree/ForgedQueryString.html">ForgedQueryString</a></li>
       <li><a href="BASE_URL/classes/Braintree/NotFoundError.html">NotFoundError</a></li>
-      <li><a href="BASE_URL/classes/Braintree/ServerError.html">ServerError</a></li>
       <li><a href="BASE_URL/classes/Braintree/SSLCertificateError.html">SSLCertificateError</a></li>
+      <li><a href="BASE_URL/classes/Braintree/ServerError.html">ServerError</a></li>
       <li><a href="BASE_URL/classes/Braintree/UnexpectedError.html">UnexpectedError</a></li>
       <li><a href="BASE_URL/classes/Braintree/ValidationsFailed.html">ValidationsFailed</a></li>
     </ul>

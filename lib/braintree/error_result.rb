@@ -17,13 +17,12 @@ module Braintree
   #   end
   class ErrorResult
 
-    attr_reader :credit_card_verification, :errors, :params
+    attr_reader :credit_card_verification, :transaction, :errors, :params
 
     def initialize(data) # :nodoc:
       @params = data[:params]
-      if data[:verification]
-        @credit_card_verification = CreditCardVerification._new(data[:verification])
-      end
+      @credit_card_verification = CreditCardVerification._new(data[:verification]) if data[:verification]
+      @transaction = Transaction._new(data[:transaction]) if data[:transaction]
       @errors = Errors.new(data[:errors])
     end
 

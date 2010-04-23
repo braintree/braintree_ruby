@@ -1,11 +1,14 @@
 module Braintree
+  # == More Information
+  #
+  # For more detailed documentation on Customers, see http://www.braintreepaymentsolutions.com/gateway/customer-api
   class Customer
     include BaseModule
 
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
       :phone, :updated_at, :website, :custom_fields
 
-    # Returns a PagedCollection of all customers stored in the vault. Due to race conditions, this method
+    # Returns a ResourceCollection of all customers stored in the vault. Due to race conditions, this method
     # may not reliably return all customers stored in the vault.
     #
     #   page = Braintree::Customer.all
@@ -23,7 +26,7 @@ module Braintree
       attributes[:items] = Util.extract_attribute_as_array(attributes, :customer).map do |customer_attributes|
         new customer_attributes
       end
-      PagedCollection.new(attributes) { |page_number| Customer.all(:page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Customer.all(:page => page_number) }
     end
 
     # Creates a customer using the given +attributes+. If <tt>:id</tt> is not passed,
@@ -95,7 +98,7 @@ module Braintree
        return_object_or_raise(:transaction){ sale(customer_id, transaction_attributes) }
     end
 
-    # Returns a PagedCollection of transactions for the customer with the given +customer_id+.
+    # Returns a ResourceCollection of transactions for the customer with the given +customer_id+.
     def self.transactions(customer_id, options = {})
       page_number = options[:page] || 1
       response = Http.get "/customers/#{customer_id}/transactions?page=#{page_number}"
@@ -103,7 +106,7 @@ module Braintree
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
         Transaction._new transaction_attributes
       end
-      PagedCollection.new(attributes) { |page_number| Customer.transactions(customer_id, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Customer.transactions(customer_id, :page => page_number) }
     end
 
     def self.update(customer_id, attributes)
@@ -160,7 +163,7 @@ module Braintree
       return_object_or_raise(:transaction) { sale(transaction_attributes) }
     end
 
-    # Returns a PagedCollection of transactions for the customer.
+    # Returns a ResourceCollection of transactions for the customer.
     def transactions(options = {})
       Customer.transactions(id, options)
     end

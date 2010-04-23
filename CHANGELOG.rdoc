@@ -1,3 +1,9 @@
+== 2.0.0
+
+* Updated success? on transaction responses to return false on declined transactions
+* Search results now include Enumerable and will automatically paginate data
+* Added credit_card[cardholder_name] to allowed transaction params and CreditCardDetails (thanks chrismcc[http://github.com/chrismcc])
+
 == 1.2.1
 
 * Added ValidationErrorCollection#shallow_errors to get all of the ValidationErrors at a given level in the error hierarchy

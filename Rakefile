@@ -50,6 +50,7 @@ Rake::RDocTask.new(:bt_rdoc) do |t|
   t.rdoc_dir = "bt_rdoc"
   t.template = "bt_rdoc_template/braintree"
 end
+Rake::Task["bt_rdoc"].prerequisites.unshift "clean"
 
 task :bt_rdoc_postprocessing do
   FileUtils.cp "bt_rdoc_template/braintree.gif", "bt_rdoc"
@@ -76,6 +77,8 @@ gem_spec = Gem::Specification.new do |s|
   s.rubyforge_project = "braintree"
   s.has_rdoc = false
   s.files = FileList["README.rdoc", "LICENSE", "{lib,spec}/**/*.rb", "lib/**/*.crt"]
+  s.add_dependency "builder"
+  s.add_dependency "libxml-ruby"
 end
 
 task :gem do

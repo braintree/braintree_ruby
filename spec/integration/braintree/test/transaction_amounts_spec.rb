@@ -16,14 +16,14 @@ describe Braintree::Test::TransactionAmounts do
 
   describe "Decline" do
     it "creates a transaction with status processor_declined" do
-      transaction = Braintree::Transaction.sale!(
+      result = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "12/2012"
         }
       )
-      transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
   end
 end

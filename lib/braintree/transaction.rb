@@ -116,6 +116,10 @@ module Braintree
   #       :submit_for_settlement => true
   #     }
   #   )
+  #
+  # == More Information
+  #
+  # For more detailed documentation on Transactions, see http://www.braintreepaymentsolutions.com/gateway/transaction-api
   class Transaction
     include BaseModule
 
@@ -138,18 +142,20 @@ module Braintree
     end
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
-    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id, :status
+    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id
     attr_reader :custom_fields
     attr_reader :cvv_response_code
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
-    attr_reader :status_history
     # The authorization code from the processor.
     attr_reader :processor_authorization_code
     # The response code from the processor.
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    # See Transaction::Status
+    attr_reader :status
+    attr_reader :status_history
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at
@@ -200,7 +206,7 @@ module Braintree
       return_object_or_raise(:transaction) { sale(attributes) }
     end
 
-    # Returns a PagedCollection of transactions matching the search query.
+    # Returns a ResourceCollection of transactions matching the search query.
     # If <tt>query</tt> is a string, the search will be a basic search.
     # If <tt>query</tt> is a hash, the search will be an advanced search.
     def self.search(query, options = {})
@@ -379,7 +385,7 @@ module Braintree
       response = Http.post "/transactions/advanced_search?page=#{Util.url_encode(page)}", :search => query
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      PagedCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
     end
 
     def self._attributes # :nodoc:
@@ -391,13 +397,13 @@ module Braintree
       response = Http.get "/transactions/all/search?q=#{Util.url_encode(query)}&page=#{Util.url_encode(page)}"
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      PagedCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
     end
 
     def self._create_signature # :nodoc:
       [
         :amount, :customer_id, :order_id, :payment_method_token, :type,
-        {:credit_card => [:token, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
+        {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {:billing => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
         {:shipping => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},

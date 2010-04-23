@@ -638,42 +638,19 @@ describe Braintree::CreditCard do
 
   describe "self.expired" do
     it "finds expired payment methods, paginated" do
-      first_page = Braintree::CreditCard.expired
-      first_page.current_page_number.should == 1
-      first_page.total_items.should > 0
-      first_page.all? { |pm| pm.expired?.should == true }
-    end
-
-    it "can get the next_page" do
-      first_page = Braintree::CreditCard.expired
-      first_page.current_page_number.should == 1
-      first_page.all? { |pm| pm.expired?.should == true }
-      second_page = first_page.next_page
-      # TODO: we don't have enough expired payment methods to go onto a second page
-      # second_page.current_page_number.should == 2
-      # second_page.all? { |pm| pm.expired?.should == true }
+      collection = Braintree::CreditCard.expired
+      collection._approximate_size.should > 0
+      collection.all? { |pm| pm.expired?.should == true }
     end
   end
 
   describe "self.expiring_between" do
     it "finds payment methods expiring between the given dates" do
       next_year = Time.now.year + 1
-      first_page = Braintree::CreditCard.expiring_between(Time.mktime(next_year, 1), Time.mktime(next_year, 12))
-      first_page.current_page_number.should == 1
-      first_page.total_items.should > 0
-      first_page.all? { |pm| pm.expired?.should == false }
-      first_page.all? { |pm| pm.expiration_year.should == next_year.to_s }
-    end
-
-    it "can get the next_page" do
-      next_year = Time.now.year + 1
-      first_page = Braintree::CreditCard.expiring_between(Time.mktime(next_year, 1), Time.mktime(next_year, 12))
-      first_page.current_page_number.should == 1
-      second_page = first_page.next_page
-      # TODO: we don't have enough expired payment methods to go onto a second page
-      # second_page.current_page_number.should == 2
-      # second_page.all? { |pm| pm.expired?.should == false }
-      # second_page.all? { |pm| pm.expiration_year.should == next_year.to_s }
+      collection = Braintree::CreditCard.expiring_between(Time.mktime(next_year, 1), Time.mktime(next_year, 12))
+      collection._approximate_size.should > 0
+      collection.all? { |pm| pm.expired?.should == false }
+      collection.all? { |pm| pm.expiration_year.should == next_year.to_s }
     end
   end
 

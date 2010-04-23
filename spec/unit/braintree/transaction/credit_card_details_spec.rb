@@ -16,13 +16,14 @@ describe Braintree::Transaction::CreditCardDetails do
       details = Braintree::Transaction::CreditCardDetails.new(
         :bin => "123456",
         :card_type => "Visa",
+        :cardholder_name => "The Cardholder",
         :expiration_month => "05",
         :expiration_year => "2012",
         :last_4 => "6789",
         :token => "token",
         :customer_location => "US"
       )
-      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", customer_location: "US">)
+      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US">)
     end
   end
 
