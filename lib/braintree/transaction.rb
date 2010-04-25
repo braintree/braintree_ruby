@@ -256,8 +256,9 @@ module Braintree
       _init attributes
     end
 
-    # True if <tt>other</tt> has the same id.
+    # True if <tt>other</tt> is a Braintree::Transaction with the same id.
     def ==(other)
+      return false unless other.is_a?(Transaction)
       id == other.id
     end
 

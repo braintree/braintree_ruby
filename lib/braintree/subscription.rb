@@ -47,7 +47,7 @@ module Braintree
     def self.cancel(subscription_id)
       response = Http.put "/subscriptions/#{subscription_id}/cancel"
       if response[:subscription]
-        SuccessfulResult.new(:subscription => new(response[:subscription]))
+        SuccessfulResult.new(:subscription => _new(response[:subscription]))
       elsif response[:api_error_response]
         ErrorResult.new(response[:api_error_response])
       else
@@ -66,7 +66,7 @@ module Braintree
     # if the subscription cannot be found.
     def self.find(id)
       response = Http.get "/subscriptions/#{id}"
-      new(response[:subscription])
+      _new(response[:subscription])
     rescue NotFoundError
       raise NotFoundError, "subscription with id #{id.inspect} not found"
     end
@@ -103,7 +103,7 @@ module Braintree
 
       response = Http.post "/subscriptions/advanced_search?page=#{page}", {:search => search.to_hash}
       attributes = response[:subscriptions]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| new(attrs) }
+      attributes[:items] = Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| _new(attrs) }
       ResourceCollection.new(attributes) { |page_number| Subscription.search(page_number, &block) }
     end
 
@@ -111,7 +111,7 @@ module Braintree
       Util.verify_keys(_update_signature, attributes)
       response = Http.put "/subscriptions/#{subscription_id}", :subscription => attributes
       if response[:subscription]
-        SuccessfulResult.new(:subscription => new(response[:subscription]))
+        SuccessfulResult.new(:subscription => _new(response[:subscription]))
       elsif response[:api_error_response]
          ErrorResult.new(response[:api_error_response])
       else
@@ -140,7 +140,15 @@ module Braintree
 
     # True if <tt>other</tt> has the same id.
     def ==(other)
+      return false unless other.is_a?(Subscription)
       id == other.id
+    end
+
+    class << self
+      protected :new
+      def _new(*args) # :nodoc:
+        self.new *args
+      end
     end
 
     def self._do_create(url, params) # :nodoc:

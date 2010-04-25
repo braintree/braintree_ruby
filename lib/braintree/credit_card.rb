@@ -103,7 +103,7 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       _init attributes
-      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription.new(subscription_hash) }
+      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(subscription_hash) }
     end
 
     # Creates a credit transaction for this credit card.

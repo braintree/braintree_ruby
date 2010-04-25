@@ -127,7 +127,7 @@ describe Braintree::Transaction do
   end
 
   describe "==" do
-    it "returns true when it should" do
+    it "returns true for transactions with the same id" do
       first = Braintree::Transaction._new(:id => 123)
       second = Braintree::Transaction._new(:id => 123)
 
@@ -135,12 +135,23 @@ describe Braintree::Transaction do
       second.should == first
     end
 
-    it "returns false when it should" do
+    it "returns false for transactions with different ids" do
       first = Braintree::Transaction._new(:id => 123)
       second = Braintree::Transaction._new(:id => 124)
 
       first.should_not == second
       second.should_not == first
+    end
+
+    it "returns false when comparing to nil" do
+      Braintree::Transaction._new({}).should_not == nil
+    end
+
+    it "returns false when comparing to non-transactions" do
+      same_id_different_object = Object.new
+      def same_id_different_object.id; 123; end
+      transaction = Braintree::Transaction._new(:id => 123)
+      transaction.should_not == same_id_different_object
     end
   end
 
