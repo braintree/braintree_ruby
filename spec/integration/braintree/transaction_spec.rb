@@ -1236,7 +1236,7 @@ describe Braintree::Transaction do
           collection._approximate_size.should == 0
         end
 
-        it "searches on payment_type" do
+        it "searches on credit_card_card_type" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :credit_card => {
@@ -1247,21 +1247,21 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.payment_type.in Braintree::CreditCard::CardType::Visa
+            search.credit_card_card_type.in Braintree::CreditCard::CardType::Visa
           end
 
           collection._approximate_size.should == 1
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.payment_type.in Braintree::CreditCard::CardType::Visa, Braintree::CreditCard::CardType::MasterCard
+            search.credit_card_card_type.in Braintree::CreditCard::CardType::Visa, Braintree::CreditCard::CardType::MasterCard
           end
 
           collection._approximate_size.should == 1
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.payment_type.in Braintree::CreditCard::CardType::MasterCard
+            search.credit_card_card_type.in Braintree::CreditCard::CardType::MasterCard
           end
 
           collection._approximate_size.should == 0

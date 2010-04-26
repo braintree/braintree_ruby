@@ -42,7 +42,7 @@ module Braintree
       Transaction::CreatedUsing::FullInformation,
       Transaction::CreatedUsing::Token
     ]
-    multiple_value_field :payment_type, :allows => [
+    multiple_value_field :credit_card_card_type, :allows => [
       CreditCard::CardType::Amex,
       CreditCard::CardType::Discover,
       CreditCard::CardType::MasterCard,
