@@ -37,5 +37,21 @@ module Braintree
       :shipping_street_address,
       :transaction_id
     )
+
+    multiple_value_field :created_using, :allows => [
+      Transaction::CreatedUsing::FullInformation,
+      Transaction::CreatedUsing::Token
+    ]
+    multiple_value_field :payment_type, :allows => [
+      CreditCard::CardType::Amex,
+      CreditCard::CardType::Discover,
+      CreditCard::CardType::MasterCard,
+      CreditCard::CardType::Visa
+    ]
+    multiple_value_field :credit_card_customer_location, :allows => [
+      CreditCard::CustomerLocation::International,
+      CreditCard::CustomerLocation::US
+    ]
+    multiple_value_field :merchant_account_id
   end
 end

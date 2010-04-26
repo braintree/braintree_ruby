@@ -123,6 +123,11 @@ module Braintree
   class Transaction
     include BaseModule
 
+    module CreatedUsing
+      FullInformation = 'full_information'
+      Token = 'token'
+    end
+
     module Status
       Authorizing = 'authorizing'
       Authorized = 'authorized'
@@ -145,6 +150,7 @@ module Braintree
     attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id
     attr_reader :custom_fields
     attr_reader :cvv_response_code
+    attr_reader :merchant_account_id
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
     # The authorization code from the processor.

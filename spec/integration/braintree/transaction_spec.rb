@@ -1054,7 +1054,7 @@ describe Braintree::Transaction do
         collection._approximate_size.should == 0
       end
 
-      it "returns one result" do
+      it "returns one result for text field search" do
         first_name = "Tim#{rand(10000)}"
         token = "creditcard#{rand(10000)}"
 
@@ -1140,6 +1140,132 @@ describe Braintree::Transaction do
 
         collection._approximate_size.should == 1
         collection.first.id.should == transaction.id
+      end
+
+      context "multiple value fields" do
+        it "searches on created_using" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.created_using.in Braintree::Transaction::CreatedUsing::FullInformation
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.created_using.in Braintree::Transaction::CreatedUsing::FullInformation, Braintree::Transaction::CreatedUsing::Token
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.created_using.in Braintree::Transaction::CreatedUsing::Token
+          end
+
+          collection._approximate_size.should == 0
+        end
+
+        it "searches on payment_type" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.payment_type.in Braintree::CreditCard::CardType::Visa
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.payment_type.in Braintree::CreditCard::CardType::Visa, Braintree::CreditCard::CardType::MasterCard
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.payment_type.in Braintree::CreditCard::CardType::MasterCard
+          end
+
+          collection._approximate_size.should == 0
+        end
+
+        it "searches on credit_card_customer_location" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.credit_card_customer_location.in Braintree::CreditCard::CustomerLocation::US
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.credit_card_customer_location.in Braintree::CreditCard::CustomerLocation::US, Braintree::CreditCard::CustomerLocation::International
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.credit_card_customer_location.in Braintree::CreditCard::CustomerLocation::International
+          end
+
+          collection._approximate_size.should == 0
+        end
+
+        it "searches on merchant_account_id" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.merchant_account_id.in transaction.merchant_account_id
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.merchant_account_id.in transaction.merchant_account_id, "bogus_merchant_account_id"
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.merchant_account_id.in "bogus_merchant_account_id"
+          end
+
+          collection._approximate_size.should == 0
+        end
       end
 
       it "returns multiple results" do

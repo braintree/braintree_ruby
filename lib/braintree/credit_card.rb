@@ -6,6 +6,18 @@ module Braintree
   class CreditCard
     include BaseModule # :nodoc:
 
+    module CardType
+      Amex = "amex"
+      Discover = "discover"
+      MasterCard = "mastercard"
+      Visa = "visa"
+    end
+
+    module CustomerLocation
+      International = "international"
+      US = "us"
+    end
+
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
       :expiration_year, :last_4, :subscriptions, :token, :updated_at
 
