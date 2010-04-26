@@ -209,13 +209,13 @@ module Braintree
     # Returns a ResourceCollection of transactions matching the search query.
     # If <tt>query</tt> is a string, the search will be a basic search.
     # If <tt>query</tt> is a hash, the search will be an advanced search.
-    def self.search(query, options = {})
-      if query.is_a?(String)
-        _basic_search query, options
-      elsif query.is_a?(Hash)
-        _advanced_search query, options
+    def self.search(query = nil, page=1, &block)
+      if block_given?
+        _advanced_search page, &block
+      elsif query.is_a?(String)
+        _basic_search query, page
       else
-        raise ArgumentError, "expected query to be a string or a hash"
+        raise ArgumentError, "expected search to be a string or a block"
       end
     end
 
@@ -381,24 +381,26 @@ module Braintree
       end
     end
 
-    def self._advanced_search(query, options) # :nodoc:
-      page = options[:page] || 1
-      response = Http.post "/transactions/advanced_search?page=#{Util.url_encode(page)}", :search => query
+    def self._advanced_search(page, &block) # :nodoc:
+      search = TransactionSearch.new
+      block.call(search)
+
+      response = Http.post "/transactions/advanced_search?page=#{page}", {:search => search.to_hash}
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(nil, page_number, &block) }
     end
 
     def self._attributes # :nodoc:
       [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :type, :updated_at]
     end
 
-    def self._basic_search(query, options) # :nodoc:
-      page = options[:page] || 1
+    def self._basic_search(query, page) # :nodoc:
       response = Http.get "/transactions/all/search?q=#{Util.url_encode(query)}&page=#{Util.url_encode(page)}"
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, page_number) }
     end
 
     def self._create_signature # :nodoc:

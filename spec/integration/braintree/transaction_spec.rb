@@ -1045,85 +1045,82 @@ describe Braintree::Transaction do
   end
 
   describe "search" do
-    describe "advanced" do
-      it "pretty much works in one big fell swoop/hash" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2009"
-          },
-          :order_id => "123",
-          :customer => {
-            :company => "Apple",
-            :fax => "312-555-1234",
-            :first_name => "Steve",
-            :last_name => "Jobs",
-            :phone => "614-555-1234",
-            :website => "http://www.apple.com",
-          },
-          :billing => {
-            :country_name => "United States of America",
-            :extended_address => "Apt 1F",
-            :locality => "Chicago",
-            :postal_code => "60622",
-            :region => "Illinois",
-            :street_address => "1234 W North Ave",
-          },
-          :shipping => {
-            :country_name => "United States of America",
-            :extended_address => "Apt 123",
-            :locality => "Bartlett",
-            :postal_code => "60004",
-            :region => "Illinois",
-            :street_address => "123 Main St",
-          }
-        )
-        result.success?.should == true
-        expected_transaction = result.transaction
-        search_criteria = {
-          :billing_country_name => {:is => "United States of America"},
-          :billing_extended_address => {:is => "Apt 1F"},
-          :billing_locality => {:is => "Chicago"},
-          :billing_postal_code => {:is => "60622"},
-          :billing_region => {:is => "Illinois"},
-          :billing_street_address => {:is => "1234 W North Ave"},
-          :credit_card_number => {:is => Braintree::Test::CreditCardNumbers::Visa},
-          :customer_company => {:is => "Apple"},
-          :customer_fax => {:is => "312-555-1234"},
-          :customer_first_name => {:is => "Steve"},
-          :customer_last_name => {:is => "Jobs"},
-          :customer_phone => {:is => "614-555-1234"},
-          :customer_website => {:is => "http://www.apple.com"},
-          :expiration_date => {:is => "05/2009"},
-          :order_id => {:is => "123"},
-          :shipping_country_name => {:is => "United States of America"},
-          :shipping_extended_address => {:is => "Apt 123"},
-          :shipping_locality => {:is => "Bartlett"},
-          :shipping_postal_code => {:is => "60004"},
-          :shipping_region => {:is => "Illinois"},
-          :shipping_street_address => {:is => "123 Main St"},
-        }
-        search_results = Braintree::Transaction.search(search_criteria)
-        search_results.should include(expected_transaction)
+    context "advanced" do
+      it "correctly returns a result with no matches" do
+        collection = Braintree::Transaction.search do |search|
+          search.billing_first_name.is "thisnameisnotreal"
+        end
+
+        collection._approximate_size.should == 0
       end
 
-      it "properly parses the xml if only one transaction is found" do
-        transaction = Braintree::Transaction.create!(
-          :type => "sale",
+      it "returns one result" do
+        first_name = "Tim#{rand(10000)}"
+
+        transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2009"
+            :expiration_date => "05/2012",
+            :cardholder_name => "Tom Smith"
+          },
+          :billing => {
+            :first_name => first_name,
+            :last_name => "Smith",
+            :company => "Braintree",
+            :country_name => "United States of America",
+            :extended_address => "Suite 123",
+            :locality => "Chicago",
+            :postal_code => "12345",
+            :region => "IL",
+            :street_address => "123 Main St"
+          },
+          :customer => {
+            :company => "Braintree",
+            :email => "smith@example.com",
+            :fax => "5551231234",
+            :first_name => "Tom",
+            :last_name => "Smith",
+            :phone => "5551231234",
+            :website => "http://example.com",
           }
         )
-        search_results = Braintree::Transaction.search(:transaction_id => {:is => transaction.id})
-        search_results.first.should == transaction
+
+        collection = Braintree::Transaction.search do |search|
+          search.billing_first_name.is first_name
+          search.billing_last_name.is "Smith"
+          search.billing_company.is "Braintree"
+          search.billing_locality.is "Chicago"
+          search.billing_country_name.is "United States of America"
+          search.billing_extended_address.is "Suite 123"
+          search.billing_postal_code.is "12345"
+          search.billing_region.is "IL"
+          search.billing_street_address.is "123 Main St"
+          search.credit_card_cardholder_name.is "Tom Smith"
+          search.credit_card_number.is Braintree::Test::CreditCardNumbers::Visa
+          search.customer_company.is "Braintree"
+          search.customer_email.is "smith@example.com"
+          search.customer_fax.is "5551231234"
+          search.customer_first_name.is "Tom"
+          search.customer_last_name.is "Smith"
+          search.customer_phone.is "5551231234"
+          search.customer_website.is "http://example.com"
+        end
+
+        collection._approximate_size.should == 1
+        collection.first.id.should == transaction.id
+      end
+
+      it "returns multiple results" do
+        collection = Braintree::Transaction.search do |search|
+          search.credit_card_number.starts_with "411"
+        end
+
+        collection._approximate_size.should > 100
       end
     end
 
-    describe "basic" do
+    context "basic" do
       it "returns transactions matching the given search terms" do
         transactions = Braintree::Transaction.search "1111"
         transactions._approximate_size.should > 0
