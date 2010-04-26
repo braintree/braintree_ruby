@@ -1056,20 +1056,22 @@ describe Braintree::Transaction do
 
       it "returns one result" do
         first_name = "Tim#{rand(10000)}"
+        token = "creditcard#{rand(10000)}"
 
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2012",
-            :cardholder_name => "Tom Smith"
+            :cardholder_name => "Tom Smith",
+            :token => token,
           },
           :billing => {
-            :first_name => first_name,
-            :last_name => "Smith",
             :company => "Braintree",
             :country_name => "United States of America",
             :extended_address => "Suite 123",
+            :first_name => first_name,
+            :last_name => "Smith",
             :locality => "Chicago",
             :postal_code => "12345",
             :region => "IL",
@@ -1083,20 +1085,36 @@ describe Braintree::Transaction do
             :last_name => "Smith",
             :phone => "5551231234",
             :website => "http://example.com",
+          },
+          :options => {
+            :store_in_vault => true
+          },
+          :order_id => "myorder",
+          :shipping => {
+            :company => "Braintree P.S.",
+            :country_name => "Mexico",
+            :extended_address => "Apt 456",
+            :first_name => "Thomas",
+            :last_name => "Smithy",
+            :locality => "Braintree",
+            :postal_code => "54321",
+            :region => "MA",
+            :street_address => "456 Road"
           }
         )
 
         collection = Braintree::Transaction.search do |search|
-          search.billing_first_name.is first_name
-          search.billing_last_name.is "Smith"
           search.billing_company.is "Braintree"
-          search.billing_locality.is "Chicago"
           search.billing_country_name.is "United States of America"
           search.billing_extended_address.is "Suite 123"
+          search.billing_first_name.is first_name
+          search.billing_last_name.is "Smith"
+          search.billing_locality.is "Chicago"
           search.billing_postal_code.is "12345"
           search.billing_region.is "IL"
           search.billing_street_address.is "123 Main St"
           search.credit_card_cardholder_name.is "Tom Smith"
+          search.credit_card_expiration_date.is "05/2012"
           search.credit_card_number.is Braintree::Test::CreditCardNumbers::Visa
           search.customer_company.is "Braintree"
           search.customer_email.is "smith@example.com"
@@ -1105,6 +1123,19 @@ describe Braintree::Transaction do
           search.customer_last_name.is "Smith"
           search.customer_phone.is "5551231234"
           search.customer_website.is "http://example.com"
+          search.order_id.is "myorder"
+          search.payment_method_token.is token
+          search.processor_authorization_code.is transaction.processor_authorization_code
+          search.shipping_company.is "Braintree P.S."
+          search.shipping_country_name.is "Mexico"
+          search.shipping_extended_address.is "Apt 456"
+          search.shipping_first_name.is "Thomas"
+          search.shipping_last_name.is "Smithy"
+          search.shipping_locality.is "Braintree"
+          search.shipping_postal_code.is "54321"
+          search.shipping_region.is "MA"
+          search.shipping_street_address.is "456 Road"
+          search.transaction_id transaction.id
         end
 
         collection._approximate_size.should == 1
