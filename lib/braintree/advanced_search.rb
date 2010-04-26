@@ -18,6 +18,12 @@ module Braintree
       operators :is, :is_not, :ends_with, :starts_with, :contains
     end
 
+    class BooleanNode < SearchNode
+      def is(value)
+        @parent.add_criteria(@node_name, value)
+      end
+    end
+
     class MultipleValueNode < SearchNode
       def in(*values)
         values.flatten!
@@ -28,6 +34,10 @@ module Braintree
         end
 
         @parent.add_criteria(@node_name, values)
+      end
+
+      def is(value)
+        self.in(value)
       end
 
       def initialize(name, parent, options)
@@ -51,6 +61,12 @@ module Braintree
     def self.multiple_value_field(field, options={})
       define_method(field) do
         MultipleValueNode.new(field, self, options)
+      end
+    end
+
+    def self.boolean_field(field)
+      define_method(field) do
+        BooleanNode.new(field, self)
       end
     end
 
