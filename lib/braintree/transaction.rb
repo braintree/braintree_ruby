@@ -139,6 +139,14 @@ module Braintree
       SubmittedForSettlement = 'submitted_for_settlement'
       Unknown = 'unknown'
       Voided = 'voided'
+
+      All = constants.map { |c| const_get(c) }
+    end
+
+    module Source
+      Api = "api"
+      ControlPanel = "control_panel"
+      Recurring = "recurring"
     end
 
     module Type # :nodoc:

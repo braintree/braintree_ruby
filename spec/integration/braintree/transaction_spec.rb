@@ -1174,37 +1174,6 @@ describe Braintree::Transaction do
           collection._approximate_size.should == 0
         end
 
-        it "searches on payment_type" do
-          transaction = Braintree::Transaction.sale!(
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "05/12"
-            }
-          )
-
-          collection = Braintree::Transaction.search do |search|
-            search.transaction_id.is transaction.id
-            search.payment_type.in Braintree::CreditCard::CardType::Visa
-          end
-
-          collection._approximate_size.should == 1
-
-          collection = Braintree::Transaction.search do |search|
-            search.transaction_id.is transaction.id
-            search.payment_type.in Braintree::CreditCard::CardType::Visa, Braintree::CreditCard::CardType::MasterCard
-          end
-
-          collection._approximate_size.should == 1
-
-          collection = Braintree::Transaction.search do |search|
-            search.transaction_id.is transaction.id
-            search.payment_type.in Braintree::CreditCard::CardType::MasterCard
-          end
-
-          collection._approximate_size.should == 0
-        end
-
         it "searches on credit_card_customer_location" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -1262,6 +1231,99 @@ describe Braintree::Transaction do
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
             search.merchant_account_id.in "bogus_merchant_account_id"
+          end
+
+          collection._approximate_size.should == 0
+        end
+
+        it "searches on payment_type" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.payment_type.in Braintree::CreditCard::CardType::Visa
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.payment_type.in Braintree::CreditCard::CardType::Visa, Braintree::CreditCard::CardType::MasterCard
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.payment_type.in Braintree::CreditCard::CardType::MasterCard
+          end
+
+          collection._approximate_size.should == 0
+        end
+
+        it "searches on status" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.status.in Braintree::Transaction::Status::Authorized
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.status.in Braintree::Transaction::Status::Authorized, Braintree::Transaction::Status::ProcessorDeclined
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.status.in Braintree::Transaction::Status::ProcessorDeclined
+          end
+
+          collection._approximate_size.should == 0
+        end
+
+        it "searches on transaction_source" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.transaction_source.in Braintree::Transaction::Source::Api
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.transaction_source.in Braintree::Transaction::Source::Api, Braintree::Transaction::Source::ControlPanel
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.transaction_source.in Braintree::Transaction::Source::ControlPanel
           end
 
           collection._approximate_size.should == 0
