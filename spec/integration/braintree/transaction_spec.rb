@@ -1378,6 +1378,47 @@ describe Braintree::Transaction do
           collection._approximate_size.should == 1
           collection.first.id.should == credit_transaction.id
         end
+
+        it "searches on amount" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => "1000.00",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.between "500.00", "1500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.greater_than "500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.less_than "1500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.between "500.00", "900.00"
+          end
+
+          collection._approximate_size.should == 0
+        end
       end
 
       it "returns multiple results" do

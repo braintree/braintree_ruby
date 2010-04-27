@@ -60,6 +60,9 @@ module Braintree
       Transaction::Source::Recurring
     ]
     multiple_value_field :type
-    boolean_field :refund
+
+    key_value_fields :refund
+
+    range_fields :amount
   end
 end

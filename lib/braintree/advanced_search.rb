@@ -18,7 +18,7 @@ module Braintree
       operators :is, :is_not, :ends_with, :starts_with, :contains
     end
 
-    class BooleanNode < SearchNode
+    class KeyValueNode < SearchNode
       def is(value)
         @parent.add_criteria(@node_name, value)
       end
@@ -50,6 +50,21 @@ module Braintree
       end
     end
 
+    class RangeNode < SearchNode
+      def between(min, max)
+        @parent.add_criteria(@node_name, :min => min)
+        @parent.add_criteria(@node_name, :max => max)
+      end
+
+      def greater_than(min)
+        @parent.add_criteria(@node_name, :min => min)
+      end
+
+      def less_than(max)
+        @parent.add_criteria(@node_name, :max => max)
+      end
+    end
+
     def self.search_fields(*fields)
       fields.each do |field|
         define_method(field) do
@@ -64,9 +79,19 @@ module Braintree
       end
     end
 
-    def self.boolean_field(field)
-      define_method(field) do
-        BooleanNode.new(field, self)
+    def self.key_value_fields(*fields)
+      fields.each do |field|
+        define_method(field) do
+          KeyValueNode.new(field, self)
+        end
+      end
+    end
+
+    def self.range_fields(*fields)
+      fields.each do |field|
+        define_method(field) do
+          RangeNode.new(field, self)
+        end
       end
     end
 
