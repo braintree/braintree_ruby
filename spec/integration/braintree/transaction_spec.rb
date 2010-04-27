@@ -199,6 +199,51 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer
     end
+
+    context "new credit card for existing customer" do
+      it "allows a new credit card to be used for an existing customer" do
+        customer = Braintree::Customer.create!(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2010"
+          }
+        )
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :customer_id => customer.id,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12"
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.masked_number.should == "401288******1881"
+        result.transaction.vault_credit_card.should be_nil
+      end
+
+      it "allows a new credit card to be used and stored in the vault" do
+        customer = Braintree::Customer.create!(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2010"
+          }
+        )
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :customer_id => customer.id,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :options => { :store_in_vault => true }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.masked_number.should == "401288******1881"
+        result.transaction.vault_credit_card.masked_number.should == "401288******1881"
+      end
+    end
   end
 
   describe "self.create!" do
