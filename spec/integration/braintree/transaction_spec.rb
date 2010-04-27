@@ -1475,6 +1475,23 @@ describe Braintree::Transaction do
           collection._approximate_size.should == 0
         end
 
+        it "can also take BigDecimal for amount" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => BigDecimal.new("1000.00"),
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.amount <= BigDecimal.new("1000.00")
+          end
+
+          collection._approximate_size.should == 1
+        end
+
         it "searches on date" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,

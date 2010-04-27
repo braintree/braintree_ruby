@@ -1,6 +1,7 @@
 module Braintree
   module Util # :nodoc:
     def self.extract_attribute_as_array(hash, attribute)
+      raise UnexpectedError.new("Unprocessable entity due to an invalid request") if hash.nil?
       value = hash.has_key?(attribute) ? hash.delete(attribute) : []
       value.is_a?(Array) ? value : [value]
     end
