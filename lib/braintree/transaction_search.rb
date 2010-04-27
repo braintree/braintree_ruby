@@ -49,7 +49,7 @@ module Braintree
     ]
     multiple_value_field :merchant_account_id
     multiple_value_field :status, :allows => Transaction::Status::All
-    multiple_value_field :transaction_source, :allows => [
+    multiple_value_field :source, :allows => [
       Transaction::Source::Api,
       Transaction::Source::ControlPanel,
       Transaction::Source::Recurring

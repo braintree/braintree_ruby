@@ -1353,7 +1353,7 @@ describe Braintree::Transaction do
           collection._approximate_size.should == 0
         end
 
-        it "searches on transaction_source" do
+        it "searches on source" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :credit_card => {
@@ -1364,21 +1364,21 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.transaction_source.is Braintree::Transaction::Source::Api
+            search.source.is Braintree::Transaction::Source::Api
           end
 
           collection._approximate_size.should == 1
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.transaction_source.in Braintree::Transaction::Source::Api, Braintree::Transaction::Source::ControlPanel
+            search.source.in Braintree::Transaction::Source::Api, Braintree::Transaction::Source::ControlPanel
           end
 
           collection._approximate_size.should == 1
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.transaction_source.is Braintree::Transaction::Source::ControlPanel
+            search.source.is Braintree::Transaction::Source::ControlPanel
           end
 
           collection._approximate_size.should == 0
