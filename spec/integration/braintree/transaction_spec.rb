@@ -1199,7 +1199,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.created_using.in Braintree::Transaction::CreatedUsing::FullInformation
+            search.created_using.is Braintree::Transaction::CreatedUsing::FullInformation
           end
 
           collection._approximate_size.should == 1
@@ -1213,7 +1213,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.created_using.in Braintree::Transaction::CreatedUsing::Token
+            search.created_using.is Braintree::Transaction::CreatedUsing::Token
           end
 
           collection._approximate_size.should == 0
@@ -1230,7 +1230,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.credit_card_customer_location.in Braintree::CreditCard::CustomerLocation::US
+            search.credit_card_customer_location.is Braintree::CreditCard::CustomerLocation::US
           end
 
           collection._approximate_size.should == 1
@@ -1244,7 +1244,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.credit_card_customer_location.in Braintree::CreditCard::CustomerLocation::International
+            search.credit_card_customer_location.is Braintree::CreditCard::CustomerLocation::International
           end
 
           collection._approximate_size.should == 0
@@ -1261,7 +1261,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.merchant_account_id.in transaction.merchant_account_id
+            search.merchant_account_id.is transaction.merchant_account_id
           end
 
           collection._approximate_size.should == 1
@@ -1275,7 +1275,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.merchant_account_id.in "bogus_merchant_account_id"
+            search.merchant_account_id.is "bogus_merchant_account_id"
           end
 
           collection._approximate_size.should == 0
@@ -1292,7 +1292,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.credit_card_card_type.in Braintree::CreditCard::CardType::Visa
+            search.credit_card_card_type.is Braintree::CreditCard::CardType::Visa
           end
 
           collection._approximate_size.should == 1
@@ -1306,7 +1306,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.credit_card_card_type.in Braintree::CreditCard::CardType::MasterCard
+            search.credit_card_card_type.is Braintree::CreditCard::CardType::MasterCard
           end
 
           collection._approximate_size.should == 0
@@ -1323,7 +1323,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.status.in Braintree::Transaction::Status::Authorized
+            search.status.is Braintree::Transaction::Status::Authorized
           end
 
           collection._approximate_size.should == 1
@@ -1337,7 +1337,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.status.in Braintree::Transaction::Status::ProcessorDeclined
+            search.status.is Braintree::Transaction::Status::ProcessorDeclined
           end
 
           collection._approximate_size.should == 0
@@ -1354,7 +1354,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.transaction_source.in Braintree::Transaction::Source::Api
+            search.transaction_source.is Braintree::Transaction::Source::Api
           end
 
           collection._approximate_size.should == 1
@@ -1368,7 +1368,98 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.transaction_source.in Braintree::Transaction::Source::ControlPanel
+            search.transaction_source.is Braintree::Transaction::Source::ControlPanel
+          end
+
+          collection._approximate_size.should == 0
+        end
+
+        it "searches on transaction_type" do
+          cardholder_name = "refunds#{rand(10000)}"
+          credit_transaction = Braintree::Transaction.credit!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :cardholder_name => cardholder_name,
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :cardholder_name => cardholder_name,
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            },
+            :options => { :submit_for_settlement => true }
+          )
+          Braintree::Http.put "/transactions/#{transaction.id}/settle"
+
+          refund_transaction = transaction.refund.new_transaction
+
+          collection = Braintree::Transaction.search do |search|
+            search.credit_card_cardholder_name.is cardholder_name
+            search.type.is Braintree::Transaction::Type::Credit
+          end
+
+          collection._approximate_size.should == 2
+
+          collection = Braintree::Transaction.search do |search|
+            search.credit_card_cardholder_name.is cardholder_name
+            search.type.is Braintree::Transaction::Type::Credit
+            search.refund.is true
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == refund_transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.credit_card_cardholder_name.is cardholder_name
+            search.type.is Braintree::Transaction::Type::Credit
+            search.refund.is false
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == credit_transaction.id
+        end
+
+        it "searches on amount" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => "1000.00",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.between "500.00", "1500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.greater_than "500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.less_than "1500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.amount.between "500.00", "900.00"
           end
 
           collection._approximate_size.should == 0

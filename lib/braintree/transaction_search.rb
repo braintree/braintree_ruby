@@ -59,5 +59,10 @@ module Braintree
       Transaction::Source::ControlPanel,
       Transaction::Source::Recurring
     ]
+    multiple_value_field :type
+
+    key_value_fields :refund
+
+    range_fields :amount
   end
 end

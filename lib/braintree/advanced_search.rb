@@ -18,6 +18,12 @@ module Braintree
       operators :is, :is_not, :ends_with, :starts_with, :contains
     end
 
+    class KeyValueNode < SearchNode
+      def is(value)
+        @parent.add_criteria(@node_name, value)
+      end
+    end
+
     class MultipleValueNode < SearchNode
       def in(*values)
         values.flatten!
@@ -30,6 +36,10 @@ module Braintree
         @parent.add_criteria(@node_name, values)
       end
 
+      def is(value)
+        self.in(value)
+      end
+
       def initialize(name, parent, options)
         super(name, parent)
         @options = options
@@ -37,6 +47,21 @@ module Braintree
 
       def allowed_values
         @options[:allows]
+      end
+    end
+
+    class RangeNode < SearchNode
+      def between(min, max)
+        @parent.add_criteria(@node_name, :min => min)
+        @parent.add_criteria(@node_name, :max => max)
+      end
+
+      def greater_than(min)
+        @parent.add_criteria(@node_name, :min => min)
+      end
+
+      def less_than(max)
+        @parent.add_criteria(@node_name, :max => max)
       end
     end
 
@@ -51,6 +76,22 @@ module Braintree
     def self.multiple_value_field(field, options={})
       define_method(field) do
         MultipleValueNode.new(field, self, options)
+      end
+    end
+
+    def self.key_value_fields(*fields)
+      fields.each do |field|
+        define_method(field) do
+          KeyValueNode.new(field, self)
+        end
+      end
+    end
+
+    def self.range_fields(*fields)
+      fields.each do |field|
+        define_method(field) do
+          RangeNode.new(field, self)
+        end
       end
     end
 
