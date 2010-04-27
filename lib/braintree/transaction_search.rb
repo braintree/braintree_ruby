@@ -63,6 +63,6 @@ module Braintree
 
     key_value_fields :refund
 
-    range_fields :amount
+    range_fields :amount, :date
   end
 end

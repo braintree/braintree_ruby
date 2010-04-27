@@ -1464,6 +1464,55 @@ describe Braintree::Transaction do
 
           collection._approximate_size.should == 0
         end
+
+        it "searches on date" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          created_at = transaction.created_at
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.date.between(
+              Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min),
+              Time.utc(created_at.year, created_at.month, created_at.day + 1, created_at.hour, created_at.min)
+            )
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.date.greater_than Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min)
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.date.less_than Time.utc(created_at.year, created_at.month, created_at.day + 1, created_at.hour, created_at.min)
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
+            search.date.between(
+              Time.utc(created_at.year, created_at.month, created_at.day - 3, created_at.hour, created_at.min),
+              Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min)
+            )
+          end
+
+          collection._approximate_size.should == 0
+        end
       end
 
       it "returns multiple results" do

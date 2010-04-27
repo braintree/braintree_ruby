@@ -52,8 +52,8 @@ module Braintree
 
     class RangeNode < SearchNode
       def between(min, max)
-        @parent.add_criteria(@node_name, :min => min)
-        @parent.add_criteria(@node_name, :max => max)
+        greater_than(min)
+        less_than(max)
       end
 
       def greater_than(min)
@@ -95,12 +95,24 @@ module Braintree
       end
     end
 
+    def self.date_range_fields(*fields)
+      fields.each do |field|
+        define_method(field) do
+          DateRangeNode.new(field, self)
+        end
+      end
+    end
+
     def initialize
       @criteria = {}
     end
 
     def add_criteria(key, value)
-      @criteria[key] = value
+      if @criteria[key].is_a?(Hash)
+        @criteria[key].merge!(value)
+      else
+        @criteria[key] = value
+      end
     end
 
     def to_hash
