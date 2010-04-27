@@ -1443,7 +1443,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.amount.greater_than "500.00"
+            search.amount >= "500.00"
           end
 
           collection._approximate_size.should == 1
@@ -1451,7 +1451,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.amount.less_than "1500.00"
+            search.amount <= "1500.00"
           end
 
           collection._approximate_size.should == 1
@@ -1477,7 +1477,7 @@ describe Braintree::Transaction do
           created_at = transaction.created_at
 
           collection = Braintree::Transaction.search do |search|
-            search.transaction_id.is transaction.id
+            search.transaction_id == transaction.id
             search.date.between(
               Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min),
               Time.utc(created_at.year, created_at.month, created_at.day + 1, created_at.hour, created_at.min)
@@ -1489,7 +1489,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.date.greater_than Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min)
+            search.date >= created_at - 1
           end
 
           collection._approximate_size.should == 1
@@ -1497,7 +1497,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.date.less_than Time.utc(created_at.year, created_at.month, created_at.day + 1, created_at.hour, created_at.min)
+            search.date <= created_at + 1
           end
 
           collection._approximate_size.should == 1

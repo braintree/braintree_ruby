@@ -16,12 +16,14 @@ module Braintree
 
     class TextNode < SearchNode
       operators :is, :is_not, :ends_with, :starts_with, :contains
+      alias :== :is
     end
 
     class KeyValueNode < SearchNode
       def is(value)
         @parent.add_criteria(@node_name, value)
       end
+      alias :== :is
     end
 
     class MultipleValueNode < SearchNode
@@ -39,6 +41,7 @@ module Braintree
       def is(value)
         self.in(value)
       end
+      alias :== :is
 
       def initialize(name, parent, options)
         super(name, parent)
@@ -52,15 +55,15 @@ module Braintree
 
     class RangeNode < SearchNode
       def between(min, max)
-        greater_than(min)
-        less_than(max)
+        self >= min
+        self <= max
       end
 
-      def greater_than(min)
+      def >=(min)
         @parent.add_criteria(@node_name, :min => min)
       end
 
-      def less_than(max)
+      def <=(max)
         @parent.add_criteria(@node_name, :max => max)
       end
     end
