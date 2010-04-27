@@ -1102,6 +1102,7 @@ describe Braintree::Transaction do
       it "returns one result for text field search" do
         first_name = "Tim#{rand(10000)}"
         token = "creditcard#{rand(10000)}"
+        customer_id = "customer#{rand(10000)}"
 
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -1127,6 +1128,7 @@ describe Braintree::Transaction do
             :email => "smith@example.com",
             :fax => "5551231234",
             :first_name => "Tom",
+            :id => customer_id,
             :last_name => "Smith",
             :phone => "5551231234",
             :website => "http://example.com",
@@ -1165,6 +1167,7 @@ describe Braintree::Transaction do
           search.customer_email.is "smith@example.com"
           search.customer_fax.is "5551231234"
           search.customer_first_name.is "Tom"
+          search.customer_id.is customer_id
           search.customer_last_name.is "Smith"
           search.customer_phone.is "5551231234"
           search.customer_website.is "http://example.com"
