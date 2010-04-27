@@ -1302,6 +1302,13 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
+            search.credit_card_card_type.is transaction.credit_card_details.card_type
+          end
+
+          collection._approximate_size.should == 1
+
+          collection = Braintree::Transaction.search do |search|
+            search.transaction_id.is transaction.id
             search.credit_card_card_type.in Braintree::CreditCard::CardType::Visa, Braintree::CreditCard::CardType::MasterCard
           end
 

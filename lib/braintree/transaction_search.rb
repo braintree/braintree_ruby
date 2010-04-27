@@ -42,12 +42,7 @@ module Braintree
       Transaction::CreatedUsing::FullInformation,
       Transaction::CreatedUsing::Token
     ]
-    multiple_value_field :credit_card_card_type, :allows => [
-      CreditCard::CardType::Amex,
-      CreditCard::CardType::Discover,
-      CreditCard::CardType::MasterCard,
-      CreditCard::CardType::Visa
-    ]
+    multiple_value_field :credit_card_card_type, :allows => CreditCard::CardType::All
     multiple_value_field :credit_card_customer_location, :allows => [
       CreditCard::CustomerLocation::International,
       CreditCard::CustomerLocation::US

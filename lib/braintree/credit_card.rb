@@ -7,10 +7,21 @@ module Braintree
     include BaseModule # :nodoc:
 
     module CardType
-      Amex = "amex"
-      Discover = "discover"
-      MasterCard = "mastercard"
-      Visa = "visa"
+      AmEx = "American Express"
+      CarteBlanche = "Carte Blanche"
+      ChinaUnionPay = "China UnionPay"
+      DinersClubInternational = "Diners Club"
+      Discover = "Discover"
+      JCB = "JCB"
+      Laser = "Laser"
+      Maestro = "Maestro"
+      MasterCard = "MasterCard"
+      Solo = "Solo"
+      Switch = "Switch"
+      Visa = "Visa"
+      Unknown = "Unknown"
+
+      All = constants.map { |c| const_get(c) }
     end
 
     module CustomerLocation
