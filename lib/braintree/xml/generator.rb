@@ -13,7 +13,8 @@ module Braintree
       }
 
 			XML_FORMATTING_NAMES = {
-				"BigDecimal" => "bigdecimal"
+				"BigDecimal" => "bigdecimal",
+				"Symbol"     => "symbol"
 			}.merge(XML_TYPE_NAMES)
 
       XML_FORMATTING = {

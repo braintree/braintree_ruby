@@ -116,6 +116,11 @@ describe Braintree::Xml do
 			end
 		end
 
+		it "works for symbols" do
+			hash = {:root => {:foo => :bar}}
+			Braintree::Xml.hash_to_xml(hash).should include("<foo>bar</foo>")
+		end
+
     it "type casts booleans" do
       hash = {:root => {:string_true => "true", :bool_true => true, :bool_false => false, :string_false => "false"}}
       verify_to_xml_and_back hash
