@@ -20,6 +20,7 @@ module Braintree
       :customer_last_name,
       :customer_phone,
       :customer_website,
+      :id,
       :order_id,
       :payment_method_token,
       :processor_authorization_code,
@@ -31,8 +32,7 @@ module Braintree
       :shipping_locality,
       :shipping_postal_code,
       :shipping_region,
-      :shipping_street_address,
-      :transaction_id
+      :shipping_street_address
     )
 
     equality_fields :credit_card_expiration_date
