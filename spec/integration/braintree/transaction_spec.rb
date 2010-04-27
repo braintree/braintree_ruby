@@ -1478,7 +1478,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id == transaction.id
-            search.date.between(
+            search.created_at.between(
               Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min),
               Time.utc(created_at.year, created_at.month, created_at.day + 1, created_at.hour, created_at.min)
             )
@@ -1489,7 +1489,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.date >= created_at - 1
+            search.created_at >= created_at - 1
           end
 
           collection._approximate_size.should == 1
@@ -1497,7 +1497,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.date <= created_at + 1
+            search.created_at <= created_at + 1
           end
 
           collection._approximate_size.should == 1
@@ -1505,7 +1505,7 @@ describe Braintree::Transaction do
 
           collection = Braintree::Transaction.search do |search|
             search.transaction_id.is transaction.id
-            search.date.between(
+            search.created_at.between(
               Time.utc(created_at.year, created_at.month, created_at.day - 3, created_at.hour, created_at.min),
               Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min)
             )
