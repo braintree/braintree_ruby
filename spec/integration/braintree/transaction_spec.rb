@@ -1487,7 +1487,7 @@ describe Braintree::Transaction do
           created_at = transaction.created_at
 
           collection = Braintree::Transaction.search do |search|
-            search.transaction_id == transaction.id
+            search.transaction_id.is transaction.id
             search.created_at.between(
               Time.utc(created_at.year, created_at.month, created_at.day - 1, created_at.hour, created_at.min),
               Time.utc(created_at.year, created_at.month, created_at.day + 1, created_at.hour, created_at.min)

@@ -11,9 +11,6 @@ module Braintree
       :billing_region,
       :billing_street_address,
       :credit_card_cardholder_name,
-      :credit_card_expiration_date,
-      :credit_card_number,
-      :credit_card_number,
       :currency,
       :customer_company,
       :customer_email,
@@ -37,6 +34,9 @@ module Braintree
       :shipping_street_address,
       :transaction_id
     )
+
+    equality_fields :credit_card_expiration_date
+    partial_match_fields :credit_card_number
 
     multiple_value_field :created_using, :allows => [
       Transaction::CreatedUsing::FullInformation,

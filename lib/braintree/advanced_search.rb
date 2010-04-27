@@ -14,16 +14,22 @@ module Braintree
       end
     end
 
-    class TextNode < SearchNode
-      operators :is, :is_not, :ends_with, :starts_with, :contains
-      alias :== :is
+    class EqualityNode < SearchNode
+      operators :is, :is_not
+    end
+
+    class PartialMatchNode < EqualityNode
+      operators :ends_with, :starts_with
+    end
+
+    class TextNode < PartialMatchNode
+      operators :contains
     end
 
     class KeyValueNode < SearchNode
       def is(value)
         @parent.add_criteria(@node_name, value)
       end
-      alias :== :is
     end
 
     class MultipleValueNode < SearchNode
@@ -41,7 +47,6 @@ module Braintree
       def is(value)
         self.in(value)
       end
-      alias :== :is
 
       def initialize(name, parent, options)
         super(name, parent)
@@ -69,11 +74,15 @@ module Braintree
     end
 
     def self.search_fields(*fields)
-      fields.each do |field|
-        define_method(field) do
-          TextNode.new(field, self)
-        end
-      end
+      _create_field_accessors(fields, TextNode)
+    end
+
+    def self.equality_fields(*fields)
+      _create_field_accessors(fields, EqualityNode)
+    end
+
+    def self.partial_match_fields(*fields)
+      _create_field_accessors(fields, PartialMatchNode)
     end
 
     def self.multiple_value_field(field, options={})
@@ -83,25 +92,21 @@ module Braintree
     end
 
     def self.key_value_fields(*fields)
-      fields.each do |field|
-        define_method(field) do
-          KeyValueNode.new(field, self)
-        end
-      end
+      _create_field_accessors(fields, KeyValueNode)
     end
 
     def self.range_fields(*fields)
-      fields.each do |field|
-        define_method(field) do
-          RangeNode.new(field, self)
-        end
-      end
+      _create_field_accessors(fields, RangeNode)
     end
 
     def self.date_range_fields(*fields)
+      _create_field_accessors(fields, DateRangeNode)
+    end
+
+    def self._create_field_accessors(fields, node_class)
       fields.each do |field|
         define_method(field) do
-          DateRangeNode.new(field, self)
+          node_class.new(field, self)
         end
       end
     end
