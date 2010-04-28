@@ -1150,6 +1150,109 @@ describe Braintree::Transaction do
           }
         )
 
+        search_criteria = {
+          :billing_company => "Braintree",
+          :billing_country_name => "United States of America",
+          :billing_extended_address => "Suite 123",
+          :billing_first_name => first_name,
+          :billing_last_name => "Smith",
+          :billing_locality => "Chicago",
+          :billing_postal_code => "12345",
+          :billing_region => "IL",
+          :billing_street_address => "123 Main St",
+          :credit_card_cardholder_name => "Tom Smith",
+          :credit_card_expiration_date => "05/2012",
+          :credit_card_number => Braintree::Test::CreditCardNumbers::Visa,
+          :customer_company => "Braintree",
+          :customer_email => "smith@example.com",
+          :customer_fax => "5551231234",
+          :customer_first_name => "Tom",
+          :customer_id => customer_id,
+          :customer_last_name => "Smith",
+          :customer_phone => "5551231234",
+          :customer_website => "http://example.com",
+          :order_id => "myorder",
+          :payment_method_token => token,
+          :processor_authorization_code => transaction.processor_authorization_code,
+          :shipping_company => "Braintree P.S.",
+          :shipping_country_name => "Mexico",
+          :shipping_extended_address => "Apt 456",
+          :shipping_first_name => "Thomas",
+          :shipping_last_name => "Smithy",
+          :shipping_locality => "Braintree",
+          :shipping_postal_code => "54321",
+          :shipping_region => "MA",
+          :shipping_street_address => "456 Road"
+        }
+
+        search_criteria.each do |criterion, value|
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.send(criterion).is value
+          end
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.send(criterion).is("invalid_attribute")
+          end
+          collection.should be_empty
+        end
+      end
+
+
+      it "searches all fields at once" do
+        first_name = "Tim#{rand(10000)}"
+        token = "creditcard#{rand(10000)}"
+        customer_id = "customer#{rand(10000)}"
+
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+            :cardholder_name => "Tom Smith",
+            :token => token,
+          },
+          :billing => {
+            :company => "Braintree",
+            :country_name => "United States of America",
+            :extended_address => "Suite 123",
+            :first_name => first_name,
+            :last_name => "Smith",
+            :locality => "Chicago",
+            :postal_code => "12345",
+            :region => "IL",
+            :street_address => "123 Main St"
+          },
+          :customer => {
+            :company => "Braintree",
+            :email => "smith@example.com",
+            :fax => "5551231234",
+            :first_name => "Tom",
+            :id => customer_id,
+            :last_name => "Smith",
+            :phone => "5551231234",
+            :website => "http://example.com",
+          },
+          :options => {
+            :store_in_vault => true
+          },
+          :order_id => "myorder",
+          :shipping => {
+            :company => "Braintree P.S.",
+            :country_name => "Mexico",
+            :extended_address => "Apt 456",
+            :first_name => "Thomas",
+            :last_name => "Smithy",
+            :locality => "Braintree",
+            :postal_code => "54321",
+            :region => "MA",
+            :street_address => "456 Road"
+          }
+        )
+
         collection = Braintree::Transaction.search do |search|
           search.billing_company.is "Braintree"
           search.billing_country_name.is "United States of America"
