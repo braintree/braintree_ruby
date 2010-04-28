@@ -20,13 +20,13 @@ module Braintree
       XML_FORMATTING = {
         "symbol"     => Proc.new { |symbol| symbol.to_s },
         "datetime"   => Proc.new { |time| time.xmlschema },
-				"bigdecimal" => Proc.new do |bigdecimal|
-					str = bigdecimal.to_s('F')
-					if str =~ /\.\d$/
-						str += "0"
-					end
-					str
-				end
+        "bigdecimal" => Proc.new do |bigdecimal|
+          str = bigdecimal.to_s('F')
+          if str =~ /\.\d$/
+            str += "0"
+          end
+          str
+        end
       }
 
       def self.hash_to_xml(hash)
