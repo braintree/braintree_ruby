@@ -1183,7 +1183,7 @@ describe Braintree::Transaction do
           search.shipping_postal_code.is "54321"
           search.shipping_region.is "MA"
           search.shipping_street_address.is "456 Road"
-          search.id transaction.id
+          search.id.is transaction.id
         end
 
         collection._approximate_size.should == 1

@@ -105,7 +105,8 @@ module Braintree
 
     def self._create_field_accessors(fields, node_class)
       fields.each do |field|
-        define_method(field) do
+        define_method(field) do |*args|
+          raise "An operator is required" unless args.empty?
           node_class.new(field, self)
         end
       end

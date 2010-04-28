@@ -14,4 +14,11 @@ describe Braintree::TransactionSearch do
 		search.status.in Braintree::Transaction::Status::SubmittedForSettlement
 		search.to_hash.should == {:status => [Braintree::Transaction::Status::SubmittedForSettlement]}
 	end
+
+  it "raises if the operator 'is' is left off" do
+    search = Braintree::TransactionSearch.new
+    expect do
+      search.billing_company "one"
+    end.to raise_error(RuntimeError, "An operator is required")
+  end
 end
