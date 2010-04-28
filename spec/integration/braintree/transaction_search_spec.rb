@@ -561,6 +561,104 @@ describe Braintree::Transaction, "search" do
 
       collection._approximate_size.should > 100
     end
+
+    context "text node operations" do
+      before(:each) do
+        @transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+            :cardholder_name => "Tom Smith"
+          }
+        )
+      end
+
+      it "is" do
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.is "Tom Smith"
+        end
+
+        collection._approximate_size.should == 1
+        collection.first.id.should == @transaction.id
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.is "Invalid"
+        end
+
+        collection._approximate_size.should == 0
+      end
+
+      it "is_not" do
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.is_not "Anybody Else"
+        end
+
+        collection._approximate_size.should == 1
+        collection.first.id.should == @transaction.id
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.is_not "Tom Smith"
+        end
+
+        collection._approximate_size.should == 0
+      end
+
+      it "ends_with" do
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.ends_with "m Smith"
+        end
+
+        collection._approximate_size.should == 1
+        collection.first.id.should == @transaction.id
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.ends_with "Tom S"
+        end
+
+        collection._approximate_size.should == 0
+      end
+
+      it "starts_with" do
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.starts_with "Tom S"
+        end
+
+        collection._approximate_size.should == 1
+        collection.first.id.should == @transaction.id
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.starts_with "m Smith"
+        end
+
+        collection._approximate_size.should == 0
+      end
+
+      it "contains" do
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.contains "m Sm"
+        end
+
+        collection._approximate_size.should == 1
+        collection.first.id.should == @transaction.id
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is @transaction.id
+          search.credit_card_cardholder_name.contains "Anybody Else"
+        end
+
+        collection._approximate_size.should == 0
+      end
+    end
   end
 
   context "basic" do
