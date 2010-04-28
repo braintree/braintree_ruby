@@ -445,66 +445,70 @@ describe Braintree::Transaction, "search" do
         collection._approximate_size.should == 1
         collection.first.id.should == credit_transaction.id
       end
+    end
 
-      it "searches on amount" do
-        transaction = Braintree::Transaction.sale!(
-          :amount => "1000.00",
-          :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/12"
-        }
-        )
+    context "range fields" do
+      context "amount" do
+        it "searches on amount" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => "1000.00",
+            :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/12"
+          }
+          )
 
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.amount.between "500.00", "1500.00"
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.amount.between "500.00", "1500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.amount >= "500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.amount <= "1500.00"
+          end
+
+          collection._approximate_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.amount.between "500.00", "900.00"
+          end
+
+          collection._approximate_size.should == 0
         end
 
-        collection._approximate_size.should == 1
-        collection.first.id.should == transaction.id
+        it "can also take BigDecimal for amount" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => BigDecimal.new("1000.00"),
+            :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/12"
+          }
+          )
 
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.amount >= "500.00"
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.amount <= BigDecimal.new("1000.00")
+          end
+
+          collection._approximate_size.should == 1
         end
-
-        collection._approximate_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.amount <= "1500.00"
-        end
-
-        collection._approximate_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.amount.between "500.00", "900.00"
-        end
-
-        collection._approximate_size.should == 0
       end
 
-      it "can also take BigDecimal for amount" do
-        transaction = Braintree::Transaction.sale!(
-          :amount => BigDecimal.new("1000.00"),
-          :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/12"
-        }
-        )
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.amount <= BigDecimal.new("1000.00")
-        end
-
-        collection._approximate_size.should == 1
-      end
-
-      it "searches on date" do
+      it "searches on created_at" do
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
