@@ -396,7 +396,7 @@ describe Braintree::Transaction, "search" do
         collection._approximate_size.should == 0
       end
 
-      it "searches on transaction_type" do
+      it "searches on type" do
         cardholder_name = "refunds#{rand(10000)}"
         credit_transaction = Braintree::Transaction.credit!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
