@@ -17,6 +17,10 @@ unless defined?(SPEC_HELPER_LOADED)
   Braintree::Configuration.logger.level = Logger::INFO
 
   module SpecHelper
+
+    DefaultMerchantAccountId = "sandbox_credit_card"
+    NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
+
     def self.stub_time_dot_now(desired_time)
       Time.class_eval do
         class << self

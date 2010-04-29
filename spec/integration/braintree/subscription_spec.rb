@@ -17,9 +17,6 @@ describe Braintree::Subscription do
     :trial_period => false
   }
 
-  DefaultMerchantAccountId = "sandbox_credit_card"
-  NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
-
   before(:each) do
     @credit_card = Braintree::Customer.create!(
       :credit_card => {
@@ -72,18 +69,18 @@ describe Braintree::Subscription do
         )
 
         result.success?.should == true
-        result.subscription.merchant_account_id.should == DefaultMerchantAccountId
+        result.subscription.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
       end
 
       it "allows setting the merchant_account_id" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => TriallessPlan[:id],
-          :merchant_account_id => NonDefaultMerchantAccountId
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
         )
 
         result.success?.should == true
-        result.subscription.merchant_account_id.should == NonDefaultMerchantAccountId
+        result.subscription.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
       end
     end
 
@@ -263,11 +260,11 @@ describe Braintree::Subscription do
     context "merchant_account_id" do
       it "allows changing the merchant_account_id" do
         result = Braintree::Subscription.update(@subscription.id,
-          :merchant_account_id => NonDefaultMerchantAccountId
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
         )
 
         result.success?.should == true
-        result.subscription.merchant_account_id.should == NonDefaultMerchantAccountId
+        result.subscription.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
       end
     end
 

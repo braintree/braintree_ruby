@@ -384,6 +384,31 @@ describe Braintree::Transaction do
       transaction.shipping_details.country_name.should == "United States of America"
     end
 
+    it "allows merchant account to be specified" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+    end
+
+    it "uses default merchant account when it is not specified" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+    end
+
     it "can store customer and credit card in the vault" do
       result = Braintree::Transaction.sale(
         :amount => "100",
@@ -704,6 +729,31 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.params.should == {:transaction => {:type => 'credit', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
+    end
+
+    it "allows merchant account to be specified" do
+      result = Braintree::Transaction.credit(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+    end
+
+    it "uses default merchant account when it is not specified" do
+      result = Braintree::Transaction.credit(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
     end
   end
 
