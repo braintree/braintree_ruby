@@ -562,8 +562,10 @@ describe Braintree::Transaction, "search" do
       collection = Braintree::Transaction.search do |search|
         search.credit_card_number.starts_with "411"
       end
-
       collection._approximate_size.should > 100
+
+      transaction_ids = collection.map {|t| t.id }.uniq.compact
+      transaction_ids.size.should == collection._approximate_size
     end
 
     context "text node operations" do
