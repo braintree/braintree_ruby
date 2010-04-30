@@ -10,14 +10,56 @@ describe Braintree::CreditCard do
   end
 
   describe "self.create_signature" do
-    it "should include customer_id" do
-      Braintree::CreditCard._create_signature.should include(:customer_id)
+    it "should be what we expect" do
+      Braintree::CreditCard._create_signature.should == [
+        :cardholder_name,
+        :cvv,
+        :expiration_date,
+        :expiration_month,
+        :expiration_year,
+        :number,
+        :token,
+        {:options => [:make_default, :verify_card]},
+        {:billing_address => [
+          :company,
+          :country_name,
+          :extended_address,
+          :first_name,
+          :last_name,
+          :locality,
+          :postal_code,
+          :region,
+          :street_address
+        ]},
+        :customer_id
+      ]
     end
   end
 
   describe "self.update_signature" do
-    it "should not include customer_id" do
-      Braintree::CreditCard._update_signature.should_not include(:customer_id)
+    it "should be what we expect" do
+      Braintree::CreditCard._update_signature.should == [
+        :cardholder_name,
+        :cvv,
+        :expiration_date,
+        :expiration_month,
+        :expiration_year,
+        :number,
+        :token,
+        {:options => [:make_default, :verify_card]},
+        {:billing_address => [
+          :company,
+          :country_name,
+          :extended_address,
+          :first_name,
+          :last_name,
+          :locality,
+          :postal_code,
+          :region,
+          :street_address,
+          {:options => [:update_existing]}
+        ]}
+      ]
     end
   end
 
