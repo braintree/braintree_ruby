@@ -1019,6 +1019,23 @@ describe Braintree::Transaction do
   end
 
   describe "refund" do
+    context "partial refunds" do
+      it "allows partial refunds" do
+        transaction = create_transaction_to_refund
+        result = transaction.refund(transaction.amount / 2)
+        result.success?.should == true
+        result.new_transaction.type.should == "credit"
+      end
+
+      it "does not all multiple refunds" do
+        transaction = create_transaction_to_refund
+        transaction.refund(transaction.amount / 2)
+        result = transaction.refund(BigDecimal.new("1"))
+        result.success?.should == false
+        result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+      end
+    end
+
     it "returns a successful result if successful" do
       transaction = create_transaction_to_refund
       transaction.status.should == Braintree::Transaction::Status::Settled

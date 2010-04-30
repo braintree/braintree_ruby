@@ -290,8 +290,8 @@ module Braintree
     end
 
     # Creates a credit transaction that refunds this transaction.
-    def refund
-      response = Http.post "/transactions/#{id}/refund"
+    def refund(amount = nil)
+      response = Http.post "/transactions/#{id}/refund", :transaction => {:amount => amount}
       if response[:transaction]
         # TODO: need response to return original_transaction so that we can update status, updated_at, etc.
         SuccessfulResult.new(:new_transaction => Transaction._new(response[:transaction]))
