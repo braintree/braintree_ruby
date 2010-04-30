@@ -326,6 +326,53 @@ describe Braintree::CreditCard do
       updated_credit_card.cardholder_name.should == "New Holder"
     end
 
+    context "billing address" do
+      it "creates a new billing address by default" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :billing_address => {
+            :street_address => "123 Nigeria Ave"
+          }
+        )
+        update_result = Braintree::CreditCard.update(credit_card.token,
+          :billing_address => {
+            :region => "IL"
+          }
+        )
+        update_result.success?.should == true
+        updated_credit_card = update_result.credit_card
+        updated_credit_card.billing_address.region.should == "IL"
+        updated_credit_card.billing_address.street_address.should == nil
+        updated_credit_card.billing_address.id.should_not == credit_card.billing_address.id
+      end
+
+      it "updates the billing address if option is specified" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :billing_address => {
+            :street_address => "123 Nigeria Ave"
+          }
+        )
+        update_result = Braintree::CreditCard.update(credit_card.token,
+          :billing_address => {
+            :region => "IL",
+            :options => {:update_existing => true}
+          }
+        )
+        update_result.success?.should == true
+        updated_credit_card = update_result.credit_card
+        updated_credit_card.billing_address.region.should == "IL"
+        updated_credit_card.billing_address.street_address.should == "123 Nigeria Ave"
+        updated_credit_card.billing_address.id.should == credit_card.billing_address.id
+      end
+    end
+
     it "can pass expiration_month and expiration_year" do
       customer = Braintree::Customer.create!
       credit_card = Braintree::CreditCard.create!(
