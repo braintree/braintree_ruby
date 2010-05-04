@@ -582,7 +582,7 @@ describe Braintree::Transaction, "search" do
 
         collection = Braintree::Transaction.search do |search|
           search.id.is transaction.id
-          search.created_at >= now - 1
+          search.created_at >= now - 60
         end
 
         collection._approximate_size.should == 1
@@ -590,7 +590,7 @@ describe Braintree::Transaction, "search" do
 
         collection = Braintree::Transaction.search do |search|
           search.id.is transaction.id
-          search.created_at <= now + 1
+          search.created_at <= now + 60
         end
 
         collection._approximate_size.should == 1
