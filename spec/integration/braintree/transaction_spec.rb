@@ -816,6 +816,30 @@ describe Braintree::Transaction do
       transaction.credit_card_details.expiration_date.should == "05/2009"
     end
 
+    it "raises an error with a message if given invalid params" do
+      params = {
+        :transaction => {
+          :bad => "value",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        }
+      }
+      tr_data_params = {
+        :transaction => {
+          :type => "sale"
+        }
+      }
+      tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
+
+      expect do
+        Braintree::Transaction.create_from_transparent_redirect(query_string_response)
+      end.to raise_error(Braintree::AuthorizationError, "Invalid params: transaction[bad]")
+    end
+
     it "can put any param in tr_data" do
       params = {
 
