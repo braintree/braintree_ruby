@@ -518,7 +518,7 @@ describe Braintree::CreditCard do
       updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
       updated_credit_card.expiration_date.should == "06/2013"
       updated_credit_card.cardholder_name.should == "New Holder"
-      updated_credit_card.updated_at.between?(Time.now - 5, Time.now).should == true
+      updated_credit_card.updated_at.between?(Time.now - 60, Time.now).should == true
     end
 
     it "raises a ValidationsFailed if invalid" do
@@ -967,7 +967,7 @@ describe Braintree::CreditCard do
       credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
       credit_card.expiration_date.should == "06/2013"
       credit_card.cardholder_name.should == "New Holder"
-      credit_card.updated_at.between?(Time.now - 5, Time.now).should == true
+      credit_card.updated_at.between?(Time.now - 60, Time.now).should == true
     end
 
     it "raises a ValidationsFailed if invalid" do

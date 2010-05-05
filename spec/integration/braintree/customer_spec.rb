@@ -578,7 +578,7 @@ describe Braintree::Customer do
       )
       updated_customer.first_name.should == "Mr. Joe"
       updated_customer.last_name.should == "Super Cool"
-      updated_customer.updated_at.between?(Time.now - 5, Time.now).should == true
+      updated_customer.updated_at.between?(Time.now - 60, Time.now).should == true
     end
 
     it "raises an error if unsuccessful" do
@@ -630,7 +630,7 @@ describe Braintree::Customer do
       ).should == customer
       customer.first_name.should == "Mr. Joe"
       customer.last_name.should == "Super Cool"
-      customer.updated_at.between?(Time.now - 5, Time.now).should == true
+      customer.updated_at.between?(Time.now - 60, Time.now).should == true
     end
 
     it "raises an error if unsuccessful" do

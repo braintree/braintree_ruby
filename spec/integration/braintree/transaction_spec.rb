@@ -636,7 +636,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.amount.should == BigDecimal.new("999.99")
       result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      result.transaction.updated_at.between?(Time.now - 5, Time.now).should == true
+      result.transaction.updated_at.between?(Time.now - 60, Time.now).should == true
     end
 
     it "returns an error result if settlement is too large" do
