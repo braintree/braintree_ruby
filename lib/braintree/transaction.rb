@@ -395,15 +395,21 @@ module Braintree
       end
     end
 
-    def self._advanced_search(page, &block) # :nodoc:
+    def self._advanced_search(ids=nil, &block) # :nodoc:
       search = TransactionSearch.new
       block.call(search)
 
-      response = Http.post "/transactions/advanced_search?page=#{page}", {:search => search.to_hash}
-      attributes = response[:credit_card_transactions]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
+      response = Http.post "/transactions/advanced_search_ids", {:search => search.to_hash}
+      ids = Util.extract_attribute_as_array(response[:search_results], :ids)
 
-      ResourceCollection.new(attributes) { |page_number| Transaction.search(nil, page_number, &block) }
+      NewResourceCollection.new(ids) { |ids| _fetch_transactions(search, ids) }
+    end
+
+    def self._fetch_transactions(search, ids)
+      search.ids.in ids
+      response = Http.post "/transactions/advanced_search", {:search => search.to_hash}
+      attributes = response[:credit_card_transactions]
+      Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
     end
 
     def self._attributes # :nodoc:

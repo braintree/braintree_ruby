@@ -23,7 +23,7 @@ module Braintree
           when 'Hash'
             if value['type'] == 'array'
               child_key, entries = value.detect { |k,v| k != 'type' }   # child_key is throwaway
-              if entries.nil? || (c = value[CONTENT_ROOT] && c.blank?)
+              if entries.nil? || ((c = value[CONTENT_ROOT]) && c.strip.empty?)
                 []
               else
                 case entries.class.to_s   # something weird with classes not matching here.  maybe singleton methods breaking is_a?
