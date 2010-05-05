@@ -120,7 +120,7 @@ describe Braintree::Util do
   end
 
   describe "self.extract_attribute_as_array" do
-    it "delets the attribute from the hash" do
+    it "deletes the attribute from the hash" do
       hash = {:foo => ["x"], :bar => :baz}
       Braintree::Util.extract_attribute_as_array(hash, :foo)
       hash.should == {:bar => :baz}
@@ -143,6 +143,12 @@ describe Braintree::Util do
       result = Braintree::Util.extract_attribute_as_array(hash, :quz)
       result.should == []
     end
+
+		it "raises an UnexpectedError if nil data is provided" do
+			expect do
+				Braintree::Util.extract_attribute_as_array(nil, :abc)
+			end.to raise_error(Braintree::UnexpectedError, /Unprocessable entity due to an invalid request/)
+		end
   end
 
   describe "self.hash_to_query_string" do

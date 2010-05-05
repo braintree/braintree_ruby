@@ -123,6 +123,11 @@ module Braintree
   class Transaction
     include BaseModule
 
+    module CreatedUsing
+      FullInformation = 'full_information'
+      Token = 'token'
+    end
+
     module Status
       Authorizing = 'authorizing'
       Authorized = 'authorized'
@@ -134,6 +139,14 @@ module Braintree
       SubmittedForSettlement = 'submitted_for_settlement'
       Unknown = 'unknown'
       Voided = 'voided'
+
+      All = constants.map { |c| const_get(c) }
+    end
+
+    module Source
+      Api = "api"
+      ControlPanel = "control_panel"
+      Recurring = "recurring"
     end
 
     module Type # :nodoc:
@@ -145,6 +158,7 @@ module Braintree
     attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id
     attr_reader :custom_fields
     attr_reader :cvv_response_code
+    attr_reader :merchant_account_id
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
     # The authorization code from the processor.
@@ -209,13 +223,13 @@ module Braintree
     # Returns a ResourceCollection of transactions matching the search query.
     # If <tt>query</tt> is a string, the search will be a basic search.
     # If <tt>query</tt> is a hash, the search will be an advanced search.
-    def self.search(query, options = {})
-      if query.is_a?(String)
-        _basic_search query, options
-      elsif query.is_a?(Hash)
-        _advanced_search query, options
+    def self.search(query = nil, page=1, &block)
+      if block_given?
+        _advanced_search page, &block
+      elsif query.is_a?(String)
+        _basic_search query, page
       else
-        raise ArgumentError, "expected query to be a string or a hash"
+        raise ArgumentError, "expected search to be a string or a block"
       end
     end
 
@@ -256,8 +270,9 @@ module Braintree
       _init attributes
     end
 
-    # True if <tt>other</tt> has the same id.
+    # True if <tt>other</tt> is a Braintree::Transaction with the same id.
     def ==(other)
+      return false unless other.is_a?(Transaction)
       id == other.id
     end
 
@@ -275,8 +290,8 @@ module Braintree
     end
 
     # Creates a credit transaction that refunds this transaction.
-    def refund
-      response = Http.post "/transactions/#{id}/refund"
+    def refund(amount = nil)
+      response = Http.post "/transactions/#{id}/refund", :transaction => {:amount => amount}
       if response[:transaction]
         # TODO: need response to return original_transaction so that we can update status, updated_at, etc.
         SuccessfulResult.new(:new_transaction => Transaction._new(response[:transaction]))
@@ -380,29 +395,31 @@ module Braintree
       end
     end
 
-    def self._advanced_search(query, options) # :nodoc:
-      page = options[:page] || 1
-      response = Http.post "/transactions/advanced_search?page=#{Util.url_encode(page)}", :search => query
+    def self._advanced_search(page, &block) # :nodoc:
+      search = TransactionSearch.new
+      block.call(search)
+
+      response = Http.post "/transactions/advanced_search?page=#{page}", {:search => search.to_hash}
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(nil, page_number, &block) }
     end
 
     def self._attributes # :nodoc:
       [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :type, :updated_at]
     end
 
-    def self._basic_search(query, options) # :nodoc:
-      page = options[:page] || 1
+    def self._basic_search(query, page) # :nodoc:
       response = Http.get "/transactions/all/search?q=#{Util.url_encode(query)}&page=#{Util.url_encode(page)}"
       attributes = response[:credit_card_transactions]
       attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
-      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, :page => page_number) }
+      ResourceCollection.new(attributes) { |page_number| Transaction.search(query, page_number) }
     end
 
     def self._create_signature # :nodoc:
       [
-        :amount, :customer_id, :order_id, :payment_method_token, :type,
+        :amount, :customer_id, :merchant_account_id, :order_id, :payment_method_token, :type,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {:billing => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},

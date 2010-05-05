@@ -99,6 +99,28 @@ describe Braintree::Xml do
       verify_to_xml_and_back hash
     end
 
+		context "BigDecimal" do
+			it "works for BigDecimals" do
+				hash = {:root => {:foo => BigDecimal.new("123.45")}}
+				Braintree::Xml.hash_to_xml(hash).should include("<foo>123.45</foo>")
+			end
+
+			it "works for BigDecimals with fewer than 2 digits" do
+				hash = {:root => {:foo => BigDecimal.new("1000.0")}}
+				Braintree::Xml.hash_to_xml(hash).should include("<foo>1000.00</foo>")
+			end
+
+			it "works for BigDecimals with more than 2 digits" do
+				hash = {:root => {:foo => BigDecimal.new("12.345")}}
+				Braintree::Xml.hash_to_xml(hash).should include("<foo>12.345</foo>")
+			end
+		end
+
+		it "works for symbols" do
+			hash = {:root => {:foo => :bar}}
+			Braintree::Xml.hash_to_xml(hash).should include("<foo>bar</foo>")
+		end
+
     it "type casts booleans" do
       hash = {:root => {:string_true => "true", :bool_true => true, :bool_false => false, :string_false => "false"}}
       verify_to_xml_and_back hash

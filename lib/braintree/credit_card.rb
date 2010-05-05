@@ -6,6 +6,29 @@ module Braintree
   class CreditCard
     include BaseModule # :nodoc:
 
+    module CardType
+      AmEx = "American Express"
+      CarteBlanche = "Carte Blanche"
+      ChinaUnionPay = "China UnionPay"
+      DinersClubInternational = "Diners Club"
+      Discover = "Discover"
+      JCB = "JCB"
+      Laser = "Laser"
+      Maestro = "Maestro"
+      MasterCard = "MasterCard"
+      Solo = "Solo"
+      Switch = "Switch"
+      Visa = "Visa"
+      Unknown = "Unknown"
+
+      All = constants.map { |c| const_get(c) }
+    end
+
+    module CustomerLocation
+      International = "international"
+      US = "us"
+    end
+
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
       :expiration_year, :last_4, :subscriptions, :token, :updated_at
 
@@ -103,7 +126,7 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       _init attributes
-      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription.new(subscription_hash) }
+      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(subscription_hash) }
     end
 
     # Creates a credit transaction for this credit card.
@@ -196,7 +219,7 @@ module Braintree
     end
 
     def self._create_signature # :nodoc:
-      _update_signature + [:customer_id]
+      _signature(:create)
     end
 
     def self._new(*args) # :nodoc:
@@ -226,11 +249,27 @@ module Braintree
     end
 
     def self._update_signature # :nodoc:
-      [
+      _signature(:update)
+    end
+
+    def self._signature(type) # :nodoc:
+      billing_address_params = [:company, :country_name, :extended_address, :first_name, :last_name, :locality, :postal_code, :region, :street_address]
+      signature = [
         :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
         {:options => [:make_default, :verify_card]},
-        {:billing_address => [:company, :country_name, :extended_address, :first_name, :last_name, :locality, :postal_code, :region, :street_address]}
+        {:billing_address => billing_address_params}
       ]
+
+      case type
+      when :create
+        signature << :customer_id
+      when :update
+        billing_address_params << {:options => [:update_existing]}
+      else
+        raise ArgumentError
+      end
+
+      return signature
     end
 
     def _init(attributes) # :nodoc:

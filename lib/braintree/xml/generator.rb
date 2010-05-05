@@ -11,9 +11,22 @@ module Braintree
         "DateTime"   => "datetime",
         "Time"       => "datetime",
       }
+
+			XML_FORMATTING_NAMES = {
+				"BigDecimal" => "bigdecimal",
+				"Symbol"     => "symbol"
+			}.merge(XML_TYPE_NAMES)
+
       XML_FORMATTING = {
-        "symbol"   => Proc.new { |symbol| symbol.to_s },
-        "datetime" => Proc.new { |time| time.xmlschema },
+        "symbol"     => Proc.new { |symbol| symbol.to_s },
+        "datetime"   => Proc.new { |time| time.xmlschema },
+        "bigdecimal" => Proc.new do |bigdecimal|
+          str = bigdecimal.to_s('F')
+          if str =~ /\.\d$/
+            str += "0"
+          end
+          str
+        end
       }
 
       def self.hash_to_xml(hash)
@@ -49,8 +62,9 @@ module Braintree
                 attributes[:nil] = true
               end
 
+							formatting_name = XML_FORMATTING_NAMES[value.class.name]
               options[:builder].tag!(_xml_escape(key),
-                XML_FORMATTING[type_name] ? XML_FORMATTING[type_name].call(value) : value,
+                XML_FORMATTING[formatting_name] ? XML_FORMATTING[formatting_name].call(value) : value,
                 attributes
               )
             end

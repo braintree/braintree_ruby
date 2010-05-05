@@ -199,6 +199,51 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer
     end
+
+    context "new credit card for existing customer" do
+      it "allows a new credit card to be used for an existing customer" do
+        customer = Braintree::Customer.create!(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2010"
+          }
+        )
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :customer_id => customer.id,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12"
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.masked_number.should == "401288******1881"
+        result.transaction.vault_credit_card.should be_nil
+      end
+
+      it "allows a new credit card to be used and stored in the vault" do
+        customer = Braintree::Customer.create!(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2010"
+          }
+        )
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :customer_id => customer.id,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :options => { :store_in_vault => true }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.masked_number.should == "401288******1881"
+        result.transaction.vault_credit_card.masked_number.should == "401288******1881"
+      end
+    end
   end
 
   describe "self.create!" do
@@ -301,8 +346,8 @@ describe Braintree::Transaction do
       transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
-      transaction.created_at.between?(Time.now - 5, Time.now).should == true
-      transaction.updated_at.between?(Time.now - 5, Time.now).should == true
+      transaction.created_at.between?(Time.now - 60, Time.now).should == true
+      transaction.updated_at.between?(Time.now - 60, Time.now).should == true
       transaction.credit_card_details.bin.should == "510510"
       transaction.credit_card_details.cardholder_name.should == "The Cardholder"
       transaction.credit_card_details.last_4.should == "5100"
@@ -337,6 +382,31 @@ describe Braintree::Transaction do
       transaction.shipping_details.region.should == "IL"
       transaction.shipping_details.postal_code.should == "60103"
       transaction.shipping_details.country_name.should == "United States of America"
+    end
+
+    it "allows merchant account to be specified" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+    end
+
+    it "uses default merchant account when it is not specified" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
     end
 
     it "can store customer and credit card in the vault" do
@@ -660,6 +730,31 @@ describe Braintree::Transaction do
       result.params.should == {:transaction => {:type => 'credit', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
+
+    it "allows merchant account to be specified" do
+      result = Braintree::Transaction.credit(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+    end
+
+    it "uses default merchant account when it is not specified" do
+      result = Braintree::Transaction.credit(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == true
+      result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+    end
   end
 
   describe "self.credit!" do
@@ -924,6 +1019,23 @@ describe Braintree::Transaction do
   end
 
   describe "refund" do
+    context "partial refunds" do
+      it "allows partial refunds" do
+        transaction = create_transaction_to_refund
+        result = transaction.refund(transaction.amount / 2)
+        result.success?.should == true
+        result.new_transaction.type.should == "credit"
+      end
+
+      it "does not all multiple refunds" do
+        transaction = create_transaction_to_refund
+        transaction.refund(transaction.amount / 2)
+        result = transaction.refund(BigDecimal.new("1"))
+        result.success?.should == false
+        result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+      end
+    end
+
     it "returns a successful result if successful" do
       transaction = create_transaction_to_refund
       transaction.status.should == Braintree::Transaction::Status::Settled
@@ -1041,101 +1153,6 @@ describe Braintree::Transaction do
       expect do
         transaction.submit_for_settlement!("1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
-    end
-  end
-
-  describe "search" do
-    describe "advanced" do
-      it "pretty much works in one big fell swoop/hash" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2009"
-          },
-          :order_id => "123",
-          :customer => {
-            :company => "Apple",
-            :fax => "312-555-1234",
-            :first_name => "Steve",
-            :last_name => "Jobs",
-            :phone => "614-555-1234",
-            :website => "http://www.apple.com",
-          },
-          :billing => {
-            :country_name => "United States of America",
-            :extended_address => "Apt 1F",
-            :locality => "Chicago",
-            :postal_code => "60622",
-            :region => "Illinois",
-            :street_address => "1234 W North Ave",
-          },
-          :shipping => {
-            :country_name => "United States of America",
-            :extended_address => "Apt 123",
-            :locality => "Bartlett",
-            :postal_code => "60004",
-            :region => "Illinois",
-            :street_address => "123 Main St",
-          }
-        )
-        result.success?.should == true
-        expected_transaction = result.transaction
-        search_criteria = {
-          :billing_country_name => {:is => "United States of America"},
-          :billing_extended_address => {:is => "Apt 1F"},
-          :billing_locality => {:is => "Chicago"},
-          :billing_postal_code => {:is => "60622"},
-          :billing_region => {:is => "Illinois"},
-          :billing_street_address => {:is => "1234 W North Ave"},
-          :credit_card_number => {:is => Braintree::Test::CreditCardNumbers::Visa},
-          :customer_company => {:is => "Apple"},
-          :customer_fax => {:is => "312-555-1234"},
-          :customer_first_name => {:is => "Steve"},
-          :customer_last_name => {:is => "Jobs"},
-          :customer_phone => {:is => "614-555-1234"},
-          :customer_website => {:is => "http://www.apple.com"},
-          :expiration_date => {:is => "05/2009"},
-          :order_id => {:is => "123"},
-          :shipping_country_name => {:is => "United States of America"},
-          :shipping_extended_address => {:is => "Apt 123"},
-          :shipping_locality => {:is => "Bartlett"},
-          :shipping_postal_code => {:is => "60004"},
-          :shipping_region => {:is => "Illinois"},
-          :shipping_street_address => {:is => "123 Main St"},
-        }
-        search_results = Braintree::Transaction.search(search_criteria)
-        search_results.should include(expected_transaction)
-      end
-
-      it "properly parses the xml if only one transaction is found" do
-        transaction = Braintree::Transaction.create!(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2009"
-          }
-        )
-        search_results = Braintree::Transaction.search(:transaction_id => {:is => transaction.id})
-        search_results.first.should == transaction
-      end
-    end
-
-    describe "basic" do
-      it "returns transactions matching the given search terms" do
-        transactions = Braintree::Transaction.search "1111"
-        transactions._approximate_size.should > 0
-      end
-
-      it "can iterate over the entire collection" do
-        transactions = Braintree::Transaction.search "411111"
-        transactions._approximate_size.should > 100
-
-        transaction_ids = transactions.map {|t| t.id }.uniq.compact
-        transaction_ids.size.should == transactions._approximate_size
-      end
     end
   end
 
