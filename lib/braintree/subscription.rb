@@ -99,7 +99,7 @@ module Braintree
     #  end
     def self.search(&block)
       search = SubscriptionSearch.new
-      block.call(search)
+      block.call(search) if block
 
       response = Http.post "/subscriptions/advanced_search_ids", {:search => search.to_hash}
       ids = Util.extract_attribute_as_array(response[:search_results], :ids)
