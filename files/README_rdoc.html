@@ -752,9 +752,9 @@ The Braintree gem provides integration access to the Braintree Gateway.
   require &quot;braintree&quot;
 
   Braintree::Configuration.environment = :sandbox
-  Braintree::Configuration.merchant_id = &quot;the_merchant_id&quot;
-  Braintree::Configuration.public_key = &quot;a_public_key&quot;
-  Braintree::Configuration.private_key = &quot;a_private_key&quot;
+  Braintree::Configuration.merchant_id = &quot;your_merchant_id&quot;
+  Braintree::Configuration.public_key = &quot;your_public_key&quot;
+  Braintree::Configuration.private_key = &quot;your_private_key&quot;
 
   result = Braintree::Transaction.sale(
     :amount =&gt; &quot;1000.00&quot;,
