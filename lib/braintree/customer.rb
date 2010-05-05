@@ -8,25 +8,23 @@ module Braintree
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
       :phone, :updated_at, :website, :custom_fields
 
-    # Returns a ResourceCollection of all customers stored in the vault. Due to race conditions, this method
-    # may not reliably return all customers stored in the vault.
+    # Returns a ResourceCollection of all customers stored in the vault.
     #
-    #   page = Braintree::Customer.all
-    #   loop do
-    #     page.each do |customer|
-    #       puts "Customer #{customer.id} email is #{customer.email}"
-    #     end
-    #     break if page.last_page?
-    #     page = page.next_page
+    #   customers = Braintree::Customer.all
+    #   customers.each do |customer|
+    #     puts "Customer #{customer.id} email is #{customer.email}"
     #   end
-    def self.all(options = {})
-      page_number = options[:page] || 1
-      response = Http.get("/customers?page=#{page_number}")
+    def self.all
+      response = Http.post "/customers/advanced_search_ids"
+      ids = Util.extract_attribute_as_array(response[:search_results], :ids)
+
+      NewResourceCollection.new(ids) { |ids| _fetch_customers(ids) }
+    end
+
+    def self._fetch_customers(ids)
+      response = Http.post "/customers/advanced_search", {:search => {:ids => ids}}
       attributes = response[:customers]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :customer).map do |customer_attributes|
-        new customer_attributes
-      end
-      ResourceCollection.new(attributes) { |page_number| Customer.all(:page => page_number) }
+      attributes.map { |attrs| _new(attrs) }
     end
 
     # Creates a customer using the given +attributes+. If <tt>:id</tt> is not passed,
