@@ -716,19 +716,4 @@ describe Braintree::Transaction, "search" do
       end
     end
   end
-
-  context "basic" do
-    it "returns transactions matching the given search terms" do
-      transactions = Braintree::Transaction.search "1111"
-      transactions._approximate_size.should > 0
-    end
-
-    it "can iterate over the entire collection" do
-      transactions = Braintree::Transaction.search "411111"
-      transactions._approximate_size.should > 100
-
-      transaction_ids = transactions.map {|t| t.id }.uniq.compact
-      transaction_ids.size.should == transactions._approximate_size
-    end
-  end
 end
