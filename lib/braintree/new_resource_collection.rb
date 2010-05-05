@@ -7,7 +7,7 @@ module Braintree
       @paging_block = block
     end
 
-    # Yields each item on the current page.
+    # Yields each item
     def each(&block)
       @ids.each_slice(50) do |page_of_ids|
         transactions = @paging_block.call(page_of_ids)
