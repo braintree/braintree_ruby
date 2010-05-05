@@ -9,7 +9,7 @@ module Braintree
 
     # Yields each item
     def each(&block)
-      @ids.each_slice(50) do |page_of_ids|
+      @ids.each_slice(100) do |page_of_ids|
         transactions = @paging_block.call(page_of_ids)
         transactions.each(&block)
       end

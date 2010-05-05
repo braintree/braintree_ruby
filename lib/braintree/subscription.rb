@@ -97,14 +97,21 @@ module Braintree
     #    s.days_past_due.is "30"
     #    s.status.in [Subscription::Status::PastDue]
     #  end
-    def self.search(page=1, &block)
+    def self.search(&block)
       search = SubscriptionSearch.new
       block.call(search)
 
-      response = Http.post "/subscriptions/advanced_search?page=#{page}", {:search => search.to_hash}
+      response = Http.post "/subscriptions/advanced_search_ids", {:search => search.to_hash}
+      ids = Util.extract_attribute_as_array(response[:search_results], :ids)
+
+      NewResourceCollection.new(ids) { |ids| _fetch_subscriptions(search, ids) }
+    end
+
+    def self._fetch_subscriptions(search, ids)
+      search.ids.in ids
+      response = Http.post "/subscriptions/advanced_search", {:search => search.to_hash}
       attributes = response[:subscriptions]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| _new(attrs) }
-      ResourceCollection.new(attributes) { |page_number| Subscription.search(page_number, &block) }
+      Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| _new(attrs) }
     end
 
     def self.update(subscription_id, attributes)
