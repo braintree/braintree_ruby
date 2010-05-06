@@ -67,7 +67,7 @@ module Braintree
     # Returns a ResourceCollection of expired credit cards.
     def self.expired(options = {})
       response = Http.post("/payment_methods/all/expired_ids")
-      NewResourceCollection.new(response) { |ids| _fetch_expired(ids) }
+      ResourceCollection.new(response) { |ids| _fetch_expired(ids) }
     end
 
     # Returns a ResourceCollection of credit cards expiring between +start_date+ and +end_date+ inclusive.
@@ -76,7 +76,7 @@ module Braintree
       formatted_start_date = start_date.strftime('%m%Y')
       formatted_end_date = end_date.strftime('%m%Y')
       response = Http.post("/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}")
-      NewResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
+      ResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
     end
 
     # Finds the credit card with the given +token+. Raises a NotFoundError if it cannot be found.

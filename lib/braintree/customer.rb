@@ -16,7 +16,7 @@ module Braintree
     #   end
     def self.all
       response = Http.post "/customers/advanced_search_ids"
-      NewResourceCollection.new(response) { |ids| _fetch_customers(ids) }
+      ResourceCollection.new(response) { |ids| _fetch_customers(ids) }
     end
 
     def self._fetch_customers(ids)
@@ -96,13 +96,16 @@ module Braintree
 
     # Returns a ResourceCollection of transactions for the customer with the given +customer_id+.
     def self.transactions(customer_id, options = {})
-      page_number = options[:page] || 1
-      response = Http.get "/customers/#{customer_id}/transactions?page=#{page_number}"
+      response = Http.post "/customers/#{customer_id}/transaction_ids"
+      ResourceCollection.new(response) { |ids| _fetch_transactions(customer_id, ids) }
+    end
+
+    def self._fetch_transactions(customer_id, ids)
+      response = Http.post "/customers/#{customer_id}/transactions", :search => {:ids => ids}
       attributes = response[:credit_card_transactions]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
+      Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
         Transaction._new transaction_attributes
       end
-      ResourceCollection.new(attributes) { |page_number| Customer.transactions(customer_id, :page => page_number) }
     end
 
     def self.update(customer_id, attributes)

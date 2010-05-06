@@ -229,7 +229,7 @@ module Braintree
       block.call(search) if block
 
       response = Http.post "/transactions/advanced_search_ids", {:search => search.to_hash}
-      NewResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
+      ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
     end
 
     # Submits transaction with +transaction_id+ for settlement.
