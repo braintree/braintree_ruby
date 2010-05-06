@@ -102,9 +102,7 @@ module Braintree
       block.call(search) if block
 
       response = Http.post "/subscriptions/advanced_search_ids", {:search => search.to_hash}
-      ids = Util.extract_attribute_as_array(response[:search_results], :ids)
-
-      NewResourceCollection.new(ids) { |ids| _fetch_subscriptions(search, ids) }
+      NewResourceCollection.new(response) { |ids| _fetch_subscriptions(search, ids) }
     end
 
     def self._fetch_subscriptions(search, ids)

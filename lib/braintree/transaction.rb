@@ -228,9 +228,7 @@ module Braintree
       block.call(search)
 
       response = Http.post "/transactions/advanced_search_ids", {:search => search.to_hash}
-      ids = Util.extract_attribute_as_array(response[:search_results], :ids)
-
-      NewResourceCollection.new(ids) { |ids| _fetch_transactions(search, ids) }
+      NewResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
     end
 
     # Submits transaction with +transaction_id+ for settlement.

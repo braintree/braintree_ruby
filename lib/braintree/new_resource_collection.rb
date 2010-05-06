@@ -2,14 +2,15 @@ module Braintree
   class NewResourceCollection
     include Enumerable
 
-    def initialize(ids, &block) # :nodoc:
-      @ids = ids
+    def initialize(response, &block) # :nodoc:
+      @ids = Util.extract_attribute_as_array(response[:search_results], :ids)
+      @page_size = response[:search_results][:page_size]
       @paging_block = block
     end
 
     # Yields each item
     def each(&block)
-      @ids.each_slice(100) do |page_of_ids|
+      @ids.each_slice(@page_size) do |page_of_ids|
         transactions = @paging_block.call(page_of_ids)
         transactions.each(&block)
       end

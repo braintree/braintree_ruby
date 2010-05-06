@@ -16,15 +16,13 @@ module Braintree
     #   end
     def self.all
       response = Http.post "/customers/advanced_search_ids"
-      ids = Util.extract_attribute_as_array(response[:search_results], :ids)
-
-      NewResourceCollection.new(ids) { |ids| _fetch_customers(ids) }
+      NewResourceCollection.new(response) { |ids| _fetch_customers(ids) }
     end
 
     def self._fetch_customers(ids)
       response = Http.post "/customers/advanced_search", {:search => {:ids => ids}}
       attributes = response[:customers]
-      attributes.map { |attrs| _new(attrs) }
+      Util.extract_attribute_as_array(attributes, :customer).map { |attrs| _new(attrs) }
     end
 
     # Creates a customer using the given +attributes+. If <tt>:id</tt> is not passed,
