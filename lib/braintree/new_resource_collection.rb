@@ -11,8 +11,8 @@ module Braintree
     # Yields each item
     def each(&block)
       @ids.each_slice(@page_size) do |page_of_ids|
-        transactions = @paging_block.call(page_of_ids)
-        transactions.each(&block)
+        resources = @paging_block.call(page_of_ids)
+        resources.each(&block)
       end
     end
 

@@ -66,17 +66,19 @@ module Braintree
 
     # Returns a ResourceCollection of expired credit cards.
     def self.expired(options = {})
-      page_number = options[:page] || 1
-      response = Http.get("/payment_methods/all/expired?page=#{page_number}")
-      attributes = response[:payment_methods]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :credit_card).map do |payment_method_attributes|
-        new payment_method_attributes
-      end
-      ResourceCollection.new(attributes) { |page_number| CreditCard.expired(:page => page_number) }
+      response = Http.post("/payment_methods/all/expired_ids")
+      NewResourceCollection.new(response) { |ids| _fetch_expired(ids) }
     end
 
     # Returns a ResourceCollection of credit cards expiring between +start_date+ and +end_date+ inclusive.
     # Only the month and year of the start and end dates are used.
+    def self.expiring_between(start_date, end_date, options = {})
+      formatted_start_date = start_date.strftime('%m%Y')
+      formatted_end_date = end_date.strftime('%m%Y')
+      response = Http.post("/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}")
+      NewResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
+    end
+
     def self.expiring_between(start_date, end_date, options = {})
       page_number = options[:page] || 1
       response = Http.get("/payment_methods/all/expiring?page=#{page_number}&start=#{start_date.strftime('%m%Y')}&end=#{end_date.strftime('%m%Y')}")
@@ -122,6 +124,21 @@ module Braintree
     # The transparent redirect URL to use to update a credit card.
     def self.update_credit_card_url
       "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/update_via_transparent_redirect_request"
+    end
+
+    def self._fetch_expired(ids)
+      response = Http.post("/payment_methods/all/expired", :search => {:ids => ids})
+      attributes = response[:payment_methods]
+      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| _new(attrs) }
+    end
+
+    def self._fetch_expiring_between(formatted_start_date, formatted_end_date, ids)
+      response = Http.post(
+        "/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}",
+        :search => {:ids => ids}
+      )
+      attributes = response[:payment_methods]
+      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| _new(attrs) }
     end
 
     def initialize(attributes) # :nodoc:

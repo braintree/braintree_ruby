@@ -226,7 +226,7 @@ module Braintree
     # See: http://www.braintreepaymentsolutions.com/gateway/transaction-api#searching
     def self.search(&block)
       search = TransactionSearch.new
-      block.call(search)
+      block.call(search) if block
 
       response = Http.post "/transactions/advanced_search_ids", {:search => search.to_hash}
       NewResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }

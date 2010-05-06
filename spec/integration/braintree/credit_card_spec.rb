@@ -689,6 +689,24 @@ describe Braintree::CreditCard do
       collection._approximate_size.should > 0
       collection.all? { |pm| pm.expired?.should == true }
     end
+
+    it "can iterate over all items" do
+      customer = Braintree::Customer.all.first
+
+      (110 - Braintree::CreditCard.expired._approximate_size).times do
+        Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "01/2010"
+        )
+      end
+
+      collection = Braintree::CreditCard.expired
+      collection._approximate_size.should > 100
+
+      credit_card_ids = collection.map {|c| c.token }.uniq.compact
+      credit_card_ids.size.should == collection._approximate_size
+    end
   end
 
   describe "self.expiring_between" do
@@ -698,6 +716,24 @@ describe Braintree::CreditCard do
       collection._approximate_size.should > 0
       collection.all? { |pm| pm.expired?.should == false }
       collection.all? { |pm| pm.expiration_year.should == next_year.to_s }
+    end
+
+    it "can iterate over all items" do
+      customer = Braintree::Customer.all.first
+
+      (110 - Braintree::CreditCard.expiring_between(Time.mktime(2010, 1, 1), Time.mktime(2010,3, 1))._approximate_size).times do
+        Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "01/2010"
+        )
+      end
+
+      collection = Braintree::CreditCard.expiring_between(Time.mktime(2010, 1, 1), Time.mktime(2010,3, 1))
+      collection._approximate_size.should > 100
+
+      credit_card_ids = collection.map {|c| c.token }.uniq.compact
+      credit_card_ids.size.should == collection._approximate_size
     end
   end
 

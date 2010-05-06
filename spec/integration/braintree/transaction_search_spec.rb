@@ -609,9 +609,7 @@ describe Braintree::Transaction, "search" do
     end
 
     it "returns multiple results" do
-      collection = Braintree::Transaction.search do |search|
-        search.credit_card_number.starts_with "411"
-      end
+      collection = Braintree::Transaction.search
       collection._approximate_size.should > 100
 
       transaction_ids = collection.map {|t| t.id }.uniq.compact
