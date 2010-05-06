@@ -79,16 +79,6 @@ module Braintree
       NewResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
     end
 
-    def self.expiring_between(start_date, end_date, options = {})
-      page_number = options[:page] || 1
-      response = Http.get("/payment_methods/all/expiring?page=#{page_number}&start=#{start_date.strftime('%m%Y')}&end=#{end_date.strftime('%m%Y')}")
-      attributes = response[:payment_methods]
-      attributes[:items] = Util.extract_attribute_as_array(attributes, :credit_card).map do |payment_method_attributes|
-        new payment_method_attributes
-      end
-      ResourceCollection.new(attributes) { |page_number| CreditCard.expiring_between(start_date, end_date, :page => page_number) }
-    end
-
     # Finds the credit card with the given +token+. Raises a NotFoundError if it cannot be found.
     def self.find(token)
       response = Http.get "/payment_methods/#{token}"
@@ -134,7 +124,7 @@ module Braintree
 
     def self._fetch_expiring_between(formatted_start_date, formatted_end_date, ids)
       response = Http.post(
-        "/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}",
+        "/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
         :search => {:ids => ids}
       )
       attributes = response[:payment_methods]
