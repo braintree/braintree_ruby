@@ -223,6 +223,7 @@ module Braintree
     # Returns a ResourceCollection of transactions matching the search query.
     # If <tt>query</tt> is a string, the search will be a basic search.
     # If <tt>query</tt> is a hash, the search will be an advanced search.
+    # See: http://www.braintreepaymentsolutions.com/gateway/transaction-api#searching
     def self.search(&block)
       search = TransactionSearch.new
       block.call(search)
