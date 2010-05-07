@@ -416,7 +416,7 @@ describe Braintree::Subscription do
           search.plan_id.is "not_a_real_plan_id"
         end
 
-        collection._approximate_size.should == 0
+        collection.maximum_size.should == 0
       end
 
       context "is statement" do
@@ -614,15 +614,15 @@ describe Braintree::Subscription do
     end
 
     it "returns multiple results" do
-      (110 - Braintree::Subscription.search._approximate_size).times do
+      (110 - Braintree::Subscription.search.maximum_size).times do
         Braintree::Subscription.create(:payment_method_token => @credit_card.token, :plan_id => TriallessPlan[:id])
       end
 
       collection = Braintree::Subscription.search
-      collection._approximate_size.should > 100
+      collection.maximum_size.should > 100
 
       subscriptions_ids = collection.map {|t| t.id }.uniq.compact
-      subscriptions_ids.size.should == collection._approximate_size
+      subscriptions_ids.size.should == collection.maximum_size
     end
 
   end

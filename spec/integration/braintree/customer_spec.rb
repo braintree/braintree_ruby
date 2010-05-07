@@ -4,10 +4,10 @@ describe Braintree::Customer do
   describe "self.all" do
     it "gets more than a page of customers" do
       customers = Braintree::Customer.all
-      customers._approximate_size.should > 100
+      customers.maximum_size.should > 100
 
       customer_ids = customers.map {|c| c.id }.uniq.compact
-      customer_ids.size.should == customers._approximate_size
+      customer_ids.size.should == customers.maximum_size
     end
   end
 

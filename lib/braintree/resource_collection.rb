@@ -25,9 +25,10 @@ module Braintree
       @paging_block.call([@ids.first]).first
     end
 
-    # The size of a resource collection is only approximate due to race conditions when pulling back results.  This method
-    # should be avoided.
-    def _approximate_size
+    # Only the maximum size of a resource collection can be determined since the data on the server can change while
+    # fetching blocks of results for iteration.  For example, customers can be deleted while iterating, so the number
+    # of results iterated over may be less than the maximum_size.  In general, this method should be avoided.
+    def maximum_size
       @ids.size
     end
   end
