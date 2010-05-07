@@ -20,7 +20,7 @@ module Braintree
       @ids.empty?
     end
 
-    # Returns the first item from the current page.
+    # Returns the first item in the collection or nil if the collection is empty
     def first
       @paging_block.call([@ids.first]).first
     end
