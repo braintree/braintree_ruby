@@ -49,6 +49,8 @@ module Braintree
         raise AuthorizationError, message
       when 404
         raise NotFoundError
+      when 426
+        raise UpgradeRequiredError, "Please upgrade your client library."
       when 500
         raise ServerError
       when 503

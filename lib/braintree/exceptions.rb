@@ -38,6 +38,9 @@ module Braintree # :nodoc:
   # This shouldn't happen.
   class UnexpectedError < BraintreeError; end
 
+  # Raised when a client library that has been End of Life'd is being used.
+  class UpgradeRequiredError < BraintreeError; end
+
   # Raised from bang methods when validations fail.
   class ValidationsFailed < BraintreeError
     attr_reader :error_result

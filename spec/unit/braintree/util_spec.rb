@@ -183,6 +183,12 @@ describe Braintree::Util do
       end.to raise_error(Braintree::AuthorizationError)
     end
 
+    it "raises an UpgradeRequired if the client library is EOL'd" do
+      expect do
+        Braintree::Util.raise_exception_for_status_code(426)
+      end.to raise_error(Braintree::UpgradeRequiredError, "Please upgrade your client library.")
+    end
+
     it "raises a ServerError if the server 500's" do
       expect do
         Braintree::Util.raise_exception_for_status_code(500)
