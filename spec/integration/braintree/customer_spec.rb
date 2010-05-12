@@ -109,6 +109,23 @@ describe Braintree::Customer do
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
+    it "allows the user to specify the merchant account for verification" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
+          :expiration_date => "05/2010",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+          }
+        }
+      )
+      result.success?.should == false
+      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+    end
+
     it "can create a customer, payment method, and billing address at the same time" do
       result = Braintree::Customer.create(
         :first_name => "Mike",

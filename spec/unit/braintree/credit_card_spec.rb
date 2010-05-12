@@ -19,7 +19,7 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
-        {:options => [:make_default, :verify_card]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
         {:billing_address => [
           :company,
           :country_name,
@@ -46,7 +46,7 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
-        {:options => [:make_default, :verify_card]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
         {:billing_address => [
           :company,
           :country_name,

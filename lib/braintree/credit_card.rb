@@ -263,7 +263,7 @@ module Braintree
       billing_address_params = [:company, :country_name, :extended_address, :first_name, :last_name, :locality, :postal_code, :region, :street_address]
       signature = [
         :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
-        {:options => [:make_default, :verify_card]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
         {:billing_address => billing_address_params}
       ]
 
