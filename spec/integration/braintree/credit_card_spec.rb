@@ -88,13 +88,7 @@ describe Braintree::CreditCard do
         }
       )
       result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
-      result.credit_card_verification.processor_response_code.should == "2000"
-      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.cvv_response_code.should == "I"
-      result.credit_card_verification.avs_error_response_code.should == nil
-      result.credit_card_verification.avs_postal_code_response_code.should == "I"
-      result.credit_card_verification.avs_street_address_response_code.should == "I"
+      result.credit_card_verification.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
     end
 
     it "does not verify the card if options[verify_card]=false" do
