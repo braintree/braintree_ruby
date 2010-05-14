@@ -170,6 +170,7 @@ module Braintree
     # See Transaction::Status
     attr_reader :status
     attr_reader :status_history
+    attr_reader :subscription_id
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at

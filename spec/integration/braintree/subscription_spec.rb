@@ -141,6 +141,7 @@ describe Braintree::Subscription do
           result.subscription.transactions.first.should be_a(Braintree::Transaction)
           result.subscription.transactions.first.amount.should == TriallessPlan[:price]
           result.subscription.transactions.first.type.should == Braintree::Transaction::Type::Sale
+          result.subscription.transactions.first.subscription_id.should == result.subscription.id
         end
 
         it "doesn't create a transaction if there's a trial period" do
