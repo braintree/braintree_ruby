@@ -41,14 +41,16 @@ module Braintree
       end
     end
 
-    def self.raise_exception_for_status_code(status_code)
+    def self.raise_exception_for_status_code(status_code, message=nil)
       case status_code.to_i
       when 401
         raise AuthenticationError
       when 403
-        raise AuthorizationError
+        raise AuthorizationError, message
       when 404
         raise NotFoundError
+      when 426
+        raise UpgradeRequiredError, "Please upgrade your client library."
       when 500
         raise ServerError
       when 503

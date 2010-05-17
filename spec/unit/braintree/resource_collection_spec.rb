@@ -1,68 +1,20 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe "Braintree::ResourceCollection" do
-  it "includes enumerable" do
-    collection = Braintree::ResourceCollection.new(:items => ["a"])
-    collection.detect { |item| item == "a" }.should == "a"
-  end
-
-  describe "each" do
-    it "iterates over the contents" do
-      expected = ["apples", "bananas", "cherries"]
-      collection = Braintree::ResourceCollection.new(
-        :current_page_number => 1,
-        :items => expected,
-        :page_size => 5,
-        :total_items => expected.size
-      )
-      actual = []
-      collection.each do |item|
-        actual << item
+  describe "enumeration" do
+    it "iterates over the elements, yielding to the block in pages" do
+      values = %w(a b c d e)
+      collection = Braintree::ResourceCollection.new(:search_results => {:ids => [0,1,2,3,4], :page_size => 2}) do |ids|
+        ids.map {|id| values[id] }
       end
-      actual.should == expected
-    end
-  end
 
-  describe "empty?" do
-    it "returns true if there are no items" do
-      collection = Braintree::ResourceCollection.new(
-        :current_page_number => 1,
-        :items => [],
-        :page_size => 5,
-        :total_items => 0
-      )
-      collection.should be_empty
-    end
+      count = 0
+      collection.each_with_index do |item, index|
+        item.should == values[index]
+        count += 1
+      end
 
-    it "returns false if there are items" do
-      collection = Braintree::ResourceCollection.new(
-        :current_page_number => 1,
-        :items => ["one"],
-        :page_size => 5,
-        :total_items => 1
-      )
-      collection.should_not be_empty
-    end
-  end
-
-  describe "first" do
-    it "returns the first element" do
-      collection = Braintree::ResourceCollection.new(
-        :items => ["apples", "bananas", "cherries"]
-      )
-      collection.first.should == "apples"
-    end
-  end
-
-  describe "_last_page?" do
-    it "returns true if the page is the last page" do
-      collection = Braintree::ResourceCollection.new(:current_page_number => 3, :page_size => 50, :total_items => 150)
-      collection._last_page?.should == true
-    end
-
-    it "returns false if the page is not the last page" do
-      collection = Braintree::ResourceCollection.new(:current_page_number => 3, :page_size => 50, :total_items => 151)
-      collection._last_page?.should == false
+      count.should == 5
     end
   end
 end

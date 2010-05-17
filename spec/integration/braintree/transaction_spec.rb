@@ -636,7 +636,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.amount.should == BigDecimal.new("999.99")
       result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      result.transaction.updated_at.between?(Time.now - 5, Time.now).should == true
+      result.transaction.updated_at.between?(Time.now - 60, Time.now).should == true
     end
 
     it "returns an error result if settlement is too large" do
@@ -814,6 +814,30 @@ describe Braintree::Transaction do
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
+    end
+
+    it "raises an error with a message if given invalid params" do
+      params = {
+        :transaction => {
+          :bad => "value",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        }
+      }
+      tr_data_params = {
+        :transaction => {
+          :type => "sale"
+        }
+      }
+      tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
+
+      expect do
+        Braintree::Transaction.create_from_transparent_redirect(query_string_response)
+      end.to raise_error(Braintree::AuthorizationError, "Invalid params: transaction[bad]")
     end
 
     it "can put any param in tr_data" do

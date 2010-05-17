@@ -1,55 +1,35 @@
 module Braintree
   class ResourceCollection
-    include BaseModule
     include Enumerable
 
-    def initialize(attributes, &block) # :nodoc:
-      set_instance_variables_from_hash attributes
+    def initialize(response, &block) # :nodoc:
+      @ids = Util.extract_attribute_as_array(response[:search_results], :ids)
+      @page_size = response[:search_results][:page_size]
       @paging_block = block
     end
 
-    # Yields each item on the current page.
+    # Yields each item
     def each(&block)
-      @items.each(&block)
-
-      _next_page.each(&block) unless _last_page?
+      @ids.each_slice(@page_size) do |page_of_ids|
+        resources = @paging_block.call(page_of_ids)
+        resources.each(&block)
+      end
     end
 
     def empty?
-      @items.empty?
+      @ids.empty?
     end
 
-    # Returns the first item from the current page.
+    # Returns the first item in the collection or nil if the collection is empty
     def first
-      @items.first
+      @paging_block.call([@ids.first]).first
     end
 
-    # Returns true if the page is the last page. False otherwise.
-    def _last_page?
-      @current_page_number == _total_pages
-    end
-
-    # Retrieves the next page of records.
-    def _next_page
-      if _last_page?
-        return nil
-      end
-      @paging_block.call(@current_page_number + 1)
-    end
-
-    # The size of a resource collection is only approximate due to race conditions when pulling back results.  This method
-    # should be avoided.
-    def _approximate_size
-      @total_items
-    end
-
-    # Returns the total number of pages.
-    def _total_pages
-      total = @total_items / @page_size
-      if @total_items % @page_size != 0
-        total += 1
-      end
-      total
+    # Only the maximum size of a resource collection can be determined since the data on the server can change while
+    # fetching blocks of results for iteration.  For example, customers can be deleted while iterating, so the number
+    # of results iterated over may be less than the maximum_size.  In general, this method should be avoided.
+    def maximum_size
+      @ids.size
     end
   end
 end

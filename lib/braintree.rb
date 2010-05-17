@@ -1,7 +1,8 @@
-require 'bigdecimal'
+require "bigdecimal"
 require "cgi"
 require "date"
 require "digest/sha1"
+require "enumerator"
 require "logger"
 require "net/http"
 require "net/https"

@@ -32,7 +32,7 @@ describe Braintree::Http do
           Braintree::Configuration.logger.level = Logger::INFO
           Braintree::Customer.all
           utc_or_gmt = Time.now.utc.strftime("%Z")
-          output.string.should include("[Braintree] [10/Oct/2009 13:55:36 #{utc_or_gmt}] GET /customers?page=1 200")
+          output.string.should include("[Braintree] [10/Oct/2009 13:55:36 #{utc_or_gmt}] POST /customers/advanced_search_ids 200")
         end
       ensure
         Braintree::Configuration.logger = old_logger

@@ -45,7 +45,7 @@ module Braintree
       if params[:http_status] == nil
         raise UnexpectedError, "expected query string to have an http_status param"
       elsif params[:http_status] != '200'
-        Util.raise_exception_for_status_code(params[:http_status])
+        Util.raise_exception_for_status_code(params[:http_status], params[:bt_message])
       end
 
       if _hash(query_string_without_hash) == params[:hash]
