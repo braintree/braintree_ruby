@@ -839,110 +839,120 @@ href="http://www.braintreepaymentsolutions.com/gateway/credit-card-verification-
 <div class="sectiontitle">Public Class Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000075"></a><b>create</b>(attributes)
+<a name="M000093"></a><b>_fetch_expired</b>(ids)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000076"></a><b>create!</b>(attributes)
+<a name="M000094"></a><b>_fetch_expiring_between</b>(formatted_start_date, formatted_end_date, ids)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000077"></a><b>create_credit_card_url</b>()
+<a name="M000078"></a><b>create</b>(attributes)
+</div><!-- end class=title -->
+</div><!-- end class=method -->
+<div class="method">
+<div class="title">
+<a name="M000079"></a><b>create!</b>(attributes)
+</div><!-- end class=title -->
+</div><!-- end class=method -->
+<div class="method">
+<div class="title">
+<a name="M000080"></a><b>create_credit_card_url</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 The transparent redirect URL to use to <a
-href="CreditCard.html#M000075">create</a> a <a
-href="CreditCard.html#M000079">credit</a> card.
+href="CreditCard.html#M000078">create</a> a <a
+href="CreditCard.html#M000082">credit</a> card.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000078"></a><b>create_from_transparent_redirect</b>(query_string)
+<a name="M000081"></a><b>create_from_transparent_redirect</b>(query_string)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000079"></a><b>credit</b>(token, transaction_attributes)
+<a name="M000082"></a><b>credit</b>(token, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000080"></a><b>credit!</b>(token, transaction_attributes)
+<a name="M000083"></a><b>credit!</b>(token, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000081"></a><b>expired</b>(options = {})
+<a name="M000084"></a><b>expired</b>(options = {})
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns a <a href="ResourceCollection.html">ResourceCollection</a> of <a
-href="CreditCard.html#M000081">expired</a> <a
-href="CreditCard.html#M000079">credit</a> cards.
+href="CreditCard.html#M000084">expired</a> <a
+href="CreditCard.html#M000082">credit</a> cards.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000082"></a><b>expiring_between</b>(start_date, end_date, options = {})
+<a name="M000085"></a><b>expiring_between</b>(start_date, end_date, options = {})
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns a <a href="ResourceCollection.html">ResourceCollection</a> of <a
-href="CreditCard.html#M000079">credit</a> cards expiring between
+href="CreditCard.html#M000082">credit</a> cards expiring between
 <tt>start_date</tt> and <tt>end_date</tt> inclusive. Only the month and
 year of the start and end dates are used.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000083"></a><b>find</b>(token)
+<a name="M000086"></a><b>find</b>(token)
 </div><!-- end class=title -->
 <div class="description"> <p>
-Finds the <a href="CreditCard.html#M000079">credit</a> card with the given
+Finds the <a href="CreditCard.html#M000082">credit</a> card with the given
 <tt>token</tt>. Raises a <a href="NotFoundError.html">NotFoundError</a> if
 it cannot be found.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000084"></a><b>sale</b>(token, transaction_attributes)
+<a name="M000087"></a><b>sale</b>(token, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000085"></a><b>sale!</b>(token, transaction_attributes)
+<a name="M000088"></a><b>sale!</b>(token, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000086"></a><b>update</b>(token, attributes)
+<a name="M000089"></a><b>update</b>(token, attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000087"></a><b>update!</b>(token, attributes)
+<a name="M000090"></a><b>update!</b>(token, attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000089"></a><b>update_credit_card_url</b>()
+<a name="M000092"></a><b>update_credit_card_url</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 The transparent redirect URL to use to <a
-href="CreditCard.html#M000086">update</a> a <a
-href="CreditCard.html#M000079">credit</a> card.
+href="CreditCard.html#M000089">update</a> a <a
+href="CreditCard.html#M000082">credit</a> card.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000088"></a><b>update_from_transparent_redirect</b>(query_string)
+<a name="M000091"></a><b>update_from_transparent_redirect</b>(query_string)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <hr />
 <div class="sectiontitle">Public Instance Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000101"></a><b>==</b>(other)
+<a name="M000106"></a><b>==</b>(other)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns true if <tt>other</tt> is a <tt><a
@@ -951,35 +961,35 @@ href="CreditCard.html">CreditCard</a></tt> with the same token.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000090"></a><b>credit</b>(transaction_attributes)
+<a name="M000095"></a><b>credit</b>(transaction_attributes)
 </div><!-- end class=title -->
 <div class="description"> <p>
-Creates a <a href="CreditCard.html#M000079">credit</a> transaction for this
-<a href="CreditCard.html#M000079">credit</a> card.
+Creates a <a href="CreditCard.html#M000082">credit</a> transaction for this
+<a href="CreditCard.html#M000082">credit</a> card.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000091"></a><b>credit!</b>(transaction_attributes)
+<a name="M000096"></a><b>credit!</b>(transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000093"></a><b>default?</b>()
+<a name="M000098"></a><b>default?</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
-Returns true if this <a href="CreditCard.html#M000079">credit</a> card is
+Returns true if this <a href="CreditCard.html#M000082">credit</a> card is
 the customer&#8216;s default.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000092"></a><b>delete</b>()
+<a name="M000097"></a><b>delete</b>()
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000094"></a><b>expiration_date</b>()
+<a name="M000099"></a><b>expiration_date</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 Expiration date formatted as MM/YYYY
@@ -987,40 +997,40 @@ Expiration date formatted as MM/YYYY
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000095"></a><b>expired?</b>()
+<a name="M000100"></a><b>expired?</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
-Returns true if the <a href="CreditCard.html#M000079">credit</a> card is <a
-href="CreditCard.html#M000081">expired</a>.
+Returns true if the <a href="CreditCard.html#M000082">credit</a> card is <a
+href="CreditCard.html#M000084">expired</a>.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000096"></a><b>masked_number</b>()
+<a name="M000101"></a><b>masked_number</b>()
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000097"></a><b>sale</b>(transaction_attributes)
+<a name="M000102"></a><b>sale</b>(transaction_attributes)
 </div><!-- end class=title -->
 <div class="description"> <p>
-Creates a <a href="CreditCard.html#M000084">sale</a> transaction for this
-<a href="CreditCard.html#M000079">credit</a> card.
+Creates a <a href="CreditCard.html#M000087">sale</a> transaction for this
+<a href="CreditCard.html#M000082">credit</a> card.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000098"></a><b>sale!</b>(transaction_attributes)
+<a name="M000103"></a><b>sale!</b>(transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000099"></a><b>update</b>(attributes)
+<a name="M000104"></a><b>update</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000100"></a><b>update!</b>(attributes)
+<a name="M000105"></a><b>update!</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 </div><!-- end grid_13 -->

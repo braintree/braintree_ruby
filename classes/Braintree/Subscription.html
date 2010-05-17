@@ -882,17 +882,22 @@ href="http://www.braintreepaymentsolutions.com/gateway/subscription-api">www.bra
 <div class="sectiontitle">Public Class Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000130"></a><b>cancel</b>(subscription_id)
+<a name="M000137"></a><b>_fetch_subscriptions</b>(search, ids)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000131"></a><b>create</b>(attributes)
+<a name="M000132"></a><b>cancel</b>(subscription_id)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000132"></a><b>find</b>(id)
+<a name="M000133"></a><b>create</b>(attributes)
+</div><!-- end class=title -->
+</div><!-- end class=method -->
+<div class="method">
+<div class="title">
+<a name="M000134"></a><b>find</b>(id)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Finds the subscription with the given id. Raises a <a
@@ -902,12 +907,12 @@ cannot be found.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000133"></a><b>retry_charge</b>(subscription_id, amount=nil)
+<a name="M000135"></a><b>retry_charge</b>(subscription_id, amount=nil)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000134"></a><b>search</b>(page=1, &amp;block)
+<a name="M000136"></a><b>search</b>(&amp;block)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Allows searching on subscriptions. There are two types of fields that are
@@ -930,10 +935,10 @@ Searchable multiple value fields are:
 </li>
 </ul>
 <p>
-For text fields, you can <a href="Subscription.html#M000134">search</a>
+For text fields, you can <a href="Subscription.html#M000136">search</a>
 using the following operators: is, is_not, starts_with, ends_with and
 contains. For mutiple value fields, you can <a
-href="Subscription.html#M000134">search</a> using the in operator. An
+href="Subscription.html#M000136">search</a> using the in operator. An
 example:
 </p>
 <pre>
@@ -946,14 +951,14 @@ example:
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000135"></a><b>update</b>(subscription_id, attributes)
+<a name="M000138"></a><b>update</b>(subscription_id, attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <hr />
 <div class="sectiontitle">Public Instance Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000136"></a><b>==</b>(other)
+<a name="M000139"></a><b>==</b>(other)
 </div><!-- end class=title -->
 <div class="description"> <p>
 True if <tt>other</tt> has the same id.

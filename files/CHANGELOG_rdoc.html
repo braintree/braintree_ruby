@@ -733,7 +733,23 @@ pre {
 
   <hr />
   <div class="description">
-    <h2>2.1.0</h2>
+    <h2>2.2.0</h2>
+<ul>
+<li>Prevent race condition when pulling back collection results &#8212; search
+results represent the state of the data at the time the query was run
+
+</li>
+<li>Rename ResourceCollection&#8216;s approximate_size to maximum_size because
+items that no longer match the query will not be returned in the result set
+
+</li>
+<li>Correctly handle HTTP error 426 (Upgrade Required) &#8212; the error code
+is returned when your client library version is no longer compatible with
+the gateway
+
+</li>
+</ul>
+<h2>2.1.0</h2>
 <ul>
 <li>Added transaction advanced search
 
