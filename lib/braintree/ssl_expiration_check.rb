@@ -6,7 +6,6 @@ module Braintree
 
     def self.check_dates # :nodoc:
       {
-        "QA" => qa_expiration_date,
         "Sandbox" => sandbox_expiration_date,
         "Production" => production_expiration_date
       }.each do |host, expiration_date|
@@ -22,10 +21,6 @@ module Braintree
     end
 
     def self.sandbox_expiration_date # :nodoc:
-      Date.civil(2010, 12, 1)
-    end
-
-    def self.qa_expiration_date # :nodoc:
       Date.civil(2010, 12, 1)
     end
   end
