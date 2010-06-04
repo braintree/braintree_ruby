@@ -42,7 +42,7 @@ describe Braintree::SSLExpirationCheck do
       end
 
       it "doesn't log when the cert is not expired" do
-        Braintree::SSLExpirationCheck.stub(:qa_expiration_date).and_return(Date.today + 365)
+        Braintree::SSLExpirationCheck.stub(:sandbox_expiration_date).and_return(Date.today + 365)
         output = StringIO.new
         Braintree::Configuration.logger = Logger.new(output)
         Braintree::Configuration.logger.level = Logger::WARN
