@@ -27,7 +27,13 @@ module Braintree
     end
 
     def inspect # :nodoc:
-      "#<#{self.class} params:{...} errors:<#{@errors._inner_inspect}>>"
+      if @credit_card_verification
+        verification_inspect = " credit_card_verification: #{@credit_card_verification.inspect}"
+      end
+      if @transaction
+        transaction_inspect = " transaction: #{@transaction.inspect}"
+      end
+      "#<#{self.class} params:{...} errors:<#{@errors._inner_inspect}>#{verification_inspect}#{transaction_inspect}>"
     end
 
     # Always returns false.
