@@ -571,6 +571,46 @@ describe Braintree::Customer do
       result.customer.custom_fields[:store_me].should == "a value"
     end
 
+    it "can update the customer, credit card, and billing address in one request" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2009",
+          :billing_address => {
+            :first_name => "Joe",
+            :postal_code => "60622"
+          }
+        }
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :first_name => "New Joe",
+        :credit_card => {
+          :cardholder_name => "New Joe Cardholder",
+          :options => { :update_existing_token => customer.credit_cards.first.token },
+          :billing_address => {
+            :last_name => "Cool",
+            :postal_code => "60666",
+            :options => { :update_existing => true }
+          }
+        }
+      )
+      result.success?.should == true
+      result.customer.id.should == customer.id
+      result.customer.first_name.should == "New Joe"
+
+      result.customer.credit_cards.size.should == 1
+      credit_card = result.customer.credit_cards.first
+      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa.slice(0, 6)
+      credit_card.cardholder_name.should == "New Joe Cardholder"
+
+      credit_card.billing_address.first_name.should == "Joe"
+      credit_card.billing_address.last_name.should == "Cool"
+      credit_card.billing_address.postal_code.should == "60666"
+    end
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:email => "valid@email.com")
       result = Braintree::Customer.update(

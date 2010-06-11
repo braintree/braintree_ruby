@@ -48,6 +48,86 @@ describe Braintree::Customer do
     end
   end
 
+  describe "self.create_signature" do
+    it "should be what we expect" do
+      Braintree::Customer._create_signature.should == [
+        :company,
+        :email,
+        :fax,
+        :first_name,
+        :id,
+        :last_name,
+        :phone,
+        :website,
+        {:credit_card => [
+          :cardholder_name,
+          :cvv,
+          :expiration_date,
+          :expiration_month,
+          :expiration_year,
+          :number,
+          :token,
+          {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
+          {:billing_address => [
+            :company,
+            :country_name,
+            :extended_address,
+            :first_name,
+            :last_name,
+            :locality,
+            :postal_code,
+            :region,
+            :street_address
+          ]}
+        ]},
+        {:custom_fields => :_any_key_}
+      ]
+    end
+  end
+
+  describe "self.update_signature" do
+    it "should be what we expect" do
+      Braintree::Customer._update_signature.should == [
+        :company,
+        :email,
+        :fax,
+        :first_name,
+        :id,
+        :last_name,
+        :phone,
+        :website,
+        {:credit_card => [
+          :cardholder_name,
+          :cvv,
+          :expiration_date,
+          :expiration_month,
+          :expiration_year,
+          :number,
+          :token,
+          {:options => [
+            :make_default,
+            :verification_merchant_account_id,
+            :verify_card,
+            :update_existing_token
+          ]},
+          {:billing_address => [
+            :company,
+            :country_name,
+            :extended_address,
+            :first_name,
+            :last_name,
+            :locality,
+            :postal_code,
+            :region,
+            :street_address,
+            {:options => [:update_existing]}
+          ]}
+        ]},
+        {:custom_fields => :_any_key_}
+      ]
+    end
+  end
+
   describe "self.create_from_transparent_redirect" do
     it "raises an exception if the query string is forged" do
       expect do

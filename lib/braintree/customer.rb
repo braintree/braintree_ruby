@@ -235,7 +235,14 @@ module Braintree
     end
 
     def self._update_signature # :nodoc:
-      [ :company, :email, :fax, :first_name, :id, :last_name, :phone, :website, {:custom_fields => :_any_key_} ]
+      credit_card_signature = CreditCard._update_signature - [:customer_id]
+      credit_card_options = credit_card_signature.find { |item| item.respond_to?(:keys) && item.keys == [:options] }
+      credit_card_options[:options] << :update_existing_token
+      [
+        :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
+        {:credit_card => credit_card_signature},
+        {:custom_fields => :_any_key_}
+      ]
     end
   end
 end
