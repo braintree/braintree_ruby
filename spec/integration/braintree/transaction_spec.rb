@@ -344,6 +344,7 @@ describe Braintree::Transaction do
       transaction.type.should == "sale"
       transaction.status.should == Braintree::Transaction::Status::Authorized
       transaction.amount.should == BigDecimal.new("100.00")
+      transaction.currency_iso_code.should == "USD"
       transaction.order_id.should == "123"
       transaction.processor_response_code.should == "1000"
       transaction.created_at.between?(Time.now - 60, Time.now).should == true
@@ -1066,6 +1067,14 @@ describe Braintree::Transaction do
       result = transaction.refund
       result.success?.should == true
       result.new_transaction.type.should == "credit"
+    end
+
+    it "assigns the refund_id on the original transaction" do
+      transaction = create_transaction_to_refund
+      refund_transaction = transaction.refund.new_transaction
+      transaction = Braintree::Transaction.find(transaction.id)
+
+      transaction.refund_id.should == refund_transaction.id
     end
 
     it "returns an error if already refunded" do
