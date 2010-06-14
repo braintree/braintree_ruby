@@ -744,6 +744,73 @@ describe Braintree::Customer do
       customer.website.should == "new.website.com"
     end
 
+    it "returns a successful result when updating an existing credit card" do
+      result = Braintree::Customer.create(
+        :first_name => "Old First",
+        :last_name => "Old Last",
+        :company => "Old Company",
+        :email => "old@email.com",
+        :phone => "000.111.2222",
+        :fax => "000.222.3333",
+        :website => "old.website.com",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2009",
+          :billing_address => {
+            :first_name => "Joe",
+            :postal_code => "60622"
+          }
+        }
+      )
+      result.success?.should == true
+      original_customer = result.customer
+
+      tr_data_params = {
+        :customer_id => original_customer.id,
+        :customer => {
+          :first_name => "New First",
+          :last_name => "New Last",
+          :company => "New Company",
+          :email => "new@email.com",
+          :phone => "888.111.2222",
+          :fax => "999.222.3333",
+          :website => "new.website.com",
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :options => { :update_existing_token => original_customer.credit_cards.first.token },
+            :billing_address => {
+              :last_name => "Cool",
+              :postal_code => "60666",
+              :options => { :update_existing => true }
+            }
+          }
+        }
+      }
+
+      tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, {})
+      result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
+
+      result.success?.should == true
+      customer = result.customer
+      customer.id.should == original_customer.id
+      customer.first_name.should == "New First"
+      customer.last_name.should == "New Last"
+      customer.company.should == "New Company"
+      customer.email.should == "new@email.com"
+      customer.phone.should == "888.111.2222"
+      customer.fax.should == "999.222.3333"
+      customer.website.should == "new.website.com"
+
+      credit_card = customer.credit_cards.first
+      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa.slice(0, 6)
+      credit_card.cardholder_name.should == "New Joe Cardholder"
+
+      credit_card.billing_address.first_name.should == "Joe"
+      credit_card.billing_address.last_name.should == "Cool"
+      credit_card.billing_address.postal_code.should == "60666"
+    end
+
     it "can pass any attribute through tr_data" do
       original_customer = Braintree::Customer.create!(
         :first_name => "Old First",
