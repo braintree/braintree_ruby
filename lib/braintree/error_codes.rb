@@ -43,6 +43,10 @@ module Braintree
       TokenIsTooLong = "91720"
       TokenIsNotAllowed = "91721"
       TokenIsRequired = "91722"
+
+      module Options
+        UpdateExistingTokenIsInvalid = "91723"
+      end
     end
 
     module Customer
@@ -67,6 +71,7 @@ module Braintree
     module Subscription
       CannotEditCanceledSubscription = "81901"
       IdIsInUse =  "81902"
+      MerchantAccountIdIsInvalid = "91901"
       PriceCannotBeBlank = "81903"
       PriceFormatIsInvalid = "81904"
       StatusIsCanceled = "81905"
@@ -81,6 +86,7 @@ module Braintree
       AmountIsRequired = "81502"
       AmountIsInvalid = "81503"
       AmountIsTooLarge = "81528"
+      BillingAddressConflict = "91530"
       CannotBeVoided = "91504"
       CannotRefundCredit = "91505"
       CannotRefundUnlessSettled = "91506"
