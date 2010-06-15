@@ -4,6 +4,7 @@ unless defined?(SPEC_HELPER_LOADED)
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
   gem "libxml-ruby", ENV["LIBXML_VERSION"] || "1.1.3"
+  require "libxml"
   gem "builder", ENV["BUILDER_VERSION"] || "2.1.2"
   braintree_lib = "#{project_root}/lib"
   $LOAD_PATH << braintree_lib
@@ -71,6 +72,45 @@ unless defined?(SPEC_HELPER_LOADED)
       end
     end
   end
+
+  module CustomMatchers
+    class ParseTo
+      def initialize(hash)
+        @expected_hash = hash
+      end
+
+      def matches?(xml_string)
+        @libxml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string, Braintree::Xml::Libxml)
+        @rexml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string, Braintree::Xml::Rexml)
+        if @libxml_parse != @expected_hash
+          @results = @libxml_parse
+          @failed_parser = "libxml"
+          false
+        elsif @rexml_parse != @expected_hash
+          @results = @rexml_parse
+          @failed_parser = "rexml"
+          false
+        else
+          true
+        end
+      end
+
+      def failure_message
+        "xml parsing failed for #{@failed_parser}, expected #{@expected_hash.inspect} but was #{@results.inspect}"
+      end
+
+      def negative_failure_message
+        raise NotImplementedError
+      end
+    end
+
+    def parse_to(hash)
+      ParseTo.new(hash)
+    end
+  end
+
+  Spec::Runner.configure do |config|
+    config.include CustomMatchers
+  end
 end
 
-Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}

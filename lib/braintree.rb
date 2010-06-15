@@ -12,10 +12,6 @@ require "time"
 require "zlib"
 
 require "builder"
-require "libxml"
-unless ::LibXML::XML.respond_to?(:default_keep_blanks=)
-  raise LoadError, "The version of libxml that you're using is not compatible with the Braintree gem."
-end
 
 module Braintree
 end
@@ -55,6 +51,7 @@ require "braintree/version.rb"
 require "braintree/xml.rb"
 require "braintree/xml/generator.rb"
 require "braintree/xml/libxml.rb"
+require "braintree/xml/rexml.rb"
 require "braintree/xml/parser.rb"
 
 Braintree::SSLExpirationCheck.check_dates
