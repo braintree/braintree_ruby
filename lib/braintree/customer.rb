@@ -208,7 +208,7 @@ module Braintree
       ]
     end
 
-    def self._do_create(url, params) # :nodoc:
+    def self._do_create(url, params=nil) # :nodoc:
       response = Http.post url, params
       if response[:customer]
         SuccessfulResult.new(:customer => new(response[:customer]))

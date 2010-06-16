@@ -26,14 +26,22 @@ module Braintree
     CreateCreditCardSignature = TransparentRedirectKeys + [{:credit_card => CreditCard._create_signature}] # :nodoc:
     UpdateCreditCardSignature = TransparentRedirectKeys + [:payment_method_token, {:credit_card => CreditCard._update_signature}] # :nodoc:
 
+    module Kind
+      CreateCustomer = "create_customer"
+      UpdateCustomer = "update_customer"
+      CreatePaymentMethod = "create_payment_method"
+      UpdatePaymentMethod = "update_payment_method"
+      CreateTransaction = "create_transaction"
+    end
+
     def self.confirm(query_string)
       params = TransparentRedirect.parse_and_validate_query_string query_string
       confirmation_klass = {
-        "create_customer" => Braintree::Customer,
-        "update_customer" => Braintree::Customer,
-        "create_payment_method" => Braintree::CreditCard,
-        "update_payment_method" => Braintree::CreditCard,
-        "create_transaction" => Braintree::Transaction
+        Kind::CreateCustomer => Braintree::Customer,
+        Kind::UpdateCustomer => Braintree::Customer,
+        Kind::CreatePaymentMethod => Braintree::CreditCard,
+        Kind::UpdatePaymentMethod => Braintree::CreditCard,
+        Kind::CreateTransaction => Braintree::Transaction
       }[params[:kind]]
 
       confirmation_klass._do_create("/transparent_redirect_requests/#{params[:id]}/confirm")
@@ -48,6 +56,8 @@ module Braintree
     # Returns the tr_data string for creating a customer.
     def self.create_customer_data(params)
       Util.verify_keys(CreateCustomerSignature, params)
+      params[:kind] = Kind::CreateCustomer
+
       _data(params)
     end
 
@@ -71,7 +81,7 @@ module Braintree
     # Returns the tr_data string for creating a transaction.
     def self.transaction_data(params)
       Util.verify_keys(TransactionSignature, params)
-      params[:kind] = "create_transaction"
+      params[:kind] = Kind::CreateTransaction
       transaction_type = params[:transaction] && params[:transaction][:type]
       unless %w[sale credit].include?(transaction_type)
         raise ArgumentError, "expected transaction[type] of sale or credit, was: #{transaction_type.inspect}"
@@ -106,6 +116,7 @@ module Braintree
       unless params[:customer_id]
         raise ArgumentError, "expected params to contain :customer_id of customer to update"
       end
+      params[:kind] = Kind::UpdateCustomer
       _data(params)
     end
 
