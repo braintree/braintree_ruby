@@ -50,6 +50,7 @@ module Braintree
     # Returns the tr_data string for creating a credit card.
     def self.create_credit_card_data(params)
       Util.verify_keys(CreateCreditCardSignature, params)
+      params[:kind] = Kind::CreatePaymentMethod
       _data(params)
     end
 
@@ -57,7 +58,6 @@ module Braintree
     def self.create_customer_data(params)
       Util.verify_keys(CreateCustomerSignature, params)
       params[:kind] = Kind::CreateCustomer
-
       _data(params)
     end
 
@@ -101,6 +101,7 @@ module Braintree
       unless params[:payment_method_token]
         raise ArgumentError, "expected params to contain :payment_method_token of payment method to update"
       end
+      params[:kind] = Kind::UpdatePaymentMethod
       _data(params)
     end
 

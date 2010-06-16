@@ -233,7 +233,7 @@ module Braintree
       self.new *args
     end
 
-    def self._do_create(url, params) # :nodoc:
+    def self._do_create(url, params=nil) # :nodoc:
       response = Http.post url, params
       if response[:credit_card]
         SuccessfulResult.new(:credit_card => new(response[:credit_card]))

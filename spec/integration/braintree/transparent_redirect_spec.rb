@@ -77,7 +77,7 @@ describe Braintree::TransparentRedirect do
 
       params = {
         :customer => {
-          :first_name => "Drew",
+          :first_name => "John",
         }
       }
       tr_data_params = {
@@ -92,8 +92,71 @@ describe Braintree::TransparentRedirect do
 
       result.success?.should == true
       customer = Braintree::Customer.find(customer.id)
-      customer.first_name.should == "Drew"
+      customer.first_name.should == "John"
       customer.last_name.should == "Uncool"
+    end
+
+    it "successfully confirms a credit_card create" do
+      customer = Braintree::Customer.create(:first_name => "John", :last_name => "Doe").customer
+
+      params = {
+        :credit_card => {
+          :cardholder_name => "John Doe"
+        }
+      }
+      tr_data_params = {
+        :credit_card => {
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "10/10"
+        }
+      }
+      tr_data = Braintree::TransparentRedirect.create_credit_card_data(
+        {:redirect_url => "http://example.com"}.merge(tr_data_params)
+      )
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params)
+      result = Braintree::TransparentRedirect.confirm(query_string_response)
+
+      result.success?.should == true
+      credit_card = result.credit_card
+      credit_card.cardholder_name.should == "John Doe"
+      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
+      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
+      credit_card.expiration_date.should == "10/2010"
+    end
+
+    it "successfully confirms a credit_card update" do
+      customer = Braintree::Customer.create(:first_name => "John", :last_name => "Doe").customer
+      credit_card = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "10/10"
+      ).credit_card
+
+      params = {
+        :credit_card => {
+          :cardholder_name => "John Doe"
+        }
+      }
+      tr_data_params = {
+        :payment_method_token => credit_card.token,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "11/11"
+        }
+      }
+      tr_data = Braintree::TransparentRedirect.update_credit_card_data(
+        {:redirect_url => "http://example.com"}.merge(tr_data_params)
+      )
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params)
+      result = Braintree::TransparentRedirect.confirm(query_string_response)
+
+      result.success?.should == true
+      credit_card = result.credit_card
+      credit_card.cardholder_name.should == "John Doe"
+      credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
+      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
+      credit_card.expiration_date.should == "11/2011"
     end
   end
 end
