@@ -805,7 +805,7 @@ describe Braintree::Transaction do
         }
       }
       tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Transaction.create_transaction_url)
       result = Braintree::Transaction.create_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -834,7 +834,7 @@ describe Braintree::Transaction do
         }
       }
       tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Transaction.create_transaction_url)
 
       expect do
         Braintree::Transaction.create_from_transparent_redirect(query_string_response)
@@ -890,7 +890,7 @@ describe Braintree::Transaction do
         }
       }
       tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Transaction.create_transaction_url)
       result = Braintree::Transaction.create_from_transparent_redirect(query_string_response)
 
       transaction = result.transaction
@@ -954,7 +954,7 @@ describe Braintree::Transaction do
         }
       }
       tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Transaction.create_transaction_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Transaction.create_transaction_url)
       result = Braintree::Transaction.create_from_transparent_redirect(query_string_response)
 
       result.success?.should == false

@@ -40,7 +40,7 @@ unless defined?(SPEC_HELPER_LOADED)
       end
     end
 
-    def self.simulate_form_post_for_tr(url, tr_data_string, form_data_hash)
+    def self.simulate_form_post_for_tr(tr_data_string, form_data_hash, url=Braintree::TransparentRedirect.url)
       response = nil
       Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
         request = Net::HTTP::Post.new("/" + url.split("/", 4)[3])

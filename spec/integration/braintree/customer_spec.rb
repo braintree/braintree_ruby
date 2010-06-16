@@ -427,7 +427,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge({}))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.create_customer_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Customer.create_customer_url)
       result = Braintree::Customer.create_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -457,7 +457,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.create_customer_url, tr_data, {})
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Customer.create_customer_url)
       result = Braintree::Customer.create_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -729,7 +729,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Customer.update_customer_url)
       result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -788,7 +788,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, {})
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Customer.update_customer_url)
       result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -837,7 +837,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, {})
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Customer.update_customer_url)
       result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
 
       result.success?.should == true

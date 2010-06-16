@@ -245,7 +245,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == true
       credit_card = result.credit_card
@@ -282,7 +282,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == true
       card2 = result.credit_card
@@ -306,7 +306,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == false
       result.params[:customer_id] == customer.id
@@ -581,7 +581,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.update_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.update_credit_card_url)
       result = Braintree::CreditCard.update_from_transparent_redirect(query_string_response)
       result.success?.should == true
       credit_card = result.credit_card
@@ -619,7 +619,7 @@ describe Braintree::CreditCard do
         :payment_method_token => card2.token
       }
       tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.update_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.update_credit_card_url)
       result = Braintree::CreditCard.update_from_transparent_redirect(query_string_response)
 
       Braintree::CreditCard.find(card1.token).should_not be_default

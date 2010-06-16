@@ -26,6 +26,19 @@ module Braintree
     CreateCreditCardSignature = TransparentRedirectKeys + [{:credit_card => CreditCard._create_signature}] # :nodoc:
     UpdateCreditCardSignature = TransparentRedirectKeys + [:payment_method_token, {:credit_card => CreditCard._update_signature}] # :nodoc:
 
+    def self.confirm(query_string)
+      params = TransparentRedirect.parse_and_validate_query_string query_string
+      confirmation_klass = {
+        "create_customer" => Braintree::Customer,
+        "update_customer" => Braintree::Customer,
+        "create_payment_method" => Braintree::CreditCard,
+        "update_payment_method" => Braintree::CreditCard,
+        "create_transaction" => Braintree::Transaction
+      }[params[:kind]]
+
+      confirmation_klass._do_create("/transparent_redirect_requests/#{params[:id]}/confirm")
+    end
+
     # Returns the tr_data string for creating a credit card.
     def self.create_credit_card_data(params)
       Util.verify_keys(CreateCreditCardSignature, params)
@@ -58,6 +71,7 @@ module Braintree
     # Returns the tr_data string for creating a transaction.
     def self.transaction_data(params)
       Util.verify_keys(TransactionSignature, params)
+      params[:kind] = "create_transaction"
       transaction_type = params[:transaction] && params[:transaction][:type]
       unless %w[sale credit].include?(transaction_type)
         raise ArgumentError, "expected transaction[type] of sale or credit, was: #{transaction_type.inspect}"
@@ -93,6 +107,11 @@ module Braintree
         raise ArgumentError, "expected params to contain :customer_id of customer to update"
       end
       _data(params)
+    end
+
+    # Returns the URL to which Transparent Redirect Requests should be posted
+    def self.url
+      "#{Braintree::Configuration.base_merchant_url}/transparent_redirect_requests"
     end
 
     def self._data(params) # :nodoc:
