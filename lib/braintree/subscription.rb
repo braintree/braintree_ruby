@@ -176,6 +176,7 @@ module Braintree
       [
         :id,
         :merchant_account_id,
+        :payment_method_token,
         :plan_id,
         :price
       ]
