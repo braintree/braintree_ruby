@@ -168,7 +168,7 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
-    attr_reader :refund_id
+    attr_reader :refund_id, :refunded_transaction_id
     # See Transaction::Status
     attr_reader :status
     attr_reader :status_history

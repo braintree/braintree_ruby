@@ -1077,6 +1077,13 @@ describe Braintree::Transaction do
       transaction.refund_id.should == refund_transaction.id
     end
 
+    it "assigns the refunded_transaction_id to the original transaction" do
+      transaction = create_transaction_to_refund
+      refund_transaction = transaction.refund.new_transaction
+
+      refund_transaction.refunded_transaction_id.should == transaction.id
+    end
+
     it "returns an error if already refunded" do
       transaction = create_transaction_to_refund
       result = transaction.refund
