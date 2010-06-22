@@ -163,10 +163,7 @@ module Braintree
 
     # Returns true if the credit card is expired.
     def expired?
-      if expiration_year.to_i == Time.now.year
-        return expiration_month.to_i < Time.now.month
-      end
-      expiration_year.to_i < Time.now.year
+      @expired
     end
 
     def inspect # :nodoc:
