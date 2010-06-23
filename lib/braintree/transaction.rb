@@ -187,12 +187,14 @@ module Braintree
     end
 
     def self.create_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] Transaction.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_create("/transactions/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
     # The URL to use to create transactions via transparent redirect.
     def self.create_transaction_url
+      warn "[DEPRECATED] Transaction.create_transaction_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/transactions/all/create_via_transparent_redirect_request"
     end
 

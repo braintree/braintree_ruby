@@ -17,6 +17,14 @@ unless defined?(SPEC_HELPER_LOADED)
   Braintree::Configuration.logger = Logger.new("/dev/null")
   Braintree::Configuration.logger.level = Logger::INFO
 
+  module Kernel
+    alias_method :original_warn, :warn
+    def warn(message)
+      return if message =~ /^\[DEPRECATED\]/
+      original_warn(message)
+    end
+  end
+
   module SpecHelper
 
     DefaultMerchantAccountId = "sandbox_credit_card"

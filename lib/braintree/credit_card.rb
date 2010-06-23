@@ -46,10 +46,12 @@ module Braintree
 
     # The transparent redirect URL to use to create a credit card.
     def self.create_credit_card_url
+      warn "[DEPRECATED] CreditCard.create_credit_card_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/create_via_transparent_redirect_request"
     end
 
     def self.create_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] CreditCard.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_create("/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
     end
@@ -107,12 +109,14 @@ module Braintree
     end
 
     def self.update_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_update(:post, "/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
     # The transparent redirect URL to use to update a credit card.
     def self.update_credit_card_url
+      warn "[DEPRECATED] CreditCard.update_credit_card_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/update_via_transparent_redirect_request"
     end
 
