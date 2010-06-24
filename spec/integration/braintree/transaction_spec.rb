@@ -63,7 +63,6 @@ describe Braintree::Transaction do
       )
       result.success?.should == false
       result.errors.for(:transaction).on(:customer_id)[0].code.should == "91510"
-      result.summary.should == "Customer ID is invalid."
     end
 
     it "can create custom fields" do
