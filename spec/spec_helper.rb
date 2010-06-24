@@ -4,6 +4,7 @@ unless defined?(SPEC_HELPER_LOADED)
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
   gem "libxml-ruby", ENV["LIBXML_VERSION"] || "1.1.3"
+  require "libxml"
   gem "builder", ENV["BUILDER_VERSION"] || "2.1.2"
   braintree_lib = "#{project_root}/lib"
   $LOAD_PATH << braintree_lib
@@ -15,6 +16,14 @@ unless defined?(SPEC_HELPER_LOADED)
   Braintree::Configuration.private_key = "integration_private_key"
   Braintree::Configuration.logger = Logger.new("/dev/null")
   Braintree::Configuration.logger.level = Logger::INFO
+
+  module Kernel
+    alias_method :original_warn, :warn
+    def warn(message)
+      return if message =~ /^\[DEPRECATED\]/
+      original_warn(message)
+    end
+  end
 
   module SpecHelper
 
@@ -39,7 +48,7 @@ unless defined?(SPEC_HELPER_LOADED)
       end
     end
 
-    def self.simulate_form_post_for_tr(url, tr_data_string, form_data_hash)
+    def self.simulate_form_post_for_tr(tr_data_string, form_data_hash, url=Braintree::TransparentRedirect.url)
       response = nil
       Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
         request = Net::HTTP::Post.new("/" + url.split("/", 4)[3])
@@ -71,6 +80,45 @@ unless defined?(SPEC_HELPER_LOADED)
       end
     end
   end
+
+  module CustomMatchers
+    class ParseTo
+      def initialize(hash)
+        @expected_hash = hash
+      end
+
+      def matches?(xml_string)
+        @libxml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string, Braintree::Xml::Libxml)
+        @rexml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string, Braintree::Xml::Rexml)
+        if @libxml_parse != @expected_hash
+          @results = @libxml_parse
+          @failed_parser = "libxml"
+          false
+        elsif @rexml_parse != @expected_hash
+          @results = @rexml_parse
+          @failed_parser = "rexml"
+          false
+        else
+          true
+        end
+      end
+
+      def failure_message
+        "xml parsing failed for #{@failed_parser}, expected #{@expected_hash.inspect} but was #{@results.inspect}"
+      end
+
+      def negative_failure_message
+        raise NotImplementedError
+      end
+    end
+
+    def parse_to(hash)
+      ParseTo.new(hash)
+    end
+  end
+
+  Spec::Runner.configure do |config|
+    config.include CustomMatchers
+  end
 end
 
-Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}

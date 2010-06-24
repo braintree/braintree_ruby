@@ -19,7 +19,7 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
-        {:options => [:make_default, :verify_card]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
         {:billing_address => [
           :company,
           :country_name,
@@ -46,7 +46,7 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
-        {:options => [:make_default, :verify_card]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
         {:billing_address => [
           :company,
           :country_name,
@@ -108,25 +108,6 @@ describe Braintree::CreditCard do
 
     it "is false if the credit card is not the default credit card for the customer" do
       Braintree::CreditCard._new(:default => false).default?.should == false
-    end
-  end
-
-  describe "expired?" do
-    it "is true if the payment method is this year and the month has passed" do
-      SpecHelper.stub_time_dot_now(Time.mktime(2009, 10, 20)) do
-        expired_pm = Braintree::CreditCard._new(:expiration_month => "09", :expiration_year => "2009")
-        expired_pm.expired?.should == true
-      end
-    end
-
-    it "is true if the payment method is in a previous year" do
-      expired_pm = Braintree::CreditCard._new(:expiration_month => "12", :expiration_year => (Time.now.year - 1).to_s)
-      expired_pm.expired?.should == true
-    end
-
-    it "is false if the payment method is not expired" do
-      not_expired_pm = Braintree::CreditCard._new(:expiration_month => "01", :expiration_year => (Time.now.year + 1).to_s)
-      not_expired_pm.expired?.should == false
     end
   end
 

@@ -10,7 +10,6 @@ end
 
 describe Braintree::SSLExpirationCheck do
   SANDBOX = "sandbox.braintreegateway.com"
-  QA = "qa.braintreegateway.com"
   PRODUCTION = "www.braintreegateway.com"
 
   describe "check_dates" do
@@ -18,9 +17,9 @@ describe Braintree::SSLExpirationCheck do
       Braintree::SSLExpirationCheck.ssl_expiration_dates_checked.should == true
     end
 
-    describe "QA Cert" do
+    describe "Sandbox Cert" do
       it "logs when the cert is expired" do
-        Braintree::SSLExpirationCheck.stub(:qa_expiration_date).and_return(Date.today - 1)
+        Braintree::SSLExpirationCheck.stub(:sandbox_expiration_date).and_return(Date.today - 1)
 
         output = StringIO.new
         Braintree::Configuration.logger = Logger.new(output)
@@ -28,22 +27,22 @@ describe Braintree::SSLExpirationCheck do
 
         Braintree::SSLExpirationCheck.check_dates
 
-        output.string.should match(/\[Braintree\] The SSL Certificate for the QA environment will expire on \d{4}-\d{2}-\d{2}\. Please check for an updated client library\./)
+        output.string.should match(/\[Braintree\] The SSL Certificate for the Sandbox environment will expire on \d{4}-\d{2}-\d{2}\. Please check for an updated client library\./)
       end
 
       it "logs when the cert is close to expiring" do
-        Braintree::SSLExpirationCheck.stub(:qa_expiration_date).and_return(Date.today)
+        Braintree::SSLExpirationCheck.stub(:sandbox_expiration_date).and_return(Date.today)
         output = StringIO.new
         Braintree::Configuration.logger = Logger.new(output)
         Braintree::Configuration.logger.level = Logger::WARN
 
         Braintree::SSLExpirationCheck.check_dates
 
-        output.string.should match(/\[Braintree\] The SSL Certificate for the QA environment will expire on \d{4}-\d{2}-\d{2}\. Please check for an updated client library\./)
+        output.string.should match(/\[Braintree\] The SSL Certificate for the Sandbox environment will expire on \d{4}-\d{2}-\d{2}\. Please check for an updated client library\./)
       end
 
       it "doesn't log when the cert is not expired" do
-        Braintree::SSLExpirationCheck.stub(:qa_expiration_date).and_return(Date.today + 365)
+        Braintree::SSLExpirationCheck.stub(:sandbox_expiration_date).and_return(Date.today + 365)
         output = StringIO.new
         Braintree::Configuration.logger = Logger.new(output)
         Braintree::Configuration.logger.level = Logger::WARN
@@ -82,13 +81,6 @@ describe Braintree::SSLExpirationCheck do
     it "is the date the production cert expires" do
       Braintree::SSLExpirationCheck.production_expiration_date.should be_a(Date)
       Braintree::SSLExpirationCheck.production_expiration_date.should == fetch_expiration_date(PRODUCTION)
-    end
-  end
-
-  describe "qa_expiration_date" do
-    it "is the date the QA cert expires" do
-      Braintree::SSLExpirationCheck.qa_expiration_date.should be_a(Date)
-      Braintree::SSLExpirationCheck.qa_expiration_date.should == fetch_expiration_date(QA)
     end
   end
 

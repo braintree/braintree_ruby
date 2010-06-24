@@ -38,5 +38,45 @@ describe Braintree::ErrorResult do
       result = Braintree::ErrorResult.new(:params => "params", :errors => errors)
       result.inspect.should == "#<Braintree::ErrorResult params:{...} errors:<level1:[(code1) message], level1/level2:[(code2) message2]>>"
     end
+
+    it "includes the credit_card_verification if there is one" do
+      result = Braintree::ErrorResult.new(
+        :params => "params",
+        :errors => {},
+        :verification => {},
+        :transaction => nil
+      )
+      result.inspect.should include("credit_card_verification: #<Braintree::CreditCardVerification status: ")
+    end
+
+    it "does not include the credit_card_verification if there isn't one" do
+      result = Braintree::ErrorResult.new(
+        :params => "params",
+        :errors => {},
+        :verification => nil,
+        :transaction => nil
+      )
+      result.inspect.should_not include("credit_card_verification")
+    end
+
+    it "includes the transaction if there is one" do
+      result = Braintree::ErrorResult.new(
+        :params => "params",
+        :errors => {},
+        :verification => nil,
+        :transaction => {}
+      )
+      result.inspect.should include("transaction: #<Braintree::Transaction id: ")
+    end
+
+    it "does not include the transaction if there isn't one" do
+      result = Braintree::ErrorResult.new(
+        :params => "params",
+        :errors => {},
+        :verification => nil,
+        :transaction => nil
+      )
+      result.inspect.should_not include("transaction")
+    end
   end
 end

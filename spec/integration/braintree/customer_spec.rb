@@ -109,6 +109,23 @@ describe Braintree::Customer do
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
+    it "allows the user to specify the merchant account for verification" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
+          :expiration_date => "05/2010",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+          }
+        }
+      )
+      result.success?.should == false
+      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+    end
+
     it "can create a customer, payment method, and billing address at the same time" do
       result = Braintree::Customer.create(
         :first_name => "Mike",
@@ -410,7 +427,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge({}))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.create_customer_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Customer.create_customer_url)
       result = Braintree::Customer.create_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -440,7 +457,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.create_customer_url, tr_data, {})
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Customer.create_customer_url)
       result = Braintree::Customer.create_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -552,6 +569,46 @@ describe Braintree::Customer do
       result.customer.first_name.should == "Mr. Joe"
       result.customer.last_name.should == "Super Cool"
       result.customer.custom_fields[:store_me].should == "a value"
+    end
+
+    it "can update the customer, credit card, and billing address in one request" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2009",
+          :billing_address => {
+            :first_name => "Joe",
+            :postal_code => "60622"
+          }
+        }
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :first_name => "New Joe",
+        :credit_card => {
+          :cardholder_name => "New Joe Cardholder",
+          :options => { :update_existing_token => customer.credit_cards.first.token },
+          :billing_address => {
+            :last_name => "Cool",
+            :postal_code => "60666",
+            :options => { :update_existing => true }
+          }
+        }
+      )
+      result.success?.should == true
+      result.customer.id.should == customer.id
+      result.customer.first_name.should == "New Joe"
+
+      result.customer.credit_cards.size.should == 1
+      credit_card = result.customer.credit_cards.first
+      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa.slice(0, 6)
+      credit_card.cardholder_name.should == "New Joe Cardholder"
+
+      credit_card.billing_address.first_name.should == "Joe"
+      credit_card.billing_address.last_name.should == "Cool"
+      credit_card.billing_address.postal_code.should == "60666"
     end
 
     it "returns an error response if invalid" do
@@ -672,7 +729,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::Customer.update_customer_url)
       result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
 
       result.success?.should == true
@@ -685,6 +742,73 @@ describe Braintree::Customer do
       customer.phone.should == "888.111.2222"
       customer.fax.should == "999.222.3333"
       customer.website.should == "new.website.com"
+    end
+
+    it "returns a successful result when updating an existing credit card" do
+      result = Braintree::Customer.create(
+        :first_name => "Old First",
+        :last_name => "Old Last",
+        :company => "Old Company",
+        :email => "old@email.com",
+        :phone => "000.111.2222",
+        :fax => "000.222.3333",
+        :website => "old.website.com",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2009",
+          :billing_address => {
+            :first_name => "Joe",
+            :postal_code => "60622"
+          }
+        }
+      )
+      result.success?.should == true
+      original_customer = result.customer
+
+      tr_data_params = {
+        :customer_id => original_customer.id,
+        :customer => {
+          :first_name => "New First",
+          :last_name => "New Last",
+          :company => "New Company",
+          :email => "new@email.com",
+          :phone => "888.111.2222",
+          :fax => "999.222.3333",
+          :website => "new.website.com",
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :options => { :update_existing_token => original_customer.credit_cards.first.token },
+            :billing_address => {
+              :last_name => "Cool",
+              :postal_code => "60666",
+              :options => { :update_existing => true }
+            }
+          }
+        }
+      }
+
+      tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Customer.update_customer_url)
+      result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
+
+      result.success?.should == true
+      customer = result.customer
+      customer.id.should == original_customer.id
+      customer.first_name.should == "New First"
+      customer.last_name.should == "New Last"
+      customer.company.should == "New Company"
+      customer.email.should == "new@email.com"
+      customer.phone.should == "888.111.2222"
+      customer.fax.should == "999.222.3333"
+      customer.website.should == "new.website.com"
+
+      credit_card = customer.credit_cards.first
+      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa.slice(0, 6)
+      credit_card.cardholder_name.should == "New Joe Cardholder"
+
+      credit_card.billing_address.first_name.should == "Joe"
+      credit_card.billing_address.last_name.should == "Cool"
+      credit_card.billing_address.postal_code.should == "60666"
     end
 
     it "can pass any attribute through tr_data" do
@@ -713,7 +837,7 @@ describe Braintree::Customer do
       }
 
       tr_data = Braintree::TransparentRedirect.update_customer_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::Customer.update_customer_url, tr_data, {})
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Customer.update_customer_url)
       result = Braintree::Customer.update_from_transparent_redirect(query_string_response)
 
       result.success?.should == true

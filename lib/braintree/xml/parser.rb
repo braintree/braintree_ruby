@@ -11,11 +11,19 @@ module Braintree
         "boolean"  => Proc.new { |boolean| %w(1 true).include?(boolean.strip) },
       }
 
-      def self.hash_from_xml(xml)
-        standardized_hash_structure = ::Braintree::Xml::Libxml.parse(xml)
+      def self.hash_from_xml(xml, parser = _determine_parser)
+        standardized_hash_structure = parser.parse(xml)
         with_underscores_in_keys = _unrename_keys(standardized_hash_structure)
         typecasted_xml = _typecast_xml_value(with_underscores_in_keys)
         Util.symbolize_keys(typecasted_xml)
+      end
+
+      def self._determine_parser
+        if defined?(::LibXml::XML) && ::LibXml::XML.respond_to?(:default_keep_blanks=)
+          ::Braintree::Xml::Libxml
+        else
+          ::Braintree::Xml::Rexml
+        end
       end
 
       def self._typecast_xml_value(value)

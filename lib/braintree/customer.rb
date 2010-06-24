@@ -52,16 +52,14 @@ module Braintree
     end
 
     def self.create_customer_url
+      warn "[DEPRECATED] Customer.create_customer_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/customers/all/create_via_transparent_redirect_request"
     end
 
     def self.create_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] Customer.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_create("/customers/all/confirm_transparent_redirect_request", :id => params[:id])
-    end
-
-    def self.create_customer_transparent_redirect_url
-      "#{Braintree::Configuration.base_merchant_url}/customers"
     end
 
     def self.credit(customer_id, transaction_attributes)
@@ -118,10 +116,12 @@ module Braintree
     end
 
     def self.update_customer_url
+      warn "[DEPRECATED] Customer.update_customer_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/customers/all/update_via_transparent_redirect_request"
     end
 
     def self.update_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] Customer.update_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string(query_string)
       _do_update(:post, "/customers/all/confirm_transparent_redirect_request", :id => params[:id])
     end
@@ -208,7 +208,7 @@ module Braintree
       ]
     end
 
-    def self._do_create(url, params) # :nodoc:
+    def self._do_create(url, params=nil) # :nodoc:
       response = Http.post url, params
       if response[:customer]
         SuccessfulResult.new(:customer => new(response[:customer]))
@@ -235,7 +235,14 @@ module Braintree
     end
 
     def self._update_signature # :nodoc:
-      [ :company, :email, :fax, :first_name, :id, :last_name, :phone, :website, {:custom_fields => :_any_key_} ]
+      credit_card_signature = CreditCard._update_signature - [:customer_id]
+      credit_card_options = credit_card_signature.find { |item| item.respond_to?(:keys) && item.keys == [:options] }
+      credit_card_options[:options] << :update_existing_token
+      [
+        :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
+        {:credit_card => credit_card_signature},
+        {:custom_fields => :_any_key_}
+      ]
     end
   end
 end

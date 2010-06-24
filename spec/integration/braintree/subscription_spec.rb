@@ -20,9 +20,9 @@ describe Braintree::Subscription do
   before(:each) do
     @credit_card = Braintree::Customer.create!(
       :credit_card => {
-      :number => Braintree::Test::CreditCardNumbers::Visa,
-      :expiration_date => "05/2010"
-    }
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2010"
+      }
     ).credit_cards[0]
   end
 
@@ -141,6 +141,7 @@ describe Braintree::Subscription do
           result.subscription.transactions.first.should be_a(Braintree::Transaction)
           result.subscription.transactions.first.amount.should == TriallessPlan[:price]
           result.subscription.transactions.first.type.should == Braintree::Transaction::Type::Sale
+          result.subscription.transactions.first.subscription_id.should == result.subscription.id
         end
 
         it "doesn't create a transaction if there's a trial period" do
@@ -257,15 +258,27 @@ describe Braintree::Subscription do
       ).subscription
     end
 
-    context "merchant_account_id" do
-      it "allows changing the merchant_account_id" do
-        result = Braintree::Subscription.update(@subscription.id,
-          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
-        )
+    it "allows changing the merchant_account_id" do
+      result = Braintree::Subscription.update(@subscription.id,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+      )
 
-        result.success?.should == true
-        result.subscription.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
-      end
+      result.success?.should == true
+      result.subscription.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+    end
+
+    it "allows changing the payment_method_token" do
+      new_credit_card = Braintree::CreditCard.create!(
+        :customer_id => @credit_card.customer_id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2010"
+      )
+
+      result = Braintree::Subscription.update(@subscription.id,
+        :payment_method_token => new_credit_card.token
+      )
+
+      result.subscription.payment_method_token.should == new_credit_card.token
     end
 
     context "when successful" do

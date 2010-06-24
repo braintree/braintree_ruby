@@ -46,10 +46,12 @@ module Braintree
 
     # The transparent redirect URL to use to create a credit card.
     def self.create_credit_card_url
+      warn "[DEPRECATED] CreditCard.create_credit_card_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/create_via_transparent_redirect_request"
     end
 
     def self.create_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] CreditCard.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_create("/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
     end
@@ -107,12 +109,14 @@ module Braintree
     end
 
     def self.update_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_update(:post, "/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
     # The transparent redirect URL to use to update a credit card.
     def self.update_credit_card_url
+      warn "[DEPRECATED] CreditCard.update_credit_card_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/update_via_transparent_redirect_request"
     end
 
@@ -163,10 +167,7 @@ module Braintree
 
     # Returns true if the credit card is expired.
     def expired?
-      if expiration_year.to_i == Time.now.year
-        return expiration_month.to_i < Time.now.month
-      end
-      expiration_year.to_i < Time.now.year
+      @expired
     end
 
     def inspect # :nodoc:
@@ -233,7 +234,7 @@ module Braintree
       self.new *args
     end
 
-    def self._do_create(url, params) # :nodoc:
+    def self._do_create(url, params=nil) # :nodoc:
       response = Http.post url, params
       if response[:credit_card]
         SuccessfulResult.new(:credit_card => new(response[:credit_card]))
@@ -263,7 +264,7 @@ module Braintree
       billing_address_params = [:company, :country_name, :extended_address, :first_name, :last_name, :locality, :postal_code, :region, :street_address]
       signature = [
         :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
-        {:options => [:make_default, :verify_card]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
         {:billing_address => billing_address_params}
       ]
 

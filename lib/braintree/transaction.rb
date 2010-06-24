@@ -156,6 +156,7 @@ module Braintree
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
     attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id
+    attr_reader :currency_iso_code
     attr_reader :custom_fields
     attr_reader :cvv_response_code
     attr_reader :merchant_account_id
@@ -167,9 +168,11 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    attr_reader :refund_id, :refunded_transaction_id
     # See Transaction::Status
     attr_reader :status
     attr_reader :status_history
+    attr_reader :subscription_id
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at
@@ -184,12 +187,14 @@ module Braintree
     end
 
     def self.create_from_transparent_redirect(query_string)
+      warn "[DEPRECATED] Transaction.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_create("/transactions/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
     # The URL to use to create transactions via transparent redirect.
     def self.create_transaction_url
+      warn "[DEPRECATED] Transaction.create_transaction_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/transactions/all/create_via_transparent_redirect_request"
     end
 
@@ -383,7 +388,7 @@ module Braintree
       end
     end
 
-    def self._do_create(url, params) # :nodoc:
+    def self._do_create(url, params=nil) # :nodoc:
       response = Http.post url, params
       if response[:transaction]
         SuccessfulResult.new(:transaction => new(response[:transaction]))

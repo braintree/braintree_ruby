@@ -58,7 +58,7 @@ describe Braintree::CreditCard do
       credit_card.expiration_date.should == "05/2009"
     end
 
-    it "verifes the credit card if options[verify_card]=true" do
+    it "verifies the credit card if options[verify_card]=true" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
@@ -74,6 +74,21 @@ describe Braintree::CreditCard do
       result.credit_card_verification.avs_error_response_code.should == nil
       result.credit_card_verification.avs_postal_code_response_code.should == "I"
       result.credit_card_verification.avs_street_address_response_code.should == "I"
+    end
+
+    it "allows user to specify merchant account for verification" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+        :expiration_date => "05/2009",
+        :options => {
+          :verify_card => true,
+          :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+        }
+      )
+      result.success?.should == false
+      result.credit_card_verification.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
     end
 
     it "does not verify the card if options[verify_card]=false" do
@@ -230,7 +245,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == true
       credit_card = result.credit_card
@@ -267,7 +282,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == true
       card2 = result.credit_card
@@ -291,7 +306,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.create_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
       result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
       result.success?.should == false
       result.params[:customer_id] == customer.id
@@ -566,7 +581,7 @@ describe Braintree::CreditCard do
         }
       }
       tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.update_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.update_credit_card_url)
       result = Braintree::CreditCard.update_from_transparent_redirect(query_string_response)
       result.success?.should == true
       credit_card = result.credit_card
@@ -604,7 +619,7 @@ describe Braintree::CreditCard do
         :payment_method_token => card2.token
       }
       tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(Braintree::CreditCard.update_credit_card_url, tr_data, params)
+      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.update_credit_card_url)
       result = Braintree::CreditCard.update_from_transparent_redirect(query_string_response)
 
       Braintree::CreditCard.find(card1.token).should_not be_default
@@ -917,6 +932,33 @@ describe Braintree::CreditCard do
       )
       update_result.success?.should == false
       update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+    end
+
+    it "allows user to specify merchant account for verification" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :cvv => "123",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+      update_result = credit_card.update(
+        :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+        :expiration_date => "05/2009",
+        :options => {
+          :verify_card => true,
+          :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+        }
+      )
+      update_result.success?.should == false
+      update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      update_result.credit_card_verification.processor_response_code.should == "2000"
+      update_result.credit_card_verification.processor_response_text.should == "Do Not Honor"
+      update_result.credit_card_verification.cvv_response_code.should == "I"
+      update_result.credit_card_verification.avs_error_response_code.should == nil
+      update_result.credit_card_verification.avs_postal_code_response_code.should == "I"
+      update_result.credit_card_verification.avs_street_address_response_code.should == "I"
     end
 
     it "can update the billing address" do
