@@ -1,3 +1,12 @@
+== 2.3.0
+
+* Removed dependency on libxml -- it will still be used if libxml is explicitly required or it will fall back on rexml
+* Added unified TransparentRedirect url and confirm methods and deprecated old methods
+* Allow updating the payment_method_token on a subscription
+* Added methods to link a Transaction with its refund and vice versa
+* Allow card verification against a specified merchant account
+* Added ability to update a customer, credit card, and billing address in one request
+
 == 2.2.0
 
 * Prevent race condition when pulling back collection results -- search results represent the state of the data at the time the query was run
