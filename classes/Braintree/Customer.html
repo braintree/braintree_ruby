@@ -843,21 +843,21 @@ href="http://www.braintreepaymentsolutions.com/gateway/customer-api">www.braintr
 <div class="sectiontitle">Public Class Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000043"></a><b>_fetch_customers</b>(ids)
+<a name="M000052"></a><b>_fetch_customers</b>(ids)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000056"></a><b>_fetch_transactions</b>(customer_id, ids)
+<a name="M000064"></a><b>_fetch_transactions</b>(customer_id, ids)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000042"></a><b>all</b>()
+<a name="M000051"></a><b>all</b>()
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns a <a href="ResourceCollection.html">ResourceCollection</a> of <a
-href="Customer.html#M000042">all</a> customers stored in the vault.
+href="Customer.html#M000051">all</a> customers stored in the vault.
 </p>
 <pre>
   customers = Braintree::Customer.all
@@ -868,7 +868,7 @@ href="Customer.html#M000042">all</a> customers stored in the vault.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000044"></a><b>create</b>(attributes = {})
+<a name="M000053"></a><b>create</b>(attributes = {})
 </div><!-- end class=title -->
 <div class="description"> <p>
 Creates a customer using the given <tt>attributes</tt>. If <tt>:id</tt> is
@@ -893,133 +893,128 @@ not passed, the gateway will generate it.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000045"></a><b>create!</b>(attributes = {})
+<a name="M000054"></a><b>create!</b>(attributes = {})
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000048"></a><b>create_customer_transparent_redirect_url</b>()
+<a name="M000055"></a><b>create_customer_url</b>()
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000046"></a><b>create_customer_url</b>()
+<a name="M000056"></a><b>create_from_transparent_redirect</b>(query_string)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000047"></a><b>create_from_transparent_redirect</b>(query_string)
+<a name="M000057"></a><b>credit</b>(customer_id, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000049"></a><b>credit</b>(customer_id, transaction_attributes)
+<a name="M000058"></a><b>credit!</b>(customer_id, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000050"></a><b>credit!</b>(customer_id, transaction_attributes)
+<a name="M000059"></a><b>delete</b>(customer_id)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000051"></a><b>delete</b>(customer_id)
+<a name="M000060"></a><b>find</b>(customer_id)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000052"></a><b>find</b>(customer_id)
+<a name="M000061"></a><b>sale</b>(customer_id, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000053"></a><b>sale</b>(customer_id, transaction_attributes)
+<a name="M000062"></a><b>sale!</b>(customer_id, transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000054"></a><b>sale!</b>(customer_id, transaction_attributes)
-</div><!-- end class=title -->
-</div><!-- end class=method -->
-<div class="method">
-<div class="title">
-<a name="M000055"></a><b>transactions</b>(customer_id, options = {})
+<a name="M000063"></a><b>transactions</b>(customer_id, options = {})
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns a <a href="ResourceCollection.html">ResourceCollection</a> of <a
-href="Customer.html#M000055">transactions</a> for the customer with the
+href="Customer.html#M000063">transactions</a> for the customer with the
 given <tt>customer_id</tt>.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000057"></a><b>update</b>(customer_id, attributes)
+<a name="M000065"></a><b>update</b>(customer_id, attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000058"></a><b>update!</b>(customer_id, attributes)
+<a name="M000066"></a><b>update!</b>(customer_id, attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000059"></a><b>update_customer_url</b>()
+<a name="M000067"></a><b>update_customer_url</b>()
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000060"></a><b>update_from_transparent_redirect</b>(query_string)
+<a name="M000068"></a><b>update_from_transparent_redirect</b>(query_string)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <hr />
 <div class="sectiontitle">Public Instance Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000069"></a><b>==</b>(other)
+<a name="M000077"></a><b>==</b>(other)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000061"></a><b>credit</b>(transaction_attributes)
+<a name="M000069"></a><b>credit</b>(transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000062"></a><b>credit!</b>(transaction_attributes)
+<a name="M000070"></a><b>credit!</b>(transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000063"></a><b>delete</b>()
+<a name="M000071"></a><b>delete</b>()
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000064"></a><b>sale</b>(transaction_attributes)
+<a name="M000072"></a><b>sale</b>(transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000065"></a><b>sale!</b>(transaction_attributes)
+<a name="M000073"></a><b>sale!</b>(transaction_attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000066"></a><b>transactions</b>(options = {})
+<a name="M000074"></a><b>transactions</b>(options = {})
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns a <a href="ResourceCollection.html">ResourceCollection</a> of <a
-href="Customer.html#M000055">transactions</a> for the customer.
+href="Customer.html#M000063">transactions</a> for the customer.
 </p> </div>
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000067"></a><b>update</b>(attributes)
+<a name="M000075"></a><b>update</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000068"></a><b>update!</b>(attributes)
+<a name="M000076"></a><b>update!</b>(attributes)
 </div><!-- end class=title -->
 </div><!-- end class=method -->
 </div><!-- end grid_13 -->

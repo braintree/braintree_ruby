@@ -770,7 +770,12 @@ the tr_data.
 <div class="sectiontitle">Public Class Methods</div>
 <div class="method">
 <div class="title">
-<a name="M000004"></a><b>create_credit_card_data</b>(params)
+<a name="M000011"></a><b>confirm</b>(query_string)
+</div><!-- end class=title -->
+</div><!-- end class=method -->
+<div class="method">
+<div class="title">
+<a name="M000012"></a><b>create_credit_card_data</b>(params)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns the tr_data string for creating a credit card.
@@ -778,7 +783,7 @@ Returns the tr_data string for creating a credit card.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000005"></a><b>create_customer_data</b>(params)
+<a name="M000013"></a><b>create_customer_data</b>(params)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns the tr_data string for creating a customer.
@@ -786,7 +791,7 @@ Returns the tr_data string for creating a customer.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000006"></a><b>transaction_data</b>(params)
+<a name="M000014"></a><b>transaction_data</b>(params)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns the tr_data string for creating a transaction.
@@ -794,7 +799,7 @@ Returns the tr_data string for creating a transaction.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000007"></a><b>update_credit_card_data</b>(params)
+<a name="M000015"></a><b>update_credit_card_data</b>(params)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns the tr_data string for updating a credit card. The
@@ -809,7 +814,7 @@ payment_method_token of the credit card to update is required.
 </div><!-- end class=method -->
 <div class="method">
 <div class="title">
-<a name="M000008"></a><b>update_customer_data</b>(params)
+<a name="M000016"></a><b>update_customer_data</b>(params)
 </div><!-- end class=title -->
 <div class="description"> <p>
 Returns the tr_data string for updating a customer. The customer_id of the
@@ -821,6 +826,14 @@ customer to update is required.
     :customer_id =&gt; &quot;customer123&quot;
   )
 </pre> </div>
+</div><!-- end class=method -->
+<div class="method">
+<div class="title">
+<a name="M000017"></a><b>url</b>()
+</div><!-- end class=title -->
+<div class="description"> <p>
+Returns the URL to which Transparent Redirect Requests should be posted
+</p> </div>
 </div><!-- end class=method -->
 </div><!-- end grid_13 -->
 

@@ -733,7 +733,31 @@ pre {
 
   <hr />
   <div class="description">
-    <h2>2.2.0</h2>
+    <h2>2.3.0</h2>
+<ul>
+<li>Removed dependency on libxml &#8212; it will still be used if libxml is
+explicitly required or it will fall back on rexml
+
+</li>
+<li>Added unified TransparentRedirect url and confirm methods and deprecated
+old methods
+
+</li>
+<li>Allow updating the payment_method_token on a subscription
+
+</li>
+<li>Added methods to link a Transaction with its refund and vice versa
+
+</li>
+<li>Allow card verification against a specified merchant account
+
+</li>
+<li>Added ability to update a customer, credit card, and billing address in one
+request
+
+</li>
+</ul>
+<h2>2.2.0</h2>
 <ul>
 <li>Prevent race condition when pulling back collection results &#8212; search
 results represent the state of the data at the time the query was run
