@@ -128,6 +128,13 @@ module Braintree
       Token = 'token'
     end
 
+    module GatewayRejectionReason
+      AVS = "avs"
+      AVS_AND_CVV = "avs_and_cvv"
+      CVV = "cvv"
+      DUPLICATE = "duplicate"
+    end
+
     module Status
       Authorizing = 'authorizing'
       Authorized = 'authorized'
@@ -159,6 +166,7 @@ module Braintree
     attr_reader :currency_iso_code
     attr_reader :custom_fields
     attr_reader :cvv_response_code
+    attr_reader :gateway_rejection_reason
     attr_reader :merchant_account_id
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
