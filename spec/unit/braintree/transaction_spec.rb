@@ -174,21 +174,4 @@ describe Braintree::Transaction do
       transaction.refunded?.should == false
     end
   end
-
-  describe "gateway_rejection_reason" do
-    it "is nil if none is present" do
-      transaction = Braintree::Transaction._new(
-        :cardholder_name => "Priness Margaret"
-      )
-      transaction.gateway_rejection_reason.should be_nil
-    end
-
-    it "is exposed when provided" do
-      transaction = Braintree::Transaction._new(
-        :cardholder_name => "Priness Anne",
-        :gateway_rejection_reason => Braintree::Transaction::GatewayRejectionReason::AVS
-      )
-      transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVS
-    end
-  end
 end

@@ -39,6 +39,94 @@ describe Braintree::Transaction do
       result.transaction.processor_response_text.should == "Do Not Honor"
     end
 
+    context "gateway rejection reason" do
+      it "exposes the cvv gateway rejection reason" do
+        old_merchant = Braintree::Configuration.merchant_id
+        old_public_key = Braintree::Configuration.public_key
+        old_private_key = Braintree::Configuration.private_key
+
+        begin
+          Braintree::Configuration.merchant_id = "processing_rules_merchant_id"
+          Braintree::Configuration.public_key = "processing_rules_public_key"
+          Braintree::Configuration.private_key = "processing_rules_private_key"
+
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009",
+              :cvv => "200"
+            }
+          )
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::CVV
+        ensure
+          Braintree::Configuration.merchant_id = old_merchant
+          Braintree::Configuration.public_key = old_public_key
+          Braintree::Configuration.private_key = old_private_key
+        end
+      end
+
+      it "exposes the avs gateway rejection reason" do
+        old_merchant = Braintree::Configuration.merchant_id
+        old_public_key = Braintree::Configuration.public_key
+        old_private_key = Braintree::Configuration.private_key
+
+        begin
+          Braintree::Configuration.merchant_id = "processing_rules_merchant_id"
+          Braintree::Configuration.public_key = "processing_rules_public_key"
+          Braintree::Configuration.private_key = "processing_rules_private_key"
+
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :billing => {
+              :street_address => "200 Fake Street"
+            },
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            }
+          )
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVS
+        ensure
+          Braintree::Configuration.merchant_id = old_merchant
+          Braintree::Configuration.public_key = old_public_key
+          Braintree::Configuration.private_key = old_private_key
+        end
+      end
+
+      it "exposes the avs_and_cvv gateway rejection reason" do
+        old_merchant = Braintree::Configuration.merchant_id
+        old_public_key = Braintree::Configuration.public_key
+        old_private_key = Braintree::Configuration.private_key
+
+        begin
+          Braintree::Configuration.merchant_id = "processing_rules_merchant_id"
+          Braintree::Configuration.public_key = "processing_rules_public_key"
+          Braintree::Configuration.private_key = "processing_rules_private_key"
+
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :billing => {
+              :postal_code => "20000"
+            },
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009",
+              :cvv => "200"
+            }
+          )
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVS_AND_CVV
+        ensure
+          Braintree::Configuration.merchant_id = old_merchant
+          Braintree::Configuration.public_key = old_public_key
+          Braintree::Configuration.private_key = old_private_key
+        end
+      end
+    end
+
     it "accepts credit card expiration month and expiration year" do
       result = Braintree::Transaction.create(
         :type => "sale",
