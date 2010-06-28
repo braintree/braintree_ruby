@@ -3,7 +3,8 @@ module Braintree
     include BaseModule
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code,
-      :cvv_response_code, :merchant_account_id, :processor_response_code, :processor_response_text, :status
+      :cvv_response_code, :merchant_account_id, :processor_response_code, :processor_response_text, :status,
+      :gateway_rejection_reason
 
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
@@ -14,7 +15,7 @@ module Braintree
         :status, :processor_response_code, :processor_response_text,
         :cvv_response_code, :avs_error_response_code,
         :avs_postal_code_response_code, :avs_street_address_response_code,
-        :merchant_account_id
+        :merchant_account_id, :gateway_rejection_reason
       ]
       formatted_attrs = attr_order.map do |attr|
         "#{attr}: #{send(attr).inspect}"

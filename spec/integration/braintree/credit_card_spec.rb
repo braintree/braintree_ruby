@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::CreditCard do
-
   describe "self.create" do
     it "throws and ArgumentError if given exipiration_date and any combination of expiration_month and expiration_year" do
       expect do
@@ -74,6 +73,33 @@ describe Braintree::CreditCard do
       result.credit_card_verification.avs_error_response_code.should == nil
       result.credit_card_verification.avs_postal_code_response_code.should == "I"
       result.credit_card_verification.avs_street_address_response_code.should == "I"
+    end
+
+    it "exposes the gateway rejection reason on verification" do
+      old_merchant = Braintree::Configuration.merchant_id
+      old_public_key = Braintree::Configuration.public_key
+      old_private_key = Braintree::Configuration.private_key
+
+      begin
+        Braintree::Configuration.merchant_id = "processing_rules_merchant_id"
+        Braintree::Configuration.public_key = "processing_rules_public_key"
+        Braintree::Configuration.private_key = "processing_rules_private_key"
+
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009",
+          :cvv => "200",
+          :options => {:verify_card => true}
+        )
+        result.success?.should == false
+        result.credit_card_verification.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::CVV
+      ensure
+        Braintree::Configuration.merchant_id = old_merchant
+        Braintree::Configuration.public_key = old_public_key
+        Braintree::Configuration.private_key = old_private_key
+      end
     end
 
     it "allows user to specify merchant account for verification" do
@@ -425,6 +451,7 @@ describe Braintree::CreditCard do
       )
       update_result.success?.should == false
       update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      update_result.credit_card_verification.gateway_rejection_reason.should be_nil
     end
 
     it "can update the billing address" do
