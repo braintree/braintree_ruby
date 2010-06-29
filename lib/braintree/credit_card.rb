@@ -261,7 +261,7 @@ module Braintree
     end
 
     def self._signature(type) # :nodoc:
-      billing_address_params = [:company, :country_name, :country_code_alpha2, :country_code_alpha3, :country_code_numeric, :extended_address, :first_name, :last_name, :locality, :postal_code, :region, :street_address]
+      billing_address_params = Address._shared_signature
       signature = [
         :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
         {:options => [:make_default, :verification_merchant_account_id, :verify_card]},

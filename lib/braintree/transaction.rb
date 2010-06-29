@@ -417,16 +417,10 @@ module Braintree
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {
-          :billing => [
-            :first_name, :last_name, :company, :country_name, :country_code_alpha2, :country_code_alpha3,
-            :country_code_numeric, :extended_address, :locality, :postal_code, :region, :street_address
-          ]
+          :billing => Address._shared_signature
         },
         {
-          :shipping => [
-            :first_name, :last_name, :company, :country_name, :country_code_alpha2, :country_code_alpha3,
-            :country_code_numeric, :extended_address, :locality, :postal_code, :region, :street_address
-          ]
+          :shipping => Address._shared_signature
         },
         {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault]},
         {:custom_fields => :_any_key_}
