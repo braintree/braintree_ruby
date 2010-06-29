@@ -27,6 +27,9 @@ describe Braintree::Address do
       result.address.region.should == "Illinois"
       result.address.postal_code.should == "60622"
       result.address.country_name.should == "United States of America"
+      result.address.country_code_alpha2.should == "US"
+      result.address.country_code_alpha3.should == "USA"
+      result.address.country_code_numeric.should == "840"
     end
 
     it "returns an error response if invalid" do

@@ -6,7 +6,8 @@ module Braintree
     include BaseModule # :nodoc:
 
     attr_reader :company, :country_name, :created_at, :customer_id, :extended_address, :first_name, :id,
-      :last_name, :locality, :postal_code, :region, :street_address, :updated_at
+      :last_name, :locality, :postal_code, :region, :street_address, :updated_at,
+      :country_code_alpha2, :country_code_alpha3, :country_code_numeric
 
     def self.create(attributes)
       Util.verify_keys(_create_signature, attributes)

@@ -463,6 +463,9 @@ describe Braintree::Transaction do
       transaction.billing_details.region.should == "IL"
       transaction.billing_details.postal_code.should == "60622"
       transaction.billing_details.country_name.should == "United States of America"
+      transaction.billing_details.country_code_alpha2.should == "US"
+      transaction.billing_details.country_code_alpha3.should == "USA"
+      transaction.billing_details.country_code_numeric.should == "840"
       transaction.shipping_details.first_name.should == "Andrew"
       transaction.shipping_details.last_name.should == "Mason"
       transaction.shipping_details.company.should == "Braintree"
@@ -472,6 +475,9 @@ describe Braintree::Transaction do
       transaction.shipping_details.region.should == "IL"
       transaction.shipping_details.postal_code.should == "60103"
       transaction.shipping_details.country_name.should == "United States of America"
+      transaction.shipping_details.country_code_alpha2.should == "US"
+      transaction.shipping_details.country_code_alpha3.should == "USA"
+      transaction.shipping_details.country_code_numeric.should == "840"
     end
 
     it "allows merchant account to be specified" do
