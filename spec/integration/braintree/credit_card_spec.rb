@@ -147,6 +147,42 @@ describe Braintree::CreditCard do
       credit_card.billing_address.street_address.should == "123 Abc Way"
     end
 
+    it "adds credit card with billing using country_code" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "12/2009",
+        :billing_address => {
+          :country_name => "United States of America",
+          :country_code_alpha2 => "US",
+          :country_code_alpha3 => "USA",
+          :country_code_numeric => "840"
+        }
+      )
+      result.success?.should == true
+      credit_card = result.credit_card
+      credit_card.billing_address.country_name.should == "United States of America"
+      credit_card.billing_address.country_code_alpha2.should == "US"
+      credit_card.billing_address.country_code_alpha3.should == "USA"
+      credit_card.billing_address.country_code_numeric.should == "840"
+    end
+
+    it "returns an error when given inconsistent country information" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "12/2009",
+        :billing_address => {
+          :country_name => "Mexico",
+          :country_code_alpha2 => "US"
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+    end
+
     it "returns an error response if unsuccessful" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
@@ -411,6 +447,33 @@ describe Braintree::CreditCard do
         updated_credit_card.billing_address.region.should == "IL"
         updated_credit_card.billing_address.street_address.should == "123 Nigeria Ave"
         updated_credit_card.billing_address.id.should == credit_card.billing_address.id
+      end
+
+      it "updates the country via codes" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :billing_address => {
+            :street_address => "123 Nigeria Ave"
+          }
+        )
+        update_result = Braintree::CreditCard.update(credit_card.token,
+          :billing_address => {
+            :country_name => "American Samoa",
+            :country_code_alpha2 => "AS",
+            :country_code_alpha3 => "ASM",
+            :country_code_numeric => "016",
+            :options => {:update_existing => true}
+          }
+        )
+        update_result.success?.should == true
+        updated_credit_card = update_result.credit_card
+        updated_credit_card.billing_address.country_name.should == "American Samoa"
+        updated_credit_card.billing_address.country_code_alpha2.should == "AS"
+        updated_credit_card.billing_address.country_code_alpha3.should == "ASM"
+        updated_credit_card.billing_address.country_code_numeric.should == "016"
       end
     end
 

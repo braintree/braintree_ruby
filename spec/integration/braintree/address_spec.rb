@@ -32,6 +32,62 @@ describe Braintree::Address do
       result.address.country_code_numeric.should == "840"
     end
 
+    it "accepts country_codes" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Address.create(
+        :customer_id => customer.id,
+        :country_code_alpha2 => "AS",
+        :country_code_alpha3 => "ASM",
+        :country_code_numeric => "16"
+      )
+      result.success?.should == true
+      result.address.country_name.should == "American Samoa"
+      result.address.country_code_alpha2.should == "AS"
+      result.address.country_code_alpha3.should == "ASM"
+      result.address.country_code_numeric.should == "016"
+    end
+
+    it "returns an error response given inconsistent country codes" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Address.create(
+        :customer_id => customer.id,
+        :country_code_alpha2 => "AS",
+        :country_code_alpha3 => "USA"
+      )
+      result.success?.should == false
+      result.errors.for(:address).on(:base).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+    end
+
+    it "returns an error response given an invalid country_code_alpha2" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Address.create(
+        :customer_id => customer.id,
+        :country_code_alpha2 => "zz"
+      )
+      result.success?.should == false
+      result.errors.for(:address).on(:country_code_alpha2).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
+    end
+
+    it "returns an error response given an invalid country_code_alpha3" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Address.create(
+        :customer_id => customer.id,
+        :country_code_alpha3 => "zzz"
+      )
+      result.success?.should == false
+      result.errors.for(:address).on(:country_code_alpha3).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
+    end
+
+    it "returns an error response given an invalid country_code_numeric" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Address.create(
+        :customer_id => customer.id,
+        :country_code_numeric => "zz"
+      )
+      result.success?.should == false
+      result.errors.for(:address).on(:country_code_numeric).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
+    end
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
       result = Braintree::Address.create(
@@ -178,6 +234,28 @@ describe Braintree::Address do
       result.address.region.should == "Illinois"
       result.address.postal_code.should == "60621"
       result.address.country_name.should == "United States of America"
+      result.address.country_code_alpha2.should == "US"
+      result.address.country_code_alpha3.should == "USA"
+      result.address.country_code_numeric.should == "840"
+    end
+
+    it "accepts country_codes" do
+      customer = Braintree::Customer.create!(:last_name => "Miller")
+      address = Braintree::Address.create!(
+        :customer_id => customer.id,
+        :country_name => "Angola"
+      )
+      result = Braintree::Address.update(
+        customer.id,
+        address.id,
+        :country_name => "Azerbaijan"
+      )
+
+      result.success?.should == true
+      result.address.country_name.should == "Azerbaijan"
+      result.address.country_code_alpha2.should == "AZ"
+      result.address.country_code_alpha3.should == "AZE"
+      result.address.country_code_numeric.should == "031"
     end
 
     it "returns an error response if invalid" do

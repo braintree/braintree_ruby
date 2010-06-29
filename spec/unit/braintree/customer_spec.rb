@@ -71,6 +71,9 @@ describe Braintree::Customer do
           {:billing_address => [
             :company,
             :country_name,
+            :country_code_alpha2,
+            :country_code_alpha3,
+            :country_code_numeric,
             :extended_address,
             :first_name,
             :last_name,
@@ -113,6 +116,9 @@ describe Braintree::Customer do
           {:billing_address => [
             :company,
             :country_name,
+            :country_code_alpha2,
+            :country_code_alpha3,
+            :country_code_numeric,
             :extended_address,
             :first_name,
             :last_name,
