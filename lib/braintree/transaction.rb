@@ -144,7 +144,6 @@ module Braintree
       Settled = 'settled'
       SettlementFailed = 'settlement_failed'
       SubmittedForSettlement = 'submitted_for_settlement'
-      Unknown = 'unknown'
       Voided = 'voided'
 
       All = constants.map { |c| const_get(c) }
