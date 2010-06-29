@@ -39,6 +39,119 @@ describe Braintree::Transaction do
       result.transaction.processor_response_text.should == "Do Not Honor"
     end
 
+    it "accepts all four country codes" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :customer => {
+          :last_name => "Adama",
+        },
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :country_name => "Botswana",
+          :country_code_alpha2 => "BW",
+          :country_code_alpha3 => "BWA",
+          :country_code_numeric => "072"
+        },
+        :shipping => {
+          :country_name => "Bhutan",
+          :country_code_alpha2 => "BT",
+          :country_code_alpha3 => "BTN",
+          :country_code_numeric => "064"
+        },
+        :options => {
+          :add_billing_address_to_payment_method => true,
+          :store_in_vault => true
+        }
+      )
+      result.success?.should == true
+      transaction = result.transaction
+      transaction.billing_details.country_name.should == "Botswana"
+      transaction.billing_details.country_code_alpha2.should == "BW"
+      transaction.billing_details.country_code_alpha3.should == "BWA"
+      transaction.billing_details.country_code_numeric.should == "072"
+
+      transaction.shipping_details.country_name.should == "Bhutan"
+      transaction.shipping_details.country_code_alpha2.should == "BT"
+      transaction.shipping_details.country_code_alpha3.should == "BTN"
+      transaction.shipping_details.country_code_numeric.should == "064"
+
+      transaction.vault_credit_card.billing_address.country_name.should == "Botswana"
+      transaction.vault_credit_card.billing_address.country_code_alpha2.should == "BW"
+      transaction.vault_credit_card.billing_address.country_code_alpha3.should == "BWA"
+      transaction.vault_credit_card.billing_address.country_code_numeric.should == "072"
+    end
+
+    it "returns an error if provided inconsistent country information" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :country_name => "Botswana",
+          :country_code_alpha2 => "US",
+        }
+      )
+
+      result.success?.should == false
+      result.errors.for(:transaction).for(:billing).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+    end
+
+    it "returns an error if given an incorrect alpha2 code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :country_code_alpha2 => "ZZ"
+        }
+      )
+
+      result.success?.should == false
+      codes = result.errors.for(:transaction).for(:billing).on(:country_code_alpha2).map { |e| e.code }
+      codes.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
+    end
+
+    it "returns an error if given an incorrect alpha3 code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :country_code_alpha3 => "ZZZ"
+        }
+      )
+
+      result.success?.should == false
+      codes = result.errors.for(:transaction).for(:billing).on(:country_code_alpha3).map { |e| e.code }
+      codes.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
+    end
+
+    it "returns an error if given an incorrect numeric code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :country_code_numeric => "FOO"
+        }
+      )
+
+      result.success?.should == false
+      codes = result.errors.for(:transaction).for(:billing).on(:country_code_numeric).map { |e| e.code }
+      codes.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
+    end
+
     context "gateway rejection reason" do
       it "exposes the cvv gateway rejection reason" do
         old_merchant = Braintree::Configuration.merchant_id
