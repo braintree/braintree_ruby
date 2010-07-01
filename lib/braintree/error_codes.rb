@@ -59,18 +59,19 @@ module Braintree
       CustomFieldIsInvalid = "91602"
       CustomFieldIsTooLong = "81603"
       EmailIsInvalid = "81604"
-      EmailIsTooLong = "81605"
       EmailIsRequired = "81606"
+      EmailIsTooLong = "81605"
       FaxIsTooLong = "81607"
       FirstNameIsTooLong = "81608"
       IdIsInUse = "91609"
       IdIsInvaild = "91610"
       IdIsNotAllowed = "91611"
+      IdIsRequired = "91613"
       IdIsTooLong = "91612"
       LastNameIsTooLong = "81613"
       PhoneIsTooLong = "81614"
-      WebsiteIsTooLong = "81615"
       WebsiteIsInvalid = "81616"
+      WebsiteIsTooLong = "81615"
     end
 
     module Subscription
