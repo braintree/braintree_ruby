@@ -770,6 +770,24 @@ describe Braintree::CreditCard do
     end
   end
 
+  describe "self.delete" do
+    it "deletes the credit card" do
+      customer = Braintree::Customer.create.customer
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+
+      result.success?.should == true
+      credit_card = result.credit_card
+      Braintree::CreditCard.delete(credit_card.token).should == true
+      expect do
+        Braintree::CreditCard.find(credit_card.token)
+      end.to raise_error(Braintree::NotFoundError)
+    end
+  end
+
   describe "delete" do
     it "deletes the credit card" do
       customer = Braintree::Customer.create.customer

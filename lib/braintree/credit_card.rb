@@ -66,6 +66,10 @@ module Braintree
       return_object_or_raise(:transaction) { credit(token, transaction_attributes) }
     end
 
+    def self.delete(token)
+      Http.delete("/payment_methods/#{token}")
+    end
+
     # Returns a ResourceCollection of expired credit cards.
     def self.expired(options = {})
       response = Http.post("/payment_methods/all/expired_ids")
@@ -152,7 +156,7 @@ module Braintree
     end
 
     def delete
-      Http.delete("/payment_methods/#{token}")
+      CreditCard.delete(token)
     end
 
     # Returns true if this credit card is the customer's default.
