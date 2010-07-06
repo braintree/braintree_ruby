@@ -8,6 +8,7 @@ module Braintree
         "Bignum"     => "integer",
         "TrueClass"  => "boolean",
         "FalseClass" => "boolean",
+        "Date"       => "datetime",
         "DateTime"   => "datetime",
         "Time"       => "datetime",
       }
@@ -19,7 +20,9 @@ module Braintree
 
       XML_FORMATTING = {
         "symbol"     => Proc.new { |symbol| symbol.to_s },
-        "datetime"   => Proc.new { |time| time.xmlschema },
+        "datetime"   => Proc.new do |date_or_time|
+          date_or_time.respond_to?(:xmlschema) ? date_or_time.xmlschema : date_or_time.to_s
+        end,
         "bigdecimal" => Proc.new do |bigdecimal|
           str = bigdecimal.to_s('F')
           if str =~ /\.\d$/
