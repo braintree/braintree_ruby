@@ -24,6 +24,7 @@ module Braintree
       :order_id,
       :payment_method_token,
       :processor_authorization_code,
+      :settlement_batch_id,
       :shipping_company,
       :shipping_country_name,
       :shipping_extended_address,

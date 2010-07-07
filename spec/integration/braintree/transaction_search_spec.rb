@@ -18,48 +18,52 @@ describe Braintree::Transaction, "search" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
         :credit_card => {
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012",
-        :cardholder_name => "Tom Smith",
-        :token => token,
-      },
-      :billing => {
-        :company => "Braintree",
-        :country_name => "United States of America",
-        :extended_address => "Suite 123",
-        :first_name => first_name,
-        :last_name => "Smith",
-        :locality => "Chicago",
-        :postal_code => "12345",
-        :region => "IL",
-        :street_address => "123 Main St"
-      },
-      :customer => {
-        :company => "Braintree",
-        :email => "smith@example.com",
-        :fax => "5551231234",
-        :first_name => "Tom",
-        :id => customer_id,
-        :last_name => "Smith",
-        :phone => "5551231234",
-        :website => "http://example.com",
-      },
-      :options => {
-        :store_in_vault => true
-      },
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :cardholder_name => "Tom Smith",
+          :token => token,
+        },
+        :billing => {
+          :company => "Braintree",
+          :country_name => "United States of America",
+          :extended_address => "Suite 123",
+          :first_name => first_name,
+          :last_name => "Smith",
+          :locality => "Chicago",
+          :postal_code => "12345",
+          :region => "IL",
+          :street_address => "123 Main St"
+        },
+        :customer => {
+          :company => "Braintree",
+          :email => "smith@example.com",
+          :fax => "5551231234",
+          :first_name => "Tom",
+          :id => customer_id,
+          :last_name => "Smith",
+          :phone => "5551231234",
+          :website => "http://example.com",
+        },
+        :options => {
+          :store_in_vault => true,
+          :submit_for_settlement => true
+        },
         :order_id => "myorder",
         :shipping => {
-        :company => "Braintree P.S.",
-        :country_name => "Mexico",
-        :extended_address => "Apt 456",
-        :first_name => "Thomas",
-        :last_name => "Smithy",
-        :locality => "Braintree",
-        :postal_code => "54321",
-        :region => "MA",
-        :street_address => "456 Road"
-      }
+          :company => "Braintree P.S.",
+          :country_name => "Mexico",
+          :extended_address => "Apt 456",
+          :first_name => "Thomas",
+          :last_name => "Smithy",
+          :locality => "Braintree",
+          :postal_code => "54321",
+          :region => "MA",
+          :street_address => "456 Road"
+        }
       )
+
+      Braintree::Http.put "/transactions/#{transaction.id}/settle"
+      transaction = Braintree::Transaction.find(transaction.id)
 
       search_criteria = {
         :billing_company => "Braintree",
@@ -85,6 +89,7 @@ describe Braintree::Transaction, "search" do
         :order_id => "myorder",
         :payment_method_token => token,
         :processor_authorization_code => transaction.processor_authorization_code,
+        :settlement_batch_id => transaction.settlement_batch_id,
         :shipping_company => "Braintree P.S.",
         :shipping_country_name => "Mexico",
         :shipping_extended_address => "Apt 456",
