@@ -811,26 +811,6 @@ describe Braintree::Transaction, "search" do
           collection.first.id.should == transaction.id
         end
 
-        it "finds transactions settlement failed in a given range" do
-          collection = Braintree::Transaction.search do |search|
-            search.settlement_failed_at.between(
-              Date.today - 2,
-              Date.today - 1
-            )
-          end
-
-          collection.maximum_size.should == 0
-
-          collection = Braintree::Transaction.search do |search|
-            search.settled_at.between(
-              Date.today - 1,
-              Date.today + 1
-            )
-          end
-
-          collection.maximum_size.should > 0
-        end
-
         it "finds transactions submitted for settlement in a given range" do
           transaction = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
