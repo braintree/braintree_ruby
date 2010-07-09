@@ -508,103 +508,126 @@ describe Braintree::Transaction, "search" do
         end
       end
 
-      it "searches on created_at in UTC" do
-        transaction = Braintree::Transaction.sale!(
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/12"
-        }
-        )
-
-        created_at = transaction.created_at
-        created_at.should be_utc
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at.between(
-            created_at - 60,
-            created_at + 60
+      context "created_at" do
+        it "searches on created_at in UTC" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/12"
+          }
           )
+
+          created_at = transaction.created_at
+          created_at.should be_utc
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at.between(
+              created_at - 60,
+              created_at + 60
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at >= created_at - 1
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at <= created_at + 1
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at.between(
+              created_at - 300,
+              created_at - 100
+            )
+          end
+
+          collection.maximum_size.should == 0
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at >= created_at - 1
-        end
-
-        collection.maximum_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at <= created_at + 1
-        end
-
-        collection.maximum_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at.between(
-            created_at - 300,
-            created_at - 100
+        it "searches on created_at in local time" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/12"
+          }
           )
+
+          now = Time.now
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at.between(
+              now - 60,
+              now + 60
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at >= now - 60
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at <= now + 60
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at.between(
+              now - 300,
+              now - 100
+            )
+          end
+
+          collection.maximum_size.should == 0
         end
 
-        collection.maximum_size.should == 0
-      end
-
-      it "searches on created_at in local time" do
-        transaction = Braintree::Transaction.sale!(
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/12"
-        }
-        )
-
-        now = Time.now
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at.between(
-            now - 60,
-            now + 60
+        it "searches on created_at with dates" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/12"
+          }
           )
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
         end
-
-        collection.maximum_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at >= now - 60
-        end
-
-        collection.maximum_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at <= now + 60
-        end
-
-        collection.maximum_size.should == 1
-        collection.first.id.should == transaction.id
-
-        collection = Braintree::Transaction.search do |search|
-          search.id.is transaction.id
-          search.created_at.between(
-            now - 300,
-            now - 100
-          )
-        end
-
-        collection.maximum_size.should == 0
       end
     end
 

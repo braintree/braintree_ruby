@@ -6,7 +6,8 @@ module Braintree
     include BaseModule # :nodoc:
 
     attr_reader :company, :country_name, :created_at, :customer_id, :extended_address, :first_name, :id,
-      :last_name, :locality, :postal_code, :region, :street_address, :updated_at
+      :last_name, :locality, :postal_code, :region, :street_address, :updated_at,
+      :country_code_alpha2, :country_code_alpha3, :country_code_numeric
 
     def self.create(attributes)
       Util.verify_keys(_create_signature, attributes)
@@ -99,8 +100,7 @@ module Braintree
     end
 
     def self._create_signature # :nodoc:
-      [:company, :country_name, :customer_id, :extended_address, :first_name,
-        :last_name, :locality, :postal_code, :region, :street_address]
+      _shared_signature + [:customer_id]
     end
 
     def self._determine_customer_id(customer_or_customer_id) # :nodoc:
@@ -109,6 +109,12 @@ module Braintree
         raise ArgumentError, "customer_id contains invalid characters"
       end
       customer_id
+    end
+
+    def self._shared_signature # :nodoc:
+      [:company, :country_code_alpha2, :country_code_alpha3, :country_code_numeric,
+        :country_name, :extended_address, :first_name,
+        :last_name, :locality, :postal_code, :region, :street_address]
     end
 
     def self._new(*args) # :nodoc:

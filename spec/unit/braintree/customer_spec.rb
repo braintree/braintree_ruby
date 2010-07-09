@@ -70,6 +70,9 @@ describe Braintree::Customer do
           {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
           {:billing_address => [
             :company,
+            :country_code_alpha2,
+            :country_code_alpha3,
+            :country_code_numeric,
             :country_name,
             :extended_address,
             :first_name,
@@ -112,6 +115,9 @@ describe Braintree::Customer do
           ]},
           {:billing_address => [
             :company,
+            :country_code_alpha2,
+            :country_code_alpha3,
+            :country_code_numeric,
             :country_name,
             :extended_address,
             :first_name,

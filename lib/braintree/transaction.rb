@@ -128,6 +128,13 @@ module Braintree
       Token = 'token'
     end
 
+    module GatewayRejectionReason
+      AVS = "avs"
+      AVS_AND_CVV = "avs_and_cvv"
+      CVV = "cvv"
+      DUPLICATE = "duplicate"
+    end
+
     module Status
       Authorizing = 'authorizing'
       Authorized = 'authorized'
@@ -137,7 +144,6 @@ module Braintree
       Settled = 'settled'
       SettlementFailed = 'settlement_failed'
       SubmittedForSettlement = 'submitted_for_settlement'
-      Unknown = 'unknown'
       Voided = 'voided'
 
       All = constants.map { |c| const_get(c) }
@@ -159,6 +165,7 @@ module Braintree
     attr_reader :currency_iso_code
     attr_reader :custom_fields
     attr_reader :cvv_response_code
+    attr_reader :gateway_rejection_reason
     attr_reader :merchant_account_id
     attr_reader :order_id
     attr_reader :billing_details, :shipping_details
@@ -408,8 +415,12 @@ module Braintree
         :amount, :customer_id, :merchant_account_id, :order_id, :payment_method_token, :type,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
-        {:billing => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
-        {:shipping => [:first_name, :last_name, :company, :country_name, :extended_address, :locality, :postal_code, :region, :street_address]},
+        {
+          :billing => Address._shared_signature
+        },
+        {
+          :shipping => Address._shared_signature
+        },
         {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault]},
         {:custom_fields => :_any_key_}
       ]

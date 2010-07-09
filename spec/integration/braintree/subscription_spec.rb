@@ -131,6 +131,17 @@ describe Braintree::Subscription do
           result.subscription.trial_period.should == false
         end
 
+        it "doesn't create a transaction if there's a trial period" do
+          result = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TrialPlan[:id]
+          )
+
+          result.subscription.transactions.size.should == 0
+        end
+      end
+
+      context "no trial period" do
         it "creates a transaction if no trial period" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
@@ -144,13 +155,16 @@ describe Braintree::Subscription do
           result.subscription.transactions.first.subscription_id.should == result.subscription.id
         end
 
-        it "doesn't create a transaction if there's a trial period" do
+        it "does not create the subscription and returns the transaction if the transaction is not successful" do
           result = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => TrialPlan[:id]
+            :plan_id => TriallessPlan[:id],
+            :price => Braintree::Test::TransactionAmounts::Decline
           )
 
-          result.subscription.transactions.size.should == 0
+          result.success?.should be_false
+          result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
+          result.message.should == "Do Not Honor"
         end
       end
 
@@ -227,7 +241,6 @@ describe Braintree::Subscription do
         result.success?.should == false
         result.errors.for(:subscription).on(:trial_duration_unit)[0].message.should == "Trial Duration Unit is invalid."
       end
-
     end
   end
 

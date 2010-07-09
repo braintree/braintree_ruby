@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::CreditCard do
-
   describe "self.create" do
     it "throws and ArgumentError if given exipiration_date and any combination of expiration_month and expiration_year" do
       expect do
@@ -76,6 +75,33 @@ describe Braintree::CreditCard do
       result.credit_card_verification.avs_street_address_response_code.should == "I"
     end
 
+    it "exposes the gateway rejection reason on verification" do
+      old_merchant = Braintree::Configuration.merchant_id
+      old_public_key = Braintree::Configuration.public_key
+      old_private_key = Braintree::Configuration.private_key
+
+      begin
+        Braintree::Configuration.merchant_id = "processing_rules_merchant_id"
+        Braintree::Configuration.public_key = "processing_rules_public_key"
+        Braintree::Configuration.private_key = "processing_rules_private_key"
+
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009",
+          :cvv => "200",
+          :options => {:verify_card => true}
+        )
+        result.success?.should == false
+        result.credit_card_verification.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::CVV
+      ensure
+        Braintree::Configuration.merchant_id = old_merchant
+        Braintree::Configuration.public_key = old_public_key
+        Braintree::Configuration.private_key = old_private_key
+      end
+    end
+
     it "allows user to specify merchant account for verification" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
@@ -119,6 +145,42 @@ describe Braintree::CreditCard do
       credit_card = result.credit_card
       credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
       credit_card.billing_address.street_address.should == "123 Abc Way"
+    end
+
+    it "adds credit card with billing using country_code" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "12/2009",
+        :billing_address => {
+          :country_name => "United States of America",
+          :country_code_alpha2 => "US",
+          :country_code_alpha3 => "USA",
+          :country_code_numeric => "840"
+        }
+      )
+      result.success?.should == true
+      credit_card = result.credit_card
+      credit_card.billing_address.country_name.should == "United States of America"
+      credit_card.billing_address.country_code_alpha2.should == "US"
+      credit_card.billing_address.country_code_alpha3.should == "USA"
+      credit_card.billing_address.country_code_numeric.should == "840"
+    end
+
+    it "returns an error when given inconsistent country information" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "12/2009",
+        :billing_address => {
+          :country_name => "Mexico",
+          :country_code_alpha2 => "US"
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
     end
 
     it "returns an error response if unsuccessful" do
@@ -386,6 +448,33 @@ describe Braintree::CreditCard do
         updated_credit_card.billing_address.street_address.should == "123 Nigeria Ave"
         updated_credit_card.billing_address.id.should == credit_card.billing_address.id
       end
+
+      it "updates the country via codes" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :billing_address => {
+            :street_address => "123 Nigeria Ave"
+          }
+        )
+        update_result = Braintree::CreditCard.update(credit_card.token,
+          :billing_address => {
+            :country_name => "American Samoa",
+            :country_code_alpha2 => "AS",
+            :country_code_alpha3 => "ASM",
+            :country_code_numeric => "016",
+            :options => {:update_existing => true}
+          }
+        )
+        update_result.success?.should == true
+        updated_credit_card = update_result.credit_card
+        updated_credit_card.billing_address.country_name.should == "American Samoa"
+        updated_credit_card.billing_address.country_code_alpha2.should == "AS"
+        updated_credit_card.billing_address.country_code_alpha3.should == "ASM"
+        updated_credit_card.billing_address.country_code_numeric.should == "016"
+      end
     end
 
     it "can pass expiration_month and expiration_year" do
@@ -425,6 +514,7 @@ describe Braintree::CreditCard do
       )
       update_result.success?.should == false
       update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      update_result.credit_card_verification.gateway_rejection_reason.should be_nil
     end
 
     it "can update the billing address" do
@@ -677,6 +767,24 @@ describe Braintree::CreditCard do
       expect do
         customer.credit_cards[0].credit!(:amount => "invalid")
       end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
+  describe "self.delete" do
+    it "deletes the credit card" do
+      customer = Braintree::Customer.create.customer
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+
+      result.success?.should == true
+      credit_card = result.credit_card
+      Braintree::CreditCard.delete(credit_card.token).should == true
+      expect do
+        Braintree::CreditCard.find(credit_card.token)
+      end.to raise_error(Braintree::NotFoundError)
     end
   end
 

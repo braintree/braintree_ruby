@@ -159,6 +159,28 @@ describe Braintree::Customer do
       result.customer.addresses[0].country_name.should == "United States of America"
     end
 
+    it "can use any country code" do
+      result = Braintree::Customer.create(
+        :first_name => "James",
+        :last_name => "Conroy",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :billing_address => {
+            :country_name => "Comoros",
+            :country_code_alpha2 => "KM",
+            :country_code_alpha3 => "COM",
+            :country_code_numeric => "174"
+          }
+        }
+      )
+      result.success?.should == true
+      result.customer.addresses[0].country_name.should == "Comoros"
+      result.customer.addresses[0].country_code_alpha2.should == "KM"
+      result.customer.addresses[0].country_code_alpha3.should == "COM"
+      result.customer.addresses[0].country_code_numeric.should == "174"
+    end
+
     it "stores custom fields when valid" do
       result = Braintree::Customer.create(
         :first_name => "Bill",
@@ -185,6 +207,72 @@ describe Braintree::Customer do
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
       result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Credit card number is invalid."
       result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_name)[0].message.should == "Country name is not an accepted country."
+    end
+
+    it "returns errors if country codes are inconsistent" do
+      result = Braintree::Customer.create(
+        :first_name => "Olivia",
+        :last_name => "Dupree",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :billing_address => {
+            :country_name => "Comoros",
+            :country_code_alpha2 => "US",
+            :country_code_alpha3 => "COM",
+          }
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:base).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+    end
+
+    it "returns an error if country code alpha2 is invalid" do
+      result = Braintree::Customer.create(
+        :first_name => "Melissa",
+        :last_name => "Henderson",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :billing_address => {
+            :country_code_alpha2 => "zz",
+          }
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha2).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
+    end
+
+    it "returns an error if country code alpha3 is invalid" do
+      result = Braintree::Customer.create(
+        :first_name => "Andrew",
+        :last_name => "Patterson",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/3010",
+          :billing_address => {
+            :country_code_alpha3 => "zzz",
+          }
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha3).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
+    end
+
+    it "returns an error if country code numeric is invalid" do
+      result = Braintree::Customer.create(
+        :first_name => "Steve",
+        :last_name => "Hamlin",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/3010",
+          :billing_address => {
+            :country_code_numeric => "zzz",
+          }
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_numeric).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
     it "returns errors if custom_fields are not registered" do
@@ -569,6 +657,33 @@ describe Braintree::Customer do
       result.customer.first_name.should == "Mr. Joe"
       result.customer.last_name.should == "Super Cool"
       result.customer.custom_fields[:store_me].should == "a value"
+    end
+
+    it "can use any country code" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Alex",
+        :last_name => "Matterson"
+      )
+      result = Braintree::Customer.update(
+        customer.id,
+        :first_name => "Sammy",
+        :last_name => "Banderton",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :billing_address => {
+            :country_name => "Fiji",
+            :country_code_alpha2 => "FJ",
+            :country_code_alpha3 => "FJI",
+            :country_code_numeric => "242"
+          }
+        }
+      )
+      result.success?.should == true
+      result.customer.addresses[0].country_name.should == "Fiji"
+      result.customer.addresses[0].country_code_alpha2.should == "FJ"
+      result.customer.addresses[0].country_code_alpha3.should == "FJI"
+      result.customer.addresses[0].country_code_numeric.should == "242"
     end
 
     it "can update the customer, credit card, and billing address in one request" do
