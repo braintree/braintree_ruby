@@ -65,6 +65,10 @@ Example of using bang method:
 We recommend using the bang methods when you assume that the data is valid and do not expect validations to fail.
 Otherwise, we recommend using the non-bang methods.
 
+== More Information
+
+* Documentation[http://www.braintreepaymentsolutions.com/docs/ruby]
+
 == Tests
 
 The unit specs can be run by anyone on any system, but the integration specs are meant to be run against a local development
