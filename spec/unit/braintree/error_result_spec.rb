@@ -2,10 +2,10 @@ require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Braintree::ErrorResult do
   describe "initialize" do
-    it "ignores data other than params, errors, and summary" do
+    it "ignores data other than params, errors, and message" do
       # so that we can add more data into the response in the future without breaking the client lib
       expect do
-        result = Braintree::ErrorResult.new(:params => "params", :errors => {:errors => []}, :extra => "is ignored", :summary => "foo bar")
+        result = Braintree::ErrorResult.new(:params => "params", :errors => {:errors => []}, :extra => "is ignored", :message => "foo bar")
       end.to_not raise_error
     end
   end
