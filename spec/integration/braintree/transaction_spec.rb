@@ -231,7 +231,7 @@ describe Braintree::Transaction do
             }
           )
           result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVS_AND_CVV
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVSAndCVV
         ensure
           Braintree::Configuration.merchant_id = old_merchant
           Braintree::Configuration.public_key = old_public_key

@@ -130,9 +130,9 @@ module Braintree
 
     module GatewayRejectionReason
       AVS = "avs"
-      AVS_AND_CVV = "avs_and_cvv"
+      AVSAndCVV = "avs_and_cvv"
       CVV = "cvv"
-      DUPLICATE = "duplicate"
+      Duplicate = "duplicate"
     end
 
     module Status
