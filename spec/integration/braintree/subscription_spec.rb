@@ -84,6 +84,30 @@ describe Braintree::Subscription do
       end
     end
 
+    context "number_of_billing_cycles" do
+      it "sets the number of billing cycles on the subscription when provided" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :number_of_billing_cycles => 10
+        )
+
+        result.success?.should == true
+        result.subscription.number_of_billing_cycles.should == 10
+      end
+
+      it "sets the number of billing cycles to nil if :never_expires => true" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :never_expires => true
+        )
+
+        result.success?.should == true
+        result.subscription.number_of_billing_cycles.should == nil
+      end
+    end
+
     context "trial period" do
       context "defaults to the plan's trial period settings" do
         it "with no trial" do
@@ -394,6 +418,39 @@ describe Braintree::Subscription do
         )
         result.success?.should == false
         result.errors.for(:subscription)[0].code.should == Braintree::ErrorCodes::Subscription::CannotEditCanceledSubscription
+      end
+    end
+
+    context "number_of_billing_cycles" do
+      it "sets the number of billing cycles on the subscription when provided" do
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :number_of_billing_cycles => 10
+        ).subscription
+
+        result = Braintree::Subscription.update(
+          subscription.id,
+          :number_of_billing_cycles => 5
+        )
+
+        result.subscription.number_of_billing_cycles.should == 5
+      end
+
+      it "sets the number of billing cycles to nil if :never_expires => true" do
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :number_of_billing_cycles => 10
+        ).subscription
+
+        result = Braintree::Subscription.update(
+          subscription.id,
+          :never_expires => true
+        )
+
+        result.success?.should == true
+        result.subscription.number_of_billing_cycles.should == nil
       end
     end
   end

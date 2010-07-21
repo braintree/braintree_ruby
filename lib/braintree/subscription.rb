@@ -43,6 +43,7 @@ module Braintree
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
     attr_reader :transactions
+    attr_reader :never_expires, :number_of_billing_cycles
 
     def self.cancel(subscription_id)
       response = Http.put "/subscriptions/#{subscription_id}/cancel"
@@ -128,6 +129,8 @@ module Braintree
       [
         :id,
         :merchant_account_id,
+        :never_expires,
+        :number_of_billing_cycles,
         :payment_method_token,
         :plan_id,
         :price,
@@ -176,6 +179,8 @@ module Braintree
       [
         :id,
         :merchant_account_id,
+        :never_expires,
+        :number_of_billing_cycles,
         :payment_method_token,
         :plan_id,
         :price

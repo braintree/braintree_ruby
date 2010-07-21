@@ -76,8 +76,13 @@ module Braintree
 
     module Subscription
       CannotEditCanceledSubscription = "81901"
-      IdIsInUse =  "81902"
+      CannotEditExpiredSubscription = "81910"
+      InconsistentNumberOfBillingCycles = "91908"
+      IdIsInUse = "81902"
       MerchantAccountIdIsInvalid = "91901"
+      NumberOfBillingCyclesIsTooSmall = "91909"
+      NumberOfBillingCyclesMustBeGreaterThanZero = "91907"
+      NumberOfBillingCyclesMustBeNumeric = "91906"
       PaymentMethodTokenCardTypeIsNotAccepted = "91902"
       PaymentMethodTokenIsInvalid = "91903"
       PaymentMethodTokenNotAssociatedWithCustomer = "91905"
@@ -86,9 +91,9 @@ module Braintree
       PriceFormatIsInvalid = "81904"
       StatusIsCanceled = "81905"
       TokenFormatIsInvalid = "81906"
-      TrialDurationFormatIsInvalid =  "81907"
+      TrialDurationFormatIsInvalid = "81907"
       TrialDurationIsRequired = "81908"
-      TrialDurationUnitIsInvalid =  "81909"
+      TrialDurationUnitIsInvalid = "81909"
     end
 
     module Transaction
