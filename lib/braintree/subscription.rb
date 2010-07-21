@@ -30,6 +30,7 @@ module Braintree
     module Status
       Active = 'Active'
       Canceled = 'Canceled'
+      Expired = 'Expired'
       PastDue = 'Past Due'
     end
 

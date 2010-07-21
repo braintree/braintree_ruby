@@ -10,6 +10,7 @@ module Braintree
           search.status.in(
             Subscription::Status::Active,
             Subscription::Status::Canceled,
+            Subscription::Status::Expired,
             Subscription::Status::PastDue
           )
         end.should_not raise_error

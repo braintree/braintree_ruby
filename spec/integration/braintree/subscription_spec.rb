@@ -693,6 +693,15 @@ describe Braintree::Subscription do
           collection.should include(subscription1)
           collection.should include(subscription2)
         end
+
+        it "returns expired subscriptions" do
+          collection = Braintree::Subscription.search do |search|
+            search.status.in [Braintree::Subscription::Status::Expired]
+          end
+
+          collection.maximum_size.should > 0
+          collection.all? { |subscription| subscription.status.should == Braintree::Subscription::Status::Expired }
+        end
       end
     end
 

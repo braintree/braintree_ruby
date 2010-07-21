@@ -5,6 +5,7 @@ module Braintree
     multiple_value_field :status, :allows => [
       Subscription::Status::Active,
       Subscription::Status::Canceled,
+      Subscription::Status::Expired,
       Subscription::Status::PastDue
     ]
   end
