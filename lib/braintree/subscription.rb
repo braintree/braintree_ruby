@@ -138,7 +138,17 @@ module Braintree
         :price,
         :trial_duration,
         :trial_duration_unit,
-        :trial_period
+        :trial_period,
+        {
+          :add_ons => [
+            {:update => [:amount, :existing_id]}
+          ]
+        },
+        {
+          :discounts => [
+            {:update => [:amount, :existing_id]}
+          ]
+        }
       ]
     end
 

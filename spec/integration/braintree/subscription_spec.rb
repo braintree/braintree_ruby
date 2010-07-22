@@ -24,6 +24,12 @@ describe Braintree::Subscription do
     :trial_period => false
   }
 
+  AddOnIncrease10 = "increase_10"
+  AddOnIncrease20 = "increase_20"
+
+  Discount7 = "discount_7"
+  Discount11 = "discount_11"
+
   before(:each) do
     @credit_card = Braintree::Customer.create!(
       :credit_card => {
@@ -300,6 +306,50 @@ describe Braintree::Subscription do
         discounts.first.quantity.should == 1
 
         discounts.last.amount.should == BigDecimal.new("7.00")
+        discounts.last.quantity.should == 1
+      end
+
+      it "allows overriding of inherited add-ons and discounts" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id],
+          :add_ons => {
+            :update => [
+              {
+                :amount => BigDecimal("50.00"),
+                :existing_id => AddOnIncrease10
+              }
+            ]
+          },
+          :discounts => {
+            :update => [
+              {
+                :amount => BigDecimal("15.00"),
+                :existing_id => Discount7
+              }
+            ]
+          }
+        )
+        result.success?.should == true
+
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 2
+        add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
+
+        add_ons.first.amount.should == BigDecimal.new("50.00")
+        add_ons.first.quantity.should == 1
+
+        add_ons.last.amount.should == BigDecimal.new("20.00")
+        add_ons.last.quantity.should == 1
+
+        subscription.discounts.size.should == 2
+        discounts = subscription.discounts.sort_by { |discount| discount.id }
+
+        discounts.first.amount.should == BigDecimal.new("11.00")
+        discounts.first.quantity.should == 1
+
+        discounts.last.amount.should == BigDecimal.new("15.00")
         discounts.last.quantity.should == 1
       end
     end

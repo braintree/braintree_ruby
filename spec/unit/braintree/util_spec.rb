@@ -93,6 +93,30 @@ describe Braintree::Util do
         )
       end.to raise_error(ArgumentError, "invalid keys: nested[deeply_allowed][real_deep_invalid], nested[nested_invalid], top_level_invalid")
     end
+
+    it "does not raise an error for array values" do
+      expect do
+        Braintree::Util.verify_keys(
+          [{:add_ons => [{:update => [:amount]}, {:add => [:amount]}]}],
+          :add_ons => {
+            :update => [{:amount => 10}],
+            :add => [{:amount => 5}]
+          }
+        )
+      end.to_not raise_error
+    end
+
+    it "raises an error for invalid key inside of array" do
+      expect do
+        Braintree::Util.verify_keys(
+          [{:add_ons => [{:update => [:amount]}, {:add => [:amount]}]}],
+          :add_ons => {
+            :update => [{:foo => 10}],
+            :add => [{:bar => 5}]
+          }
+        )
+      end.to_not raise_error(ArgumentError, "invalid keys: add_ons[update][foo], add_ons[add][bar]")
+    end
   end
 
   describe "self._flatten_hash_keys" do
