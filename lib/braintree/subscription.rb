@@ -141,12 +141,14 @@ module Braintree
         :trial_period,
         {
           :add_ons => [
-            {:update => [:amount, :existing_id]}
+            {:update => [:amount, :existing_id]},
+            {:remove => [:_any_key_]}
           ]
         },
         {
           :discounts => [
-            {:update => [:amount, :existing_id]}
+            {:update => [:amount, :existing_id]},
+            {:remove => [:_any_key_]}
           ]
         }
       ]

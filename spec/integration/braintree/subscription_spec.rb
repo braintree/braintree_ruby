@@ -352,6 +352,30 @@ describe Braintree::Subscription do
         discounts.last.amount.should == BigDecimal.new("15.00")
         discounts.last.quantity.should == 1
       end
+
+      it "allows deleting of inherited add-ons and discounts" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id],
+          :add_ons => {
+            :remove => [AddOnIncrease10]
+          },
+          :discounts => {
+            :remove => [Discount7]
+          }
+        )
+        result.success?.should == true
+
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 1
+        subscription.add_ons.first.amount.should == BigDecimal.new("20.00")
+        subscription.add_ons.first.quantity.should == 1
+
+        subscription.discounts.size.should == 1
+        subscription.discounts.last.amount.should == BigDecimal.new("11.00")
+        subscription.discounts.last.quantity.should == 1
+      end
     end
   end
 
