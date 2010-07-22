@@ -141,13 +141,15 @@ module Braintree
         :trial_period,
         {
           :add_ons => [
-            {:update => [:amount, :existing_id]},
+            {:add => [:amount, :quantity, :id]},
+            {:update => [:amount, :quantity, :existing_id]},
             {:remove => [:_any_key_]}
           ]
         },
         {
           :discounts => [
-            {:update => [:amount, :existing_id]},
+            {:add => [:amount, :quantity, :id]},
+            {:update => [:amount, :quantity, :existing_id]},
             {:remove => [:_any_key_]}
           ]
         }
@@ -199,7 +201,21 @@ module Braintree
         :number_of_billing_cycles,
         :payment_method_token,
         :plan_id,
-        :price
+        :price,
+        {
+          :add_ons => [
+            {:add => [:amount, :quantity, :id]},
+            {:update => [:amount, :quantity, :existing_id]},
+            {:remove => [:_any_key_]}
+          ]
+        },
+        {
+          :discounts => [
+            {:add => [:amount, :quantity, :id]},
+            {:update => [:amount, :quantity, :existing_id]},
+            {:remove => [:_any_key_]}
+          ]
+        }
       ]
     end
   end

@@ -26,9 +26,11 @@ describe Braintree::Subscription do
 
   AddOnIncrease10 = "increase_10"
   AddOnIncrease20 = "increase_20"
+  AddOnIncrease30 = "increase_30"
 
   Discount7 = "discount_7"
   Discount11 = "discount_11"
+  Discount15 = "discount_15"
 
   before(:each) do
     @credit_card = Braintree::Customer.create!(
@@ -280,8 +282,8 @@ describe Braintree::Subscription do
       end
     end
 
-    context "add-ons and discounts" do
-      it "inherits the add-ons and discounts from the plan when not specified" do
+    context "add_ons and discounts" do
+      it "inherits the add_ons and discounts from the plan when not specified" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => AddOnDiscountPlan[:id]
@@ -309,14 +311,14 @@ describe Braintree::Subscription do
         discounts.last.quantity.should == 1
       end
 
-      it "allows overriding of inherited add-ons and discounts" do
+      it "allows overriding of inherited add_ons and discounts" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => AddOnDiscountPlan[:id],
           :add_ons => {
             :update => [
               {
-                :amount => BigDecimal("50.00"),
+                :amount => BigDecimal.new("50.00"),
                 :existing_id => AddOnIncrease10
               }
             ]
@@ -324,7 +326,7 @@ describe Braintree::Subscription do
           :discounts => {
             :update => [
               {
-                :amount => BigDecimal("15.00"),
+                :amount => BigDecimal.new("15.00"),
                 :existing_id => Discount7
               }
             ]
@@ -353,7 +355,7 @@ describe Braintree::Subscription do
         discounts.last.quantity.should == 1
       end
 
-      it "allows deleting of inherited add-ons and discounts" do
+      it "allows deleting of inherited add_ons and discounts" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => AddOnDiscountPlan[:id],
@@ -375,6 +377,45 @@ describe Braintree::Subscription do
         subscription.discounts.size.should == 1
         subscription.discounts.last.amount.should == BigDecimal.new("11.00")
         subscription.discounts.last.quantity.should == 1
+      end
+
+      it "allows adding new add_ons and discounts" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id],
+          :add_ons => {
+            :add => [{:id => AddOnIncrease30}]
+          },
+          :discounts => {
+            :add => [{:id => Discount15}]
+          }
+        )
+        result.success?.should == true
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 3
+        add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
+
+        add_ons[0].amount.should == BigDecimal.new("10.00")
+        add_ons[0].quantity.should == 1
+
+        add_ons[1].amount.should == BigDecimal.new("20.00")
+        add_ons[1].quantity.should == 1
+
+        add_ons[2].amount.should == BigDecimal.new("30.00")
+        add_ons[2].quantity.should == 1
+
+        subscription.discounts.size.should == 3
+        discounts = subscription.discounts.sort_by { |discount| discount.id }
+
+        discounts[0].amount.should == BigDecimal.new("11.00")
+        discounts[0].quantity.should == 1
+
+        discounts[1].amount.should == BigDecimal.new("15.00")
+        discounts[1].quantity.should == 1
+
+        discounts[2].amount.should == BigDecimal.new("7.00")
+        discounts[2].quantity.should == 1
       end
     end
   end
@@ -564,8 +605,124 @@ describe Braintree::Subscription do
         result.subscription.number_of_billing_cycles.should == nil
       end
     end
-  end
 
+    context "add_ons and discounts" do
+      it "can update add_ons and discounts" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id]
+        )
+        result.success?.should == true
+        subscription = result.subscription
+
+        result = Braintree::Subscription.update(
+          subscription.id,
+          :add_ons => {
+            :update => [
+              {
+                :existing_id => subscription.add_ons.first.id,
+                :amount => BigDecimal.new("99.99"),
+                :quantity => 12
+              }
+            ]
+          },
+          :discounts => {
+            :update => [
+              {
+                :existing_id => subscription.discounts.first.id,
+                :amount => BigDecimal.new("88.88"),
+                :quantity => 9
+              }
+            ]
+          }
+        )
+
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 2
+        add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
+
+        add_ons.first.amount.should == BigDecimal.new("99.99")
+        add_ons.first.quantity.should == 12
+
+        subscription.discounts.size.should == 2
+        discounts = subscription.discounts.sort_by { |discount| discount.id }
+
+        discounts.last.amount.should == BigDecimal.new("88.88")
+        discounts.last.quantity.should == 9
+      end
+
+      it "allows adding new add_ons and discounts" do
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id]
+        ).subscription
+
+        result = Braintree::Subscription.update(subscription.id,
+          :add_ons => {
+            :add => [{:id => AddOnIncrease30}]
+          },
+          :discounts => {
+            :add => [{:id => Discount15}]
+          }
+        )
+
+        result.success?.should == true
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 3
+        add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
+
+        add_ons[0].amount.should == BigDecimal.new("10.00")
+        add_ons[0].quantity.should == 1
+
+        add_ons[1].amount.should == BigDecimal.new("20.00")
+        add_ons[1].quantity.should == 1
+
+        add_ons[2].amount.should == BigDecimal.new("30.00")
+        add_ons[2].quantity.should == 1
+
+        subscription.discounts.size.should == 3
+        discounts = subscription.discounts.sort_by { |discount| discount.id }
+
+        discounts[0].amount.should == BigDecimal.new("11.00")
+        discounts[0].quantity.should == 1
+
+        discounts[1].amount.should == BigDecimal.new("15.00")
+        discounts[1].quantity.should == 1
+
+        discounts[2].amount.should == BigDecimal.new("7.00")
+        discounts[2].quantity.should == 1
+      end
+
+      it "allows deleting of add_ons and discounts" do
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id]
+        ).subscription
+
+        result = Braintree::Subscription.update(subscription.id,
+          :add_ons => {
+            :remove => [AddOnIncrease10]
+          },
+          :discounts => {
+            :remove => [Discount7]
+          }
+        )
+        result.success?.should == true
+
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 1
+        subscription.add_ons.first.amount.should == BigDecimal.new("20.00")
+        subscription.add_ons.first.quantity.should == 1
+
+        subscription.discounts.size.should == 1
+        subscription.discounts.last.amount.should == BigDecimal.new("11.00")
+        subscription.discounts.last.quantity.should == 1
+      end
+    end
+  end
 
   describe "self.cancel" do
     it "returns a success response with the updated subscription if valid" do
