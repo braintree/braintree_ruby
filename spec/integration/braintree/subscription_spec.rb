@@ -17,6 +17,13 @@ describe Braintree::Subscription do
     :trial_period => false
   }
 
+  AddOnDiscountPlan = {
+    :description => "Plan for integration tests -- with add-ons and discounts",
+    :id => "integration_plan_with_add_ons_and_discounts",
+    :price => BigDecimal.new("9.99"),
+    :trial_period => false
+  }
+
   before(:each) do
     @credit_card = Braintree::Customer.create!(
       :credit_card => {
@@ -264,6 +271,36 @@ describe Braintree::Subscription do
         )
         result.success?.should == false
         result.errors.for(:subscription).on(:trial_duration_unit)[0].message.should == "Trial Duration Unit is invalid."
+      end
+    end
+
+    context "add-ons and discounts" do
+      it "inherits the add-ons and discounts from the plan when not specified" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id]
+        )
+        result.success?.should == true
+
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 2
+        add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
+
+        add_ons.first.amount.should == BigDecimal.new("10.00")
+        add_ons.first.quantity.should == 1
+
+        add_ons.last.amount.should == BigDecimal.new("20.00")
+        add_ons.last.quantity.should == 1
+
+        subscription.discounts.size.should == 2
+        discounts = subscription.discounts.sort_by { |discount| discount.id }
+
+        discounts.first.amount.should == BigDecimal.new("11.00")
+        discounts.first.quantity.should == 1
+
+        discounts.last.amount.should == BigDecimal.new("7.00")
+        discounts.last.quantity.should == 1
       end
     end
   end

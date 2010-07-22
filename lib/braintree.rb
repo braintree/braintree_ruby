@@ -18,7 +18,9 @@ end
 
 require "braintree/exceptions"
 require "braintree/base_module"
+require "braintree/modification.rb"
 
+require "braintree/add_on.rb"
 require "braintree/address.rb"
 require "braintree/advanced_search.rb"
 require "braintree/configuration.rb"
@@ -26,6 +28,7 @@ require "braintree/credit_card.rb"
 require "braintree/credit_card_verification.rb"
 require "braintree/customer.rb"
 require "braintree/digest.rb"
+require "braintree/discount.rb"
 require "braintree/error_codes.rb"
 require "braintree/error_result.rb"
 require "braintree/errors.rb"

@@ -45,6 +45,7 @@ module Braintree
     attr_reader :failure_count
     attr_reader :transactions
     attr_reader :never_expires, :number_of_billing_cycles
+    attr_reader :add_ons, :discounts
 
     def self.cancel(subscription_id)
       response = Http.put "/subscriptions/#{subscription_id}/cancel"
@@ -143,7 +144,9 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       _init attributes
-      transactions.map! {|attrs| Transaction._new(attrs) }
+      transactions.map! { |attrs| Transaction._new(attrs) }
+      add_ons.map! { |attrs| AddOn._new(attrs) }
+      discounts.map! { |attrs| Discount._new(attrs) }
     end
 
 
