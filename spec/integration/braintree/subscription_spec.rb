@@ -21,7 +21,9 @@ describe Braintree::Subscription do
     :description => "Plan for integration tests -- with add-ons and discounts",
     :id => "integration_plan_with_add_ons_and_discounts",
     :price => BigDecimal.new("9.99"),
-    :trial_period => false
+    :trial_period => true,
+    :trial_duration => 2,
+    :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
   }
 
   AddOnIncrease10 = "increase_10"
@@ -384,10 +386,10 @@ describe Braintree::Subscription do
           :payment_method_token => @credit_card.token,
           :plan_id => AddOnDiscountPlan[:id],
           :add_ons => {
-            :add => [{:id => AddOnIncrease30}]
+            :add => [{:inherited_from_id => AddOnIncrease30}]
           },
           :discounts => {
-            :add => [{:id => Discount15}]
+            :add => [{:inherited_from_id => Discount15}]
           }
         )
         result.success?.should == true
@@ -660,10 +662,10 @@ describe Braintree::Subscription do
 
         result = Braintree::Subscription.update(subscription.id,
           :add_ons => {
-            :add => [{:id => AddOnIncrease30}]
+            :add => [{:inherited_from_id => AddOnIncrease30}]
           },
           :discounts => {
-            :add => [{:id => Discount15}]
+            :add => [{:inherited_from_id => Discount15}]
           }
         )
 

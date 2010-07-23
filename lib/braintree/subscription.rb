@@ -141,14 +141,14 @@ module Braintree
         :trial_period,
         {
           :add_ons => [
-            {:add => [:amount, :quantity, :id]},
+            {:add => [:amount, :quantity, :inherited_from_id]},
             {:update => [:amount, :quantity, :existing_id]},
             {:remove => [:_any_key_]}
           ]
         },
         {
           :discounts => [
-            {:add => [:amount, :quantity, :id]},
+            {:add => [:amount, :quantity, :inherited_from_id]},
             {:update => [:amount, :quantity, :existing_id]},
             {:remove => [:_any_key_]}
           ]
@@ -204,14 +204,14 @@ module Braintree
         :price,
         {
           :add_ons => [
-            {:add => [:amount, :quantity, :id]},
+            {:add => [:amount, :quantity, :inherited_from_id]},
             {:update => [:amount, :quantity, :existing_id]},
             {:remove => [:_any_key_]}
           ]
         },
         {
           :discounts => [
-            {:add => [:amount, :quantity, :id]},
+            {:add => [:amount, :quantity, :inherited_from_id]},
             {:update => [:amount, :quantity, :existing_id]},
             {:remove => [:_any_key_]}
           ]
