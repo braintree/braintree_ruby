@@ -139,21 +139,7 @@ module Braintree
         :trial_duration,
         :trial_duration_unit,
         :trial_period,
-        {
-          :add_ons => [
-            {:add => [:amount, :quantity, :inherited_from_id]},
-            {:update => [:amount, :quantity, :existing_id]},
-            {:remove => [:_any_key_]}
-          ]
-        },
-        {
-          :discounts => [
-            {:add => [:amount, :quantity, :inherited_from_id]},
-            {:update => [:amount, :quantity, :existing_id]},
-            {:remove => [:_any_key_]}
-          ]
-        }
-      ]
+      ] + _add_on_discount_signature
     end
 
     def initialize(attributes) # :nodoc:
@@ -202,6 +188,11 @@ module Braintree
         :payment_method_token,
         :plan_id,
         :price,
+      ] + _add_on_discount_signature
+    end
+
+    def self._add_on_discount_signature
+      [
         {
           :add_ons => [
             {:add => [:amount, :quantity, :inherited_from_id]},
