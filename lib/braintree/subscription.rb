@@ -139,6 +139,7 @@ module Braintree
         :trial_duration,
         :trial_duration_unit,
         :trial_period,
+        {:options => [:do_not_inherit_add_ons_or_discounts]},
       ] + _add_on_discount_signature
     end
 

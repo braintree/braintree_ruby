@@ -285,6 +285,20 @@ describe Braintree::Subscription do
     end
 
     context "add_ons and discounts" do
+      it "does not inherit the add_ons and discounts from the plan when do_not_inherit_add_ons_or_discounts is set" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id],
+          :options => {:do_not_inherit_add_ons_or_discounts => true}
+        )
+        result.success?.should == true
+
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 0
+        subscription.discounts.size.should == 0
+      end
+
       it "inherits the add_ons and discounts from the plan when not specified" do
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
