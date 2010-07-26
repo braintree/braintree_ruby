@@ -711,6 +711,36 @@ describe Braintree::Subscription do
         discounts[2].quantity.should == 1
       end
 
+      it "allows replacing entire set of add_ons and discounts" do
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id]
+        ).subscription
+
+        result = Braintree::Subscription.update(subscription.id,
+          :add_ons => {
+            :add => [{:inherited_from_id => AddOnIncrease30}]
+          },
+          :discounts => {
+            :add => [{:inherited_from_id => Discount15}]
+          },
+          :options => {:replace_all_add_ons_and_discounts => true}
+        )
+
+        result.success?.should == true
+        subscription = result.subscription
+
+        subscription.add_ons.size.should == 1
+
+        subscription.add_ons[0].amount.should == BigDecimal.new("30.00")
+        subscription.add_ons[0].quantity.should == 1
+
+        subscription.discounts.size.should == 1
+
+        subscription.discounts[0].amount.should == BigDecimal.new("15.00")
+        subscription.discounts[0].quantity.should == 1
+      end
+
       it "allows deleting of add_ons and discounts" do
         subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
