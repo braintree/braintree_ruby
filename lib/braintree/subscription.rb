@@ -200,15 +200,15 @@ module Braintree
       [
         {
           :add_ons => [
-            {:add => [:amount, :quantity, :inherited_from_id]},
-            {:update => [:amount, :quantity, :existing_id]},
+            {:add => [:amount, :inherited_from_id, :never_expires, :number_of_billing_cycles, :quantity]},
+            {:update => [:amount, :existing_id, :never_expires, :number_of_billing_cycles, :quantity]},
             {:remove => [:_any_key_]}
           ]
         },
         {
           :discounts => [
-            {:add => [:amount, :quantity, :inherited_from_id]},
-            {:update => [:amount, :quantity, :existing_id]},
+            {:add => [:amount, :inherited_from_id, :never_expires, :number_of_billing_cycles, :quantity]},
+            {:update => [:amount, :existing_id, :never_expires, :number_of_billing_cycles, :quantity]},
             {:remove => [:_any_key_]}
           ]
         }

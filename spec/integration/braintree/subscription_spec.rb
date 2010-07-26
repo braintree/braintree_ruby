@@ -343,7 +343,9 @@ describe Braintree::Subscription do
             :update => [
               {
                 :amount => BigDecimal.new("50.00"),
-                :existing_id => AddOnIncrease10
+                :existing_id => AddOnIncrease10,
+                :quantity => 2,
+                :number_of_billing_cycles => 5
               }
             ]
           },
@@ -351,7 +353,9 @@ describe Braintree::Subscription do
             :update => [
               {
                 :amount => BigDecimal.new("15.00"),
-                :existing_id => Discount7
+                :existing_id => Discount7,
+                :quantity => 3,
+                :never_expires => true
               }
             ]
           }
@@ -364,7 +368,9 @@ describe Braintree::Subscription do
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
         add_ons.first.amount.should == BigDecimal.new("50.00")
-        add_ons.first.quantity.should == 1
+        add_ons.first.quantity.should == 2
+        add_ons.first.number_of_billing_cycles.should == 5
+        add_ons.first.never_expires?.should be_false
 
         add_ons.last.amount.should == BigDecimal.new("20.00")
         add_ons.last.quantity.should == 1
@@ -376,7 +382,9 @@ describe Braintree::Subscription do
         discounts.first.quantity.should == 1
 
         discounts.last.amount.should == BigDecimal.new("15.00")
-        discounts.last.quantity.should == 1
+        discounts.last.quantity.should == 3
+        discounts.last.number_of_billing_cycles.should be_nil
+        discounts.last.never_expires?.should be_true
       end
 
       it "allows deleting of inherited add_ons and discounts" do
