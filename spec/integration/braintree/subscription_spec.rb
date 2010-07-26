@@ -449,6 +449,27 @@ describe Braintree::Subscription do
         discounts[2].amount.should == BigDecimal.new("7.00")
         discounts[2].quantity.should == 1
       end
+
+      it "properly parses validation errors for arrays" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => AddOnDiscountPlan[:id],
+          :add_ons => {
+            :update => [
+              {
+                :existing_id => AddOnIncrease10,
+                :quantity => 2,
+              },
+              {
+                :existing_id => AddOnIncrease20,
+                :quantity => -10,
+              }
+            ]
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:subscription).for(:add_ons).for(:update).for(1).on(:quantity)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::QuantityIsInvalid
+      end
     end
   end
 
