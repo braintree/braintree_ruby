@@ -44,7 +44,7 @@ module Braintree
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
     attr_reader :transactions
-    attr_reader :never_expires, :number_of_billing_cycles
+    attr_reader :number_of_billing_cycles
     attr_reader :add_ons, :discounts
 
     def self.cancel(subscription_id)
@@ -150,6 +150,9 @@ module Braintree
       discounts.map! { |attrs| Discount._new(attrs) }
     end
 
+    def never_expires?
+      @never_expires
+    end
 
     # True if <tt>other</tt> has the same id.
     def ==(other)

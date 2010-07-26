@@ -313,18 +313,26 @@ describe Braintree::Subscription do
 
         add_ons.first.amount.should == BigDecimal.new("10.00")
         add_ons.first.quantity.should == 1
+        add_ons.first.number_of_billing_cycles.should be_nil
+        add_ons.first.never_expires?.should be_true
 
         add_ons.last.amount.should == BigDecimal.new("20.00")
         add_ons.last.quantity.should == 1
+        add_ons.last.number_of_billing_cycles.should be_nil
+        add_ons.last.never_expires?.should be_true
 
         subscription.discounts.size.should == 2
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
         discounts.first.amount.should == BigDecimal.new("11.00")
         discounts.first.quantity.should == 1
+        discounts.first.number_of_billing_cycles.should be_nil
+        discounts.first.never_expires?.should be_true
 
         discounts.last.amount.should == BigDecimal.new("7.00")
         discounts.last.quantity.should == 1
+        discounts.last.number_of_billing_cycles.should be_nil
+        discounts.last.never_expires?.should be_true
       end
 
       it "allows overriding of inherited add_ons and discounts" do
@@ -619,6 +627,7 @@ describe Braintree::Subscription do
 
         result.success?.should == true
         result.subscription.number_of_billing_cycles.should == nil
+        result.subscription.never_expires?.should be_true
       end
     end
 
