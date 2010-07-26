@@ -44,6 +44,7 @@ module Braintree
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
     attr_reader :transactions
+    attr_reader :next_bill_amount
     attr_reader :number_of_billing_cycles
     attr_reader :add_ons, :discounts
 
