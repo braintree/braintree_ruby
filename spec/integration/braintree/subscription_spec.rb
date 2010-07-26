@@ -469,8 +469,8 @@ describe Braintree::Subscription do
           }
         )
         result.success?.should == false
-        result.errors.for(:subscription).for(:add_ons).for(:update).for(0).on(:amount)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::AmountIsInvalid
-        result.errors.for(:subscription).for(:add_ons).for(:update).for(1).on(:quantity)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::QuantityIsInvalid
+        result.errors.for(:subscription).for(:add_ons).for(:update).for_index(0).on(:amount)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::AmountIsInvalid
+        result.errors.for(:subscription).for(:add_ons).for(:update).for_index(1).on(:quantity)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::QuantityIsInvalid
       end
     end
   end

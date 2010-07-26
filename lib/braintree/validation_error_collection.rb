@@ -57,8 +57,11 @@ module Braintree
     # Returns a ValidationErrorCollection of errors nested under the given nested_key.
     # Returns nil if there are not any errors nested under the given key.
     def for(nested_key)
-      nested_key = "index_#{nested_key}".to_sym if nested_key.is_a? Fixnum
       @nested[nested_key]
+    end
+
+    def for_index(index)
+      self.for("index_#{index}".to_sym)
     end
 
     def inspect # :nodoc:
