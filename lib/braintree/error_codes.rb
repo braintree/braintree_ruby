@@ -95,6 +95,7 @@ module Braintree
       TrialDurationIsRequired = "81908"
       TrialDurationUnitIsInvalid = "81909"
       module Modification
+        AmountIsInvalid = "92002"
         QuantityIsInvalid = "92001"
       end
     end
