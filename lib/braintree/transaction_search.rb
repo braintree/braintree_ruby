@@ -1,5 +1,5 @@
 module Braintree
-  class TransactionSearch < AdvancedSearch
+  class TransactionSearch < AdvancedSearch # :nodoc:
     search_fields(
       :billing_company,
       :billing_country_name,

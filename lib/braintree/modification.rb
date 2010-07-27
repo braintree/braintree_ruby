@@ -1,5 +1,5 @@
 module Braintree
-  class Modification
+  class Modification # :nodoc:
     include BaseModule
 
     attr_reader :amount, :id, :number_of_billing_cycles, :quantity

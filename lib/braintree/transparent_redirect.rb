@@ -1,23 +1,9 @@
 module Braintree
-  # The TransparentRedirect module provides methods to build the tr_data param
-  # that must be submitted when using the transparent redirect API. For more information
-  # about transparent redirect, see (TODO).
-  #
-  # You must provide a redirect_url that the gateway will redirect the user to when the
-  # action is complete.
-  #
-  #   tr_data = Braintree::TransparentRedirect.create_customer_data(
-  #     :redirect_url => "http://example.com/redirect_back_to_merchant_site
-  #   )
-  #
-  # In addition to the redirect_url, any data that needs to be protected from user tampering
-  # should be included in the tr_data. For example, to prevent the user from tampering with the transaction
-  # amount, include the amount in the tr_data.
-  #
-  #   tr_data = Braintree::TransparentRedirect.transaction_data(
-  #     :redirect_url => "http://example.com/complete_transaction",
-  #     :transaction => {:amount => "100.00"}
-  #   )
+  # See:
+  # * http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_tr
+  # * http://www.braintreepaymentsolutions.com/docs/ruby/customers/create_tr
+  # * http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
+  # * http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
   module TransparentRedirect
     TransparentRedirectKeys = [:redirect_url] # :nodoc:
     CreateCustomerSignature = TransparentRedirectKeys + [{:customer => Customer._create_signature}] # :nodoc:
@@ -26,7 +12,7 @@ module Braintree
     CreateCreditCardSignature = TransparentRedirectKeys + [{:credit_card => CreditCard._create_signature}] # :nodoc:
     UpdateCreditCardSignature = TransparentRedirectKeys + [:payment_method_token, {:credit_card => CreditCard._update_signature}] # :nodoc:
 
-    module Kind
+    module Kind # :nodoc:
       CreateCustomer = "create_customer"
       UpdateCustomer = "update_customer"
       CreatePaymentMethod = "create_payment_method"
@@ -47,14 +33,14 @@ module Braintree
       confirmation_klass._do_create("/transparent_redirect_requests/#{params[:id]}/confirm")
     end
 
-    # Returns the tr_data string for creating a credit card.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
     def self.create_credit_card_data(params)
       Util.verify_keys(CreateCreditCardSignature, params)
       params[:kind] = Kind::CreatePaymentMethod
       _data(params)
     end
 
-    # Returns the tr_data string for creating a customer.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/create_tr
     def self.create_customer_data(params)
       Util.verify_keys(CreateCustomerSignature, params)
       params[:kind] = Kind::CreateCustomer
@@ -78,7 +64,7 @@ module Braintree
       end
     end
 
-    # Returns the tr_data string for creating a transaction.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_tr
     def self.transaction_data(params)
       Util.verify_keys(TransactionSignature, params)
       params[:kind] = Kind::CreateTransaction
@@ -89,13 +75,7 @@ module Braintree
       _data(params)
     end
 
-    # Returns the tr_data string for updating a credit card.
-    # The payment_method_token of the credit card to update is required.
-    #
-    #   tr_data = Braintree::TransparentRedirect.update_credit_card_data(
-    #     :redirect_url => "http://example.com/redirect_here",
-    #     :payment_method_token => "token123"
-    #   )
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
     def self.update_credit_card_data(params)
       Util.verify_keys(UpdateCreditCardSignature, params)
       unless params[:payment_method_token]
@@ -105,13 +85,7 @@ module Braintree
       _data(params)
     end
 
-    # Returns the tr_data string for updating a customer.
-    # The customer_id of the customer to update is required.
-    #
-    #   tr_data = Braintree::TransparentRedirect.update_customer_data(
-    #     :redirect_url => "http://example.com/redirect_here",
-    #     :customer_id => "customer123"
-    #   )
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update_tr
     def self.update_customer_data(params)
       Util.verify_keys(UpdateCustomerSignature, params)
       unless params[:customer_id]

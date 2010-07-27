@@ -1,6 +1,6 @@
 module Braintree
-  class AdvancedSearch
-    class SearchNode
+  class AdvancedSearch # :nodoc:
+    class SearchNode # :nodoc:
       def self.operators(*operator_names)
         operator_names.each do |operator|
           define_method(operator) do |value|
@@ -14,25 +14,25 @@ module Braintree
       end
     end
 
-    class EqualityNode < SearchNode
+    class EqualityNode < SearchNode # :nodoc:
       operators :is, :is_not
     end
 
-    class PartialMatchNode < EqualityNode
+    class PartialMatchNode < EqualityNode # :nodoc:
       operators :ends_with, :starts_with
     end
 
-    class TextNode < PartialMatchNode
+    class TextNode < PartialMatchNode # :nodoc:
       operators :contains
     end
 
-    class KeyValueNode < SearchNode
+    class KeyValueNode < SearchNode # :nodoc:
       def is(value)
         @parent.add_criteria(@node_name, value)
       end
     end
 
-    class MultipleValueNode < SearchNode
+    class MultipleValueNode < SearchNode # :nodoc:
       def in(*values)
         values.flatten!
 
@@ -58,7 +58,7 @@ module Braintree
       end
     end
 
-    class RangeNode < SearchNode
+    class RangeNode < SearchNode # :nodoc:
       def between(min, max)
         self >= min
         self <= max

@@ -185,28 +185,34 @@ module Braintree
     attr_reader :type
     attr_reader :updated_at
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.create(attributes)
       Util.verify_keys(_create_signature, attributes)
       _do_create "/transactions", :transaction => attributes
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.create!(attributes)
       return_object_or_raise(:transaction) { create(attributes) }
     end
 
+    # Deprecated. Use Braintree::TransparentRedirect.confirm
+    #
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Transaction.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_create("/transactions/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
-    # The URL to use to create transactions via transparent redirect.
+    # Deprecated. Use Braintree::TransparentRedirect.url
+    #
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_tr
     def self.create_transaction_url
       warn "[DEPRECATED] Transaction.create_transaction_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/transactions/all/create_via_transparent_redirect_request"
     end
 
-    # Creates a credit transaction.
     def self.credit(attributes)
       create(attributes.merge(:type => 'credit'))
     end
@@ -215,8 +221,7 @@ module Braintree
       return_object_or_raise(:transaction) { credit(attributes) }
     end
 
-    # Finds the transaction with the given id. Raises a Braintree::NotFoundError
-    # if the transaction cannot be found.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/search
     def self.find(id)
       response = Http.get "/transactions/#{id}"
       new(response[:transaction])
@@ -224,19 +229,17 @@ module Braintree
       raise NotFoundError, "transaction with id #{id.inspect} not found"
     end
 
-    # Creates a sale transaction.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.sale(attributes)
       create(attributes.merge(:type => 'sale'))
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.sale!(attributes)
       return_object_or_raise(:transaction) { sale(attributes) }
     end
 
-    # Returns a ResourceCollection of transactions matching the search query.
-    # If <tt>query</tt> is a string, the search will be a basic search.
-    # If <tt>query</tt> is a hash, the search will be an advanced search.
-    # See: http://www.braintreepaymentsolutions.com/gateway/transaction-api#searching
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/search
     def self.search(&block)
       search = TransactionSearch.new
       block.call(search) if block
@@ -245,7 +248,7 @@ module Braintree
       ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
     end
 
-    # Submits transaction with +transaction_id+ for settlement.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def self.submit_for_settlement(transaction_id, amount = nil)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
       response = Http.put "/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount}
@@ -258,11 +261,12 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def self.submit_for_settlement!(transaction_id, amount = nil)
       return_object_or_raise(:transaction) { submit_for_settlement(transaction_id, amount) }
     end
 
-    # Voids the transaction with the given <tt>transaction_id</tt>
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def self.void(transaction_id)
       response = Http.put "/transactions/#{transaction_id}/void"
       if response[:transaction]
@@ -274,6 +278,7 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def self.void!(transaction_id)
       return_object_or_raise(:transaction) { void(transaction_id) }
     end
@@ -301,7 +306,7 @@ module Braintree
       "#<#{self.class} #{nice_attributes.join(', ')}>"
     end
 
-    # Creates a credit transaction that refunds this transaction.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/refund
     def refund(amount = nil)
       response = Http.post "/transactions/#{id}/refund", :transaction => {:amount => amount}
       if response[:transaction]
@@ -319,7 +324,7 @@ module Braintree
       !@refund_id.nil?
     end
 
-    # Submits the transaction for settlement.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def submit_for_settlement(amount = nil)
       response = Http.put "/transactions/#{id}/submit_for_settlement", :transaction => {:amount => amount}
       if response[:transaction]
@@ -332,6 +337,7 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def submit_for_settlement!(amount = nil)
       return_object_or_raise(:transaction) { submit_for_settlement(amount) }
     end
@@ -372,7 +378,7 @@ module Braintree
       Address.find(customer_details.id, shipping_details.id)
     end
 
-    # Voids the transaction.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def void
       response = Http.put "/transactions/#{id}/void"
       if response[:transaction]
@@ -385,6 +391,7 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def void!
       return_object_or_raise(:transaction) { void }
     end
@@ -427,7 +434,7 @@ module Braintree
       ]
     end
 
-    def self._fetch_transactions(search, ids)
+    def self._fetch_transactions(search, ids) # :nodoc:
       search.ids.in ids
       response = Http.post "/transactions/advanced_search", {:search => search.to_hash}
       attributes = response[:credit_card_transactions]

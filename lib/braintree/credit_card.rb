@@ -1,8 +1,5 @@
 module Braintree
-  # == More Information
-  #
-  # For more detailed documentation on CreditCards, see http://www.braintreepaymentsolutions.com/gateway/credit-card-api
-  # For more detailed documentation on CreditCard verification, see http://www.braintreepaymentsolutions.com/gateway/credit-card-verification-api
+  # See http://www.braintreepaymentsolutions.com/docs/ruby
   class CreditCard
     include BaseModule # :nodoc:
 
@@ -32,6 +29,7 @@ module Braintree
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
       :expiration_year, :last_4, :subscriptions, :token, :updated_at
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create
     def self.create(attributes)
       if attributes.has_key?(:expiration_date) && (attributes.has_key?(:expiration_month) || attributes.has_key?(:expiration_year))
         raise ArgumentError.new("create with both expiration_month and expiration_year or only expiration_date")
@@ -40,44 +38,50 @@ module Braintree
       _do_create("/payment_methods", :credit_card => attributes)
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create
     def self.create!(attributes)
       return_object_or_raise(:credit_card) { create(attributes) }
     end
 
-    # The transparent redirect URL to use to create a credit card.
+    # Deprecated. Use Braintree::TransparentRedirect.url
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
     def self.create_credit_card_url
       warn "[DEPRECATED] CreditCard.create_credit_card_url is deprecated. Please use TransparentRedirect.url"
       "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/create_via_transparent_redirect_request"
     end
 
+    # Deprecated. Use Braintree::TransparentRedirect.confirm
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
       _do_create("/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.credit(token, transaction_attributes)
       Transaction.credit(transaction_attributes.merge(
         :payment_method_token => token
       ))
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.credit!(token, transaction_attributes)
       return_object_or_raise(:transaction) { credit(token, transaction_attributes) }
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/delete
     def self.delete(token)
       Http.delete("/payment_methods/#{token}")
     end
 
-    # Returns a ResourceCollection of expired credit cards.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/search
     def self.expired(options = {})
       response = Http.post("/payment_methods/all/expired_ids")
       ResourceCollection.new(response) { |ids| _fetch_expired(ids) }
     end
 
-    # Returns a ResourceCollection of credit cards expiring between +start_date+ and +end_date+ inclusive.
-    # Only the month and year of the start and end dates are used.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/search
     def self.expiring_between(start_date, end_date, options = {})
       formatted_start_date = start_date.strftime('%m%Y')
       formatted_end_date = end_date.strftime('%m%Y')
@@ -85,7 +89,7 @@ module Braintree
       ResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
     end
 
-    # Finds the credit card with the given +token+. Raises a NotFoundError if it cannot be found.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/search
     def self.find(token)
       response = Http.get "/payment_methods/#{token}"
       new(response[:credit_card])
@@ -93,25 +97,31 @@ module Braintree
       raise NotFoundError, "payment method with token #{token.inspect} not found"
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.sale(token, transaction_attributes)
       Transaction.sale(transaction_attributes.merge(
         :payment_method_token => token
       ))
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.sale!(token, transaction_attributes)
       return_object_or_raise(:transaction) { sale(token, transaction_attributes) }
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def self.update(token, attributes)
       Util.verify_keys(_update_signature, attributes)
       _do_update(:put, "/payment_methods/#{token}", :credit_card => attributes)
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def self.update!(token, attributes)
       return_object_or_raise(:credit_card) { update(token, attributes) }
     end
 
+    # Deprecated. Use Braintree::TransparentRedirect.confirm
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
     def self.update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"
       params = TransparentRedirect.parse_and_validate_query_string query_string
@@ -124,13 +134,13 @@ module Braintree
       "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/update_via_transparent_redirect_request"
     end
 
-    def self._fetch_expired(ids)
+    def self._fetch_expired(ids) # :nodoc:
       response = Http.post("/payment_methods/all/expired", :search => {:ids => ids})
       attributes = response[:payment_methods]
       Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| _new(attrs) }
     end
 
-    def self._fetch_expiring_between(formatted_start_date, formatted_end_date, ids)
+    def self._fetch_expiring_between(formatted_start_date, formatted_end_date, ids) # :nodoc:
       response = Http.post(
         "/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
         :search => {:ids => ids}
@@ -144,17 +154,19 @@ module Braintree
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(subscription_hash) }
     end
 
-    # Creates a credit transaction for this credit card.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def credit(transaction_attributes)
       Transaction.credit(transaction_attributes.merge(
         :payment_method_token => self.token
       ))
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def credit!(transaction_attributes)
       return_object_or_raise(:transaction) { credit(transaction_attributes) }
     end
 
+    # http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/delete
     def delete
       CreditCard.delete(token)
     end
@@ -187,15 +199,17 @@ module Braintree
       "#{bin}******#{last_4}"
     end
 
-    # Creates a sale transaction for this credit card.
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale(transaction_attributes)
       CreditCard.sale(self.token, transaction_attributes)
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale!(transaction_attributes)
       return_object_or_raise(:transaction) { sale(transaction_attributes) }
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def update(attributes)
       Util.verify_keys(self.class._update_signature, attributes)
       response = Http.put "/payment_methods/#{token}", :credit_card => attributes
@@ -209,6 +223,7 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def update!(attributes)
       return_object_or_raise(:credit_card) { update(attributes) }
     end
