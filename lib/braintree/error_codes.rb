@@ -75,11 +75,13 @@ module Braintree
     end
 
     module Subscription
+      CannotAddDuplicateAddonOrDiscount = "91911"
       CannotEditCanceledSubscription = "81901"
       CannotEditExpiredSubscription = "81910"
-      InconsistentNumberOfBillingCycles = "91908"
       IdIsInUse = "81902"
+      InconsistentNumberOfBillingCycles = "91908"
       MerchantAccountIdIsInvalid = "91901"
+      NumberOfBillingCyclesCannotBeBlank = "91912"
       NumberOfBillingCyclesIsTooSmall = "91909"
       NumberOfBillingCyclesMustBeGreaterThanZero = "91907"
       NumberOfBillingCyclesMustBeNumeric = "91906"
@@ -94,9 +96,24 @@ module Braintree
       TrialDurationFormatIsInvalid = "81907"
       TrialDurationIsRequired = "81908"
       TrialDurationUnitIsInvalid = "81909"
+
       module Modification
+        AmountCannotBeBlank = "92003"
         AmountIsInvalid = "92002"
+        CannotUpdateAndRemove = "92015"
+        ExistingIdIsIncorrectKind = "92016"
+        ExistingIdIsInvalid = "92011"
+        ExistingIdIsRequired = "92012"
+        IdToRemoveIsIncorrectKind = "92019"
+        IdToRemoveIsNotPresent = "92016"
+        InconsistentNumberOfBillingCycles = "92018"
+        InheritedFromIdIsInvalid = "92013"
+        InheritedFromIdIsRequired = "92014"
+        NumberOfBillingCyclesCannotBeBlank = "92017"
+        NumberOfBillingCyclesIsInvalid = "92005"
+        QuantityCannotBeBlank = "92004"
         QuantityIsInvalid = "92001"
+        QuantityMustBeGreaterThanZero = "92010"
       end
     end
 
