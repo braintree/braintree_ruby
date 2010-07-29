@@ -123,6 +123,7 @@ module Braintree
       AmountIsRequired = "81502"
       AmountIsInvalid = "81503"
       AmountIsTooLarge = "81528"
+      AmountMustBeGreaterThanZero = "81531"
       BillingAddressConflict = "91530"
       CannotBeVoided = "91504"
       CannotRefundCredit = "91505"
