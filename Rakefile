@@ -44,25 +44,6 @@ Rake::RDocTask.new do |t|
   t.rdoc_dir = "rdoc"
 end
 
-Rake::RDocTask.new(:bt_rdoc) do |t|
-  configure_rdoc_task(t)
-  t.rdoc_dir = "bt_rdoc"
-  t.template = "bt_rdoc_template/braintree"
-end
-Rake::Task["bt_rdoc"].prerequisites.unshift "clean"
-
-task :bt_rdoc_postprocessing do
-  FileUtils.cp "bt_rdoc_template/braintree.gif", "bt_rdoc"
-  FileUtils.cp "bt_rdoc_template/ruby.png", "bt_rdoc"
-  Dir.glob("bt_rdoc/**/*.html") do |html_file|
-    original = File.read(html_file)
-    next unless original =~ /STYLE_URL/
-    base_url = original[/STYLE_URL = (.*)\/.*/, 1]
-    updated = original.gsub("BASE_URL", base_url)
-    File.open(html_file, "w") { |f| f.write updated }
-  end
-end
-task(:bt_rdoc) { Rake::Task["bt_rdoc_postprocessing"].invoke }
 
 require File.dirname(__FILE__) + "/lib/braintree/version.rb"
 gem_spec = Gem::Specification.new do |s|
@@ -114,7 +95,6 @@ end
 desc 'Cleans generated files'
 task :clean do
   rm_f Dir.glob('*.gem').join(" ")
-  rm_rf "bt_rdoc"
   rm_rf "rdoc"
 end
 
