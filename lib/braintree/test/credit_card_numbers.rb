@@ -3,6 +3,8 @@ module Braintree
     # The constants contained in the Braintree::Test::CreditCardNumbers module provide
     # credit card numbers that should be used when working in the sandbox environment. The sandbox
     # will not accept any credit card numbers other than the ones listed below.
+    #
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/reference/sandbox
     module CreditCardNumbers
       AmExes = %w[
         378282246310005

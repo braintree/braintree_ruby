@@ -2,6 +2,8 @@ module Braintree
   # An Address belongs to a Customer. It can be associated to a
   # CreditCard as the billing address. It can also be used
   # as the shipping address when creating a Transaction.
+  #
+  # See http://www.braintreepaymentsolutions.com/docs/ruby/addresses/details
   class Address
     include BaseModule # :nodoc:
 

@@ -1,7 +1,7 @@
 # Portions of this code were copied and modified from Ruby on Rails, released
 # under the MIT license, copyright (c) 2005-2009 David Heinemeier Hansson
 module Braintree
-  module Xml
+  module Xml # :nodoc:
     CONTENT_ROOT = '__content__'
 
     module Parser # :nodoc:

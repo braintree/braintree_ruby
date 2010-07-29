@@ -3,6 +3,7 @@ module Braintree
   # The constants should be used to check for a specific validation error in a ValidationErrorCollection.
   # The error messages returned from the server may change, but the codes will remain the same.
   module ErrorCodes
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/addresses/validations
     module Address
       CannotBeBlank = "81801"
       CompanyIsTooLong = "81802"
@@ -23,6 +24,7 @@ module Braintree
       StreetAddressIsTooLong = "81812"
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/validations
     module CreditCard
       BillingAddressConflict = "91701"
       BillingAddressIdIsInvalid = "91702"
@@ -54,6 +56,7 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/validations
     module Customer
       CompanyIsTooLong = "81601"
       CustomFieldIsInvalid = "91602"
@@ -74,6 +77,7 @@ module Braintree
       WebsiteIsTooLong = "81615"
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/validations
     module Subscription
       CannotAddDuplicateAddonOrDiscount = "91911"
       CannotEditCanceledSubscription = "81901"
@@ -118,6 +122,7 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
       AmountIsRequired = "81502"

@@ -2,6 +2,7 @@ module Braintree
   # See:
   # * http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_tr
   # * http://www.braintreepaymentsolutions.com/docs/ruby/customers/create_tr
+  # * http://www.braintreepaymentsolutions.com/docs/ruby/customers/update_tr
   # * http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
   # * http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
   module TransparentRedirect

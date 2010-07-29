@@ -1,4 +1,5 @@
 module Braintree
+  # See http://www.braintreepaymentsolutions.com/docs/ruby/general/validation_errors
   class ValidationError
     include BaseModule
 

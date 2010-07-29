@@ -90,11 +90,11 @@ module Braintree
       end
     end
 
-    def self.custom_user_agent=(custom_user_agent)
+    def self.custom_user_agent=(custom_user_agent) # :nodoc:
       @custom_user_agent = custom_user_agent
     end
 
-    def self.user_agent
+    def self.user_agent # :nodoc:
       base_user_agent = "Braintree Ruby Gem #{Braintree::Version::String}"
       @custom_user_agent ? "#{base_user_agent} (#{@custom_user_agent})" : base_user_agent
     end
