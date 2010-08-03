@@ -869,13 +869,178 @@ describe Braintree::Subscription do
   end
 
   describe "self.search" do
-    context "search_fields" do
-      it "correctly returns a result with no matches" do
+    context "multiple_value_fields" do
+      it "merchant_account_id is searchable" do
+        subscription1 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :merchant_account_id => SpecHelper::DefaultMerchantAccountId
+        ).subscription
+
+        subscription2 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+        ).subscription
+
         collection = Braintree::Subscription.search do |search|
-          search.plan_id.is "not_a_real_plan_id"
+          search.merchant_account_id.is SpecHelper::DefaultMerchantAccountId
         end
 
-        collection.maximum_size.should == 0
+        collection.should include(subscription1)
+        collection.should_not include(subscription2)
+
+        collection = Braintree::Subscription.search do |search|
+          search.merchant_account_id.in [SpecHelper::DefaultMerchantAccountId, SpecHelper::NonDefaultMerchantAccountId]
+        end
+
+        collection.should include(subscription1)
+        collection.should include(subscription2)
+      end
+    end
+
+    context "text_fields" do
+      it "id" do
+        id = rand(36**8).to_s(36)
+        subscription1 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :id => "subscription1_#{id}"
+        ).subscription
+
+        subscription2 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => TriallessPlan[:id],
+          :id => "subscription2_#{id}"
+        ).subscription
+
+        collection = Braintree::Subscription.search do |search|
+          search.id.is "subscription1_#{id}"
+        end
+
+        collection.should include(subscription1)
+        collection.should_not include(subscription2)
+      end
+    end
+
+    context "multiple_value_field operations" do
+      context "in" do
+        it "matches all values if none are specified" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.is TriallessPlan[:id]
+          end
+
+          collection.should include(subscription1)
+          collection.should include(subscription2)
+        end
+
+        it "returns only matching results" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.status.in Braintree::Subscription::Status::Active
+          end
+
+          collection.should include(subscription1)
+          collection.should_not include(subscription2)
+        end
+
+        it "returns only matching results given an argument list" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.status.in Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled
+          end
+
+          collection.should include(subscription1)
+          collection.should include(subscription2)
+        end
+
+        it "returns only matching results given an array" do
+          subscription1 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          subscription2 = Braintree::Subscription.create(
+            :payment_method_token => @credit_card.token,
+            :plan_id => TriallessPlan[:id]
+          ).subscription
+
+          Braintree::Subscription.cancel(subscription2.id)
+
+          collection = Braintree::Subscription.search do |search|
+            search.status.in [Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled]
+          end
+
+          collection.should include(subscription1)
+          collection.should include(subscription2)
+        end
+
+        it "returns expired subscriptions" do
+          collection = Braintree::Subscription.search do |search|
+            search.status.in [Braintree::Subscription::Status::Expired]
+          end
+
+          collection.maximum_size.should > 0
+          collection.all? { |subscription| subscription.status.should == Braintree::Subscription::Status::Expired }
+        end
+      end
+    end
+
+    describe "multiple_value_or_text_field" do
+      context "in operator" do
+        it "works for the in operator" do
+          plan_ids = [TriallessPlan[:id], TrialPlan[:id]]
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.in plan_ids
+          end
+
+          collection.maximum_size.should > 0
+          collection.all? { |subscription| plan_ids.include?(subscription.plan_id) }
+        end
+      end
+
+      context "a search with no matches" do
+        it "works" do
+          collection = Braintree::Subscription.search do |search|
+            search.plan_id.is "not_a_real_plan_id"
+          end
+
+          collection.maximum_size.should == 0
+        end
       end
 
       context "is statement" do
@@ -980,103 +1145,6 @@ describe Braintree::Subscription do
 
           collection.should include(trial_subscription)
           collection.should_not include(trialless_subscription)
-        end
-      end
-    end
-
-    context "multiple_value_fields" do
-      context "in" do
-        it "matches all values if none are specified" do
-          subscription1 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          subscription2 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          Braintree::Subscription.cancel(subscription2.id)
-
-          collection = Braintree::Subscription.search do |search|
-            search.plan_id.is TriallessPlan[:id]
-          end
-
-          collection.should include(subscription1)
-          collection.should include(subscription2)
-        end
-
-        it "returns only matching results" do
-          subscription1 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          subscription2 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          Braintree::Subscription.cancel(subscription2.id)
-
-          collection = Braintree::Subscription.search do |search|
-            search.status.in Braintree::Subscription::Status::Active
-          end
-
-          collection.should include(subscription1)
-          collection.should_not include(subscription2)
-        end
-
-        it "returns only matching results given an argument list" do
-          subscription1 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          subscription2 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          Braintree::Subscription.cancel(subscription2.id)
-
-          collection = Braintree::Subscription.search do |search|
-            search.status.in Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled
-          end
-
-          collection.should include(subscription1)
-          collection.should include(subscription2)
-        end
-
-        it "returns only matching results given an array" do
-          subscription1 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          subscription2 = Braintree::Subscription.create(
-            :payment_method_token => @credit_card.token,
-            :plan_id => TriallessPlan[:id]
-          ).subscription
-
-          Braintree::Subscription.cancel(subscription2.id)
-
-          collection = Braintree::Subscription.search do |search|
-            search.status.in [Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled]
-          end
-
-          collection.should include(subscription1)
-          collection.should include(subscription2)
-        end
-
-        it "returns expired subscriptions" do
-          collection = Braintree::Subscription.search do |search|
-            search.status.in [Braintree::Subscription::Status::Expired]
-          end
-
-          collection.maximum_size.should > 0
-          collection.all? { |subscription| subscription.status.should == Braintree::Subscription::Status::Expired }
         end
       end
     end

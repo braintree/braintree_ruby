@@ -58,6 +58,16 @@ module Braintree
       end
     end
 
+    class MultipleValueOrTextNode < MultipleValueNode
+      extend Forwardable
+      def_delegators :@text_node, :contains, :ends_with, :is, :is_not, :starts_with
+
+      def initialize(name, parent, options)
+        super
+        @text_node = TextNode.new(name, parent)
+      end
+    end
+
     class RangeNode < SearchNode # :nodoc:
       def between(min, max)
         self >= min
@@ -73,7 +83,7 @@ module Braintree
       end
     end
 
-    def self.search_fields(*fields)
+    def self.text_fields(*fields)
       _create_field_accessors(fields, TextNode)
     end
 
@@ -88,6 +98,12 @@ module Braintree
     def self.multiple_value_field(field, options={})
       define_method(field) do
         MultipleValueNode.new(field, self, options)
+      end
+    end
+
+    def self.multiple_value_or_text_field(field, options={})
+      define_method(field) do
+        MultipleValueOrTextNode.new(field, self, options)
       end
     end
 
