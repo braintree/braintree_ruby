@@ -566,6 +566,28 @@ describe Braintree::Subscription do
         result.subscription.transactions.size.should == @subscription.transactions.size + 1
       end
 
+      it "allows the user to force proration if there is a charge" do
+        result = Braintree::Subscription.update(@subscription.id,
+          :price => @subscription.price.to_f + 1,
+          :options => { :prorate_charges => true }
+        )
+
+        result.success?.should == true
+        result.subscription.price.to_f.should == @subscription.price.to_f + 1
+        result.subscription.transactions.size.should == @subscription.transactions.size + 1
+      end
+
+      it "allows the user to prevent proration if there is a charge" do
+        result = Braintree::Subscription.update(@subscription.id,
+          :price => @subscription.price.to_f + 1,
+          :options => { :prorate_charges => false }
+        )
+
+        result.success?.should == true
+        result.subscription.price.to_f.should == @subscription.price.to_f + 1
+        result.subscription.transactions.size.should == @subscription.transactions.size
+      end
+
       it "doesn't prorate if price decreases" do
         result = Braintree::Subscription.update(@subscription.id,
           :price => @subscription.price.to_f - 1

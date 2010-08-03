@@ -156,7 +156,7 @@ module Braintree
         :payment_method_token,
         :plan_id,
         :price,
-        {:options => [:replace_all_add_ons_and_discounts]},
+        {:options => [:prorate_charges, :replace_all_add_ons_and_discounts]},
       ] + _add_on_discount_signature
     end
 
