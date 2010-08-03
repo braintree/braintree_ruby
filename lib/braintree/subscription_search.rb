@@ -10,5 +10,6 @@ module Braintree
       Subscription::Status::PastDue
     ]
     multiple_value_field :merchant_account_id
+    range_fields :price
   end
 end

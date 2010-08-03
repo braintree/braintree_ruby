@@ -30,6 +30,39 @@ unless defined?(SPEC_HELPER_LOADED)
     DefaultMerchantAccountId = "sandbox_credit_card"
     NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
 
+    TrialPlan = {
+      :description => "Plan for integration tests -- with trial",
+      :id => "integration_trial_plan",
+      :price => BigDecimal.new("43.21"),
+      :trial_period => true,
+      :trial_duration => 2,
+      :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
+    }
+
+    TriallessPlan = {
+      :description => "Plan for integration tests -- without a trial",
+      :id => "integration_trialless_plan",
+      :price => BigDecimal.new("12.34"),
+      :trial_period => false
+    }
+
+    AddOnDiscountPlan = {
+      :description => "Plan for integration tests -- with add-ons and discounts",
+      :id => "integration_plan_with_add_ons_and_discounts",
+      :price => BigDecimal.new("9.99"),
+      :trial_period => true,
+      :trial_duration => 2,
+      :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
+    }
+
+    AddOnIncrease10 = "increase_10"
+    AddOnIncrease20 = "increase_20"
+    AddOnIncrease30 = "increase_30"
+
+    Discount7 = "discount_7"
+    Discount11 = "discount_11"
+    Discount15 = "discount_15"
+
     def self.stub_time_dot_now(desired_time)
       Time.class_eval do
         class << self

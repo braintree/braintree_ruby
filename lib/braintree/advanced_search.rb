@@ -74,6 +74,10 @@ module Braintree
         self <= max
       end
 
+      def is(value)
+        between(value, value)
+      end
+
       def >=(min)
         @parent.add_criteria(@node_name, :min => min)
       end
