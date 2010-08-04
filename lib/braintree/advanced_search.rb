@@ -69,13 +69,11 @@ module Braintree
     end
 
     class RangeNode < SearchNode # :nodoc:
+      operators :is
+
       def between(min, max)
         self >= min
         self <= max
-      end
-
-      def is(value)
-        between(value, value)
       end
 
       def >=(min)

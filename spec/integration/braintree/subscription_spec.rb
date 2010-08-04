@@ -957,6 +957,72 @@ describe Braintree::Subscription do
       end
     end
 
+    describe "days_past_due" do
+      it "is backwards-compatible for 'is'" do
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "5.01"
+        ).subscription
+
+        collection = Braintree::Subscription.search do |search|
+          search.days_past_due.is 1
+        end
+
+        collection.should_not include(subscription)
+        collection.each do |s|
+          s.status.should == Braintree::Subscription::Status::PastDue
+        end
+      end
+
+      it "passes a smoke test" do
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "5.01"
+        ).subscription
+
+        collection = Braintree::Subscription.search do |search|
+          search.days_past_due.between 1, 20
+        end
+
+        collection.should_not include(subscription)
+        collection.each do |s|
+          s.status.should == Braintree::Subscription::Status::PastDue
+        end
+      end
+    end
+
+    describe "billing_cycles_remaining" do
+      it "passes a smoke test" do
+        subscription_5 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :number_of_billing_cycles => 5
+        ).subscription
+
+        subscription_9 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :number_of_billing_cycles => 10
+        ).subscription
+
+        subscription_15 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :number_of_billing_cycles => 15
+        ).subscription
+
+        collection = Braintree::Subscription.search do |search|
+          search.billing_cycles_remaining.between 5, 10
+        end
+
+        collection.should include(subscription_5)
+        collection.should include(subscription_9)
+        collection.should_not include(subscription_15)
+      end
+    end
+
     it "returns multiple results" do
       (110 - Braintree::Subscription.search.maximum_size).times do
         Braintree::Subscription.create(:payment_method_token => @credit_card.token, :plan_id => SpecHelper::TriallessPlan[:id])

@@ -1,7 +1,7 @@
 module Braintree
   class SubscriptionSearch < AdvancedSearch  # :nodoc:
     multiple_value_field :ids
-    text_fields :days_past_due, :id
+    text_fields :id
     multiple_value_or_text_field :plan_id
     multiple_value_field :status, :allows => [
       Subscription::Status::Active,
@@ -10,6 +10,6 @@ module Braintree
       Subscription::Status::PastDue
     ]
     multiple_value_field :merchant_account_id
-    range_fields :price
+    range_fields :price, :days_past_due, :billing_cycles_remaining
   end
 end
