@@ -86,6 +86,20 @@ module Braintree
       end
     end
 
+    context "days_past_due" do
+      it "is a range node" do
+        search = SubscriptionSearch.new
+        search.days_past_due.should be_kind_of(Braintree::AdvancedSearch::RangeNode)
+      end
+    end
+
+    context "billing_cycles_remaining" do
+      it "is a range node" do
+        search = SubscriptionSearch.new
+        search.billing_cycles_remaining.should be_kind_of(Braintree::AdvancedSearch::RangeNode)
+      end
+    end
+
     context "id" do
       it "is" do
         search = SubscriptionSearch.new
