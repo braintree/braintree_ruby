@@ -988,7 +988,8 @@ describe Braintree::Subscription do
 
         collection.should_not include(subscription)
         collection.each do |s|
-          s.status.should == Braintree::Subscription::Status::PastDue
+          s.days_past_due.should >= 1
+          s.days_past_due.should <= 20
         end
       end
     end

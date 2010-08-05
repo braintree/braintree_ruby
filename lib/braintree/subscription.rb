@@ -15,7 +15,7 @@ module Braintree
       Month = "month"
     end
 
-    attr_reader :price, :plan_id, :id, :status, :payment_method_token, :merchant_account_id
+    attr_reader :days_past_due, :price, :plan_id, :id, :status, :payment_method_token, :merchant_account_id
     attr_reader :first_billing_date, :next_billing_date, :billing_period_start_date, :billing_period_end_date
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
