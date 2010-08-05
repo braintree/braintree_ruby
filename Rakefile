@@ -96,6 +96,7 @@ desc 'Cleans generated files'
 task :clean do
   rm_f Dir.glob('*.gem').join(" ")
   rm_rf "rdoc"
+  rm_rf "bt_rdoc"
 end
 
 def spawn_server(pid_file, port, environment="test")
