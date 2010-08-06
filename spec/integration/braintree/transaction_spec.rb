@@ -446,6 +446,69 @@ describe Braintree::Transaction do
         result.transaction.vault_credit_card.masked_number.should == "401288******1881"
       end
     end
+
+    it "snapshots add_ons and discounts from subscription" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2010"
+        }
+      )
+
+      result = Braintree::Subscription.create(
+        :payment_method_token => customer.credit_cards.first.token,
+        :plan_id => SpecHelper::TriallessPlan[:id],
+        :add_ons => {
+          :add => [
+            {
+              :amount => BigDecimal.new("11.00"),
+              :inherited_from_id => SpecHelper::AddOnIncrease10,
+              :quantity => 2,
+              :number_of_billing_cycles => 5
+            },
+            {
+              :amount => BigDecimal.new("21.00"),
+              :inherited_from_id => SpecHelper::AddOnIncrease20,
+              :quantity => 3,
+              :number_of_billing_cycles => 6
+            }
+          ]
+        },
+        :discounts => {
+          :add => [
+            {
+              :amount => BigDecimal.new("7.50"),
+              :inherited_from_id => SpecHelper::Discount7,
+              :quantity => 2,
+              :never_expires => true
+            }
+          ]
+        }
+      )
+
+      result.success?.should be_true
+      transaction = result.subscription.transactions.first
+
+      transaction.add_ons.size.should == 2
+      add_ons = transaction.add_ons.sort_by { |add_on| add_on.id }
+
+      add_ons.first.id.should == "increase_10"
+      add_ons.first.amount.should == BigDecimal.new("11.00")
+      add_ons.first.quantity.should == 2
+      add_ons.first.number_of_billing_cycles.should == 5
+
+      add_ons.last.id.should == "increase_20"
+      add_ons.last.amount.should == BigDecimal.new("21.00")
+      add_ons.last.quantity.should == 3
+      add_ons.last.number_of_billing_cycles.should == 6
+
+      transaction.discounts.size.should == 1
+
+      transaction.discounts.first.id.should == "discount_7"
+      transaction.discounts.first.amount.should == BigDecimal.new("7.50")
+      transaction.discounts.first.quantity.should == 2
+      transaction.discounts.first.number_of_billing_cycles.should be_nil
+    end
   end
 
   describe "self.create!" do

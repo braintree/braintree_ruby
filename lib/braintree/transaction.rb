@@ -64,6 +64,7 @@ module Braintree
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at
+    attr_reader :add_ons, :discounts
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.create(attributes)
@@ -329,6 +330,8 @@ module Braintree
       @billing_details = AddressDetails.new(@billing)
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
+      add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
+      discounts.map! { |attrs| Discount._new(attrs) } if discounts
     end
   end
 end
