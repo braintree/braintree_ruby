@@ -38,17 +38,20 @@ describe Braintree::AdvancedSearch do
       subscription1 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
+        :price => "11",
         :id => "subscription1_#{id}"
       ).subscription
 
       subscription2 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
+        :price => "11",
         :id => "subscription2_#{id}"
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
         search.id.is_not "subscription1_#{id}"
+        search.price.is "11"
       end
 
       collection.should_not include(subscription1)
@@ -127,18 +130,21 @@ describe Braintree::AdvancedSearch do
       it "matches all values if none are specified" do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "12"
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "12"
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
 
         collection = Braintree::Subscription.search do |search|
           search.plan_id.is SpecHelper::TriallessPlan[:id]
+          search.price.is "12"
         end
 
         collection.should include(subscription1)
@@ -148,18 +154,21 @@ describe Braintree::AdvancedSearch do
       it "returns only matching results" do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "13"
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "13"
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
 
         collection = Braintree::Subscription.search do |search|
           search.status.in Braintree::Subscription::Status::Active
+          search.price.is "13"
         end
 
         collection.should include(subscription1)
@@ -169,18 +178,21 @@ describe Braintree::AdvancedSearch do
       it "returns only matching results given an argument list" do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "14"
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "14"
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
 
         collection = Braintree::Subscription.search do |search|
           search.status.in Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled
+          search.price.is "14"
         end
 
         collection.should include(subscription1)
@@ -191,18 +203,21 @@ describe Braintree::AdvancedSearch do
         it "accepts single argument" do
           subscription1 = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => SpecHelper::TriallessPlan[:id]
+            :plan_id => SpecHelper::TriallessPlan[:id],
+            :price => "15"
           ).subscription
 
           subscription2 = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
-            :plan_id => SpecHelper::TriallessPlan[:id]
+            :plan_id => SpecHelper::TriallessPlan[:id],
+            :price => "15"
           ).subscription
 
           Braintree::Subscription.cancel(subscription2.id)
 
           collection = Braintree::Subscription.search do |search|
             search.status.is Braintree::Subscription::Status::Active
+            search.price.is "15"
           end
 
           collection.should include(subscription1)
@@ -213,18 +228,21 @@ describe Braintree::AdvancedSearch do
       it "returns only matching results given an array" do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "16"
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "16"
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
 
         collection = Braintree::Subscription.search do |search|
           search.status.in [Braintree::Subscription::Status::Active, Braintree::Subscription::Status::Canceled]
+          search.price.is "16"
         end
 
         collection.should include(subscription1)
@@ -245,9 +263,28 @@ describe Braintree::AdvancedSearch do
   context "multiple_value_or_text_field" do
     describe "in" do
       it "works for the in operator" do
+        subscription1 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "17"
+        ).subscription
+
+        subscription2 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "17"
+        ).subscription
+
+        subscription3 = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::AddOnDiscountPlan[:id],
+          :price => "17"
+        ).subscription
+
         plan_ids = [SpecHelper::TriallessPlan[:id], SpecHelper::TrialPlan[:id]]
         collection = Braintree::Subscription.search do |search|
           search.plan_id.in plan_ids
+          search.price.is "17"
         end
 
         collection.maximum_size.should > 0
@@ -269,16 +306,19 @@ describe Braintree::AdvancedSearch do
       it "returns resource collection with matching results" do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "18"
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TrialPlan[:id]
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "18"
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
           search.plan_id.is SpecHelper::TriallessPlan[:id]
+          search.price.is "18"
         end
 
         collection.should include(trialless_subscription)
@@ -290,16 +330,19 @@ describe Braintree::AdvancedSearch do
       it "returns resource collection without matching results" do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "19"
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TrialPlan[:id]
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "19"
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
           search.plan_id.is_not SpecHelper::TriallessPlan[:id]
+          search.price.is "19"
         end
 
         collection.should_not include(trialless_subscription)
@@ -311,16 +354,19 @@ describe Braintree::AdvancedSearch do
       it "returns resource collection with matching results" do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "20"
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TrialPlan[:id]
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "20"
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
           search.plan_id.ends_with "trial_plan"
+          search.price.is "20"
         end
 
         collection.should include(trial_subscription)
@@ -332,16 +378,19 @@ describe Braintree::AdvancedSearch do
       it "returns resource collection with matching results" do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "21"
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TrialPlan[:id]
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "21"
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
           search.plan_id.starts_with "integration_trial_p"
+          search.price.is "21"
         end
 
         collection.should include(trial_subscription)
@@ -353,16 +402,19 @@ describe Braintree::AdvancedSearch do
       it "returns resource collection with matching results" do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TriallessPlan[:id]
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :price => "22"
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
-          :plan_id => SpecHelper::TrialPlan[:id]
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "22"
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
           search.plan_id.contains "trial_p"
+          search.price.is "22"
         end
 
         collection.should include(trial_subscription)
@@ -425,23 +477,23 @@ describe Braintree::AdvancedSearch do
       subscription_499 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "4.99"
+        :price => "999.99"
       ).subscription
 
       subscription_500 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :price => "5.00"
+        :price => "1000.00"
       ).subscription
 
       subscription_501 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "5.01"
+        :price => "1000.01"
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
-        search.price >= "5.00"
+        search.price >= "1000.00"
       end
 
       collection.should_not include(subscription_499)

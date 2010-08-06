@@ -807,13 +807,7 @@ describe Braintree::CreditCard do
   end
 
   describe "self.expired" do
-    it "finds expired payment methods, paginated" do
-      collection = Braintree::CreditCard.expired
-      collection.maximum_size.should > 0
-      collection.all? { |pm| pm.expired?.should == true }
-    end
-
-    it "can iterate over all items" do
+    it "can iterate over all items, and make sure they are all expired" do
       customer = Braintree::Customer.all.first
 
       (110 - Braintree::CreditCard.expired.maximum_size).times do
@@ -827,7 +821,10 @@ describe Braintree::CreditCard do
       collection = Braintree::CreditCard.expired
       collection.maximum_size.should > 100
 
-      credit_card_ids = collection.map {|c| c.token }.uniq.compact
+      credit_card_ids = collection.map do |c|
+        c.expired?.should == true
+        c.token
+      end.uniq.compact
       credit_card_ids.size.should == collection.maximum_size
     end
   end
