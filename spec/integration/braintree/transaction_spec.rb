@@ -496,11 +496,13 @@ describe Braintree::Transaction do
       add_ons.first.amount.should == BigDecimal.new("11.00")
       add_ons.first.quantity.should == 2
       add_ons.first.number_of_billing_cycles.should == 5
+      add_ons.first.never_expires?.should be_false
 
       add_ons.last.id.should == "increase_20"
       add_ons.last.amount.should == BigDecimal.new("21.00")
       add_ons.last.quantity.should == 3
       add_ons.last.number_of_billing_cycles.should == 6
+      add_ons.last.never_expires?.should be_false
 
       transaction.discounts.size.should == 1
 
@@ -508,6 +510,7 @@ describe Braintree::Transaction do
       transaction.discounts.first.amount.should == BigDecimal.new("7.50")
       transaction.discounts.first.quantity.should == 2
       transaction.discounts.first.number_of_billing_cycles.should be_nil
+      transaction.discounts.first.never_expires?.should be_true
     end
   end
 
