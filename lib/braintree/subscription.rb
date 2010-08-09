@@ -8,6 +8,7 @@ module Braintree
       Canceled = 'Canceled'
       Expired = 'Expired'
       PastDue = 'Past Due'
+      Pending = 'Pending'
     end
 
     module TrialDurationUnit
@@ -21,7 +22,7 @@ module Braintree
     attr_reader :failure_count
     attr_reader :transactions
     attr_reader :next_bill_amount
-    attr_reader :number_of_billing_cycles
+    attr_reader :number_of_billing_cycles, :billing_day_of_month
     attr_reader :add_ons, :discounts
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/cancel
@@ -93,6 +94,8 @@ module Braintree
 
     def self._create_signature # :nodoc:
       [
+        :billing_day_of_month,
+        :first_billing_date,
         :id,
         :merchant_account_id,
         :never_expires,
@@ -103,7 +106,7 @@ module Braintree
         :trial_duration,
         :trial_duration_unit,
         :trial_period,
-        {:options => [:do_not_inherit_add_ons_or_discounts]},
+        {:options => [:do_not_inherit_add_ons_or_discounts, :start_immediately]},
       ] + _add_on_discount_signature
     end
 

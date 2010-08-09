@@ -47,6 +47,67 @@ describe Braintree::Subscription do
       result.subscription.id.should == new_id
     end
 
+    context "billing_day_of_month" do
+      it "inherits from the plan if not provided" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::BillingDayOfMonthPlan[:id]
+        )
+
+        result.success?.should == true
+        result.subscription.billing_day_of_month.should == 5
+      end
+
+      it "allows overriding" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::BillingDayOfMonthPlan[:id],
+          :billing_day_of_month => 25
+        )
+
+        result.success?.should == true
+        result.subscription.billing_day_of_month.should == 25
+      end
+
+      it "allows overriding with start_immediately" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::BillingDayOfMonthPlan[:id],
+          :options => {
+            :start_immediately => true
+          }
+        )
+
+        result.success?.should == true
+        result.subscription.transactions.size.should == 1
+      end
+    end
+
+    context "first_billing_date" do
+      it "allows specifying" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::BillingDayOfMonthPlan[:id],
+          :first_billing_date => Date.today + 3
+        )
+
+        result.success?.should == true
+        result.subscription.first_billing_date.should == (Date.today + 3).to_s
+        result.subscription.status.should == Braintree::Subscription::Status::Pending
+      end
+
+      it "returns an error if the date is in the past" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::BillingDayOfMonthPlan[:id],
+          :first_billing_date => Date.today - 3
+        )
+
+        result.success?.should == false
+        result.errors.for(:subscription).on(:first_billing_date).first.code.should == Braintree::ErrorCodes::Subscription::FirstBillingDateCannotBeInThePast
+      end
+    end
+
     context "merchant_account_id" do
       it "defaults to the default merchant account if no merchant_account_id is provided" do
         result = Braintree::Subscription.create(

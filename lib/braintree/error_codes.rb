@@ -79,11 +79,18 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/validations
     module Subscription
+      BillingDayOfMonthCannotBeUpdated = "91918"
+      BillingDayOfMonthIsInvalid = "91914"
+      BillingDayOfMonthMustBeNumeric = "91913"
       CannotAddDuplicateAddonOrDiscount = "91911"
       CannotEditCanceledSubscription = "81901"
       CannotEditExpiredSubscription = "81910"
+      FirstBillingDateCannotBeInThePast = "91916"
+      FirstBillingDateCannotBeUpdated = "91919"
+      FirstBillingDateIsInvalid = "91915"
       IdIsInUse = "81902"
       InconsistentNumberOfBillingCycles = "91908"
+      InconsistentStartDate = "91917"
       MerchantAccountIdIsInvalid = "91901"
       NumberOfBillingCyclesCannotBeBlank = "91912"
       NumberOfBillingCyclesIsTooSmall = "91909"

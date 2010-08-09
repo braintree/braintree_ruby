@@ -55,6 +55,13 @@ unless defined?(SPEC_HELPER_LOADED)
       :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
     }
 
+    BillingDayOfMonthPlan = {
+      :description => "Plan for integration tests -- with billing day of month",
+      :id => "integration_plan_with_billing_day_of_month",
+      :price => BigDecimal.new("8.88"),
+      :billing_day_of_month => 5
+    }
+
     AddOnIncrease10 = "increase_10"
     AddOnIncrease20 = "increase_20"
     AddOnIncrease30 = "increase_30"
