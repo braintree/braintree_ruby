@@ -9,6 +9,8 @@ module Braintree
       Expired = 'Expired'
       PastDue = 'Past Due'
       Pending = 'Pending'
+
+      All = constants.map { |c| const_get(c) }
     end
 
     module TrialDurationUnit
