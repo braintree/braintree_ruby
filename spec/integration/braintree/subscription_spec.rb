@@ -1039,7 +1039,7 @@ describe Braintree::Subscription do
           :price => "6"
         ).subscription
 
-        Braintree::Http.put "/subscriptions/#{past_due_subscription.id}/make_past_due?days_past_due=5"
+        SpecHelper.make_past_due(past_due_subscription, 5)
 
         collection = Braintree::Subscription.search do |search|
           search.price.is "6.00"
@@ -1116,9 +1116,11 @@ describe Braintree::Subscription do
 
   describe "self.retry_charge" do
     it "is successful with only subscription id" do
-      subscription = Braintree::Subscription.search do |search|
-        search.status.in Braintree::Subscription::Status::PastDue
-      end.first
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+      SpecHelper.make_past_due(subscription)
 
       result = Braintree::Subscription.retry_charge(subscription.id)
 
@@ -1132,9 +1134,11 @@ describe Braintree::Subscription do
     end
 
     it "is successful with subscription id and amount" do
-      subscription = Braintree::Subscription.search do |search|
-        search.status.in Braintree::Subscription::Status::PastDue
-      end.first
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+      SpecHelper.make_past_due(subscription)
 
       result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize)
 
