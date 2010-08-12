@@ -1027,18 +1027,27 @@ describe Braintree::Subscription do
 
     describe "days_past_due" do
       it "is backwards-compatible for 'is'" do
-        subscription = Braintree::Subscription.create(
+        active_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
           :price => "6"
         ).subscription
 
+        past_due_subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :price => "6"
+        ).subscription
+
+        Braintree::Http.put "/subscriptions/#{past_due_subscription.id}/make_past_due?days_past_due=5"
+
         collection = Braintree::Subscription.search do |search|
-          search.days_past_due.is 1
+          search.price.is "6.00"
+          search.days_past_due.is 5
         end
 
-        collection.should_not be_empty
-        collection.should_not include(subscription)
+        collection.should include(past_due_subscription)
+        collection.should_not include(active_subscription)
         collection.each do |s|
           s.status.should == Braintree::Subscription::Status::PastDue
         end
