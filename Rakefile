@@ -29,7 +29,7 @@ task :cruise do
     Rake::Task["spec:unit"].invoke
     Rake::Task["spec:integration"].invoke
   ensure
-    Rake::Task["stop_gateway"].invoke
+    Rake::Task["stop_gateway"].invoke rescue nil
   end
 end
 
