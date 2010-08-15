@@ -104,6 +104,7 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
     def self.update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"

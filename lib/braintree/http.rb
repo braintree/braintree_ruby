@@ -81,7 +81,7 @@ module Braintree
       if response.header["Content-Encoding"] == "gzip"
         Zlib::GzipReader.new(StringIO.new(response.body)).read
       else
-        raise UnexpectedError, "expected a gzip'd response"
+        raise UnexpectedError, "expected a gzipped response"
       end
     end
 

@@ -64,45 +64,8 @@ module Braintree
       "#{@config.base_merchant_url}/payment_methods/all/update_via_transparent_redirect_request"
     end
 
-    def _fetch_expired(ids) # :nodoc:
-      response = @config.http.post("/payment_methods/all/expired", :search => {:ids => ids})
-      attributes = response[:payment_methods]
-      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(attrs) }
-    end
-
-    def _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) # :nodoc:
-      response = @config.http.post(
-        "/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
-        :search => {:ids => ids}
-      )
-      attributes = response[:payment_methods]
-      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(attrs) }
-    end
-
     def self._create_signature # :nodoc:
       _signature(:create)
-    end
-
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
-      if response[:credit_card]
-        SuccessfulResult.new(:credit_card => CreditCard._new(response[:credit_card]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :credit_card or :api_error_response"
-      end
-    end
-
-    def _do_update(http_verb, url, params) # :nodoc:
-      response = @config.http.send http_verb, url, params
-      if response[:credit_card]
-        SuccessfulResult.new(:credit_card => CreditCard._new(response[:credit_card]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :credit_card or :api_error_response"
-      end
     end
 
     def self._update_signature # :nodoc:
@@ -127,6 +90,43 @@ module Braintree
       end
 
       return signature
+    end
+
+    def _do_create(url, params=nil) # :nodoc:
+      response = @config.http.post url, params
+      if response[:credit_card]
+        SuccessfulResult.new(:credit_card => CreditCard._new(response[:credit_card]))
+      elsif response[:api_error_response]
+        ErrorResult.new(response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :credit_card or :api_error_response"
+      end
+    end
+
+    def _do_update(http_verb, url, params) # :nodoc:
+      response = @config.http.send http_verb, url, params
+      if response[:credit_card]
+        SuccessfulResult.new(:credit_card => CreditCard._new(response[:credit_card]))
+      elsif response[:api_error_response]
+        ErrorResult.new(response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :credit_card or :api_error_response"
+      end
+    end
+
+    def _fetch_expired(ids) # :nodoc:
+      response = @config.http.post("/payment_methods/all/expired", :search => {:ids => ids})
+      attributes = response[:payment_methods]
+      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(attrs) }
+    end
+
+    def _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) # :nodoc:
+      response = @config.http.post(
+        "/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
+        :search => {:ids => ids}
+      )
+      attributes = response[:payment_methods]
+      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(attrs) }
     end
   end
 end

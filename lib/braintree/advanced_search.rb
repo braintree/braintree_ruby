@@ -44,10 +44,6 @@ module Braintree
         @parent.add_criteria(@node_name, values)
       end
 
-      def is(value)
-        self.in(value)
-      end
-
       def initialize(name, parent, options)
         super(name, parent)
         @options = options
@@ -55,6 +51,10 @@ module Braintree
 
       def allowed_values
         @options[:allows]
+      end
+
+      def is(value)
+        self.in(value)
       end
     end
 

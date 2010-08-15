@@ -78,17 +78,6 @@ module Braintree
       end
     end
 
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
-    end
-
     def self._create_signature # :nodoc:
       [
         :amount, :customer_id, :merchant_account_id, :order_id, :payment_method_token, :type,
@@ -103,6 +92,17 @@ module Braintree
         {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault]},
         {:custom_fields => :_any_key_}
       ]
+    end
+
+    def _do_create(url, params=nil) # :nodoc:
+      response = @config.http.post url, params
+      if response[:transaction]
+        SuccessfulResult.new(:transaction => Transaction._new(response[:transaction]))
+      elsif response[:api_error_response]
+        ErrorResult.new(response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :transaction or :api_error_response"
+      end
     end
 
     def _fetch_transactions(search, ids) # :nodoc:

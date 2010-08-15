@@ -37,13 +37,6 @@ module Braintree
       ResourceCollection.new(response) { |ids| _fetch_subscriptions(search, ids) }
     end
 
-    def _fetch_subscriptions(search, ids) # :nodoc:
-      search.ids.in ids
-      response = @config.http.post "/subscriptions/advanced_search", {:search => search.to_hash}
-      attributes = response[:subscriptions]
-      Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| Subscription._new(attrs) }
-    end
-
     def update(subscription_id, attributes)
       Util.verify_keys(SubscriptionGateway._update_signature, attributes)
       response = @config.http.put "/subscriptions/#{subscription_id}", :subscription => attributes
@@ -72,17 +65,6 @@ module Braintree
         :trial_period,
         {:options => [:do_not_inherit_add_ons_or_discounts, :start_immediately]},
       ] + _add_on_discount_signature
-    end
-
-    def _do_create(url, params) # :nodoc:
-      response = @config.http.post url, params
-      if response[:subscription]
-        SuccessfulResult.new(:subscription => Subscription._new(response[:subscription]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :subscription or :api_error_response"
-      end
     end
 
     def self._update_signature # :nodoc:
@@ -115,6 +97,24 @@ module Braintree
           ]
         }
       ]
+    end
+
+    def _do_create(url, params) # :nodoc:
+      response = @config.http.post url, params
+      if response[:subscription]
+        SuccessfulResult.new(:subscription => Subscription._new(response[:subscription]))
+      elsif response[:api_error_response]
+        ErrorResult.new(response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :subscription or :api_error_response"
+      end
+    end
+
+    def _fetch_subscriptions(search, ids) # :nodoc:
+      search.ids.in ids
+      response = @config.http.post "/subscriptions/advanced_search", {:search => search.to_hash}
+      attributes = response[:subscriptions]
+      Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| Subscription._new(attrs) }
     end
   end
 end

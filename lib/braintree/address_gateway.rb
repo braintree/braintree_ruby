@@ -49,16 +49,16 @@ module Braintree
       end
     end
 
-    def self._create_signature # :nodoc:
-      _shared_signature + [:customer_id]
-    end
-
     def _determine_customer_id(customer_or_customer_id) # :nodoc:
       customer_id = customer_or_customer_id.is_a?(Customer) ? customer_or_customer_id.id : customer_or_customer_id
       unless customer_id =~ /\A[\w_-]+\z/
         raise ArgumentError, "customer_id contains invalid characters"
       end
       customer_id
+    end
+
+    def self._create_signature # :nodoc:
+      _shared_signature + [:customer_id]
     end
 
     def self._shared_signature # :nodoc:

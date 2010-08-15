@@ -106,10 +106,6 @@ module Braintree
       end
     end
 
-    def _transaction_gateway
-      Gateway.new_with_config(@config).transaction
-    end
-
     def self._update_signature # :nodoc:
       credit_card_signature = CreditCardGateway._update_signature - [:customer_id]
       credit_card_options = credit_card_signature.find { |item| item.respond_to?(:keys) && item.keys == [:options] }
