@@ -29,87 +29,31 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/cancel
     def self.cancel(subscription_id)
-      response = Http.put "/subscriptions/#{subscription_id}/cancel"
-      if response[:subscription]
-        SuccessfulResult.new(:subscription => _new(response[:subscription]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :subscription or :api_error_response"
-      end
-    rescue NotFoundError
-      raise NotFoundError, "subscription with id #{subscription_id.inspect} not found"
+      Configuration.gateway.subscription.cancel(subscription_id)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/create
     def self.create(attributes)
-      Util.verify_keys(_create_signature, attributes)
-      _do_create "/subscriptions", :subscription => attributes
+      Configuration.gateway.subscription.create(attributes)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/search
     def self.find(id)
-      response = Http.get "/subscriptions/#{id}"
-      _new(response[:subscription])
-    rescue NotFoundError
-      raise NotFoundError, "subscription with id #{id.inspect} not found"
+      Configuration.gateway.subscription.find(id)
     end
 
     def self.retry_charge(subscription_id, amount=nil)
-      attributes = {
-        :amount => amount,
-        :subscription_id => subscription_id,
-        :type => Transaction::Type::Sale
-      }
-
-      Transaction.send(:_do_create, "/transactions", :transaction => attributes)
+      Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/search
     def self.search(&block)
-      search = SubscriptionSearch.new
-      block.call(search) if block
-
-      response = Http.post "/subscriptions/advanced_search_ids", {:search => search.to_hash}
-      ResourceCollection.new(response) { |ids| _fetch_subscriptions(search, ids) }
-    end
-
-    def self._fetch_subscriptions(search, ids) # :nodoc:
-      search.ids.in ids
-      response = Http.post "/subscriptions/advanced_search", {:search => search.to_hash}
-      attributes = response[:subscriptions]
-      Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| _new(attrs) }
+      Configuration.gateway.subscription.search(&block)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/update
     def self.update(subscription_id, attributes)
-      Util.verify_keys(_update_signature, attributes)
-      response = Http.put "/subscriptions/#{subscription_id}", :subscription => attributes
-      if response[:subscription]
-        SuccessfulResult.new(:subscription => _new(response[:subscription]))
-      elsif response[:api_error_response]
-         ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :subscription or :api_error_response"
-      end
-    end
-
-    def self._create_signature # :nodoc:
-      [
-        :billing_day_of_month,
-        :first_billing_date,
-        :id,
-        :merchant_account_id,
-        :never_expires,
-        :number_of_billing_cycles,
-        :payment_method_token,
-        :plan_id,
-        :price,
-        :trial_duration,
-        :trial_duration_unit,
-        :trial_period,
-        {:options => [:do_not_inherit_add_ons_or_discounts, :start_immediately]},
-      ] + _add_on_discount_signature
+      Configuration.gateway.subscription.update(subscription_id, attributes)
     end
 
     def initialize(attributes) # :nodoc:
@@ -136,52 +80,9 @@ module Braintree
       end
     end
 
-    def self._do_create(url, params) # :nodoc:
-      response = Http.post url, params
-      if response[:subscription]
-        SuccessfulResult.new(:subscription => new(response[:subscription]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :subscription or :api_error_response"
-      end
-    end
-
     def _init(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
       @price = Util.to_big_decimal(price)
-    end
-
-    def self._update_signature # :nodoc:
-      [
-        :id,
-        :merchant_account_id,
-        :never_expires,
-        :number_of_billing_cycles,
-        :payment_method_token,
-        :plan_id,
-        :price,
-        {:options => [:prorate_charges, :replace_all_add_ons_and_discounts]},
-      ] + _add_on_discount_signature
-    end
-
-    def self._add_on_discount_signature # :nodoc:
-      [
-        {
-          :add_ons => [
-            {:add => [:amount, :inherited_from_id, :never_expires, :number_of_billing_cycles, :quantity]},
-            {:update => [:amount, :existing_id, :never_expires, :number_of_billing_cycles, :quantity]},
-            {:remove => [:_any_key_]}
-          ]
-        },
-        {
-          :discounts => [
-            {:add => [:amount, :inherited_from_id, :never_expires, :number_of_billing_cycles, :quantity]},
-            {:update => [:amount, :existing_id, :never_expires, :number_of_billing_cycles, :quantity]},
-            {:remove => [:_any_key_]}
-          ]
-        }
-      ]
     end
   end
 end

@@ -50,7 +50,7 @@ describe Braintree::Customer do
 
   describe "self.create_signature" do
     it "should be what we expect" do
-      Braintree::Customer._create_signature.should == [
+      Braintree::CustomerGateway._create_signature.should == [
         :company,
         :email,
         :fax,
@@ -90,7 +90,7 @@ describe Braintree::Customer do
 
   describe "self.update_signature" do
     it "should be what we expect" do
-      Braintree::Customer._update_signature.should == [
+      Braintree::CustomerGateway._update_signature.should == [
         :company,
         :email,
         :fax,

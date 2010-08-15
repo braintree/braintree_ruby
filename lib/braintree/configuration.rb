@@ -1,19 +1,12 @@
 module Braintree
-  # The following configuration attributes need to be set to use the gem:
-  # * merchant_id
-  # * public_key
-  # * private_key
-  # * environment
-  #
-  # By default, the logger will log to +STDOUT+. The log level is set to info.
-  # The logger can be set to any Logger object.
-  module Configuration
+  # See http://www.braintreepaymentsolutions.com/docs/ruby
+  class Configuration
     API_VERSION = "2" # :nodoc:
 
     class << self
-      attr_accessor :logger
-      attr_writer :merchant_id, :public_key, :private_key
+      attr_accessor :logger, :merchant_id, :public_key, :private_key
     end
+    attr_reader :merchant_id, :public_key, :private_key
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
@@ -26,21 +19,12 @@ module Braintree
     end
     expectant_reader :environment, :merchant_id, :public_key, :private_key
 
-    def self.base_merchant_url # :nodoc:
-      "#{protocol}://#{server}:#{port}#{base_merchant_path}"
+    def self.gateway
+      Braintree::Gateway.new(instantiate)
     end
 
-    def self.base_merchant_path # :nodoc:
-      "/merchants/#{Braintree::Configuration.merchant_id}"
-    end
-
-    def self.ca_file # :nodoc:
-      case environment
-      when :qa, :sandbox
-        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "sandbox_braintreegateway_com.ca.crt"))
-      when :production
-        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "www_braintreegateway_com.ca.crt"))
-      end
+    def self.custom_user_agent=(custom_user_agent) # :nodoc:
+      @custom_user_agent = custom_user_agent
     end
 
     # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
@@ -51,12 +35,65 @@ module Braintree
       @environment = env
     end
 
-    def self.logger # :nodoc:
+    def self.instantiate # :nodoc:
+      config = new(
+        :custom_user_agent => @custom_user_agent,
+        :environment => environment,
+        :logger => @logger,
+        :merchant_id => merchant_id,
+        :private_key => private_key,
+        :public_key => public_key
+      )
+    end
+
+    def logger # :nodoc:
       @logger ||= _default_logger
     end
 
-    def self.port # :nodoc:
-      case environment
+    def user_agent # :nodoc:
+      base_user_agent = "Braintree Ruby Gem #{Braintree::Version::String}"
+      @custom_user_agent ? "#{base_user_agent} (#{@custom_user_agent})" : base_user_agent
+    end
+
+    def _default_logger # :nodoc:
+      logger = Logger.new(STDOUT)
+      logger.level = Logger::INFO
+      logger
+    end
+
+    def initialize(options = {})
+      [:environment, :merchant_id, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
+        instance_variable_set "@#{attr}", options[attr]
+      end
+    end
+
+    def api_version
+      API_VERSION
+    end
+
+    def base_merchant_url # :nodoc:
+      "#{protocol}://#{server}:#{port}#{base_merchant_path}"
+    end
+
+    def base_merchant_path # :nodoc:
+      "/merchants/#{Braintree::Configuration.merchant_id}"
+    end
+
+    def ca_file # :nodoc:
+      case @environment
+      when :qa, :sandbox
+        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "sandbox_braintreegateway_com.ca.crt"))
+      when :production
+        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "www_braintreegateway_com.ca.crt"))
+      end
+    end
+
+    def http
+      Http.new(self)
+    end
+
+    def port # :nodoc:
+      case @environment
       when :development
         ENV['GATEWAY_PORT'] || 3000
       when :production, :qa, :sandbox
@@ -64,12 +101,12 @@ module Braintree
       end
     end
 
-    def self.protocol # :nodoc:
+    def protocol # :nodoc:
       ssl? ? "https" : "http"
     end
 
-    def self.server # :nodoc:
-      case environment
+    def server # :nodoc:
+      case @environment
       when :development
         "localhost"
       when :production
@@ -81,28 +118,13 @@ module Braintree
       end
     end
 
-    def self.ssl? # :nodoc:
-      case environment
+    def ssl? # :nodoc:
+      case @environment
       when :development
         false
       when :production, :qa, :sandbox
         true
       end
-    end
-
-    def self.custom_user_agent=(custom_user_agent) # :nodoc:
-      @custom_user_agent = custom_user_agent
-    end
-
-    def self.user_agent # :nodoc:
-      base_user_agent = "Braintree Ruby Gem #{Braintree::Version::String}"
-      @custom_user_agent ? "#{base_user_agent} (#{@custom_user_agent})" : base_user_agent
-    end
-
-    def self._default_logger # :nodoc:
-      logger = Logger.new(STDOUT)
-      logger.level = Logger::INFO
-      logger
     end
   end
 end

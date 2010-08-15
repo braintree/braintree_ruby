@@ -68,8 +68,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.create(attributes)
-      Util.verify_keys(_create_signature, attributes)
-      _do_create "/transactions", :transaction => attributes
+      Configuration.gateway.transaction.create(attributes)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
@@ -82,8 +81,7 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Transaction.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      params = TransparentRedirect.parse_and_validate_query_string query_string
-      _do_create("/transactions/all/confirm_transparent_redirect_request", :id => params[:id])
+      Configuration.gateway.transaction.create_from_transparent_redirect(query_string)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
@@ -91,7 +89,7 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_tr
     def self.create_transaction_url
       warn "[DEPRECATED] Transaction.create_transaction_url is deprecated. Please use TransparentRedirect.url"
-      "#{Braintree::Configuration.base_merchant_url}/transactions/all/create_via_transparent_redirect_request"
+      Configuration.gateway.transaction.create_transaction_url
     end
 
     def self.credit(attributes)
@@ -104,10 +102,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/search
     def self.find(id)
-      response = Http.get "/transactions/#{id}"
-      new(response[:transaction])
-    rescue NotFoundError
-      raise NotFoundError, "transaction with id #{id.inspect} not found"
+      Configuration.gateway.transaction.find(id)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
@@ -122,24 +117,12 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/search
     def self.search(&block)
-      search = TransactionSearch.new
-      block.call(search) if block
-
-      response = Http.post "/transactions/advanced_search_ids", {:search => search.to_hash}
-      ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
+      Configuration.gateway.transaction.search(&block)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def self.submit_for_settlement(transaction_id, amount = nil)
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = Http.put "/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount}
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => new(response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :response"
-      end
+      Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
@@ -149,14 +132,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def self.void(transaction_id)
-      response = Http.put "/transactions/#{transaction_id}/void"
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => new(response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      Configuration.gateway.transaction.void(transaction_id)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
@@ -189,15 +165,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/refund
     def refund(amount = nil)
-      response = Http.post "/transactions/#{id}/refund", :transaction => {:amount => amount}
-      if response[:transaction]
-        # TODO: need response to return original_transaction so that we can update status, updated_at, etc.
-        SuccessfulResult.new(:new_transaction => Transaction._new(response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      Configuration.gateway.transaction.refund(id, amount)
     end
 
     # Returns true if the transaction has been refunded. False otherwise.
@@ -207,15 +175,11 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def submit_for_settlement(amount = nil)
-      response = Http.put "/transactions/#{id}/submit_for_settlement", :transaction => {:amount => amount}
-      if response[:transaction]
-        _init(response[:transaction])
-        SuccessfulResult.new :transaction => self
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected transaction or api_error_response"
+      result = Configuration.gateway.transaction.submit_for_settlement(id, amount)
+      if result.success?
+        copy_instance_variables_from_object result.transaction
       end
+      result
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
@@ -261,15 +225,11 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def void
-      response = Http.put "/transactions/#{id}/void"
-      if response[:transaction]
-        _init response[:transaction]
-        SuccessfulResult.new(:transaction => self)
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
+      result = Configuration.gateway.transaction.void(id)
+      if result.success?
+        copy_instance_variables_from_object result.transaction
       end
+      result
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
@@ -284,42 +244,8 @@ module Braintree
       end
     end
 
-    def self._do_create(url, params=nil) # :nodoc:
-      response = Http.post url, params
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => new(response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
-    end
-
     def self._attributes # :nodoc:
       [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :type, :updated_at]
-    end
-
-    def self._create_signature # :nodoc:
-      [
-        :amount, :customer_id, :merchant_account_id, :order_id, :payment_method_token, :type,
-        {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
-        {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
-        {
-          :billing => Address._shared_signature
-        },
-        {
-          :shipping => Address._shared_signature
-        },
-        {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault]},
-        {:custom_fields => :_any_key_}
-      ]
-    end
-
-    def self._fetch_transactions(search, ids) # :nodoc:
-      search.ids.in ids
-      response = Http.post "/transactions/advanced_search", {:search => search.to_hash}
-      attributes = response[:credit_card_transactions]
-      Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| _new(attrs) }
     end
 
     def _init(attributes) # :nodoc:

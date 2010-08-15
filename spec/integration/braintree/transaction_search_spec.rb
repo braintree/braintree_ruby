@@ -62,7 +62,7 @@ describe Braintree::Transaction, "search" do
         }
       )
 
-      Braintree::Http.put "/transactions/#{transaction.id}/settle"
+      SpecHelper.settle_transaction transaction.id
       transaction = Braintree::Transaction.find(transaction.id)
 
       search_criteria = {
@@ -421,7 +421,7 @@ describe Braintree::Transaction, "search" do
         },
         :options => { :submit_for_settlement => true }
         )
-        Braintree::Http.put "/transactions/#{transaction.id}/settle"
+        SpecHelper.settle_transaction transaction.id
 
         refund_transaction = transaction.refund.new_transaction
 
@@ -787,7 +787,7 @@ describe Braintree::Transaction, "search" do
             }
           ).transaction
 
-          Braintree::Http.put "/transactions/#{transaction.id}/settle"
+          SpecHelper.settle_transaction transaction.id
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction.id

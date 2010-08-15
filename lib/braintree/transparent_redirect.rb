@@ -7,11 +7,11 @@ module Braintree
   # * http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
   module TransparentRedirect
     TransparentRedirectKeys = [:redirect_url] # :nodoc:
-    CreateCustomerSignature = TransparentRedirectKeys + [{:customer => Customer._create_signature}] # :nodoc:
-    UpdateCustomerSignature = TransparentRedirectKeys + [:customer_id, {:customer => Customer._update_signature}] # :nodoc:
-    TransactionSignature = TransparentRedirectKeys + [{:transaction => Transaction._create_signature}] # :nodoc:
-    CreateCreditCardSignature = TransparentRedirectKeys + [{:credit_card => CreditCard._create_signature}] # :nodoc:
-    UpdateCreditCardSignature = TransparentRedirectKeys + [:payment_method_token, {:credit_card => CreditCard._update_signature}] # :nodoc:
+    CreateCustomerSignature = TransparentRedirectKeys + [{:customer => CustomerGateway._create_signature}] # :nodoc:
+    UpdateCustomerSignature = TransparentRedirectKeys + [:customer_id, {:customer => CustomerGateway._update_signature}] # :nodoc:
+    TransactionSignature = TransparentRedirectKeys + [{:transaction => TransactionGateway._create_signature}] # :nodoc:
+    CreateCreditCardSignature = TransparentRedirectKeys + [{:credit_card => CreditCardGateway._create_signature}] # :nodoc:
+    UpdateCreditCardSignature = TransparentRedirectKeys + [:payment_method_token, {:credit_card => CreditCardGateway._update_signature}] # :nodoc:
 
     module Kind # :nodoc:
       CreateCustomer = "create_customer"
@@ -22,16 +22,7 @@ module Braintree
     end
 
     def self.confirm(query_string)
-      params = TransparentRedirect.parse_and_validate_query_string query_string
-      confirmation_klass = {
-        Kind::CreateCustomer => Braintree::Customer,
-        Kind::UpdateCustomer => Braintree::Customer,
-        Kind::CreatePaymentMethod => Braintree::CreditCard,
-        Kind::UpdatePaymentMethod => Braintree::CreditCard,
-        Kind::CreateTransaction => Braintree::Transaction
-      }[params[:kind]]
-
-      confirmation_klass._do_create("/transparent_redirect_requests/#{params[:id]}/confirm")
+      Configuration.gateway.transparent_redirect.confirm(query_string)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
@@ -98,7 +89,7 @@ module Braintree
 
     # Returns the URL to which Transparent Redirect Requests should be posted
     def self.url
-      "#{Braintree::Configuration.base_merchant_url}/transparent_redirect_requests"
+      Configuration.gateway.transparent_redirect.url
     end
 
     def self._data(params) # :nodoc:

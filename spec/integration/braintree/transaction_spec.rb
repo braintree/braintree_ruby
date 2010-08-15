@@ -1610,7 +1610,7 @@ describe Braintree::Transaction do
       }
     )
 
-    response = Braintree::Http.put "/transactions/#{transaction.id}/settle"
+    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
     Braintree::Transaction.find(transaction.id)
   end
 end

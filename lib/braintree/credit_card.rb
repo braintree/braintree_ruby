@@ -31,11 +31,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create
     def self.create(attributes)
-      if attributes.has_key?(:expiration_date) && (attributes.has_key?(:expiration_month) || attributes.has_key?(:expiration_year))
-        raise ArgumentError.new("create with both expiration_month and expiration_year or only expiration_date")
-      end
-      Util.verify_keys(_create_signature, attributes)
-      _do_create("/payment_methods", :credit_card => attributes)
+      Configuration.gateway.credit_card.create(attributes)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create
@@ -47,22 +43,19 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
     def self.create_credit_card_url
       warn "[DEPRECATED] CreditCard.create_credit_card_url is deprecated. Please use TransparentRedirect.url"
-      "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/create_via_transparent_redirect_request"
+      Configuration.gateway.credit_card.create_credit_card_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      params = TransparentRedirect.parse_and_validate_query_string query_string
-      _do_create("/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
+      Configuration.gateway.credit_card.create_from_transparent_redirect(query_string)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.credit(token, transaction_attributes)
-      Transaction.credit(transaction_attributes.merge(
-        :payment_method_token => token
-      ))
+      Transaction.credit(transaction_attributes.merge(:payment_method_token => token))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -72,36 +65,27 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/delete
     def self.delete(token)
-      Http.delete("/payment_methods/#{token}")
+      Configuration.gateway.credit_card.delete(token)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/search
     def self.expired(options = {})
-      response = Http.post("/payment_methods/all/expired_ids")
-      ResourceCollection.new(response) { |ids| _fetch_expired(ids) }
+      Configuration.gateway.credit_card.expired(options)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/search
     def self.expiring_between(start_date, end_date, options = {})
-      formatted_start_date = start_date.strftime('%m%Y')
-      formatted_end_date = end_date.strftime('%m%Y')
-      response = Http.post("/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}")
-      ResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
+      Configuration.gateway.credit_card.expiring_between(start_date, end_date, options)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/search
     def self.find(token)
-      response = Http.get "/payment_methods/#{token}"
-      new(response[:credit_card])
-    rescue NotFoundError
-      raise NotFoundError, "payment method with token #{token.inspect} not found"
+      Configuration.gateway.credit_card.find(token)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.sale(token, transaction_attributes)
-      Transaction.sale(transaction_attributes.merge(
-        :payment_method_token => token
-      ))
+      Transaction.sale(transaction_attributes.merge(:payment_method_token => token))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -111,8 +95,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def self.update(token, attributes)
-      Util.verify_keys(_update_signature, attributes)
-      _do_update(:put, "/payment_methods/#{token}", :credit_card => attributes)
+      Configuration.gateway.credit_card.update(token, attributes)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
@@ -124,29 +107,15 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
     def self.update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"
-      params = TransparentRedirect.parse_and_validate_query_string query_string
-      _do_update(:post, "/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
+      Configuration.gateway.credit_card.update_from_transparent_redirect(query_string)
     end
 
-    # The transparent redirect URL to use to update a credit card.
+    # Deprecated. Use Braintree::TransparentRedirect.url
+    #
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update_tr
     def self.update_credit_card_url
       warn "[DEPRECATED] CreditCard.update_credit_card_url is deprecated. Please use TransparentRedirect.url"
-      "#{Braintree::Configuration.base_merchant_url}/payment_methods/all/update_via_transparent_redirect_request"
-    end
-
-    def self._fetch_expired(ids) # :nodoc:
-      response = Http.post("/payment_methods/all/expired", :search => {:ids => ids})
-      attributes = response[:payment_methods]
-      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| _new(attrs) }
-    end
-
-    def self._fetch_expiring_between(formatted_start_date, formatted_end_date, ids) # :nodoc:
-      response = Http.post(
-        "/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
-        :search => {:ids => ids}
-      )
-      attributes = response[:payment_methods]
-      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| _new(attrs) }
+      Configuration.gateway.credit_card.update_credit_card_url
     end
 
     def initialize(attributes) # :nodoc:
@@ -156,9 +125,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def credit(transaction_attributes)
-      Transaction.credit(transaction_attributes.merge(
-        :payment_method_token => self.token
-      ))
+      Transaction.credit(transaction_attributes.merge(:payment_method_token => self.token))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -211,16 +178,11 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def update(attributes)
-      Util.verify_keys(self.class._update_signature, attributes)
-      response = Http.put "/payment_methods/#{token}", :credit_card => attributes
-      if response[:credit_card]
-        _init response[:credit_card]
-        SuccessfulResult.new(:credit_card => self)
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :credit_card or :api_error_response"
+      result = Configuration.gateway.credit_card.update(token, attributes)
+      if result.success?
+        copy_instance_variables_from_object result.credit_card
       end
+      result
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
@@ -245,58 +207,8 @@ module Braintree
       ]
     end
 
-    def self._create_signature # :nodoc:
-      _signature(:create)
-    end
-
     def self._new(*args) # :nodoc:
       self.new *args
-    end
-
-    def self._do_create(url, params=nil) # :nodoc:
-      response = Http.post url, params
-      if response[:credit_card]
-        SuccessfulResult.new(:credit_card => new(response[:credit_card]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :credit_card or :api_error_response"
-      end
-    end
-
-    def self._do_update(http_verb, url, params) # :nodoc:
-      response = Http.send http_verb, url, params
-      if response[:credit_card]
-        SuccessfulResult.new(:credit_card => new(response[:credit_card]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :credit_card or :api_error_response"
-      end
-    end
-
-    def self._update_signature # :nodoc:
-      _signature(:update)
-    end
-
-    def self._signature(type) # :nodoc:
-      billing_address_params = Address._shared_signature
-      signature = [
-        :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
-        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
-        {:billing_address => billing_address_params}
-      ]
-
-      case type
-      when :create
-        signature << :customer_id
-      when :update
-        billing_address_params << {:options => [:update_existing]}
-      else
-        raise ArgumentError
-      end
-
-      return signature
     end
 
     def _init(attributes) # :nodoc:

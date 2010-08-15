@@ -8,20 +8,12 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/search
     def self.all
-      response = Http.post "/customers/advanced_search_ids"
-      ResourceCollection.new(response) { |ids| _fetch_customers(ids) }
-    end
-
-    def self._fetch_customers(ids) # :nodoc:
-      response = Http.post "/customers/advanced_search", {:search => {:ids => ids}}
-      attributes = response[:customers]
-      Util.extract_attribute_as_array(attributes, :customer).map { |attrs| _new(attrs) }
+      Configuration.gateway.customer.all
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/create
     def self.create(attributes = {})
-      Util.verify_keys(_create_signature, attributes)
-      _do_create "/customers", :customer => attributes
+      Configuration.gateway.customer.create(attributes)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/create
@@ -34,7 +26,7 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/create_tr
     def self.create_customer_url
       warn "[DEPRECATED] Customer.create_customer_url is deprecated. Please use TransparentRedirect.url"
-      "#{Braintree::Configuration.base_merchant_url}/customers/all/create_via_transparent_redirect_request"
+      Configuration.gateway.customer.create_customer_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
@@ -42,8 +34,7 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Customer.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      params = TransparentRedirect.parse_and_validate_query_string query_string
-      _do_create("/customers/all/confirm_transparent_redirect_request", :id => params[:id])
+      Configuration.gateway.customer.create_from_transparent_redirect(query_string)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -58,18 +49,12 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/delete
     def self.delete(customer_id)
-      Http.delete("/customers/#{customer_id}")
-      SuccessfulResult.new
+      Configuration.gateway.customer.delete(customer_id)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/search
     def self.find(customer_id)
-      raise ArgumentError, "customer_id contains invalid characters" unless customer_id.to_s =~ /\A[\w-]+\z/
-      raise ArgumentError, "customer_id cannot be blank" if customer_id.to_s == ""
-      response = Http.get("/customers/#{customer_id}")
-      new(response[:customer])
-    rescue NotFoundError
-      raise NotFoundError, "customer with id #{customer_id.inspect} not found"
+      Configuration.gateway.customer.find(customer_id)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -79,27 +64,17 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.sale!(customer_id, transaction_attributes)
-       return_object_or_raise(:transaction){ sale(customer_id, transaction_attributes) }
+      return_object_or_raise(:transaction) { sale(customer_id, transaction_attributes) }
     end
 
     # Returns a ResourceCollection of transactions for the customer with the given +customer_id+.
     def self.transactions(customer_id, options = {})
-      response = Http.post "/customers/#{customer_id}/transaction_ids"
-      ResourceCollection.new(response) { |ids| _fetch_transactions(customer_id, ids) }
-    end
-
-    def self._fetch_transactions(customer_id, ids) # :nodoc:
-      response = Http.post "/customers/#{customer_id}/transactions", :search => {:ids => ids}
-      attributes = response[:credit_card_transactions]
-      Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
-        Transaction._new transaction_attributes
-      end
+      Configuration.gateway.customer.transactions(customer_id, options = {})
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update
     def self.update(customer_id, attributes)
-      Util.verify_keys(_update_signature, attributes)
-      _do_update(:put, "/customers/#{customer_id}", :customer => attributes)
+      Configuration.gateway.customer.update(customer_id, attributes)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update
@@ -112,7 +87,7 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update_tr
     def self.update_customer_url
       warn "[DEPRECATED] Customer.update_customer_url is deprecated. Please use TransparentRedirect.url"
-      "#{Braintree::Configuration.base_merchant_url}/customers/all/update_via_transparent_redirect_request"
+      Configuration.gateway.customer.update_customer_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
@@ -120,8 +95,7 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update_tr
     def self.update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Customer.update_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      params = TransparentRedirect.parse_and_validate_query_string(query_string)
-      _do_update(:post, "/customers/all/confirm_transparent_redirect_request", :id => params[:id])
+      Configuration.gateway.customer.update_from_transparent_redirect(query_string)
     end
 
     def initialize(attributes) # :nodoc:
@@ -172,15 +146,11 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update
     def update(attributes)
-      response = Http.put "/customers/#{id}", :customer => attributes
-      if response[:customer]
-        set_instance_variables_from_hash response[:customer]
-        SuccessfulResult.new(:customer => self)
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise "expected :customer or :errors"
+      result = Configuration.gateway.customer.update(id, attributes)
+      if result.success?
+        copy_instance_variables_from_object result.customer
       end
+      result
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update
@@ -198,56 +168,14 @@ module Braintree
       protected :new
     end
 
-    def self._attributes # :nodoc:
-      [
-        :addresses, :company, :credit_cards, :email, :fax, :first_name, :id, :last_name, :phone, :website,
-        :created_at, :updated_at
-      ]
-    end
-
-    def self._create_signature # :nodoc:
-      credit_card_signature = CreditCard._create_signature - [:customer_id]
-      [
-        :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
-        {:credit_card => credit_card_signature},
-        {:custom_fields => :_any_key_}
-      ]
-    end
-
-    def self._do_create(url, params=nil) # :nodoc:
-      response = Http.post url, params
-      if response[:customer]
-        SuccessfulResult.new(:customer => new(response[:customer]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise "expected :customer or :api_error_response"
-      end
-    end
-
-    def self._do_update(http_verb, url, params) # :nodoc:
-      response = Http.send http_verb, url, params
-      if response[:customer]
-        SuccessfulResult.new(:customer => new(response[:customer]))
-      elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :customer or :api_error_response"
-      end
-    end
-
     def self._new(*args) # :nodoc:
       self.new *args
     end
 
-    def self._update_signature # :nodoc:
-      credit_card_signature = CreditCard._update_signature - [:customer_id]
-      credit_card_options = credit_card_signature.find { |item| item.respond_to?(:keys) && item.keys == [:options] }
-      credit_card_options[:options] << :update_existing_token
+    def self._attributes # :nodoc:
       [
-        :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
-        {:credit_card => credit_card_signature},
-        {:custom_fields => :_any_key_}
+        :addresses, :company, :credit_cards, :email, :fax, :first_name, :id, :last_name, :phone, :website,
+        :created_at, :updated_at
       ]
     end
   end

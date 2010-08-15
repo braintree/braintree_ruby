@@ -14,8 +14,9 @@ unless defined?(SPEC_HELPER_LOADED)
   Braintree::Configuration.merchant_id = "integration_merchant_id"
   Braintree::Configuration.public_key = "integration_public_key"
   Braintree::Configuration.private_key = "integration_private_key"
-  Braintree::Configuration.logger = Logger.new("/dev/null")
-  Braintree::Configuration.logger.level = Logger::INFO
+  logger = Logger.new("/dev/null")
+  logger.level = Logger::INFO
+  Braintree::Configuration.logger = logger
 
   module Kernel
     alias_method :original_warn, :warn
@@ -71,7 +72,13 @@ unless defined?(SPEC_HELPER_LOADED)
     Discount15 = "discount_15"
 
     def self.make_past_due(subscription, number_of_days_past_due = 1)
-      Braintree::Http.put "/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"
+      Braintree::Configuration.instantiate.http.put(
+        "/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"
+      )
+    end
+
+    def self.settle_transaction(transaction_id)
+      Braintree::Configuration.instantiate.http.put("/transactions/#{transaction_id}/settle")
     end
 
     def self.stub_time_dot_now(desired_time)
@@ -92,9 +99,9 @@ unless defined?(SPEC_HELPER_LOADED)
       end
     end
 
-    def self.simulate_form_post_for_tr(tr_data_string, form_data_hash, url=Braintree::TransparentRedirect.url)
+    def self.simulate_form_post_for_tr(tr_data_string, form_data_hash, url = Braintree::TransparentRedirect.url)
       response = nil
-      Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
+      Net::HTTP.start("localhost", Braintree::Configuration.instantiate.port) do |http|
         request = Net::HTTP::Post.new("/" + url.split("/", 4)[3])
         request.add_field "Content-Type", "application/x-www-form-urlencoded"
         request.body = Braintree::Util.hash_to_query_string({:tr_data => tr_data_string}.merge(form_data_hash))

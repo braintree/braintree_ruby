@@ -19,7 +19,7 @@ describe Braintree::Transaction do
 
   describe "self.create_transaction_url" do
     it "returns the url" do
-      port = Braintree::Configuration.port
+      port = Braintree::Configuration.instantiate.port
       Braintree::Transaction.create_transaction_url.should == "http://localhost:#{port}/merchants/integration_merchant_id/transactions/all/create_via_transparent_redirect_request"
     end
   end
