@@ -68,7 +68,8 @@ require File.dirname(__FILE__) + "/lib/braintree/configuration.rb"
 
 CRUISE_BUILD = "CRUISE_BUILD=#{ENV['CRUISE_BUILD']}"
 GATEWAY_ROOT = File.dirname(__FILE__) + "/../gateway" unless defined?(GATEWAY_ROOT)
-PID_FILE = "/tmp/gateway_server_#{Braintree::Configuration.new(:environment => :development).port}.pid"
+GATEWAY_PORT = Braintree::Configuration.new(:environment => :development).port
+PID_FILE = "/tmp/gateway_server_#{GATEWAY_PORT}.pid"
 
 task :prep_gateway do
   Dir.chdir(GATEWAY_ROOT) do
@@ -81,7 +82,7 @@ end
 
 task :start_gateway do
   Dir.chdir(GATEWAY_ROOT) do
-    spawn_server(PID_FILE, Braintree::Configuration.port, "integration")
+    spawn_server(PID_FILE, GATEWAY_PORT, "integration")
   end
 end
 
