@@ -24,7 +24,7 @@ describe Braintree::TransparentRedirect do
   describe "self.parse_and_validate_query_string" do
     it "returns the parsed query string params if the hash is valid" do
       query_string_without_hash = "one=1&two=2&http_status=200"
-      hash = Braintree::Digest.hexdigest(query_string_without_hash)
+      hash = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, query_string_without_hash)
 
       query_string_with_hash = "#{query_string_without_hash}&hash=#{hash}"
       result = Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string query_string_with_hash

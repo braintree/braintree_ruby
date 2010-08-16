@@ -98,7 +98,7 @@ module Braintree
     end
 
     def _hash(string) # :nodoc:
-      ::Braintree::Digest.hexdigest(string)
+      ::Braintree::Digest.hexdigest(@config.private_key, string)
     end
   end
 end

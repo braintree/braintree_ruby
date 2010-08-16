@@ -54,7 +54,7 @@ module Braintree
     end
 
     def base_merchant_path # :nodoc:
-      "/merchants/#{Braintree::Configuration.merchant_id}"
+      "/merchants/#{merchant_id}"
     end
 
     def base_merchant_url # :nodoc:
