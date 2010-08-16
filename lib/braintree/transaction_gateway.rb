@@ -12,7 +12,7 @@ module Braintree
 
     # Deprecated
     def create_from_transparent_redirect(query_string)
-      params = TransparentRedirect.parse_and_validate_query_string query_string
+      params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
       _do_create("/transactions/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 

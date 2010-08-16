@@ -20,7 +20,7 @@ module Braintree
 
     # Deprecated
     def create_from_transparent_redirect(query_string)
-      params = TransparentRedirect.parse_and_validate_query_string query_string
+      params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
       _do_create("/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
@@ -55,7 +55,7 @@ module Braintree
     # Deprecated
     def update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"
-      params = TransparentRedirect.parse_and_validate_query_string query_string
+      params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
       _do_update(:post, "/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 

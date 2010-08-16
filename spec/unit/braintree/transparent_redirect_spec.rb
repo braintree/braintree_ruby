@@ -27,7 +27,7 @@ describe Braintree::TransparentRedirect do
       hash = Braintree::Digest.hexdigest(query_string_without_hash)
 
       query_string_with_hash = "#{query_string_without_hash}&hash=#{hash}"
-      result = Braintree::TransparentRedirect.parse_and_validate_query_string query_string_with_hash
+      result = Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string query_string_with_hash
       result.should == {:one => "1", :two => "2", :http_status => "200", :hash => hash}
     end
 
@@ -37,49 +37,49 @@ describe Braintree::TransparentRedirect do
 
       query_string_with_hash = "#{query_string_without_hash}&hash=#{hash}"
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string query_string_with_hash
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string query_string_with_hash
       end.to raise_error(Braintree::ForgedQueryString)
     end
 
     it "raises Braintree::ForgedQueryString if hash is missing from the query string" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string "http_status=200&query_string=without_a_hash"
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string "http_status=200&query_string=without_a_hash"
       end.to raise_error(Braintree::ForgedQueryString)
     end
 
     it "raises an AuthenticationError if authentication fails" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=401")
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string add_hash_to_query_string("http_status=401")
       end.to raise_error(Braintree::AuthenticationError)
     end
 
     it "raises an AuthorizationError if authorization fails" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=403")
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string add_hash_to_query_string("http_status=403")
       end.to raise_error(Braintree::AuthorizationError)
     end
 
     it "raises an UnexpectedError if http_status is not in query string" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("no_http_status=x")
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string add_hash_to_query_string("no_http_status=x")
       end.to raise_error(Braintree::UnexpectedError, "expected query string to have an http_status param")
     end
 
     it "raises a ServerError if the server 500's" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=500")
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string add_hash_to_query_string("http_status=500")
       end.to raise_error(Braintree::ServerError)
     end
 
     it "raises a DownForMaintenanceError if the server is down for maintenance" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=503")
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string add_hash_to_query_string("http_status=503")
       end.to raise_error(Braintree::DownForMaintenanceError)
     end
 
     it "raises an UnexpectedError if some other code is returned" do
       expect do
-        Braintree::TransparentRedirect.parse_and_validate_query_string add_hash_to_query_string("http_status=600")
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string add_hash_to_query_string("http_status=600")
       end.to raise_error(Braintree::UnexpectedError, "Unexpected HTTP_RESPONSE 600")
     end
   end
@@ -147,13 +147,13 @@ describe Braintree::TransparentRedirect do
   describe "self._data" do
     it "raises an exception if :redirect_url isn't given" do
       expect do
-        Braintree::TransparentRedirect._data(:redirect_url => nil)
+        Braintree::TransparentRedirect.create_customer_data(:redirect_url => nil)
       end.to raise_error(ArgumentError, "expected params to contain :redirect_url")
     end
   end
 
   def add_hash_to_query_string(query_string_without_hash)
-    hash = Braintree::TransparentRedirect._hash(query_string_without_hash)
+    hash = Braintree::Configuration.gateway.transparent_redirect._hash(query_string_without_hash)
     query_string_without_hash + "&hash=" + hash
   end
 end
