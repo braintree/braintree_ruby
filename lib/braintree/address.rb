@@ -41,11 +41,15 @@ module Braintree
       id == other.id && customer_id == other.customer_id
     end
 
+    # Deprecated. Use Braintree::Address.delete
     def delete
+      warn "[DEPRECATED] delete as an instance method is deprecated. Please use CreditCard.delete"
       @gateway.address.delete(customer_id, self.id)
     end
 
+    # Deprecated. Use Braintree::Address.update
     def update(attributes)
+      warn "[DEPRECATED] update as an instance method is deprecated. Please use CreditCard.update"
       result = @gateway.address.update(customer_id, id, attributes)
       if result.success?
         copy_instance_variables_from_object result.address
@@ -53,7 +57,9 @@ module Braintree
       result
     end
 
+    # Deprecated. Use Braintree::Address.update!
     def update!(attributes)
+      warn "[DEPRECATED] update! as an instance method is deprecated. Please use CreditCard.update!"
       return_object_or_raise(:address) { update(attributes) }
     end
 

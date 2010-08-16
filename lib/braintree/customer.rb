@@ -130,13 +130,19 @@ module Braintree
       "#<#{self.class} #{nice_attributes.join(', ')}>"
     end
 
+    # Deprecated. Use Braintree::Customer.sale
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale(transaction_attributes)
+      warn "[DEPRECATED] sale as an instance method is deprecated. Please use CreditCard.sale"
       @gateway.transaction.sale(transaction_attributes.merge(:customer_id => id))
     end
 
+    # Deprecated. Use Braintree::Customer.sale!
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale!(transaction_attributes)
+      warn "[DEPRECATED] sale! as an instance method is deprecated. Please use CreditCard.sale!"
       return_object_or_raise(:transaction) { sale(transaction_attributes) }
     end
 
@@ -145,8 +151,11 @@ module Braintree
       @gateway.customer.transactions(id, options)
     end
 
+    # Deprecated. Use Braintree::Customer.update
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update
     def update(attributes)
+      warn "[DEPRECATED] update as an instance method is deprecated. Please use CreditCard.update"
       result = @gateway.customer.update(id, attributes)
       if result.success?
         copy_instance_variables_from_object result.customer
@@ -154,8 +163,11 @@ module Braintree
       result
     end
 
+    # Deprecated. Use Braintree::Customer.update!
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update
     def update!(attributes)
+      warn "[DEPRECATED] update! as an instance method is deprecated. Please use CreditCard.update!"
       return_object_or_raise(:customer) { update(attributes) }
     end
 

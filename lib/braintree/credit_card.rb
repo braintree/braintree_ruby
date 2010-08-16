@@ -126,18 +126,27 @@ module Braintree
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
     end
 
+    # Deprecated. Use Braintree::CreditCard.credit
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def credit(transaction_attributes)
+      warn "[DEPRECATED] credit as an instance method is deprecated. Please use CreditCard.credit"
       @gateway.transaction.credit(transaction_attributes.merge(:payment_method_token => token))
     end
 
+    # Deprecated. Use Braintree::CreditCard.credit!
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def credit!(transaction_attributes)
+      warn "[DEPRECATED] credit! as an instance method is deprecated. Please use CreditCard.credit!"
       return_object_or_raise(:transaction) { credit(transaction_attributes) }
     end
 
+    # Deprecated. Use Braintree::CreditCard.delete
+    #
     # http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/delete
     def delete
+      warn "[DEPRECATED] delete as an instance method is deprecated. Please use CreditCard.delete"
       @gateway.credit_card.delete(token)
     end
 
@@ -169,18 +178,27 @@ module Braintree
       "#{bin}******#{last_4}"
     end
 
+    # Deprecated. Use Braintree::CreditCard.sale
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale(transaction_attributes)
+      warn "[DEPRECATED] sale as an instance method is deprecated. Please use CreditCard.sale"
       @gateway.transaction.sale(transaction_attributes.merge(:payment_method_token => token))
     end
 
+    # Deprecated. Use Braintree::CreditCard.sale!
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale!(transaction_attributes)
+      warn "[DEPRECATED] sale! as an instance method is deprecated. Please use CreditCard.sale!"
       return_object_or_raise(:transaction) { sale(transaction_attributes) }
     end
 
+    # Deprecated. Use Braintree::CreditCard.update
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def update(attributes)
+      warn "[DEPRECATED] update as an instance method is deprecated. Please use CreditCard.update"
       result = @gateway.credit_card.update(token, attributes)
       if result.success?
         copy_instance_variables_from_object result.credit_card
@@ -188,8 +206,11 @@ module Braintree
       result
     end
 
+    # Deprecated. Use Braintree::CreditCard.update!
+    #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def update!(attributes)
+      warn "[DEPRECATED] update! as an instance method is deprecated. Please use CreditCard.update!"
       return_object_or_raise(:credit_card) { update(attributes) }
     end
 
