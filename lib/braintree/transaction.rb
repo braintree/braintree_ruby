@@ -142,7 +142,15 @@ module Braintree
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
-      _init attributes
+      set_instance_variables_from_hash(attributes)
+      @amount = Util.to_big_decimal(amount)
+      @credit_card_details = CreditCardDetails.new(@credit_card)
+      @customer_details = CustomerDetails.new(@customer)
+      @billing_details = AddressDetails.new(@billing)
+      @shipping_details = AddressDetails.new(@shipping)
+      @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
+      add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
+      discounts.map! { |attrs| Discount._new(attrs) } if discounts
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.
@@ -247,18 +255,6 @@ module Braintree
 
     def self._attributes # :nodoc:
       [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :type, :updated_at]
-    end
-
-    def _init(attributes) # :nodoc:
-      set_instance_variables_from_hash(attributes)
-      @amount = Util.to_big_decimal(amount)
-      @credit_card_details = CreditCardDetails.new(@credit_card)
-      @customer_details = CustomerDetails.new(@customer)
-      @billing_details = AddressDetails.new(@billing)
-      @shipping_details = AddressDetails.new(@shipping)
-      @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
-      add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
-      discounts.map! { |attrs| Discount._new(attrs) } if discounts
     end
   end
 end

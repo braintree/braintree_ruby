@@ -58,7 +58,8 @@ module Braintree
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
-      _init attributes
+      set_instance_variables_from_hash(attributes)
+      @price = Util.to_big_decimal(price)
       transactions.map! { |attrs| Transaction._new(gateway, attrs) }
       add_ons.map! { |attrs| AddOn._new(attrs) }
       discounts.map! { |attrs| Discount._new(attrs) }
@@ -79,11 +80,6 @@ module Braintree
       def _new(*args) # :nodoc:
         self.new *args
       end
-    end
-
-    def _init(attributes) # :nodoc:
-      set_instance_variables_from_hash(attributes)
-      @price = Util.to_big_decimal(price)
     end
   end
 end

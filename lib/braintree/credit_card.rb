@@ -121,7 +121,8 @@ module Braintree
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
-      _init attributes
+      set_instance_variables_from_hash(attributes)
+      @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
     end
 
@@ -211,11 +212,6 @@ module Braintree
 
     def self._new(*args) # :nodoc:
       self.new *args
-    end
-
-    def _init(attributes) # :nodoc:
-      set_instance_variables_from_hash(attributes)
-      @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
     end
   end
 end
