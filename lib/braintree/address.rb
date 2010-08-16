@@ -31,7 +31,8 @@ module Braintree
       return_object_or_raise(:address) { update(customer_or_customer_id, address_id, attributes) }
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(gateway, attributes) # :nodoc:
+      @gateway = gateway
       set_instance_variables_from_hash(attributes)
     end
 
@@ -41,11 +42,11 @@ module Braintree
     end
 
     def delete
-      Address.delete(customer_id, self.id)
+      @gateway.address.delete(customer_id, self.id)
     end
 
     def update(attributes)
-      result = Configuration.gateway.address.update(customer_id, id, attributes)
+      result = @gateway.address.update(customer_id, id, attributes)
       if result.success?
         copy_instance_variables_from_object result.address
       end

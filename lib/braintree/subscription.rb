@@ -56,9 +56,10 @@ module Braintree
       Configuration.gateway.subscription.update(subscription_id, attributes)
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(gateway, attributes) # :nodoc:
+      @gateway = gateway
       _init attributes
-      transactions.map! { |attrs| Transaction._new(attrs) }
+      transactions.map! { |attrs| Transaction._new(gateway, attrs) }
       add_ons.map! { |attrs| AddOn._new(attrs) }
       discounts.map! { |attrs| Discount._new(attrs) }
     end

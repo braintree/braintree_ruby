@@ -1,15 +1,16 @@
 module Braintree
   class SubscriptionGateway # :nodoc:
-    def initialize(config)
-      @config = config
+    def initialize(gateway)
+      @gateway = gateway
+      @config = gateway.config
     end
 
     def cancel(subscription_id)
       response = @config.http.put "/subscriptions/#{subscription_id}/cancel"
       if response[:subscription]
-        SuccessfulResult.new(:subscription => Subscription._new(response[:subscription]))
+        SuccessfulResult.new(:subscription => Subscription._new(@gateway, response[:subscription]))
       elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise UnexpectedError, "expected :subscription or :api_error_response"
       end
@@ -24,7 +25,7 @@ module Braintree
 
     def find(id)
       response = @config.http.get "/subscriptions/#{id}"
-      Subscription._new(response[:subscription])
+      Subscription._new(@gateway, response[:subscription])
     rescue NotFoundError
       raise NotFoundError, "subscription with id #{id.inspect} not found"
     end
@@ -41,9 +42,9 @@ module Braintree
       Util.verify_keys(SubscriptionGateway._update_signature, attributes)
       response = @config.http.put "/subscriptions/#{subscription_id}", :subscription => attributes
       if response[:subscription]
-        SuccessfulResult.new(:subscription => Subscription._new(response[:subscription]))
+        SuccessfulResult.new(:subscription => Subscription._new(@gateway, response[:subscription]))
       elsif response[:api_error_response]
-         ErrorResult.new(response[:api_error_response])
+         ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise UnexpectedError, "expected :subscription or :api_error_response"
       end
@@ -102,9 +103,9 @@ module Braintree
     def _do_create(url, params) # :nodoc:
       response = @config.http.post url, params
       if response[:subscription]
-        SuccessfulResult.new(:subscription => Subscription._new(response[:subscription]))
+        SuccessfulResult.new(:subscription => Subscription._new(@gateway, response[:subscription]))
       elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise UnexpectedError, "expected :subscription or :api_error_response"
       end
@@ -114,7 +115,7 @@ module Braintree
       search.ids.in ids
       response = @config.http.post "/subscriptions/advanced_search", {:search => search.to_hash}
       attributes = response[:subscriptions]
-      Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| Subscription._new(attrs) }
+      Util.extract_attribute_as_array(attributes, :subscription).map { |attrs| Subscription._new(@gateway, attrs) }
     end
   end
 end

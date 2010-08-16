@@ -4,11 +4,12 @@ module Braintree
 
     attr_reader :credit_card_verification, :transaction, :errors, :params, :message
 
-    def initialize(data) # :nodoc:
+    def initialize(gateway, data) # :nodoc:
+      @gateway = gateway
       @params = data[:params]
       @credit_card_verification = CreditCardVerification._new(data[:verification]) if data[:verification]
       @message = data[:message]
-      @transaction = Transaction._new(data[:transaction]) if data[:transaction]
+      @transaction = Transaction._new(gateway, data[:transaction]) if data[:transaction]
       @errors = Errors.new(data[:errors])
     end
 

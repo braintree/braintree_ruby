@@ -3,12 +3,13 @@ require File.dirname(__FILE__) + "/../spec_helper"
 describe Braintree::Customer do
   describe "inspect" do
     it "includes the id first" do
-      output = Braintree::Customer._new({:first_name => 'Dan', :id => '1234'}).inspect
+      output = Braintree::Customer._new(:gateway, {:first_name => 'Dan', :id => '1234'}).inspect
       output.should include("#<Braintree::Customer id: \"1234\",")
     end
 
     it "includes all customer attributes" do
       customer = Braintree::Customer._new(
+        :gateway,
         :company => "Company",
         :email => "e@mail.com",
         :fax => "483-438-5821",
@@ -144,23 +145,23 @@ describe Braintree::Customer do
 
   describe "==" do
     it "returns true when given a customer with the same id" do
-      first = Braintree::Customer._new(:id => 123)
-      second = Braintree::Customer._new(:id => 123)
+      first = Braintree::Customer._new(:gateway, :id => 123)
+      second = Braintree::Customer._new(:gateway, :id => 123)
 
       first.should == second
       second.should == first
     end
 
     it "returns false when given a customer with a different id" do
-      first = Braintree::Customer._new(:id => 123)
-      second = Braintree::Customer._new(:id => 124)
+      first = Braintree::Customer._new(:gateway, :id => 123)
+      second = Braintree::Customer._new(:gateway, :id => 124)
 
       first.should_not == second
       second.should_not == first
     end
 
     it "returns false when not given a customer" do
-      customer = Braintree::Customer._new(:id => 123)
+      customer = Braintree::Customer._new(:gateway, :id => 123)
       customer.should_not == "not a customer"
     end
   end
@@ -168,6 +169,7 @@ describe Braintree::Customer do
   describe "initialize" do
     it "converts payment method hashes into payment method objects" do
       customer = Braintree::Customer._new(
+        :gateway,
         :credit_cards => [
           {:token => "pm1"},
           {:token => "pm2"}

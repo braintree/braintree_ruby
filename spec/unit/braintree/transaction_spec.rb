@@ -35,6 +35,7 @@ describe Braintree::Transaction do
   describe "initialize" do
     it "sets up customer attributes in customer_details" do
       transaction = Braintree::Transaction._new(
+        :gateway,
         :customer => {
           :id => "123",
           :first_name => "Adam",
@@ -58,6 +59,7 @@ describe Braintree::Transaction do
 
     it "sets up credit card attributes in credit_card_details" do
       transaction = Braintree::Transaction._new(
+        :gateway,
         :credit_card => {
           :token => "mzg2",
           :bin => "411111",
@@ -80,6 +82,7 @@ describe Braintree::Transaction do
     it "sets up history attributes in status_history" do
       time = Time.utc(2010,1,14)
       transaction = Braintree::Transaction._new(
+        :gateway,
         :status_history => [
           { :timestamp => time, :amount => "12.00", :transaction_source => "API",
             :user => "larry", :status => Braintree::Transaction::Status::Authorized },
@@ -97,18 +100,19 @@ describe Braintree::Transaction do
 
     it "handles receiving custom as an empty string" do
       transaction = Braintree::Transaction._new(
+        :gateway,
         :custom => "\n    "
       )
     end
 
     it "accepts amount as either a String or a BigDecimal" do
-      Braintree::Transaction._new(:amount => "12.34").amount.should == BigDecimal.new("12.34")
-      Braintree::Transaction._new(:amount => BigDecimal.new("12.34")).amount.should == BigDecimal.new("12.34")
+      Braintree::Transaction._new(:gateway, :amount => "12.34").amount.should == BigDecimal.new("12.34")
+      Braintree::Transaction._new(:gateway, :amount => BigDecimal.new("12.34")).amount.should == BigDecimal.new("12.34")
     end
 
     it "blows up if amount is not a string or BigDecimal" do
       expect {
-        Braintree::Transaction._new(:amount => 12.34)
+        Braintree::Transaction._new(:gateway, :amount => 12.34)
       }.to raise_error(/Argument must be a String or BigDecimal/)
     end
   end
@@ -116,6 +120,7 @@ describe Braintree::Transaction do
   describe "inspect" do
     it "includes the id, type, amount, and status first" do
       transaction = Braintree::Transaction._new(
+        :gateway,
         :id => "1234",
         :type => "sale",
         :amount => "100.00",
@@ -128,29 +133,29 @@ describe Braintree::Transaction do
 
   describe "==" do
     it "returns true for transactions with the same id" do
-      first = Braintree::Transaction._new(:id => 123)
-      second = Braintree::Transaction._new(:id => 123)
+      first = Braintree::Transaction._new(:gateway, :id => 123)
+      second = Braintree::Transaction._new(:gateway, :id => 123)
 
       first.should == second
       second.should == first
     end
 
     it "returns false for transactions with different ids" do
-      first = Braintree::Transaction._new(:id => 123)
-      second = Braintree::Transaction._new(:id => 124)
+      first = Braintree::Transaction._new(:gateway, :id => 123)
+      second = Braintree::Transaction._new(:gateway, :id => 124)
 
       first.should_not == second
       second.should_not == first
     end
 
     it "returns false when comparing to nil" do
-      Braintree::Transaction._new({}).should_not == nil
+      Braintree::Transaction._new(:gateway, {}).should_not == nil
     end
 
     it "returns false when comparing to non-transactions" do
       same_id_different_object = Object.new
       def same_id_different_object.id; 123; end
-      transaction = Braintree::Transaction._new(:id => 123)
+      transaction = Braintree::Transaction._new(:gateway, :id => 123)
       transaction.should_not == same_id_different_object
     end
   end
@@ -165,12 +170,12 @@ describe Braintree::Transaction do
 
   describe "refunded?" do
     it "is true if the transaciton has been refunded" do
-      transaction = Braintree::Transaction._new(:refund_id => "123")
+      transaction = Braintree::Transaction._new(:gateway, :refund_id => "123")
       transaction.refunded?.should == true
     end
 
     it "is false if the transaciton has not been refunded" do
-      transaction = Braintree::Transaction._new(:refund_id => nil)
+      transaction = Braintree::Transaction._new(:gateway, :refund_id => nil)
       transaction.refunded?.should == false
     end
   end

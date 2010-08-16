@@ -1,7 +1,8 @@
 module Braintree
   class TransparentRedirectGateway # :nodoc
-    def initialize(config)
-      @config = config
+    def initialize(gateway)
+      @gateway = gateway
+      @config = gateway.config
     end
 
     def confirm(query_string)
@@ -14,8 +15,7 @@ module Braintree
         TransparentRedirect::Kind::CreateTransaction => :transaction
       }[params[:kind]]
 
-      gateway = Gateway.new(@config)
-      gateway.send(confirmation_gateway)._do_create("/transparent_redirect_requests/#{params[:id]}/confirm")
+      @gateway.send(confirmation_gateway)._do_create("/transparent_redirect_requests/#{params[:id]}/confirm")
     end
 
     def url

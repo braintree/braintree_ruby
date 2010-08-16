@@ -98,15 +98,16 @@ module Braintree
       Configuration.gateway.customer.update_from_transparent_redirect(query_string)
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(gateway, attributes) # :nodoc:
+      @gateway = gateway
       set_instance_variables_from_hash(attributes)
-      @credit_cards = (@credit_cards || []).map { |pm| CreditCard._new pm }
-      @addresses = (@addresses || []).map { |addr| Address._new addr }
+      @credit_cards = (@credit_cards || []).map { |pm| CreditCard._new gateway, pm }
+      @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def credit(transaction_attributes)
-      Customer.credit(id, transaction_attributes)
+      @gateway.transaction.credit(transaction_attributes.merge(:customer_id => id))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -116,7 +117,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/delete
     def delete
-      Customer.delete(id)
+      @gateway.customer.delete(id)
     end
 
     def inspect # :nodoc:
@@ -131,7 +132,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale(transaction_attributes)
-      Customer.sale(id, transaction_attributes)
+      @gateway.transaction.sale(transaction_attributes.merge(:customer_id => id))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -141,12 +142,12 @@ module Braintree
 
     # Returns a ResourceCollection of transactions for the customer.
     def transactions(options = {})
-      Customer.transactions(id, options)
+      @gateway.customer.transactions(id, options)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/update
     def update(attributes)
-      result = Configuration.gateway.customer.update(id, attributes)
+      result = @gateway.customer.update(id, attributes)
       if result.success?
         copy_instance_variables_from_object result.customer
       end

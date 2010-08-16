@@ -85,7 +85,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def self.sale(token, transaction_attributes)
-      Transaction.sale(transaction_attributes.merge(:payment_method_token => token))
+      Configuration.gateway.transaction.sale(transaction_attributes.merge(:payment_method_token => token))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -119,14 +119,15 @@ module Braintree
       Configuration.gateway.credit_card.update_credit_card_url
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(gateway, attributes) # :nodoc:
+      @gateway = gateway
       _init attributes
-      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(subscription_hash) }
+      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def credit(transaction_attributes)
-      Transaction.credit(transaction_attributes.merge(:payment_method_token => self.token))
+      @gateway.transaction.credit(transaction_attributes.merge(:payment_method_token => token))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -136,7 +137,7 @@ module Braintree
 
     # http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/delete
     def delete
-      CreditCard.delete(token)
+      @gateway.credit_card.delete(token)
     end
 
     # Returns true if this credit card is the customer's default.
@@ -169,7 +170,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
     def sale(transaction_attributes)
-      CreditCard.sale(self.token, transaction_attributes)
+      @gateway.transaction.sale(transaction_attributes.merge(:payment_method_token => token))
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create_from_vault
@@ -179,7 +180,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/update
     def update(attributes)
-      result = Configuration.gateway.credit_card.update(token, attributes)
+      result = @gateway.credit_card.update(token, attributes)
       if result.success?
         copy_instance_variables_from_object result.credit_card
       end
@@ -214,7 +215,7 @@ module Braintree
 
     def _init(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
-      @billing_address = attributes[:billing_address] ? Address._new(attributes[:billing_address]) : nil
+      @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
     end
   end
 end

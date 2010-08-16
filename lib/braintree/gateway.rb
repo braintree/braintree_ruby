@@ -13,27 +13,27 @@ module Braintree
     end
 
     def address
-      AddressGateway.new(config)
+      AddressGateway.new(self)
     end
 
     def credit_card
-      CreditCardGateway.new(config)
+      CreditCardGateway.new(self)
     end
 
     def customer
-      CustomerGateway.new(config)
+      CustomerGateway.new(self)
     end
 
     def subscription
-      SubscriptionGateway.new(config)
+      SubscriptionGateway.new(self)
     end
 
     def transparent_redirect
-      TransparentRedirectGateway.new(config)
+      TransparentRedirectGateway.new(self)
     end
 
     def transaction
-      TransactionGateway.new(config)
+      TransactionGateway.new(self)
     end
   end
 end

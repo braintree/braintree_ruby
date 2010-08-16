@@ -1,7 +1,8 @@
 module Braintree
   class CustomerGateway # :nodoc:
-    def initialize(config)
-      @config = config
+    def initialize(gateway)
+      @gateway = gateway
+      @config = gateway.config
     end
 
     def all
@@ -34,7 +35,7 @@ module Braintree
       raise ArgumentError, "customer_id contains invalid characters" unless customer_id.to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "customer_id cannot be blank" if customer_id.to_s == ""
       response = @config.http.get("/customers/#{customer_id}")
-      Customer._new(response[:customer])
+      Customer._new(@gateway, response[:customer])
     rescue NotFoundError
       raise NotFoundError, "customer with id #{customer_id.inspect} not found"
     end
@@ -73,9 +74,9 @@ module Braintree
     def _do_create(url, params=nil) # :nodoc:
       response = @config.http.post url, params
       if response[:customer]
-        SuccessfulResult.new(:customer => Customer._new(response[:customer]))
+        SuccessfulResult.new(:customer => Customer._new(@gateway, response[:customer]))
       elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise "expected :customer or :api_error_response"
       end
@@ -84,9 +85,9 @@ module Braintree
     def _do_update(http_verb, url, params) # :nodoc:
       response = @config.http.send http_verb, url, params
       if response[:customer]
-        SuccessfulResult.new(:customer => Customer._new(response[:customer]))
+        SuccessfulResult.new(:customer => Customer._new(@gateway, response[:customer]))
       elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise UnexpectedError, "expected :customer or :api_error_response"
       end
@@ -95,14 +96,14 @@ module Braintree
     def _fetch_customers(ids) # :nodoc:
       response = @config.http.post "/customers/advanced_search", {:search => {:ids => ids}}
       attributes = response[:customers]
-      Util.extract_attribute_as_array(attributes, :customer).map { |attrs| Customer._new(attrs) }
+      Util.extract_attribute_as_array(attributes, :customer).map { |attrs| Customer._new(@gateway, attrs) }
     end
 
     def _fetch_transactions(customer_id, ids) # :nodoc:
       response = @config.http.post "/customers/#{customer_id}/transactions", :search => {:ids => ids}
       attributes = response[:credit_card_transactions]
       Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
-        Transaction._new transaction_attributes
+        Transaction._new @gateway, transaction_attributes
       end
     end
 

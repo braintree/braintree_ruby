@@ -1,7 +1,8 @@
 module Braintree
   class AddressGateway # :nodoc
-    def initialize(config)
-      @config = config
+    def initialize(gateway)
+      @gateway = gateway
+      @config = gateway.config
     end
 
     def create(attributes)
@@ -14,9 +15,9 @@ module Braintree
       end
       response = @config.http.post "/customers/#{attributes.delete(:customer_id)}/addresses", :address => attributes
       if response[:address]
-        SuccessfulResult.new(:address => Address._new(response[:address]))
+        SuccessfulResult.new(:address => Address._new(@gateway, response[:address]))
       elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise UnexpectedError, "expected :address or :api_error_response"
       end
@@ -31,7 +32,7 @@ module Braintree
     def find(customer_or_customer_id, address_id)
       customer_id = _determine_customer_id(customer_or_customer_id)
       response = @config.http.get("/customers/#{customer_id}/addresses/#{address_id}")
-      Address._new(response[:address])
+      Address._new(@gateway, response[:address])
     rescue NotFoundError
       raise NotFoundError, "address for customer #{customer_id.inspect} with id #{address_id.inspect} not found"
     end
@@ -41,9 +42,9 @@ module Braintree
       customer_id = _determine_customer_id(customer_or_customer_id)
       response = @config.http.put "/customers/#{customer_id}/addresses/#{address_id}", :address => attributes
       if response[:address]
-        SuccessfulResult.new(:address => Address._new(response[:address]))
+        SuccessfulResult.new(:address => Address._new(@gateway, response[:address]))
       elsif response[:api_error_response]
-        ErrorResult.new(response[:api_error_response])
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise UnexpectedError, "expected :address or :api_error_response"
       end

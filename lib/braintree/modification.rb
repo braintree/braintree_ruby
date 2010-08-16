@@ -12,16 +12,12 @@ module Braintree
     end
 
     def initialize(attributes) # :nodoc:
-      _init attributes
+      set_instance_variables_from_hash(attributes)
+      @amount = Util.to_big_decimal(amount)
     end
 
     def never_expires?
       @never_expires
-    end
-
-    def _init(attributes) # :nodoc:
-      set_instance_variables_from_hash(attributes)
-      @amount = Util.to_big_decimal(amount)
     end
   end
 end

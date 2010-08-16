@@ -93,7 +93,7 @@ module Braintree
     end
 
     def self.credit(attributes)
-      create(attributes.merge(:type => 'credit'))
+      Configuration.gateway.transaction.credit(attributes)
     end
 
     def self.credit!(attributes)
@@ -107,7 +107,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.sale(attributes)
-      create(attributes.merge(:type => 'sale'))
+      Configuration.gateway.transaction.sale(attributes)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
@@ -140,7 +140,8 @@ module Braintree
       return_object_or_raise(:transaction) { void(transaction_id) }
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(gateway, attributes) # :nodoc:
+      @gateway = gateway
       _init attributes
     end
 
@@ -165,7 +166,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/refund
     def refund(amount = nil)
-      Configuration.gateway.transaction.refund(id, amount)
+      @gateway.transaction.refund(id, amount)
     end
 
     # Returns true if the transaction has been refunded. False otherwise.
@@ -175,7 +176,7 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def submit_for_settlement(amount = nil)
-      result = Configuration.gateway.transaction.submit_for_settlement(id, amount)
+      result = @gateway.transaction.submit_for_settlement(id, amount)
       if result.success?
         copy_instance_variables_from_object result.transaction
       end
@@ -193,7 +194,7 @@ module Braintree
     # on vault_billing_address may not match the attributes on billing_details.
     def vault_billing_address
       return nil if billing_details.id.nil?
-      Address.find(customer_details.id, billing_details.id)
+      @gateway.address.find(customer_details.id, billing_details.id)
     end
 
     # If this transaction was stored in the vault, or created from vault records,
@@ -202,7 +203,7 @@ module Braintree
     # on vault_credit_card may not match the attributes on credit_card_details.
     def vault_credit_card
       return nil if credit_card_details.token.nil?
-      CreditCard.find(credit_card_details.token)
+      @gateway.credit_card.find(credit_card_details.token)
     end
 
     # If this transaction was stored in the vault, or created from vault records,
@@ -211,7 +212,7 @@ module Braintree
     # on vault_customer may not match the attributes on customer_details.
     def vault_customer
       return nil if customer_details.id.nil?
-      Customer.find(customer_details.id)
+      @gateway.customer.find(customer_details.id)
     end
 
     # If this transaction was stored in the vault, or created from vault records,
@@ -220,12 +221,12 @@ module Braintree
     # on vault_shipping_address may not match the attributes on shipping_details.
     def vault_shipping_address
       return nil if shipping_details.id.nil?
-      Address.find(customer_details.id, shipping_details.id)
+      @gateway.address.find(customer_details.id, shipping_details.id)
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def void
-      result = Configuration.gateway.transaction.void(id)
+      result = @gateway.transaction.void(id)
       if result.success?
         copy_instance_variables_from_object result.transaction
       end
