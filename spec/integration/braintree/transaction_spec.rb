@@ -546,6 +546,71 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "self.refund" do
+    context "partial refunds" do
+      it "allows partial refunds" do
+        transaction = create_transaction_to_refund
+        result = Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
+        result.success?.should == true
+        result.transaction.type.should == "credit"
+      end
+
+      it "does not allow multiple refunds" do
+        transaction = create_transaction_to_refund
+        Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
+        result = Braintree::Transaction.refund(transaction.id, BigDecimal.new("1"))
+        result.success?.should == false
+        result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+      end
+    end
+
+    it "returns a successful result if successful" do
+      transaction = create_transaction_to_refund
+      transaction.status.should == Braintree::Transaction::Status::Settled
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == true
+      result.transaction.type.should == "credit"
+    end
+
+    it "assigns the refund_id on the original transaction" do
+      transaction = create_transaction_to_refund
+      refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+      transaction = Braintree::Transaction.find(transaction.id)
+
+      transaction.refund_id.should == refund_transaction.id
+    end
+
+    it "assigns the refunded_transaction_id to the original transaction" do
+      transaction = create_transaction_to_refund
+      refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+
+      refund_transaction.refunded_transaction_id.should == transaction.id
+    end
+
+    it "returns an error if already refunded" do
+      transaction = create_transaction_to_refund
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == true
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+    end
+
+    it "returns an error result if unsettled" do
+      transaction = Braintree::Transaction.create!(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled
+    end
+  end
+
   describe "self.sale" do
     it "returns a successful result with type=sale if successful" do
       result = Braintree::Transaction.sale(
@@ -1326,7 +1391,7 @@ describe Braintree::Transaction do
         result.new_transaction.type.should == "credit"
       end
 
-      it "does not all multiple refunds" do
+      it "does not allow multiple refunds" do
         transaction = create_transaction_to_refund
         transaction.refund(transaction.amount / 2)
         result = transaction.refund(BigDecimal.new("1"))

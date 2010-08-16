@@ -105,6 +105,10 @@ module Braintree
       Configuration.gateway.transaction.find(id)
     end
 
+    def self.refund(id, amount = nil)
+      Configuration.gateway.transaction.refund(id, amount)
+    end
+
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/create
     def self.sale(attributes)
       Configuration.gateway.transaction.sale(attributes)
@@ -174,7 +178,13 @@ module Braintree
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/refund
     def refund(amount = nil)
-      @gateway.transaction.refund(id, amount)
+      result = @gateway.transaction.refund(id, amount)
+
+      if result.success?
+        SuccessfulResult.new(:new_transaction => result.transaction)
+      else
+        result
+      end
     end
 
     # Returns true if the transaction has been refunded. False otherwise.

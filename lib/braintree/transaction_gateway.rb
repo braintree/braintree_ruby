@@ -35,7 +35,7 @@ module Braintree
     def refund(transaction_id, amount = nil)
       response = @config.http.post "/transactions/#{transaction_id}/refund", :transaction => {:amount => amount}
       if response[:transaction]
-        SuccessfulResult.new(:new_transaction => Transaction._new(@gateway, response[:transaction]))
+        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       else
