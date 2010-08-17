@@ -67,7 +67,8 @@ module Braintree
       FaxIsTooLong = "81607"
       FirstNameIsTooLong = "81608"
       IdIsInUse = "91609"
-      IdIsInvaild = "91610"
+      IdIsInvaild = "91610" # Deprecated
+      IdIsInvalid = "91610"
       IdIsNotAllowed = "91611"
       IdIsRequired = "91613"
       IdIsTooLong = "91612"
@@ -150,7 +151,8 @@ module Braintree
       CustomerIdIsInvalid = "91510"
       CustomerDoesNotHaveCreditCard = "91511"
       HasAlreadyBeenRefunded = "91512"
-      MerchantAccountNameIsInvalid = "91513"
+      MerchantAccountIdIsInvalid = "91513"
+      MerchantAccountNameIsInvalid = "91513" # Deprecated
       MerchantAccountIsSuspended = "91514"
       OrderIdIsTooLong = "91501"
       PaymentMethodConflict = "91515"
