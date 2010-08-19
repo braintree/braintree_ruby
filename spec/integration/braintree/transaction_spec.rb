@@ -231,7 +231,7 @@ describe Braintree::Transaction do
             }
           )
           result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVS_AND_CVV
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVSAndCVV
         ensure
           Braintree::Configuration.merchant_id = old_merchant
           Braintree::Configuration.public_key = old_public_key
@@ -446,6 +446,72 @@ describe Braintree::Transaction do
         result.transaction.vault_credit_card.masked_number.should == "401288******1881"
       end
     end
+
+    it "snapshots add_ons and discounts from subscription" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2010"
+        }
+      )
+
+      result = Braintree::Subscription.create(
+        :payment_method_token => customer.credit_cards.first.token,
+        :plan_id => SpecHelper::TriallessPlan[:id],
+        :add_ons => {
+          :add => [
+            {
+              :amount => BigDecimal.new("11.00"),
+              :inherited_from_id => SpecHelper::AddOnIncrease10,
+              :quantity => 2,
+              :number_of_billing_cycles => 5
+            },
+            {
+              :amount => BigDecimal.new("21.00"),
+              :inherited_from_id => SpecHelper::AddOnIncrease20,
+              :quantity => 3,
+              :number_of_billing_cycles => 6
+            }
+          ]
+        },
+        :discounts => {
+          :add => [
+            {
+              :amount => BigDecimal.new("7.50"),
+              :inherited_from_id => SpecHelper::Discount7,
+              :quantity => 2,
+              :never_expires => true
+            }
+          ]
+        }
+      )
+
+      result.success?.should be_true
+      transaction = result.subscription.transactions.first
+
+      transaction.add_ons.size.should == 2
+      add_ons = transaction.add_ons.sort_by { |add_on| add_on.id }
+
+      add_ons.first.id.should == "increase_10"
+      add_ons.first.amount.should == BigDecimal.new("11.00")
+      add_ons.first.quantity.should == 2
+      add_ons.first.number_of_billing_cycles.should == 5
+      add_ons.first.never_expires?.should be_false
+
+      add_ons.last.id.should == "increase_20"
+      add_ons.last.amount.should == BigDecimal.new("21.00")
+      add_ons.last.quantity.should == 3
+      add_ons.last.number_of_billing_cycles.should == 6
+      add_ons.last.never_expires?.should be_false
+
+      transaction.discounts.size.should == 1
+
+      transaction.discounts.first.id.should == "discount_7"
+      transaction.discounts.first.amount.should == BigDecimal.new("7.50")
+      transaction.discounts.first.quantity.should == 2
+      transaction.discounts.first.number_of_billing_cycles.should be_nil
+      transaction.discounts.first.never_expires?.should be_true
+    end
   end
 
   describe "self.create!" do
@@ -477,6 +543,71 @@ describe Braintree::Transaction do
           }
         )
       end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
+  describe "self.refund" do
+    context "partial refunds" do
+      it "allows partial refunds" do
+        transaction = create_transaction_to_refund
+        result = Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
+        result.success?.should == true
+        result.transaction.type.should == "credit"
+      end
+
+      it "does not allow multiple refunds" do
+        transaction = create_transaction_to_refund
+        Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
+        result = Braintree::Transaction.refund(transaction.id, BigDecimal.new("1"))
+        result.success?.should == false
+        result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+      end
+    end
+
+    it "returns a successful result if successful" do
+      transaction = create_transaction_to_refund
+      transaction.status.should == Braintree::Transaction::Status::Settled
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == true
+      result.transaction.type.should == "credit"
+    end
+
+    it "assigns the refund_id on the original transaction" do
+      transaction = create_transaction_to_refund
+      refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+      transaction = Braintree::Transaction.find(transaction.id)
+
+      transaction.refund_id.should == refund_transaction.id
+    end
+
+    it "assigns the refunded_transaction_id to the original transaction" do
+      transaction = create_transaction_to_refund
+      refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+
+      refund_transaction.refunded_transaction_id.should == transaction.id
+    end
+
+    it "returns an error if already refunded" do
+      transaction = create_transaction_to_refund
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == true
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+    end
+
+    it "returns an error result if unsettled" do
+      transaction = Braintree::Transaction.create!(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result = Braintree::Transaction.refund(transaction.id)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled
     end
   end
 
@@ -1260,7 +1391,7 @@ describe Braintree::Transaction do
         result.new_transaction.type.should == "credit"
       end
 
-      it "does not all multiple refunds" do
+      it "does not allow multiple refunds" do
         transaction = create_transaction_to_refund
         transaction.refund(transaction.amount / 2)
         result = transaction.refund(BigDecimal.new("1"))
@@ -1544,7 +1675,7 @@ describe Braintree::Transaction do
       }
     )
 
-    response = Braintree::Http.put "/transactions/#{transaction.id}/settle"
+    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
     Braintree::Transaction.find(transaction.id)
   end
 end

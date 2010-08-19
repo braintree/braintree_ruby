@@ -104,6 +104,10 @@ module Braintree
         full_key = (namespace ? "#{namespace}[#{key}]" : key.to_s)
         if value.is_a?(Hash)
           result += _flatten_hash_keys(value, full_key)
+        elsif value.is_a?(Array)
+          value.each do |item|
+            result += _flatten_hash_keys(item, full_key)
+          end
         else
           result << full_key
         end

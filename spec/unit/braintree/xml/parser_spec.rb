@@ -27,7 +27,7 @@ describe Braintree::Xml::Parser do
       xml.should parse_to(:root => {:a_nil_value => nil, :an_empty_string => ""})
     end
 
-    it "typecasts dates and times" do
+    it "typecasts datetimes" do
       xml = <<-END
         <root>
           <created-at type="datetime">2009-10-28T10:19:49Z</created-at>

@@ -3,6 +3,7 @@ module Braintree
   # The constants should be used to check for a specific validation error in a ValidationErrorCollection.
   # The error messages returned from the server may change, but the codes will remain the same.
   module ErrorCodes
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/addresses/validations
     module Address
       CannotBeBlank = "81801"
       CompanyIsTooLong = "81802"
@@ -23,6 +24,7 @@ module Braintree
       StreetAddressIsTooLong = "81812"
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/validations
     module CreditCard
       BillingAddressConflict = "91701"
       BillingAddressIdIsInvalid = "91702"
@@ -54,6 +56,7 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/validations
     module Customer
       CompanyIsTooLong = "81601"
       CustomFieldIsInvalid = "91602"
@@ -64,7 +67,8 @@ module Braintree
       FaxIsTooLong = "81607"
       FirstNameIsTooLong = "81608"
       IdIsInUse = "91609"
-      IdIsInvaild = "91610"
+      IdIsInvaild = "91610" # Deprecated
+      IdIsInvalid = "91610"
       IdIsNotAllowed = "91611"
       IdIsRequired = "91613"
       IdIsTooLong = "91612"
@@ -74,10 +78,26 @@ module Braintree
       WebsiteIsTooLong = "81615"
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/validations
     module Subscription
+      BillingDayOfMonthCannotBeUpdated = "91918"
+      BillingDayOfMonthIsInvalid = "91914"
+      BillingDayOfMonthMustBeNumeric = "91913"
+      CannotAddDuplicateAddonOrDiscount = "91911"
       CannotEditCanceledSubscription = "81901"
-      IdIsInUse =  "81902"
+      CannotEditExpiredSubscription = "81910"
+      CannotEditPriceChangingFieldsOnPastDueSubscription = "91920"
+      FirstBillingDateCannotBeInThePast = "91916"
+      FirstBillingDateCannotBeUpdated = "91919"
+      FirstBillingDateIsInvalid = "91915"
+      IdIsInUse = "81902"
+      InconsistentNumberOfBillingCycles = "91908"
+      InconsistentStartDate = "91917"
       MerchantAccountIdIsInvalid = "91901"
+      NumberOfBillingCyclesCannotBeBlank = "91912"
+      NumberOfBillingCyclesIsTooSmall = "91909"
+      NumberOfBillingCyclesMustBeGreaterThanZero = "91907"
+      NumberOfBillingCyclesMustBeNumeric = "91906"
       PaymentMethodTokenCardTypeIsNotAccepted = "91902"
       PaymentMethodTokenIsInvalid = "91903"
       PaymentMethodTokenNotAssociatedWithCustomer = "91905"
@@ -86,16 +106,39 @@ module Braintree
       PriceFormatIsInvalid = "81904"
       StatusIsCanceled = "81905"
       TokenFormatIsInvalid = "81906"
-      TrialDurationFormatIsInvalid =  "81907"
+      TrialDurationFormatIsInvalid = "81907"
       TrialDurationIsRequired = "81908"
-      TrialDurationUnitIsInvalid =  "81909"
+      TrialDurationUnitIsInvalid = "81909"
+
+      module Modification
+        AmountCannotBeBlank = "92003"
+        AmountIsInvalid = "92002"
+        CannotEditModificationsOnPastDueSubscription = "92022"
+        CannotUpdateAndRemove = "92015"
+        ExistingIdIsIncorrectKind = "92020"
+        ExistingIdIsInvalid = "92011"
+        ExistingIdIsRequired = "92012"
+        IdToRemoveIsIncorrectKind = "92021"
+        IdToRemoveIsNotPresent = "92016"
+        InconsistentNumberOfBillingCycles = "92018"
+        InheritedFromIdIsInvalid = "92013"
+        InheritedFromIdIsRequired = "92014"
+        NumberOfBillingCyclesCannotBeBlank = "92017"
+        NumberOfBillingCyclesIsInvalid = "92005"
+        NumberOfBillingCyclesMustBeGreaterThanZero = "92019"
+        QuantityCannotBeBlank = "92004"
+        QuantityIsInvalid = "92001"
+        QuantityMustBeGreaterThanZero = "92010"
+      end
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
       AmountIsRequired = "81502"
       AmountIsInvalid = "81503"
       AmountIsTooLarge = "81528"
+      AmountMustBeGreaterThanZero = "81531"
       BillingAddressConflict = "91530"
       CannotBeVoided = "91504"
       CannotRefundCredit = "91505"
@@ -108,7 +151,8 @@ module Braintree
       CustomerIdIsInvalid = "91510"
       CustomerDoesNotHaveCreditCard = "91511"
       HasAlreadyBeenRefunded = "91512"
-      MerchantAccountNameIsInvalid = "91513"
+      MerchantAccountIdIsInvalid = "91513"
+      MerchantAccountNameIsInvalid = "91513" # Deprecated
       MerchantAccountIsSuspended = "91514"
       OrderIdIsTooLong = "91501"
       PaymentMethodConflict = "91515"
@@ -122,6 +166,7 @@ module Braintree
       SettlementAmountIsTooLarge = "91522"
       SubscriptionDoesNotBelongToCustomer = "91529"
       SubscriptionIdIsInvalid = "91528"
+      SubscriptionStatusMustBePastDue = "91531"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
       module Options

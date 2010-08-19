@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + "/../spec_helper"
 describe Braintree::TransparentRedirect do
   it "raises a DownForMaintenanceError when app is in maintenance mode on TR requests" do
     tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge({}))
-    query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Configuration.base_merchant_url + "/test/maintenance")
+    query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Configuration.instantiate.base_merchant_url + "/test/maintenance")
     expect do
       Braintree::Customer.create_from_transparent_redirect(query_string_response)
     end.to raise_error(Braintree::DownForMaintenanceError)

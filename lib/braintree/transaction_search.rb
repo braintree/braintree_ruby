@@ -1,6 +1,6 @@
 module Braintree
-  class TransactionSearch < AdvancedSearch
-    search_fields(
+  class TransactionSearch < AdvancedSearch # :nodoc:
+    text_fields(
       :billing_company,
       :billing_country_name,
       :billing_extended_address,
@@ -24,6 +24,7 @@ module Braintree
       :order_id,
       :payment_method_token,
       :processor_authorization_code,
+      :settlement_batch_id,
       :shipping_company,
       :shipping_country_name,
       :shipping_extended_address,
@@ -59,6 +60,7 @@ module Braintree
 
     key_value_fields :refund
 
-    range_fields :amount, :created_at
+    range_fields :amount, :created_at, :authorized_at, :failed_at, :gateway_rejected_at, :processor_declined_at,
+                 :settled_at, :submitted_for_settlement_at, :voided_at
   end
 end

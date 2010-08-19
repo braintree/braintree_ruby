@@ -5,7 +5,13 @@ describe Braintree::ErrorResult do
     it "ignores data other than params, errors, and message" do
       # so that we can add more data into the response in the future without breaking the client lib
       expect do
-        result = Braintree::ErrorResult.new(:params => "params", :errors => {:errors => []}, :extra => "is ignored", :message => "foo bar")
+        result = Braintree::ErrorResult.new(
+          :gateway,
+          :params => "params",
+          :errors => {:errors => []},
+          :extra => "is ignored",
+          :message => "foo bar"
+        )
       end.to_not raise_error
     end
   end
@@ -20,12 +26,13 @@ describe Braintree::ErrorResult do
           }
         }
       }
-      result = Braintree::ErrorResult.new(:params => "params", :errors => errors)
+      result = Braintree::ErrorResult.new(:gateway, :params => "params", :errors => errors)
       result.inspect.should == "#<Braintree::ErrorResult params:{...} errors:<level1:[(code1) message], level1/level2:[(code2) message2]>>"
     end
 
     it "includes the credit_card_verification if there is one" do
       result = Braintree::ErrorResult.new(
+        :gateway,
         :params => "params",
         :errors => {},
         :verification => {},
@@ -36,6 +43,7 @@ describe Braintree::ErrorResult do
 
     it "does not include the credit_card_verification if there isn't one" do
       result = Braintree::ErrorResult.new(
+        :gateway,
         :params => "params",
         :errors => {},
         :verification => nil,
@@ -46,6 +54,7 @@ describe Braintree::ErrorResult do
 
     it "includes the transaction if there is one" do
       result = Braintree::ErrorResult.new(
+        :gateway,
         :params => "params",
         :errors => {},
         :verification => nil,
@@ -56,6 +65,7 @@ describe Braintree::ErrorResult do
 
     it "does not include the transaction if there isn't one" do
       result = Braintree::ErrorResult.new(
+        :gateway,
         :params => "params",
         :errors => {},
         :verification => nil,

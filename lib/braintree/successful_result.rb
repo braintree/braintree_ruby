@@ -1,16 +1,5 @@
 module Braintree
-  # A SuccessfulResult will be returned from non-bang methods when
-  # validations pass. It will provide access to the created resource.
-  # For example, when creating a customer, SuccessfulResult will
-  # respond to +customer+ like so:
-  #
-  #   result = Customer.create(:first_name => "John")
-  #   if result.success?
-  #     # have a SuccessfulResult
-  #     puts "Created customer #{result.customer.id}
-  #   else
-  #     # have an ErrorResult
-  #   end
+  # See http://www.braintreepaymentsolutions.com/docs/ruby/general/result_objects
   class SuccessfulResult
     include BaseModule
 

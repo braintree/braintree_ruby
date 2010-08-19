@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + "/../spec_helper"
 describe Braintree::BaseModule do
   describe "return_object_or_raise" do
     it "inspects the error_result when inspecting the exception" do
-      result = Braintree::ErrorResult.new(:errors => {})
+      result = Braintree::ErrorResult.new(:gateway, :errors => {})
       begin
         klass = Class.new { include Braintree::BaseModule }
         klass.return_object_or_raise(:obj) { result }

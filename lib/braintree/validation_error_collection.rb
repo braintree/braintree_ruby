@@ -1,27 +1,5 @@
 module Braintree
-  # A collection of validation errors.
-  #
-  #   result = Braintree::Customer.create(
-  #     :email => "invalid",
-  #     :credit_card => {
-  #       :number => "invalidnumber",
-  #       :billing_address => {
-  #         :country_name => "invalid"
-  #       }
-  #     }
-  #   )
-  #   result.success?
-  #   #=> false
-  #   result.errors.for(:customer).on(:email)
-  #   #=> [#<Braintree::ValidationError (81604) Email is an invalid format.>]
-  #   result.errors.for(:customer).for(:credit_card).on(:number)
-  #   #=> [#<Braintree::ValidationError (81715) Credit card number is invalid.>]
-  #   result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_name)
-  #   #=> [#<Braintree::ValidationError (91803) Country name is not an accepted country.>]
-  #
-  # == More Information
-  #
-  # For more detailed documentation on ValidationErrors, see http://www.braintreepaymentsolutions.com/gateway/validation-errors
+  # See http://www.braintreepaymentsolutions.com/docs/ruby/general/validation_errors
   class ValidationErrorCollection
     include Enumerable
 
@@ -58,6 +36,10 @@ module Braintree
     # Returns nil if there are not any errors nested under the given key.
     def for(nested_key)
       @nested[nested_key]
+    end
+
+    def for_index(index)
+      self.for("index_#{index}".to_sym)
     end
 
     def inspect # :nodoc:

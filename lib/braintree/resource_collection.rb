@@ -1,5 +1,5 @@
 module Braintree
-  class ResourceCollection
+  class ResourceCollection # :nodoc:
     include Enumerable
 
     def initialize(response, &block) # :nodoc:

@@ -1,5 +1,5 @@
 module Braintree
-  # Provides access to errors from an ErrorResult.
+  # See http://www.braintreepaymentsolutions.com/docs/ruby/general/validation_errors
   class Errors
     include Enumerable
 
@@ -11,7 +11,6 @@ module Braintree
       @errors.deep_errors.each(&block)
     end
 
-    # Accesses validation errors for the given +scope+.
     def for(scope)
       @errors.for(scope)
     end

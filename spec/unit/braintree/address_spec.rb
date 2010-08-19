@@ -3,31 +3,31 @@ require File.dirname(__FILE__) + "/../spec_helper"
 describe Braintree::Address do
   describe "==" do
     it "returns true if given an address with the same id and customer_id" do
-      first = Braintree::Address._new(:customer_id => "c1", :id => 'a1')
-      second = Braintree::Address._new(:customer_id => "c1", :id => "a1")
+      first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => 'a1')
+      second = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
 
       first.should == second
       second.should == first
     end
 
     it "returns false if given an address with a different id and the same customer_id" do
-      first = Braintree::Address._new(:customer_id => "c1", :id => "a1")
-      second = Braintree::Address._new(:customer_id => "c1", :id => "not a1")
+      first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
+      second = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "not a1")
 
       first.should_not == second
       second.should_not == first
     end
 
     it "returns false if given an address with a different customer_id and the same id" do
-      first = Braintree::Address._new(:customer_id => "c1", :id => "a1")
-      second = Braintree::Address._new(:customer_id => "not c1", :id => "a1")
+      first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
+      second = Braintree::Address._new(:gateway, :customer_id => "not c1", :id => "a1")
 
       first.should_not == second
       second.should_not == first
     end
 
     it "returns false when not given an address" do
-      address = Braintree::Address._new(:id => "a1")
+      address = Braintree::Address._new(:gateway, :id => "a1")
       address.should_not == "not an address"
     end
   end
@@ -79,7 +79,7 @@ describe Braintree::Address do
   describe "update" do
     it "raises an exception if hash includes an invalid key" do
       expect do
-        Braintree::Address._new({}).update(:street_address => "456 E Main", :invalid_key2 => "foo")
+        Braintree::Address._new(Braintree::Configuration.gateway, {}).update(:street_address => "456 E Main", :invalid_key2 => "foo")
       end.to raise_error(ArgumentError, "invalid keys: invalid_key2")
     end
   end

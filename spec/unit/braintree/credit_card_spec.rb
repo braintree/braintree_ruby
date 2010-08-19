@@ -11,7 +11,7 @@ describe Braintree::CreditCard do
 
   describe "self.create_signature" do
     it "should be what we expect" do
-      Braintree::CreditCard._create_signature.should == [
+      Braintree::CreditCardGateway._create_signature.should == [
         :cardholder_name,
         :cvv,
         :expiration_date,
@@ -41,7 +41,7 @@ describe Braintree::CreditCard do
 
   describe "self.update_signature" do
     it "should be what we expect" do
-      Braintree::CreditCard._update_signature.should == [
+      Braintree::CreditCardGateway._update_signature.should == [
         :cardholder_name,
         :cvv,
         :expiration_date,
@@ -79,52 +79,53 @@ describe Braintree::CreditCard do
 
   describe "self.create_credit_card_url" do
     it "returns the url" do
-      port = Braintree::Configuration.port
+      port = Braintree::Configuration.instantiate.port
       Braintree::CreditCard.create_credit_card_url.should == "http://localhost:#{port}/merchants/integration_merchant_id/payment_methods/all/create_via_transparent_redirect_request"
     end
   end
 
   describe "==" do
     it "returns true if given a credit card with the same token" do
-      first = Braintree::CreditCard._new(:token => 123)
-      second = Braintree::CreditCard._new(:token => 123)
+      first = Braintree::CreditCard._new(:gateway, :token => 123)
+      second = Braintree::CreditCard._new(:gateway, :token => 123)
 
       first.should == second
       second.should == first
     end
 
     it "returns false if given a credit card with a different token" do
-      first = Braintree::CreditCard._new(:token => 123)
-      second = Braintree::CreditCard._new(:token => 124)
+      first = Braintree::CreditCard._new(:gateway, :token => 123)
+      second = Braintree::CreditCard._new(:gateway, :token => 124)
 
       first.should_not == second
       second.should_not == first
     end
 
     it "returns false if not given a credit card" do
-      credit_card = Braintree::CreditCard._new(:token => 123)
+      credit_card = Braintree::CreditCard._new(:gateway, :token => 123)
       credit_card.should_not == "not a credit card"
     end
   end
 
   describe "default?" do
     it "is true if the credit card is the default credit card for the customer" do
-      Braintree::CreditCard._new(:default => true).default?.should == true
+      Braintree::CreditCard._new(:gateway, :default => true).default?.should == true
     end
 
     it "is false if the credit card is not the default credit card for the customer" do
-      Braintree::CreditCard._new(:default => false).default?.should == false
+      Braintree::CreditCard._new(:gateway, :default => false).default?.should == false
     end
   end
 
   describe "inspect" do
     it "includes the token first" do
-      output = Braintree::CreditCard._new(:token => "cc123").inspect
+      output = Braintree::CreditCard._new(:gateway, :token => "cc123").inspect
       output.should include("#<Braintree::CreditCard token: \"cc123\",")
     end
 
     it "includes all customer attributes" do
       credit_card = Braintree::CreditCard._new(
+        :gateway,
         :bin => "411111",
         :card_type => "Visa",
         :cardholder_name => "John Miller",
@@ -154,6 +155,7 @@ describe Braintree::CreditCard do
   describe "masked_number" do
     it "uses the bin and last_4 to build the masked number" do
       credit_card = Braintree::CreditCard._new(
+        :gateway,
         :bin => "510510",
         :last_4 => "5100"
       )
@@ -164,7 +166,7 @@ describe Braintree::CreditCard do
   describe "self.update" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
-        Braintree::CreditCard._new({}).update(:invalid_key => 'val')
+        Braintree::CreditCard._new(Braintree::Configuration.gateway, {}).update(:invalid_key => 'val')
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end

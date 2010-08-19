@@ -1,29 +1,15 @@
 module Braintree
-  # An ErrorResult will be returned from non-bang methods when
-  # validations fail. It will provide access to the params passed
-  # to the server. The params are primarily useful for re-populaing
-  # web forms when using transparent redirect. ErrorResult also
-  # provides access to the validation errors.
-  #
-  #   result = Braintree::Customer.create(:email => "invalid.email.address")
-  #   if result.success?
-  #     # have a SuccessfulResult
-  #   else
-  #     # have an ErrorResult
-  #     puts "Validations failed when attempting to create customer."
-  #     result.errors.for(:customer).each do |error|
-  #       puts error.message
-  #     end
-  #   end
+  # See http://www.braintreepaymentsolutions.com/docs/ruby/general/result_objects
   class ErrorResult
 
     attr_reader :credit_card_verification, :transaction, :errors, :params, :message
 
-    def initialize(data) # :nodoc:
+    def initialize(gateway, data) # :nodoc:
+      @gateway = gateway
       @params = data[:params]
       @credit_card_verification = CreditCardVerification._new(data[:verification]) if data[:verification]
       @message = data[:message]
-      @transaction = Transaction._new(data[:transaction]) if data[:transaction]
+      @transaction = Transaction._new(gateway, data[:transaction]) if data[:transaction]
       @errors = Errors.new(data[:errors])
     end
 

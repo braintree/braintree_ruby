@@ -10,6 +10,12 @@ module Braintree
         end
       end
 
+      def copy_instance_variables_from_object(object)
+        object.instance_variables.each do |ivar|
+          instance_variable_set ivar, object.instance_variable_get(ivar)
+        end
+      end
+
       def set_instance_variables_from_hash(hash)
         hash.each do |key, value|
           instance_variable_set "@#{key}", value

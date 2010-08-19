@@ -1,6 +1,6 @@
 module Braintree
-  class AdvancedSearch
-    class SearchNode
+  class AdvancedSearch # :nodoc:
+    class SearchNode # :nodoc:
       def self.operators(*operator_names)
         operator_names.each do |operator|
           define_method(operator) do |value|
@@ -14,25 +14,25 @@ module Braintree
       end
     end
 
-    class EqualityNode < SearchNode
+    class EqualityNode < SearchNode # :nodoc:
       operators :is, :is_not
     end
 
-    class PartialMatchNode < EqualityNode
+    class PartialMatchNode < EqualityNode # :nodoc:
       operators :ends_with, :starts_with
     end
 
-    class TextNode < PartialMatchNode
+    class TextNode < PartialMatchNode # :nodoc:
       operators :contains
     end
 
-    class KeyValueNode < SearchNode
+    class KeyValueNode < SearchNode # :nodoc:
       def is(value)
         @parent.add_criteria(@node_name, value)
       end
     end
 
-    class MultipleValueNode < SearchNode
+    class MultipleValueNode < SearchNode # :nodoc:
       def in(*values)
         values.flatten!
 
@@ -44,10 +44,6 @@ module Braintree
         @parent.add_criteria(@node_name, values)
       end
 
-      def is(value)
-        self.in(value)
-      end
-
       def initialize(name, parent, options)
         super(name, parent)
         @options = options
@@ -56,9 +52,25 @@ module Braintree
       def allowed_values
         @options[:allows]
       end
+
+      def is(value)
+        self.in(value)
+      end
     end
 
-    class RangeNode < SearchNode
+    class MultipleValueOrTextNode < MultipleValueNode
+      extend Forwardable
+      def_delegators :@text_node, :contains, :ends_with, :is, :is_not, :starts_with
+
+      def initialize(name, parent, options)
+        super
+        @text_node = TextNode.new(name, parent)
+      end
+    end
+
+    class RangeNode < SearchNode # :nodoc:
+      operators :is
+
       def between(min, max)
         self >= min
         self <= max
@@ -73,7 +85,7 @@ module Braintree
       end
     end
 
-    def self.search_fields(*fields)
+    def self.text_fields(*fields)
       _create_field_accessors(fields, TextNode)
     end
 
@@ -88,6 +100,12 @@ module Braintree
     def self.multiple_value_field(field, options={})
       define_method(field) do
         MultipleValueNode.new(field, self, options)
+      end
+    end
+
+    def self.multiple_value_or_text_field(field, options={})
+      define_method(field) do
+        MultipleValueOrTextNode.new(field, self, options)
       end
     end
 

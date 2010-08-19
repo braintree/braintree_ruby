@@ -29,8 +29,7 @@ task :cruise do
     Rake::Task["spec:unit"].invoke
     Rake::Task["spec:integration"].invoke
   ensure
-    Rake::Task["stop_gateway"].invoke
-    Rake::Task["stop_sphinx"].invoke
+    Rake::Task["stop_gateway"].invoke rescue nil
   end
 end
 
@@ -45,25 +44,6 @@ Rake::RDocTask.new do |t|
   t.rdoc_dir = "rdoc"
 end
 
-Rake::RDocTask.new(:bt_rdoc) do |t|
-  configure_rdoc_task(t)
-  t.rdoc_dir = "bt_rdoc"
-  t.template = "bt_rdoc_template/braintree"
-end
-Rake::Task["bt_rdoc"].prerequisites.unshift "clean"
-
-task :bt_rdoc_postprocessing do
-  FileUtils.cp "bt_rdoc_template/braintree.gif", "bt_rdoc"
-  FileUtils.cp "bt_rdoc_template/ruby.png", "bt_rdoc"
-  Dir.glob("bt_rdoc/**/*.html") do |html_file|
-    original = File.read(html_file)
-    next unless original =~ /STYLE_URL/
-    base_url = original[/STYLE_URL = (.*)\/.*/, 1]
-    updated = original.gsub("BASE_URL", base_url)
-    File.open(html_file, "w") { |f| f.write updated }
-  end
-end
-task(:bt_rdoc) { Rake::Task["bt_rdoc_postprocessing"].invoke }
 
 require File.dirname(__FILE__) + "/lib/braintree/version.rb"
 gem_spec = Gem::Specification.new do |s|
@@ -88,28 +68,21 @@ require File.dirname(__FILE__) + "/lib/braintree/configuration.rb"
 
 CRUISE_BUILD = "CRUISE_BUILD=#{ENV['CRUISE_BUILD']}"
 GATEWAY_ROOT = File.dirname(__FILE__) + "/../gateway" unless defined?(GATEWAY_ROOT)
-Braintree::Configuration.environment = :development
-PID_FILE = "/tmp/gateway_server_#{Braintree::Configuration.port}.pid"
+GATEWAY_PORT = Braintree::Configuration.new(:environment => :development).port
+PID_FILE = "/tmp/gateway_server_#{GATEWAY_PORT}.pid"
 
 task :prep_gateway do
   Dir.chdir(GATEWAY_ROOT) do
     sh "git pull"
-    sh "env RAILS_ENV=integration #{CRUISE_BUILD} SPHINX_PORT=#{ENV['SPHINX_PORT']} rake db:migrate:reset --trace"
-    sh "env RAILS_ENV=integration #{CRUISE_BUILD} SPHINX_PORT=#{ENV['SPHINX_PORT']} ruby script/populate_data"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} rake db:migrate:reset --trace"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} ruby script/populate_data"
     Rake::Task[:start_gateway].invoke
-    Rake::Task[:start_sphinx].invoke
   end
 end
 
 task :start_gateway do
   Dir.chdir(GATEWAY_ROOT) do
-    spawn_server(PID_FILE, Braintree::Configuration.port, "integration")
-  end
-end
-
-task :start_sphinx do
-  Dir.chdir(GATEWAY_ROOT) do
-    sh "env RAILS_ENV=integration #{CRUISE_BUILD} SPHINX_PORT=#{ENV['SPHINX_PORT']} rake ts:rebuild --trace"
+    spawn_server(PID_FILE, GATEWAY_PORT, "integration")
   end
 end
 
@@ -119,17 +92,11 @@ task :stop_gateway do
   end
 end
 
-task :stop_sphinx do
-  Dir.chdir(GATEWAY_ROOT) do
-    sh "env RAILS_ENV=integration rake ts:stop --trace"
-  end
-end
-
 desc 'Cleans generated files'
 task :clean do
   rm_f Dir.glob('*.gem').join(" ")
-  rm_rf "bt_rdoc"
   rm_rf "rdoc"
+  rm_rf "bt_rdoc"
 end
 
 def spawn_server(pid_file, port, environment="test")

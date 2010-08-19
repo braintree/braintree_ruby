@@ -3,29 +3,20 @@ require File.dirname(__FILE__) + "/../spec_helper"
 describe Braintree::Digest do
   describe "self.hexdigest" do
     it "returns the sha1 hmac of the input string (test case 6 from RFC 2202)" do
-      begin
-        original_key = Braintree::Configuration.private_key
-        Braintree::Configuration.private_key = "\xaa" * 80
-        data = "Test Using Larger Than Block-Size Key - Hash Key First"
-        Braintree::Digest.hexdigest(data).should == "aa4ae5e15272d00e95705637ce8a3b55ed402112"
-      ensure
-        Braintree::Configuration.private_key = original_key
-      end
+      original_key = Braintree::Configuration.private_key
+      private_key = "\xaa" * 80
+      data = "Test Using Larger Than Block-Size Key - Hash Key First"
+      Braintree::Digest.hexdigest(private_key, data).should == "aa4ae5e15272d00e95705637ce8a3b55ed402112"
     end
 
     it "returns the sha1 hmac of the input string (test case 7 from RFC 2202)" do
-      begin
-        original_key = Braintree::Configuration.private_key
-        Braintree::Configuration.private_key = "\xaa" * 80
-        data = "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"
-        Braintree::Digest.hexdigest(data).should == "e8e99d0f45237d786d6bbaa7965c7808bbff1a91"
-      ensure
-        Braintree::Configuration.private_key = original_key
-      end
+      private_key = "\xaa" * 80
+      data = "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"
+      Braintree::Digest.hexdigest(private_key, data).should == "e8e99d0f45237d786d6bbaa7965c7808bbff1a91"
     end
 
     it "doesn't blow up if message is nil" do
-      expect { Braintree::Digest.hexdigest(nil) }.to_not raise_error
+      expect { Braintree::Digest.hexdigest("key", nil) }.to_not raise_error
     end
   end
 end

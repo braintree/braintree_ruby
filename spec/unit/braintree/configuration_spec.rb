@@ -16,48 +16,48 @@ describe Braintree::Configuration do
     Braintree::Configuration.environment = @original_environment
   end
 
-  describe "self.base_merchant_path" do
+  describe "base_merchant_path" do
     it "returns /merchants/{merchant_id}" do
-      Braintree::Configuration.base_merchant_path.should == "/merchants/integration_merchant_id"
+      Braintree::Configuration.instantiate.base_merchant_path.should == "/merchants/integration_merchant_id"
     end
   end
 
-  describe "self.base_merchant_url" do
+  describe "base_merchant_url" do
     it "returns the expected url for the development env" do
       Braintree::Configuration.environment = :development
-      port = Braintree::Configuration.port
-      Braintree::Configuration.base_merchant_url.should == "http://localhost:#{port}/merchants/integration_merchant_id"
+      port = Braintree::Configuration.instantiate.port
+      Braintree::Configuration.instantiate.base_merchant_url.should == "http://localhost:#{port}/merchants/integration_merchant_id"
     end
 
     it "returns the expected url for the sandbox env" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.base_merchant_url.should == "https://sandbox.braintreegateway.com:443/merchants/integration_merchant_id"
+      Braintree::Configuration.instantiate.base_merchant_url.should == "https://sandbox.braintreegateway.com:443/merchants/integration_merchant_id"
     end
 
     it "returns the expected url for the production env" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.base_merchant_url.should == "https://www.braintreegateway.com:443/merchants/integration_merchant_id"
+      Braintree::Configuration.instantiate.base_merchant_url.should == "https://www.braintreegateway.com:443/merchants/integration_merchant_id"
     end
   end
 
-  describe "self.ca_file" do
+  describe "ca_file" do
     it "qa" do
       Braintree::Configuration.environment = :qa
-      ca_file = Braintree::Configuration.ca_file
+      ca_file = Braintree::Configuration.instantiate.ca_file
       ca_file.should match(/sandbox_braintreegateway_com.ca.crt$/)
       File.exists?(ca_file).should == true
     end
 
     it "sandbox" do
       Braintree::Configuration.environment = :sandbox
-      ca_file = Braintree::Configuration.ca_file
+      ca_file = Braintree::Configuration.instantiate.ca_file
       ca_file.should match(/sandbox_braintreegateway_com.ca.crt$/)
       File.exists?(ca_file).should == true
     end
 
     it "production" do
       Braintree::Configuration.environment = :production
-      ca_file = Braintree::Configuration.ca_file
+      ca_file = Braintree::Configuration.instantiate.ca_file
       ca_file.should match(/www_braintreegateway_com.ca.crt$/)
       File.exists?(ca_file).should == true
     end
@@ -85,7 +85,7 @@ describe Braintree::Configuration do
       begin
         old_logger = Braintree::Configuration.logger
         Braintree::Configuration.logger = nil
-        Braintree::Configuration.logger.level.should == Logger::INFO
+        Braintree::Configuration.instantiate.logger.level.should == Logger::INFO
       ensure
         Braintree::Configuration.logger = old_logger
       end
@@ -122,12 +122,12 @@ describe Braintree::Configuration do
   describe "self.port" do
     it "is 443 for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.port.should == 443
+      Braintree::Configuration.instantiate.port.should == 443
     end
 
     it "is 443 for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.port.should == 443
+      Braintree::Configuration.instantiate.port.should == 443
     end
 
     it "is 3000 or GATEWAY_PORT environment variable for development" do
@@ -135,10 +135,10 @@ describe Braintree::Configuration do
       old_gateway_port = ENV['GATEWAY_PORT']
       begin
         ENV['GATEWAY_PORT'] = nil
-        Braintree::Configuration.port.should == 3000
+        Braintree::Configuration.instantiate.port.should == 3000
 
         ENV['GATEWAY_PORT'] = '1234'
-        Braintree::Configuration.port.should == '1234'
+        Braintree::Configuration.instantiate.port.should == '1234'
       ensure
         ENV['GATEWAY_PORT'] = old_gateway_port
       end
@@ -148,17 +148,17 @@ describe Braintree::Configuration do
   describe "self.protocol" do
     it "is http for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.protocol.should == "http"
+      Braintree::Configuration.instantiate.protocol.should == "http"
     end
 
     it "is https for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.protocol.should == "https"
+      Braintree::Configuration.instantiate.protocol.should == "https"
     end
 
     it "is https for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.protocol.should == "https"
+      Braintree::Configuration.instantiate.protocol.should == "https"
     end
 
   end
@@ -166,50 +166,50 @@ describe Braintree::Configuration do
   describe "self.server" do
     it "is localhost for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.server.should == "localhost"
+      Braintree::Configuration.instantiate.server.should == "localhost"
     end
 
     it "is www.braintreegateway.com for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.server.should == "www.braintreegateway.com"
+      Braintree::Configuration.instantiate.server.should == "www.braintreegateway.com"
     end
 
     it "is sandbox.braintreegateway.com for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.server.should == "sandbox.braintreegateway.com"
+      Braintree::Configuration.instantiate.server.should == "sandbox.braintreegateway.com"
     end
   end
 
-  describe "self.ssl?" do
+  describe "ssl?" do
     it "returns false for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.ssl?.should == false
+      Braintree::Configuration.instantiate.ssl?.should == false
     end
 
     it "returns true for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.ssl?.should == true
+      Braintree::Configuration.instantiate.ssl?.should == true
     end
 
     it "returns true for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.ssl?.should == true
+      Braintree::Configuration.instantiate.ssl?.should == true
     end
   end
 
-  describe "self.user_agent" do
+  describe "user_agent" do
     after :each do
       Braintree::Configuration.custom_user_agent = nil
     end
 
     it "appends the default user_agent with the given value" do
       Braintree::Configuration.custom_user_agent = "ActiveMerchant 1.2.3"
-      Braintree::Configuration.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)"
+      Braintree::Configuration.instantiate.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)"
     end
 
     it "does not append anything if there is no custom_user_agent" do
       Braintree::Configuration.custom_user_agent = nil
-      Braintree::Configuration.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String}"
+      Braintree::Configuration.instantiate.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String}"
     end
   end
 end

@@ -18,48 +18,52 @@ describe Braintree::Transaction, "search" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
         :credit_card => {
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012",
-        :cardholder_name => "Tom Smith",
-        :token => token,
-      },
-      :billing => {
-        :company => "Braintree",
-        :country_name => "United States of America",
-        :extended_address => "Suite 123",
-        :first_name => first_name,
-        :last_name => "Smith",
-        :locality => "Chicago",
-        :postal_code => "12345",
-        :region => "IL",
-        :street_address => "123 Main St"
-      },
-      :customer => {
-        :company => "Braintree",
-        :email => "smith@example.com",
-        :fax => "5551231234",
-        :first_name => "Tom",
-        :id => customer_id,
-        :last_name => "Smith",
-        :phone => "5551231234",
-        :website => "http://example.com",
-      },
-      :options => {
-        :store_in_vault => true
-      },
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :cardholder_name => "Tom Smith",
+          :token => token,
+        },
+        :billing => {
+          :company => "Braintree",
+          :country_name => "United States of America",
+          :extended_address => "Suite 123",
+          :first_name => first_name,
+          :last_name => "Smith",
+          :locality => "Chicago",
+          :postal_code => "12345",
+          :region => "IL",
+          :street_address => "123 Main St"
+        },
+        :customer => {
+          :company => "Braintree",
+          :email => "smith@example.com",
+          :fax => "5551231234",
+          :first_name => "Tom",
+          :id => customer_id,
+          :last_name => "Smith",
+          :phone => "5551231234",
+          :website => "http://example.com",
+        },
+        :options => {
+          :store_in_vault => true,
+          :submit_for_settlement => true
+        },
         :order_id => "myorder",
         :shipping => {
-        :company => "Braintree P.S.",
-        :country_name => "Mexico",
-        :extended_address => "Apt 456",
-        :first_name => "Thomas",
-        :last_name => "Smithy",
-        :locality => "Braintree",
-        :postal_code => "54321",
-        :region => "MA",
-        :street_address => "456 Road"
-      }
+          :company => "Braintree P.S.",
+          :country_name => "Mexico",
+          :extended_address => "Apt 456",
+          :first_name => "Thomas",
+          :last_name => "Smithy",
+          :locality => "Braintree",
+          :postal_code => "54321",
+          :region => "MA",
+          :street_address => "456 Road"
+        }
       )
+
+      SpecHelper.settle_transaction transaction.id
+      transaction = Braintree::Transaction.find(transaction.id)
 
       search_criteria = {
         :billing_company => "Braintree",
@@ -85,6 +89,7 @@ describe Braintree::Transaction, "search" do
         :order_id => "myorder",
         :payment_method_token => token,
         :processor_authorization_code => transaction.processor_authorization_code,
+        :settlement_batch_id => transaction.settlement_batch_id,
         :shipping_company => "Braintree P.S.",
         :shipping_country_name => "Mexico",
         :shipping_extended_address => "Apt 456",
@@ -416,7 +421,7 @@ describe Braintree::Transaction, "search" do
         },
         :options => { :submit_for_settlement => true }
         )
-        Braintree::Http.put "/transactions/#{transaction.id}/settle"
+        SpecHelper.settle_transaction transaction.id
 
         refund_transaction = transaction.refund.new_transaction
 
@@ -612,9 +617,9 @@ describe Braintree::Transaction, "search" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/12"
-          }
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
           )
 
           collection = Braintree::Transaction.search do |search|
@@ -628,6 +633,276 @@ describe Braintree::Transaction, "search" do
           collection.maximum_size.should == 1
           collection.first.id.should == transaction.id
         end
+      end
+
+      context "status date ranges" do
+        it "finds transactions authorized in a given range" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.authorized_at.between(
+              Date.today - 2,
+              Date.today - 1
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.authorized_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+        end
+
+        it "finds transactions failed in a given range" do
+          transaction = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Fail,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          ).transaction
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.failed_at.between(
+              Date.today - 2,
+              Date.today - 1
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.failed_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+        end
+
+        it "finds transactions gateway_rejected in a given range" do
+          old_merchant = Braintree::Configuration.merchant_id
+          old_public_key = Braintree::Configuration.public_key
+          old_private_key = Braintree::Configuration.private_key
+
+          begin
+            Braintree::Configuration.merchant_id = "processing_rules_merchant_id"
+            Braintree::Configuration.public_key = "processing_rules_public_key"
+            Braintree::Configuration.private_key = "processing_rules_private_key"
+
+            transaction = Braintree::Transaction.sale(
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :credit_card => {
+                :number => Braintree::Test::CreditCardNumbers::Visa,
+                :expiration_date => "05/12",
+                :cvv => "200"
+              }
+            ).transaction
+
+            collection = Braintree::Transaction.search do |search|
+              search.id.is transaction.id
+              search.gateway_rejected_at.between(
+                Date.today - 2,
+                Date.today - 1
+              )
+            end
+
+            collection.maximum_size.should == 0
+
+            collection = Braintree::Transaction.search do |search|
+              search.id.is transaction.id
+              search.gateway_rejected_at.between(
+                Date.today - 1,
+                Date.today + 1
+              )
+            end
+
+            collection.maximum_size.should == 1
+            collection.first.id.should == transaction.id
+          ensure
+            Braintree::Configuration.merchant_id = old_merchant
+            Braintree::Configuration.public_key = old_public_key
+            Braintree::Configuration.private_key = old_private_key
+          end
+        end
+
+        it "finds transactions processor declined in a given range" do
+          transaction = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Decline,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          ).transaction
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.processor_declined_at.between(
+              Date.today - 2,
+              Date.today - 1
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.processor_declined_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+        end
+
+        it "finds transactions settled in a given range" do
+          transaction = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            },
+            :options => {
+              :submit_for_settlement => true
+            }
+          ).transaction
+
+          SpecHelper.settle_transaction transaction.id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.settled_at.between(
+              Date.today - 2,
+              Date.today - 1
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.settled_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+        end
+
+        it "finds transactions submitted for settlement in a given range" do
+          transaction = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            },
+            :options => {
+              :submit_for_settlement => true
+            }
+          ).transaction
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.submitted_for_settlement_at.between(
+              Date.today - 2,
+              Date.today - 1
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.submitted_for_settlement_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+        end
+
+        it "finds transactions voided in a given range" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            }
+          )
+          transaction = Braintree::Transaction.void(transaction.id).transaction
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.voided_at.between(
+              Date.today - 2,
+              Date.today - 1
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.voided_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
+        end
+      end
+
+      it "allows searching on multiple statuses" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/12"
+            },
+            :options => {
+              :submit_for_settlement => true
+            }
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.authorized_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+            search.submitted_for_settlement_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should > 0
       end
     end
 

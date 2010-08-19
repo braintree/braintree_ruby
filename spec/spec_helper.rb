@@ -14,8 +14,9 @@ unless defined?(SPEC_HELPER_LOADED)
   Braintree::Configuration.merchant_id = "integration_merchant_id"
   Braintree::Configuration.public_key = "integration_public_key"
   Braintree::Configuration.private_key = "integration_private_key"
-  Braintree::Configuration.logger = Logger.new("/dev/null")
-  Braintree::Configuration.logger.level = Logger::INFO
+  logger = Logger.new("/dev/null")
+  logger.level = Logger::INFO
+  Braintree::Configuration.logger = logger
 
   module Kernel
     alias_method :original_warn, :warn
@@ -29,6 +30,56 @@ unless defined?(SPEC_HELPER_LOADED)
 
     DefaultMerchantAccountId = "sandbox_credit_card"
     NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
+
+    TrialPlan = {
+      :description => "Plan for integration tests -- with trial",
+      :id => "integration_trial_plan",
+      :price => BigDecimal.new("43.21"),
+      :trial_period => true,
+      :trial_duration => 2,
+      :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
+    }
+
+    TriallessPlan = {
+      :description => "Plan for integration tests -- without a trial",
+      :id => "integration_trialless_plan",
+      :price => BigDecimal.new("12.34"),
+      :trial_period => false
+    }
+
+    AddOnDiscountPlan = {
+      :description => "Plan for integration tests -- with add-ons and discounts",
+      :id => "integration_plan_with_add_ons_and_discounts",
+      :price => BigDecimal.new("9.99"),
+      :trial_period => true,
+      :trial_duration => 2,
+      :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
+    }
+
+    BillingDayOfMonthPlan = {
+      :description => "Plan for integration tests -- with billing day of month",
+      :id => "integration_plan_with_billing_day_of_month",
+      :price => BigDecimal.new("8.88"),
+      :billing_day_of_month => 5
+    }
+
+    AddOnIncrease10 = "increase_10"
+    AddOnIncrease20 = "increase_20"
+    AddOnIncrease30 = "increase_30"
+
+    Discount7 = "discount_7"
+    Discount11 = "discount_11"
+    Discount15 = "discount_15"
+
+    def self.make_past_due(subscription, number_of_days_past_due = 1)
+      Braintree::Configuration.instantiate.http.put(
+        "/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"
+      )
+    end
+
+    def self.settle_transaction(transaction_id)
+      Braintree::Configuration.instantiate.http.put("/transactions/#{transaction_id}/settle")
+    end
 
     def self.stub_time_dot_now(desired_time)
       Time.class_eval do
@@ -48,9 +99,9 @@ unless defined?(SPEC_HELPER_LOADED)
       end
     end
 
-    def self.simulate_form_post_for_tr(tr_data_string, form_data_hash, url=Braintree::TransparentRedirect.url)
+    def self.simulate_form_post_for_tr(tr_data_string, form_data_hash, url = Braintree::TransparentRedirect.url)
       response = nil
-      Net::HTTP.start("localhost", Braintree::Configuration.port) do |http|
+      Net::HTTP.start("localhost", Braintree::Configuration.instantiate.port) do |http|
         request = Net::HTTP::Post.new("/" + url.split("/", 4)[3])
         request.add_field "Content-Type", "application/x-www-form-urlencoded"
         request.body = Braintree::Util.hash_to_query_string({:tr_data => tr_data_string}.merge(form_data_hash))

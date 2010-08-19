@@ -7,7 +7,7 @@ describe Braintree::Http do
         original_key = Braintree::Configuration.public_key
         Braintree::Configuration.public_key = "invalid_public_key"
         expect do
-          Braintree::Http.get "/customers"
+          Braintree::Configuration.instantiate.http.get "/customers"
         end.to raise_error(Braintree::AuthenticationError)
       ensure
         Braintree::Configuration.public_key = original_key
@@ -16,7 +16,7 @@ describe Braintree::Http do
 
     it "raises an AuthorizationError if authorization fails" do
       expect do
-        Braintree::Http.get "/users"
+        Braintree::Configuration.instantiate.http.get "/users"
       end.to raise_error(Braintree::AuthorizationError)
     end
   end
@@ -73,47 +73,43 @@ describe Braintree::Http do
       end
 
       it "sets the User-Agent header using the default user agent" do
-        response = Braintree::Http.get("/test/headers")
+        response = Braintree::Configuration.instantiate.http.get "/test/headers"
         response[:headers][:HTTP_USER_AGENT].should == "Braintree Ruby Gem #{Braintree::Version::String}"
       end
 
       it "sets the User-Agent header using a customer user agent" do
         Braintree::Configuration.custom_user_agent = "ActiveMerchant 1.2.3"
-        response = Braintree::Http.get("/test/headers")
+        response = Braintree::Configuration.instantiate.http.get "/test/headers"
         response[:headers][:HTTP_USER_AGENT].should == "Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)"
       end
     end
 
     describe "ssl verification" do
       it "rejects when the certificate isn't verified by our certificate authority (self-signed)" do
-        begin
-          use_ssl = Braintree::Configuration.ssl?
-          Braintree::Configuration.stub(:ssl?).and_return(true)
-          Braintree::Configuration.stub(:port).and_return(8443)
+        config = Braintree::Configuration.instantiate
+        config.stub(:ssl?).and_return(true)
+        config.stub(:port).and_return(8443)
 
-          start_ssl_server do
-            expect { Braintree::Http._http_do(Net::HTTP::Get, "/login") }.to raise_error(Braintree::SSLCertificateError, /Preverify: false, Error: self signed certificate/)
-          end
-        ensure
-          Braintree::Configuration.stub(:ssl?).and_return(use_ssl)
+        start_ssl_server do
+          expect do
+            config.http._http_do(Net::HTTP::Get, "/login")
+          end.to raise_error(Braintree::SSLCertificateError, /Preverify: false, Error: self signed certificate/)
         end
       end
 
       it "rejets when the certificate is signed by a different (but valid) root CA" do
         # Random CA root file from a different certificate authority
-        begin
-          original_ca_file = Braintree::Configuration.ca_file
-          Braintree::Configuration.stub(:ca_file).and_return(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "ssl", "geotrust_global.crt")))
-          use_ssl = Braintree::Configuration.ssl?
-          Braintree::Configuration.stub(:ssl?).and_return(true)
-          Braintree::Configuration.stub(:port).and_return(8443)
+        config = Braintree::Configuration.instantiate
+        config.stub(:ca_file).and_return(
+          File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "ssl", "geotrust_global.crt"))
+        )
+        config.stub(:ssl?).and_return(true)
+        config.stub(:port).and_return(8443)
 
-          start_ssl_server do
-            expect { Braintree::Http._http_do(Net::HTTP::Get, "/login") }.to raise_error(Braintree::SSLCertificateError, /Preverify: false, Error: self signed certificate/)
-          end
-        ensure
-          Braintree::Configuration.stub(:ssl?).and_return(use_ssl)
-          Braintree::Configuration.stub(:ca_file).and_return(original_ca_file)
+        start_ssl_server do
+          expect do
+            config.http._http_do(Net::HTTP::Get, "/login")
+          end.to raise_error(Braintree::SSLCertificateError, /Preverify: false, Error: self signed certificate/)
         end
       end
 
@@ -123,7 +119,9 @@ describe Braintree::Http do
           Braintree::Configuration.environment = :qa
           Braintree::Configuration.stub(:base_merchant_path).and_return("/")
 
-          expect { Braintree::Http._http_do(Net::HTTP::Get, "/login") }.to_not raise_error
+          expect do
+            Braintree::Configuration.instantiate.http._http_do(Net::HTTP::Get, "/login")
+          end.to_not raise_error
         ensure
           Braintree::Configuration.environment = original_env
         end
@@ -135,7 +133,9 @@ describe Braintree::Http do
           Braintree::Configuration.environment = :sandbox
           Braintree::Configuration.stub(:base_merchant_path).and_return("/")
 
-          expect { Braintree::Http._http_do(Net::HTTP::Get, "/login") }.to_not raise_error
+          expect do
+            Braintree::Configuration.instantiate.http._http_do(Net::HTTP::Get, "/login")
+          end.to_not raise_error
         ensure
           Braintree::Configuration.environment = original_env
         end
@@ -147,7 +147,9 @@ describe Braintree::Http do
           Braintree::Configuration.environment = :production
           Braintree::Configuration.stub(:base_merchant_path).and_return("/")
 
-          expect { Braintree::Http._http_do(Net::HTTP::Get, "/login") }.to_not raise_error
+          expect do
+            Braintree::Configuration.instantiate.http._http_do(Net::HTTP::Get, "/login")
+          end.to_not raise_error
         ensure
           Braintree::Configuration.environment = original_env
         end
@@ -157,11 +159,13 @@ describe Braintree::Http do
         begin
           original_env = Braintree::Configuration.environment
           Braintree::Configuration.environment = :qa
-          Braintree::Configuration.stub(:base_merchant_path).and_return("/")
-          original_ca_file = Braintree::Configuration.ca_file
-          Braintree::Configuration.stub(:ca_file).and_return(nil)
+          config = Braintree::Configuration.instantiate
+          config.stub(:base_merchant_path).and_return("/")
+          config.stub(:ca_file).and_return(nil)
 
-          expect { Braintree::Http._http_do(Net::HTTP::Get, "/login") }.to raise_error(Braintree::SSLCertificateError)
+          expect do
+            config.http._http_do(Net::HTTP::Get, "/login")
+          end.to raise_error(Braintree::SSLCertificateError)
         ensure
           Braintree::Configuration.environment = original_env
         end
@@ -172,18 +176,24 @@ describe Braintree::Http do
   describe "self._verify_ssl_certificate" do
     it "raises if preverify is false" do
       context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
-      expect { Braintree::Http._verify_ssl_certificate(false, context) }.to raise_error(Braintree::SSLCertificateError)
+      expect do
+        Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context)
+      end.to raise_error(Braintree::SSLCertificateError)
     end
 
     it "raise if ssl_context doesn't have an error code of 0" do
       context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
       context.error = 19 # ca_file incorrect, self-signed
-      expect { Braintree::Http._verify_ssl_certificate(true, context) }.to raise_error(Braintree::SSLCertificateError)
+      expect do
+        Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context)
+      end.to raise_error(Braintree::SSLCertificateError)
     end
 
     it "doesn't raise if there is no error" do
       context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
-      expect { Braintree::Http._verify_ssl_certificate(true, context) }.to_not raise_error
+      expect do
+        Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context)
+      end.to_not raise_error
     end
 
     it "logs when there is an error" do
@@ -194,7 +204,9 @@ describe Braintree::Http do
         utc_or_gmt = Time.now.utc.strftime("%Z")
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
         context.error = 19
-        expect { Braintree::Http._verify_ssl_certificate(false, context) }.to raise_error(Braintree::SSLCertificateError)
+        expect do
+          Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context)
+        end.to raise_error(Braintree::SSLCertificateError)
         output.string.should include("SSL Verification failed -- Preverify: false, Error: self signed certificate in certificate chain (19)")
       ensure
         Braintree::Configuration.logger = old_logger
@@ -208,7 +220,9 @@ describe Braintree::Http do
         Braintree::Configuration.logger = Logger.new(output)
         utc_or_gmt = Time.now.utc.strftime("%Z")
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
-        expect { Braintree::Http._verify_ssl_certificate(true, context) }.to_not raise_error(Braintree::SSLCertificateError)
+        expect do
+          Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context)
+        end.to_not raise_error(Braintree::SSLCertificateError)
         output.string.should == ""
       ensure
         Braintree::Configuration.logger = old_logger
