@@ -2,9 +2,10 @@
 
 * Added AddOns/Discounts
 * Enhanced Subscription search
+* Enhanced Transaction search
 * Made gateway operations threadsafe when using multiple configurations
-* Allow specifying prorate_charges on Subscription update
-* Added AddOn/Discount details to transactions that were created from a Subscription
+* Allowed prorate_charges to be specified on Subscription update
+* Added AddOn/Discount details to Transactions that were created from a Subscription
 * Added Expired and Pending statuses to Subscription
 * Added constants for CreditCardVerification statuses
 * Renamed GatewayRejectionReason constants to make them more idiomatic
@@ -13,10 +14,10 @@
 * Deprecated instance methods on Resource classes in favor of class methods
 * Added new fields to Subscription:
   * billing_day_of_month
-  * first_billing_date
-  * number_of_billing_cycles
-  * never_expires
   * days_past_due
+  * first_billing_date
+  * never_expires
+  * number_of_billing_cycles
 
 == 2.4.0
 
