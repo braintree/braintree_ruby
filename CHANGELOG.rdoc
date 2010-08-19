@@ -1,3 +1,23 @@
+== 2.5.0
+
+* Added AddOns/Discounts
+* Enhanced Subscription search
+* Made gateway operations threadsafe when using multiple configurations
+* Allow specifying prorate_charges on Subscription update
+* Added AddOn/Discount details to transactions that were created from a Subscription
+* Added Expired and Pending statuses to Subscription
+* Added constants for CreditCardVerification statuses
+* Renamed GatewayRejectionReason constants to make them more idiomatic
+* Removed 13 digit Visa Sandbox Credit Card number and replaced it with a 16 digit Visa
+* Added refund class method on Transaction
+* Deprecated instance methods on Resource classes in favor of class methods
+* Added new fields to Subscription:
+  * billing_day_of_month
+  * first_billing_date
+  * number_of_billing_cycles
+  * never_expires
+  * days_past_due
+
 == 2.4.0
 
 * Added unified message to result objects
