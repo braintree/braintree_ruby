@@ -93,6 +93,7 @@ module Braintree
       IdIsInUse = "81902"
       InconsistentNumberOfBillingCycles = "91908"
       InconsistentStartDate = "91917"
+      InvalidRequestFormat = "91921"
       MerchantAccountIdIsInvalid = "91901"
       NumberOfBillingCyclesCannotBeBlank = "91912"
       NumberOfBillingCyclesIsTooSmall = "91909"
