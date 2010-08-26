@@ -554,6 +554,15 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.type.should == "credit"
       end
+
+      it "allows multiple partial refunds" do
+        transaction = create_transaction_to_refund
+        transaction_1 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
+        transaction_2 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
+
+        transaction = Braintree::Transaction.find(transaction.id)
+        transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+      end
     end
 
     it "returns a successful result if successful" do

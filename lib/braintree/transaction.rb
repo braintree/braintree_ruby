@@ -55,7 +55,7 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
-    attr_reader :refund_id, :refunded_transaction_id
+    attr_reader :refund_ids, :refunded_transaction_id
     attr_reader :settlement_batch_id
     # See Transaction::Status
     attr_reader :status
@@ -194,6 +194,11 @@ module Braintree
     # Returns true if the transaction has been refunded. False otherwise.
     def refunded?
       !@refund_id.nil?
+    end
+
+    def refund_id
+      warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use TransparentRedirect.refund_ids"
+      @refund_id
     end
 
     # Deprecated. Use Braintree::Transaction.submit_for_settlement
