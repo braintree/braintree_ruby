@@ -90,6 +90,11 @@ describe Braintree::Configuration do
         Braintree::Configuration.logger = old_logger
       end
     end
+
+    it "lazily initializes so that you can do Braintree::Configuration.logger.level = when configuring the client lib" do
+      Braintree::Configuration.logger = nil
+      Braintree::Configuration.logger.should_not == nil
+    end
   end
 
   describe "self.merchant_id" do
