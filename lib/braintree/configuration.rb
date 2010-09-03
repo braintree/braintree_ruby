@@ -4,10 +4,9 @@ module Braintree
     API_VERSION = "2" # :nodoc:
 
     class << self
-      attr_reader :logger
       attr_writer :custom_user_agent, :logger, :merchant_id, :public_key, :private_key
     end
-    attr_reader :merchant_id, :public_key, :private_key
+    attr_reader :logger, :merchant_id, :public_key, :private_key
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
@@ -36,11 +35,15 @@ module Braintree
       config = new(
         :custom_user_agent => @custom_user_agent,
         :environment => environment,
-        :logger => @logger,
+        :logger => logger,
         :merchant_id => merchant_id,
         :private_key => private_key,
         :public_key => public_key
       )
+    end
+
+    def self.logger
+      @logger ||= _default_logger
     end
 
     def initialize(options = {})
@@ -72,10 +75,6 @@ module Braintree
 
     def http # :nodoc:
       Http.new(self)
-    end
-
-    def logger # :nodoc:
-      @logger ||= _default_logger
     end
 
     def port # :nodoc:
@@ -118,7 +117,7 @@ module Braintree
       @custom_user_agent ? "#{base_user_agent} (#{@custom_user_agent})" : base_user_agent
     end
 
-    def _default_logger # :nodoc:
+    def self._default_logger # :nodoc:
       logger = Logger.new(STDOUT)
       logger.level = Logger::INFO
       logger
