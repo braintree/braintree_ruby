@@ -1,6 +1,11 @@
+== 2.5.2
+
+* removed ssl expiration check
+* lazy initialize Configuration.logger when directly instantiating configuration
+
 == 2.5.1
 
-* lazy initialize Configuration.logger at the class level
+* lazy initialize Configuration.logger to fix bug with ssl expiration check
 
 == 2.5.0
 

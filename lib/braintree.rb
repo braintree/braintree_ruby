@@ -39,7 +39,6 @@ require "braintree/errors"
 require "braintree/gateway"
 require "braintree/http"
 require "braintree/resource_collection"
-require "braintree/ssl_expiration_check"
 require "braintree/subscription"
 require "braintree/subscription_gateway"
 require "braintree/subscription_search"
@@ -64,6 +63,4 @@ require "braintree/xml/generator"
 require "braintree/xml/libxml"
 require "braintree/xml/rexml"
 require "braintree/xml/parser"
-
-Braintree::SSLExpirationCheck.check_dates
 

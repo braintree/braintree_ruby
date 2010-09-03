@@ -63,6 +63,18 @@ describe Braintree::Configuration do
     end
   end
 
+  describe "logger" do
+    it "defaults to logging to stdout with log_level info" do
+      config = Braintree::Configuration.new
+      config.logger.level.should == Logger::INFO
+    end
+
+    it "lazily initializes so that you can do Braintree::Configuration.logger.level = when configuring the client lib" do
+      config = Braintree::Configuration.new :logger => nil
+      config.logger.should_not == nil
+    end
+  end
+
   describe "self.environment" do
     it "raises an exception if it hasn't been set yet" do
       Braintree::Configuration.instance_variable_set(:@environment, nil)
