@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe Braintree do
-  xit "ssl warning -- doesn't produce warnings if loading braintree.rb twice" do
+  it "doesn't produce warnings if loading braintree.rb twice" do
     lib_dir = File.dirname(__FILE__) + "/../../lib"
     braintree_file = "#{lib_dir}/braintree.rb"
     File.exist?(braintree_file).should == true
