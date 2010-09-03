@@ -6,7 +6,7 @@ module Braintree
     class << self
       attr_writer :custom_user_agent, :logger, :merchant_id, :public_key, :private_key
     end
-    attr_reader :logger, :merchant_id, :public_key, :private_key
+    attr_reader :merchant_id, :public_key, :private_key
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
@@ -75,6 +75,10 @@ module Braintree
 
     def http # :nodoc:
       Http.new(self)
+    end
+
+    def logger
+      @logger ||= self.class._default_logger
     end
 
     def port # :nodoc:
