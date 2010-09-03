@@ -1,3 +1,7 @@
+== 2.5.1
+
+* lazy initialize Configuration.logger at the class level
+
 == 2.5.0
 
 * Added AddOns/Discounts
