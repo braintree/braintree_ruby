@@ -1,3 +1,7 @@
+== 2.6.0
+
+* Added Braintree::Address::CountryNames, a list of the country names/codes that the gateway accepts (thanks r38y[http://github.com/r38y])
+
 == 2.5.2
 
 * removed ssl expiration check
