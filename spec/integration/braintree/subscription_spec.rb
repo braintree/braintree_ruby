@@ -28,6 +28,7 @@ describe Braintree::Subscription do
       result.subscription.next_billing_date.should match(date_format)
       result.subscription.billing_period_start_date.should match(date_format)
       result.subscription.billing_period_end_date.should match(date_format)
+      result.subscription.paid_through_date.should match(date_format)
 
       result.subscription.failure_count.should == 0
       result.subscription.next_bill_amount.should == "12.34"
@@ -1050,6 +1051,7 @@ describe Braintree::Subscription do
         collection.should_not include(active_subscription)
         collection.each do |s|
           s.status.should == Braintree::Subscription::Status::PastDue
+          s.balance.should == BigDecimal.new("6.00")
         end
       end
 

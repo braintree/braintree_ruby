@@ -20,6 +20,7 @@ module Braintree
 
     attr_reader :days_past_due, :price, :plan_id, :id, :status, :payment_method_token, :merchant_account_id
     attr_reader :first_billing_date, :next_billing_date, :billing_period_start_date, :billing_period_end_date
+    attr_reader :paid_through_date, :balance
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
     attr_reader :transactions
@@ -59,6 +60,7 @@ module Braintree
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
+      @balance = Util.to_big_decimal(balance)
       @price = Util.to_big_decimal(price)
       transactions.map! { |attrs| Transaction._new(gateway, attrs) }
       add_ons.map! { |attrs| AddOn._new(attrs) }
