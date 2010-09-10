@@ -24,7 +24,7 @@ module Braintree
     attr_reader :trial_period, :trial_duration, :trial_duration_unit
     attr_reader :failure_count
     attr_reader :transactions
-    attr_reader :next_bill_amount
+    attr_reader :next_billing_period_amount
     attr_reader :number_of_billing_cycles, :billing_day_of_month
     attr_reader :add_ons, :discounts
 
@@ -65,6 +65,11 @@ module Braintree
       transactions.map! { |attrs| Transaction._new(gateway, attrs) }
       add_ons.map! { |attrs| AddOn._new(attrs) }
       discounts.map! { |attrs| Discount._new(attrs) }
+    end
+
+    def next_bill_amount
+      warn "[DEPRECATED] Subscription.next_bill_amount is deprecated. Please use Subscription.next_billing_period_amount"
+      @next_bill_amount
     end
 
     def never_expires?

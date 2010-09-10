@@ -32,6 +32,7 @@ describe Braintree::Subscription do
 
       result.subscription.failure_count.should == 0
       result.subscription.next_bill_amount.should == "12.34"
+      result.subscription.next_billing_period_amount.should == "12.34"
       result.subscription.payment_method_token.should == @credit_card.token
     end
 
