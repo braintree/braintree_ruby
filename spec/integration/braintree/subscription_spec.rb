@@ -586,46 +586,82 @@ describe Braintree::Subscription do
         result.subscription.price.should == BigDecimal.new("9999.88")
       end
 
-      it "prorates if there is a charge (because merchant has proration option enabled in control panel)" do
-        result = Braintree::Subscription.update(@subscription.id,
-          :price => @subscription.price.to_f + 1
-        )
+      context "proration" do
+        it "prorates if there is a charge (because merchant has proration option enabled in control panel)" do
+          result = Braintree::Subscription.update(@subscription.id,
+            :price => @subscription.price.to_f + 1
+          )
 
-        result.success?.should == true
-        result.subscription.price.to_f.should == @subscription.price.to_f + 1
-        result.subscription.transactions.size.should == @subscription.transactions.size + 1
-      end
+          result.success?.should == true
+          result.subscription.price.to_f.should == @subscription.price.to_f + 1
+          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+        end
 
-      it "allows the user to force proration if there is a charge" do
-        result = Braintree::Subscription.update(@subscription.id,
-          :price => @subscription.price.to_f + 1,
-          :options => { :prorate_charges => true }
-        )
+        it "allows the user to force proration if there is a charge" do
+          result = Braintree::Subscription.update(@subscription.id,
+            :price => @subscription.price.to_f + 1,
+            :options => { :prorate_charges => true }
+          )
 
-        result.success?.should == true
-        result.subscription.price.to_f.should == @subscription.price.to_f + 1
-        result.subscription.transactions.size.should == @subscription.transactions.size + 1
-      end
+          result.success?.should == true
+          result.subscription.price.to_f.should == @subscription.price.to_f + 1
+          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+        end
 
-      it "allows the user to prevent proration if there is a charge" do
-        result = Braintree::Subscription.update(@subscription.id,
-          :price => @subscription.price.to_f + 1,
-          :options => { :prorate_charges => false }
-        )
+        it "allows the user to prevent proration if there is a charge" do
+          result = Braintree::Subscription.update(@subscription.id,
+            :price => @subscription.price.to_f + 1,
+            :options => { :prorate_charges => false }
+          )
 
-        result.success?.should == true
-        result.subscription.price.to_f.should == @subscription.price.to_f + 1
-        result.subscription.transactions.size.should == @subscription.transactions.size
-      end
+          result.success?.should == true
+          result.subscription.price.to_f.should == @subscription.price.to_f + 1
+          result.subscription.transactions.size.should == @subscription.transactions.size
+        end
 
-      it "doesn't prorate if price decreases" do
-        result = Braintree::Subscription.update(@subscription.id,
-          :price => @subscription.price.to_f - 1
-        )
+        it "doesn't prorate if price decreases" do
+          result = Braintree::Subscription.update(@subscription.id,
+            :price => @subscription.price.to_f - 1
+          )
 
-        result.success?.should == true
-        result.subscription.price.to_f.should == @subscription.price.to_f - 1
-        result.subscription.transactions.size.should == @subscription.transactions.size
+          result.success?.should == true
+          result.subscription.price.to_f.should == @subscription.price.to_f - 1
+          result.subscription.transactions.size.should == @subscription.transactions.size
+        end
+
+        it "updates the subscription if the proration fails and revert_subscription_on_proration_failure => false" do
+          result = Braintree::Subscription.update(@subscription.id,
+            :price => @subscription.price.to_f + 2100,
+            :options => {
+              :revert_subscription_on_proration_failure => false
+            }
+          )
+
+          result.success?.should == true
+          result.subscription.price.to_f.should == @subscription.price.to_f + 2100
+
+          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+          transaction = result.subscription.transactions.first
+          transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
+          result.subscription.balance.should == transaction.amount
+        end
+
+        it "does not update the subscription if the proration fails and revert_subscription_on_proration_failure => true" do
+          result = Braintree::Subscription.update(@subscription.id,
+            :price => @subscription.price.to_f + 2100,
+            :options => {
+              :revert_subscription_on_proration_failure => true
+            }
+          )
+
+          result.success?.should == false
+          result.subscription.price.to_f.should == @subscription.price.to_f
+
+          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+          transaction = result.subscription.transactions.first
+          transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
+          result.subscription.balance.should == 0
+        end
       end
     end
 
