@@ -22,6 +22,7 @@ require "braintree/base_module"
 require "braintree/modification"
 
 require "braintree/add_on"
+require "braintree/address/country_names"
 require "braintree/address"
 require "braintree/address_gateway"
 require "braintree/advanced_search"

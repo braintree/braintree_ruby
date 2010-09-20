@@ -64,7 +64,7 @@ module Braintree
         :trial_duration,
         :trial_duration_unit,
         :trial_period,
-        {:options => [:do_not_inherit_add_ons_or_discounts, :start_immediately]},
+        {:options => [:do_not_inherit_add_ons_or_discounts, :start_immediately]}
       ] + _add_on_discount_signature
     end
 
@@ -77,7 +77,11 @@ module Braintree
         :payment_method_token,
         :plan_id,
         :price,
-        {:options => [:prorate_charges, :replace_all_add_ons_and_discounts]},
+        {:options => [
+          :prorate_charges,
+          :replace_all_add_ons_and_discounts,
+          :revert_subscription_on_proration_failure
+        ]}
       ] + _add_on_discount_signature
     end
 

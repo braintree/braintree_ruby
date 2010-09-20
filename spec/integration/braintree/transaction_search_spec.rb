@@ -562,6 +562,14 @@ describe Braintree::Transaction, "search" do
           end
 
           collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.created_at.is created_at
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction.id
         end
 
         it "searches on created_at in local time" do

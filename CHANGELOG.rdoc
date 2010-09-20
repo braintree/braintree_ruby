@@ -1,3 +1,15 @@
+== 2.6.0
+
+* Added ability to perform multiple partial refunds on Transactions
+* Deprecated Transaction refund_id in favor of refund_ids
+* Added Braintree::Address::CountryNames, a list of the country names/codes that the gateway accepts (thanks r38y[http://github.com/r38y])
+* Added revert_subscription_on_proration_failure flag to Subscription update that specifies how a Subscription should react to a failed proration charge
+* Deprecated Subscription next_bill_amount in favor of next_billing_period_amount
+* Added new fields to Subscription:
+  * balance
+  * paid_through_date
+  * next_billing_period_amount
+
 == 2.5.2
 
 * removed ssl expiration check

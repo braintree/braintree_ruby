@@ -2,7 +2,7 @@ module Braintree
   # See http://www.braintreepaymentsolutions.com/docs/ruby/general/result_objects
   class ErrorResult
 
-    attr_reader :credit_card_verification, :transaction, :errors, :params, :message
+    attr_reader :credit_card_verification, :transaction, :subscription, :errors, :params, :message
 
     def initialize(gateway, data) # :nodoc:
       @gateway = gateway
@@ -10,6 +10,7 @@ module Braintree
       @credit_card_verification = CreditCardVerification._new(data[:verification]) if data[:verification]
       @message = data[:message]
       @transaction = Transaction._new(gateway, data[:transaction]) if data[:transaction]
+      @subscription = Subscription._new(gateway, data[:subscription]) if data[:subscription]
       @errors = Errors.new(data[:errors])
     end
 

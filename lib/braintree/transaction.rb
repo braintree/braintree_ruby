@@ -55,7 +55,7 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
-    attr_reader :refund_id, :refunded_transaction_id
+    attr_reader :refund_ids, :refunded_transaction_id
     attr_reader :settlement_batch_id
     # See Transaction::Status
     attr_reader :status
@@ -181,7 +181,7 @@ module Braintree
     #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/refund
     def refund(amount = nil)
-      warn "[DEPRECATED] refund as an instance method is deprecated. Please use CreditCard.refund"
+      warn "[DEPRECATED] refund as an instance method is deprecated. Please use Transaction.refund"
       result = @gateway.transaction.refund(id, amount)
 
       if result.success?
@@ -196,11 +196,16 @@ module Braintree
       !@refund_id.nil?
     end
 
+    def refund_id
+      warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use TransparentRedirect.refund_ids"
+      @refund_id
+    end
+
     # Deprecated. Use Braintree::Transaction.submit_for_settlement
     #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def submit_for_settlement(amount = nil)
-      warn "[DEPRECATED] submit_for_settlement as an instance method is deprecated. Please use CreditCard.submit_for_settlement"
+      warn "[DEPRECATED] submit_for_settlement as an instance method is deprecated. Please use Transaction.submit_for_settlement"
       result = @gateway.transaction.submit_for_settlement(id, amount)
       if result.success?
         copy_instance_variables_from_object result.transaction
@@ -212,7 +217,7 @@ module Braintree
     #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/submit_for_settlement
     def submit_for_settlement!(amount = nil)
-      warn "[DEPRECATED] submit_for_settlement! as an instance method is deprecated. Please use CreditCard.submit_for_settlement!"
+      warn "[DEPRECATED] submit_for_settlement! as an instance method is deprecated. Please use Transaction.submit_for_settlement!"
       return_object_or_raise(:transaction) { submit_for_settlement(amount) }
     end
 
@@ -256,7 +261,7 @@ module Braintree
     #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def void
-      warn "[DEPRECATED] void as an instance method is deprecated. Please use CreditCard.void"
+      warn "[DEPRECATED] void as an instance method is deprecated. Please use Transaction.void"
       result = @gateway.transaction.void(id)
       if result.success?
         copy_instance_variables_from_object result.transaction
@@ -268,7 +273,7 @@ module Braintree
     #
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/void
     def void!
-      warn "[DEPRECATED] void! as an instance method is deprecated. Please use CreditCard.void!"
+      warn "[DEPRECATED] void! as an instance method is deprecated. Please use Transaction.void!"
       return_object_or_raise(:transaction) { void }
     end
 
