@@ -103,7 +103,7 @@ def spawn_server(pid_file, port, environment="test")
   require File.dirname(__FILE__) + "/spec/hacks/tcp_socket"
 
   FileUtils.rm(pid_file) if File.exist?(pid_file)
-  command = "mongrel_rails start --environment #{environment} --daemon --port #{port} --pid #{pid_file}"
+  command = "rvm system exec mongrel_rails start --environment #{environment} --daemon --port #{port} --pid #{pid_file}"
 
   sh command
   puts "== waiting for web server - port: #{port}"
