@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../spec_helper"
+require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::Http do
   describe "self._handle_response" do
