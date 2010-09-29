@@ -1,3 +1,4 @@
+# encoding: utf-8
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::Customer do
@@ -62,11 +63,28 @@ describe Braintree::Customer do
       last_name = "Mu\303\261oz"
       result = Braintree::Customer.create(:first_name => first_name, :last_name => last_name)
       result.success?.should == true
-      result.customer.first_name.should == first_name
-      result.customer.last_name.should == last_name
-      found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.first_name.should == first_name
-      found_customer.last_name.should == last_name
+
+      if RUBY_VERSION =~ /^1.8/
+        result.customer.first_name.should == first_name
+        result.customer.last_name.should == last_name
+
+        found_customer = Braintree::Customer.find(result.customer.id)
+        found_customer.first_name.should == first_name
+        found_customer.last_name.should == last_name
+      elsif RUBY_VERSION =~ /^1.9/
+        result.customer.first_name.should == "José"
+        result.customer.first_name.bytes.map {|b| b.to_s(8)}.should == ["112", "157", "163", "303", "251"]
+        result.customer.last_name.should == "Muñoz"
+        result.customer.last_name.bytes.map {|b| b.to_s(8)}.should == ["115", "165", "303", "261", "157", "172"]
+
+        found_customer = Braintree::Customer.find(result.customer.id)
+        found_customer.first_name.should == "José"
+        found_customer.first_name.bytes.map {|b| b.to_s(8)}.should == ["112", "157", "163", "303", "251"]
+        found_customer.last_name.should == "Muñoz"
+        found_customer.last_name.bytes.map {|b| b.to_s(8)}.should == ["115", "165", "303", "261", "157", "172"]
+      else
+        raise "unknown ruby version: #{RUBY_VERSION.inspect}"
+      end
     end
 
     it "returns an error response if invalid" do

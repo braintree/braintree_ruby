@@ -100,6 +100,8 @@ module Braintree
     end
 
     def self._flatten_hash_keys(hash, namespace = nil)
+      return hash unless hash.is_a?(Enumerable)
+
       hash.inject([]) do |result, (key, value)|
         full_key = (namespace ? "#{namespace}[#{key}]" : key.to_s)
         if value.is_a?(Hash)
