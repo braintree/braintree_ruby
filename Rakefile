@@ -74,8 +74,8 @@ PID_FILE = "/tmp/gateway_server_#{GATEWAY_PORT}.pid"
 task :prep_gateway do
   Dir.chdir(GATEWAY_ROOT) do
     sh "git pull"
-    sh "rvm use system && env RAILS_ENV=integration #{CRUISE_BUILD} rake db:migrate:reset --trace"
-    sh "rvm use system && env RAILS_ENV=integration #{CRUISE_BUILD} ruby script/populate_data"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} rvm system exec rake db:migrate:reset --trace"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} rvm system exec ruby script/populate_data"
     Rake::Task[:start_gateway].invoke
   end
 end
