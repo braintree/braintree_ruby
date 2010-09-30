@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + "/../spec_helper"
+# encoding: utf-8
+require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::Address do
   describe "self.create" do
@@ -45,6 +46,16 @@ describe Braintree::Address do
       result.address.country_code_alpha2.should == "AS"
       result.address.country_code_alpha3.should == "ASM"
       result.address.country_code_numeric.should == "016"
+    end
+
+    it "accepts utf-8 country names" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Address.create(
+        :customer_id => customer.id,
+        :country_name => "Åland"
+      )
+      result.success?.should == true
+      result.address.country_name.should == "Åland"
     end
 
     it "returns an error response given inconsistent country codes" do

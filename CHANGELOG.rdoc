@@ -1,3 +1,7 @@
+== 2.6.1
+
+* Now supports ruby 1.9.1 and 1.9.2
+
 == 2.6.0
 
 * Added ability to perform multiple partial refunds on Transactions
@@ -12,12 +16,12 @@
 
 == 2.5.2
 
-* removed ssl expiration check
-* lazy initialize Configuration.logger when directly instantiating configuration
+* Removed ssl expiration check
+* Lazy initialize Configuration.logger when directly instantiating configuration
 
 == 2.5.1
 
-* lazy initialize Configuration.logger to fix bug with ssl expiration check
+* Lazy initialize Configuration.logger to fix bug with ssl expiration check
 
 == 2.5.0
 

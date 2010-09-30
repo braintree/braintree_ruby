@@ -74,8 +74,8 @@ PID_FILE = "/tmp/gateway_server_#{GATEWAY_PORT}.pid"
 task :prep_gateway do
   Dir.chdir(GATEWAY_ROOT) do
     sh "git pull"
-    sh "env RAILS_ENV=integration #{CRUISE_BUILD} rake db:migrate:reset --trace"
-    sh "env RAILS_ENV=integration #{CRUISE_BUILD} ruby script/populate_data"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} rvm system exec rake db:migrate:reset --trace"
+    sh "env RAILS_ENV=integration #{CRUISE_BUILD} rvm system exec ruby script/populate_data"
     Rake::Task[:start_gateway].invoke
   end
 end
@@ -103,7 +103,7 @@ def spawn_server(pid_file, port, environment="test")
   require File.dirname(__FILE__) + "/spec/hacks/tcp_socket"
 
   FileUtils.rm(pid_file) if File.exist?(pid_file)
-  command = "mongrel_rails start --environment #{environment} --daemon --port #{port} --pid #{pid_file}"
+  command = "rvm system exec mongrel_rails start --environment #{environment} --daemon --port #{port} --pid #{pid_file}"
 
   sh command
   puts "== waiting for web server - port: #{port}"
