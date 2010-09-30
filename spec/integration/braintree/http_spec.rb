@@ -161,7 +161,7 @@ describe Braintree::Http do
           Braintree::Configuration.environment = :qa
           config = Braintree::Configuration.instantiate
           config.stub(:base_merchant_path).and_return("/")
-          config.stub(:ca_file).and_return(nil)
+          config.stub(:ca_file).and_return("does_not_exist")
 
           expect do
             config.http._http_do(Net::HTTP::Get, "/login")
