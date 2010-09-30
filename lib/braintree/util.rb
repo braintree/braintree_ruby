@@ -99,10 +99,10 @@ module Braintree
       end.sort
     end
 
-    def self._flatten_hash_keys(hash, namespace = nil)
-      return hash unless hash.is_a?(Enumerable)
+    def self._flatten_hash_keys(element, namespace = nil)
+      element = [element] if element.is_a?(String)
 
-      hash.inject([]) do |result, (key, value)|
+      element.inject([]) do |result, (key, value)|
         full_key = (namespace ? "#{namespace}[#{key}]" : key.to_s)
         if value.is_a?(Hash)
           result += _flatten_hash_keys(value, full_key)
