@@ -958,6 +958,37 @@ describe Braintree::Subscription do
   end
 
   describe "self.search" do
+    describe "in_trial_period" do
+      it "works in the affirmative" do
+        id = rand(36**8).to_s(36)
+        subscription_with_trial = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :id => "subscription1_#{id}"
+        ).subscription
+
+        subscription_without_trial = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :id => "subscription2_#{id}"
+        ).subscription
+
+        subscriptions_in_trial_period = Braintree::Subscription.search do |search|
+          search.in_trial_period.is true
+        end
+
+        subscriptions_in_trial_period.should include(subscription_with_trial)
+        subscriptions_in_trial_period.should_not include(subscription_without_trial)
+
+        subscriptions_not_in_trial_period = Braintree::Subscription.search do |search|
+          search.in_trial_period.is false
+        end
+
+        subscriptions_not_in_trial_period.should_not include(subscription_with_trial)
+        subscriptions_not_in_trial_period.should include(subscription_without_trial)
+      end
+    end
+
     describe "id" do
       it "works using the is operator" do
         id = rand(36**8).to_s(36)
