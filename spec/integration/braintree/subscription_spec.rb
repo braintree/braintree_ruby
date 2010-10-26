@@ -522,6 +522,40 @@ describe Braintree::Subscription do
     end
   end
 
+  describe "self.create!" do
+    it "returns the subscription if valid" do
+      subscription = Braintree::Subscription.create!(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      )
+
+      date_format = /^\d{4}\D\d{1,2}\D\d{1,2}$/
+      subscription.id.should =~ /^\w{6}$/
+      subscription.status.should == Braintree::Subscription::Status::Active
+      subscription.plan_id.should == "integration_trialless_plan"
+
+      subscription.first_billing_date.should match(date_format)
+      subscription.next_billing_date.should match(date_format)
+      subscription.billing_period_start_date.should match(date_format)
+      subscription.billing_period_end_date.should match(date_format)
+      subscription.paid_through_date.should match(date_format)
+
+      subscription.failure_count.should == 0
+      subscription.next_bill_amount.should == "12.34"
+      subscription.next_billing_period_amount.should == "12.34"
+      subscription.payment_method_token.should == @credit_card.token
+    end
+
+    it "raises a ValidationsFailed if invalid" do
+      expect do
+        Braintree::Subscription.create!(
+          :payment_method_token => @credit_card.token,
+          :plan_id => 'not_a_plan_id'
+        )
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
   describe "self.find" do
     it "finds a subscription" do
       result = Braintree::Subscription.create(
@@ -919,6 +953,40 @@ describe Braintree::Subscription do
         subscription.discounts.last.quantity.should == 1
       end
     end
+  end
+
+  describe "self.update!" do
+    before(:each) do
+      @subscription = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :price => 54.32,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+    end
+
+    it "returns the updated subscription if valid" do
+      new_id = rand(36**9).to_s(36)
+      subscription = Braintree::Subscription.update!(@subscription.id,
+        :id => new_id,
+        :price => 9999.88,
+        :plan_id => SpecHelper::TrialPlan[:id]
+      )
+
+      subscription.id.should =~ /#{new_id}/
+      subscription.plan_id.should == SpecHelper::TrialPlan[:id]
+      subscription.price.should == BigDecimal.new("9999.88")
+    end
+
+    it "raises a ValidationsFailed if invalid" do
+      expect do
+        Braintree::Subscription.update!(@subscription.id,
+          :id => 'not_a_plan_id',
+          :price => 9999.88,
+          :plan_id => SpecHelper::TrialPlan[:id]
+        )
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+
   end
 
   describe "self.cancel" do
