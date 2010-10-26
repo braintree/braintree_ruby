@@ -980,9 +980,7 @@ describe Braintree::Subscription do
     it "raises a ValidationsFailed if invalid" do
       expect do
         Braintree::Subscription.update!(@subscription.id,
-          :id => 'not_a_plan_id',
-          :price => 9999.88,
-          :plan_id => SpecHelper::TrialPlan[:id]
+          :plan_id => 'not_a_plan_id'
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end
