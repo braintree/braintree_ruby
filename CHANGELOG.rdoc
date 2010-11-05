@@ -1,3 +1,8 @@
+== 2.6.2
+
+* Added billing_address_id to allowed parameters for credit cards create and update
+* Allow searching on subscriptions that are currently in a trial period using in_trial_period
+
 == 2.6.1
 
 * Now supports ruby 1.9.1 and 1.9.2
