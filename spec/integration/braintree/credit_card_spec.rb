@@ -57,6 +57,22 @@ describe Braintree::CreditCard do
       credit_card.expiration_date.should == "05/2009"
     end
 
+    it "accepts billing_address_id" do
+      customer = Braintree::Customer.create!
+      address = Braintree::Address.create!(:customer_id => customer.id, :first_name => "Bobby", :last_name => "Tables")
+
+      credit_card = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+        :expiration_date => "05/2009",
+        :billing_address_id => address.id
+      ).credit_card
+
+      credit_card.billing_address.id.should == address.id
+      credit_card.billing_address.first_name.should == "Bobby"
+      credit_card.billing_address.last_name.should == "Tables"
+    end
+
     it "verifies the credit card if options[verify_card]=true" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(

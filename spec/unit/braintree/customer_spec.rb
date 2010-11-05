@@ -61,6 +61,7 @@ describe Braintree::Customer do
         :phone,
         :website,
         {:credit_card => [
+          :billing_address_id,
           :cardholder_name,
           :cvv,
           :expiration_date,
@@ -101,6 +102,7 @@ describe Braintree::Customer do
         :phone,
         :website,
         {:credit_card => [
+          :billing_address_id,
           :cardholder_name,
           :cvv,
           :expiration_date,
