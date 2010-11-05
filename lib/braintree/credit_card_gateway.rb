@@ -76,7 +76,8 @@ module Braintree
     def self._signature(type) # :nodoc:
       billing_address_params = AddressGateway._shared_signature
       signature = [
-        :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, :token,
+        :billing_address_id, :cardholder_name, :cvv, :expiration_date,
+        :expiration_month, :expiration_year, :number, :token,
         {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
         {:billing_address => billing_address_params}
       ]

@@ -744,6 +744,30 @@ describe Braintree::Customer do
       credit_card.billing_address.postal_code.should == "60666"
     end
 
+    it "can update the nested billing address with billing_address_id" do
+      customer = Braintree::Customer.create!
+
+      address = Braintree::Address.create!(
+        :customer_id => customer.id,
+        :first_name => "John",
+        :last_name => "Doe"
+      )
+
+      customer = Braintree::Customer.update(
+        customer.id,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2009",
+          :billing_address_id => address.id
+        }
+      ).customer
+
+      billing_address = customer.credit_cards.first.billing_address
+      billing_address.id.should == address.id
+      billing_address.first_name.should == "John"
+      billing_address.last_name.should == "Doe"
+    end
+
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:email => "valid@email.com")
       result = Braintree::Customer.update(

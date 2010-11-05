@@ -38,6 +38,10 @@ module Braintree
       Configuration.gateway.subscription.create(attributes)
     end
 
+    def self.create!(attributes)
+      return_object_or_raise(:subscription) { create(attributes) }
+    end
+
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/search
     def self.find(id)
       Configuration.gateway.subscription.find(id)
@@ -55,6 +59,10 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/update
     def self.update(subscription_id, attributes)
       Configuration.gateway.subscription.update(subscription_id, attributes)
+    end
+
+    def self.update!(subscription_id, attributes)
+      return_object_or_raise(:subscription) { update(subscription_id, attributes) }
     end
 
     def initialize(gateway, attributes) # :nodoc:

@@ -1,5 +1,6 @@
 module Braintree
   class SubscriptionSearch < AdvancedSearch  # :nodoc:
+    multiple_value_field :in_trial_period
     multiple_value_field :ids
     text_fields :id
     multiple_value_or_text_field :plan_id

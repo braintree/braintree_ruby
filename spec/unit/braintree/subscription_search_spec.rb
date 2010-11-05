@@ -17,6 +17,22 @@ module Braintree
       end
     end
 
+    context "in_trial_period" do
+      it "allows true" do
+        search = SubscriptionSearch.new
+        search.in_trial_period.is true
+
+        search.to_hash.should == {:in_trial_period => [true]}
+      end
+
+      it "allows false" do
+        search = SubscriptionSearch.new
+        search.in_trial_period.is false
+
+        search.to_hash.should == {:in_trial_period => [false]}
+      end
+    end
+
     context "days_past_due" do
       it "correctly builds a hash with the criteria" do
         search = SubscriptionSearch.new

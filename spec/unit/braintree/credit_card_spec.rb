@@ -12,6 +12,7 @@ describe Braintree::CreditCard do
   describe "self.create_signature" do
     it "should be what we expect" do
       Braintree::CreditCardGateway._create_signature.should == [
+        :billing_address_id,
         :cardholder_name,
         :cvv,
         :expiration_date,
@@ -42,6 +43,7 @@ describe Braintree::CreditCard do
   describe "self.update_signature" do
     it "should be what we expect" do
       Braintree::CreditCardGateway._update_signature.should == [
+        :billing_address_id,
         :cardholder_name,
         :cvv,
         :expiration_date,

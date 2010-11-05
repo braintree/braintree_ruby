@@ -22,7 +22,7 @@ module Braintree
       Failed = 'failed'
       ProcessorDeclined = 'processor_declined'
       Settled = 'settled'
-      SettlementFailed = 'settlement_failed'
+      Settling = 'settling'
       SubmittedForSettlement = 'submitted_for_settlement'
       Voided = 'voided'
 
