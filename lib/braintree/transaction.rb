@@ -45,6 +45,7 @@ module Braintree
     attr_reader :currency_iso_code
     attr_reader :custom_fields
     attr_reader :cvv_response_code
+    attr_reader :descriptor
     attr_reader :gateway_rejection_reason
     attr_reader :merchant_account_id
     attr_reader :order_id
@@ -154,6 +155,7 @@ module Braintree
       @billing_details = AddressDetails.new(@billing)
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
+      @descriptor = Descriptor.new(@descriptor)
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
     end

@@ -99,7 +99,8 @@ module Braintree
           :shipping => AddressGateway._shared_signature
         },
         {:options => [:store_in_vault, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault]},
-        {:custom_fields => :_any_key_}
+        {:custom_fields => :_any_key_},
+        {:descriptor => [:name, :phone]}
       ]
     end
 

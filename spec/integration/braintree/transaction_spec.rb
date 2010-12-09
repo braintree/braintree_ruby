@@ -512,6 +512,25 @@ describe Braintree::Transaction do
       transaction.discounts.first.number_of_billing_cycles.should be_nil
       transaction.discounts.first.never_expires?.should be_true
     end
+
+    context "custom descriptors" do
+      it "accepts descriptor name and phone" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :descriptor => {
+            :name => 'companyname12*product12',
+            :phone => '1232344444'
+          }
+        )
+        result.success?.should == true
+        result.transaction.descriptor.name.should == 'companyname12*product12'
+        result.transaction.descriptor.phone.should == '1232344444'
+      end
+    end
   end
 
   describe "self.create!" do
