@@ -513,8 +513,8 @@ describe Braintree::Transaction do
       transaction.discounts.first.never_expires?.should be_true
     end
 
-    context "custom descriptors" do
-      it "accepts descriptor name and phone" do
+    context "descriptors" do
+      it "accepts name and phone" do
         result = Braintree::Transaction.sale(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
@@ -522,13 +522,30 @@ describe Braintree::Transaction do
             :expiration_date => "05/2009"
           },
           :descriptor => {
-            :name => 'companyname12*product12',
-            :phone => '1232344444'
+            :name => '123*123456789012345678',
+            :phone => '3334445555'
           }
         )
         result.success?.should == true
-        result.transaction.descriptor.name.should == 'companyname12*product12'
-        result.transaction.descriptor.phone.should == '1232344444'
+        result.transaction.descriptor.name.should == '123*123456789012345678'
+        result.transaction.descriptor.phone.should == '3334445555'
+      end
+
+      it "has validation errors if format is invalid" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :descriptor => {
+            :name => 'badcompanyname12*badproduct12',
+            :phone => '%bad4445555'
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Transaction::Descriptor::NameFormatIsInvalid
+        result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Transaction::Descriptor::PhoneFormatIsInvalid
       end
     end
   end

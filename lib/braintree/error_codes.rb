@@ -170,6 +170,10 @@ module Braintree
       SubscriptionStatusMustBePastDue = "91531"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
+      module Descriptor
+        NameFormatIsInvalid = "91532"
+        PhoneFormatIsInvalid = "91533"
+      end
       module Options
         VaultIsDisabled = "91525"
       end
