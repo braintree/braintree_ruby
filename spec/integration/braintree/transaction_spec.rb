@@ -548,6 +548,41 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Transaction::Descriptor::PhoneFormatIsInvalid
       end
     end
+
+    context "level 2 fields" do
+      it "accepts tax_amount, tax_exempt, and purchase_order_number" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :tax_amount => '0.05',
+          :tax_exempt => false,
+          :purchase_order_number => '12345678901234567'
+        )
+        result.success?.should == true
+        result.transaction.tax_amount.should == BigDecimal.new("0.05")
+        result.transaction.tax_exempt.should == false
+        result.transaction.purchase_order_number.should == '12345678901234567'
+      end
+
+      it "accepts tax_amount as a BigDecimal" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :tax_amount => BigDecimal.new('1.99'),
+          :tax_exempt => true
+        )
+        result.success?.should == true
+        result.transaction.tax_amount.should == BigDecimal.new("1.99")
+        result.transaction.tax_exempt.should == true
+        result.transaction.purchase_order_number.should be_nil
+      end
+    end
   end
 
   describe "self.create!" do

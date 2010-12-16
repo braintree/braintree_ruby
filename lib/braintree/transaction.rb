@@ -56,12 +56,15 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    attr_reader :purchase_order_number
     attr_reader :refund_ids, :refunded_transaction_id
     attr_reader :settlement_batch_id
     # See Transaction::Status
     attr_reader :status
     attr_reader :status_history
     attr_reader :subscription_id
+    attr_reader :tax_amount
+    attr_reader :tax_exempt
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at
@@ -155,6 +158,7 @@ module Braintree
       @billing_details = AddressDetails.new(@billing)
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
+      @tax_amount = Util.to_big_decimal(tax_amount)
       @descriptor = Descriptor.new(@descriptor)
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
