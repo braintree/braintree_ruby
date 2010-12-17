@@ -582,6 +582,21 @@ describe Braintree::Transaction do
         result.transaction.tax_exempt.should == true
         result.transaction.purchase_order_number.should be_nil
       end
+
+      it "has validation errors" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :tax_amount => 'abcd',
+          :purchase_order_number => 'a' * 18
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::Transaction::TaxAmountFormatIsInvalid
+        result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsTooLong
+      end
     end
   end
 
