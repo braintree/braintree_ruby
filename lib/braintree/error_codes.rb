@@ -102,6 +102,7 @@ module Braintree
       PaymentMethodTokenCardTypeIsNotAccepted = "91902"
       PaymentMethodTokenIsInvalid = "91903"
       PaymentMethodTokenNotAssociatedWithCustomer = "91905"
+      PlanBillingFrequencyCannotBeUpdated = "91922"
       PlanIdIsInvalid = "91904"
       PriceCannotBeBlank = "81903"
       PriceFormatIsInvalid = "81904"
