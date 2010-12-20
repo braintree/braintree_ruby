@@ -74,5 +74,60 @@ describe Braintree::Transaction, "search" do
         collection.should be_empty
       end
     end
+
+    it "can search by created_at" do
+      company = "Company #{rand(1_000_000)}"
+      customer = Braintree::Customer.create!(
+        :company => company
+      )
+
+      created_at = customer.created_at
+      created_at.should be_utc
+
+      collection = Braintree::Customer.search do |search|
+        search.company.is company
+        search.created_at.between(
+          created_at - 60,
+          created_at + 60
+        )
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.id.should == customer.id
+
+      collection = Braintree::Customer.search do |search|
+        search.company.is customer.company
+        search.created_at >= created_at - 1
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.company.should == customer.company
+
+      collection = Braintree::Customer.search do |search|
+        search.company.is customer.company
+        search.created_at <= created_at + 1
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.company.should == customer.company
+
+      collection = Braintree::Customer.search do |search|
+        search.company.is customer.company
+        search.created_at.between(
+          created_at - 300,
+          created_at - 100
+        )
+      end
+
+      collection.maximum_size.should == 0
+
+      collection = Braintree::Customer.search do |search|
+        search.company.is customer.company
+        search.created_at.is created_at
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.company.should == customer.company
+    end
   end
 end

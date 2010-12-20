@@ -20,5 +20,7 @@ module Braintree
     )
 
     multiple_value_field :ids
+
+    range_fields :created_at
   end
 end
