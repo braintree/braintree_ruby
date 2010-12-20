@@ -60,7 +60,7 @@ describe Braintree::Transaction, "search" do
 
       search_criteria.each do |criterion, value|
         collection = Braintree::Customer.search do |search|
-          search.company.is customer.company
+          search.id.is customer.id
           search.send(criterion).is value
         end
 
@@ -68,13 +68,14 @@ describe Braintree::Transaction, "search" do
         collection.first.id.should == customer.id
 
         collection = Braintree::Customer.search do |search|
-          search.company.is customer.company
+          search.id.is customer.id
           search.send(criterion).is("invalid_attribute")
         end
         collection.should be_empty
       end
 
       collection = Braintree::Customer.search do |search|
+        search.id.is customer.id
         search_criteria.each do |criterion, value|
           search.send(criterion).is value
         end

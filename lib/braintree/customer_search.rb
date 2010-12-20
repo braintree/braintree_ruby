@@ -13,6 +13,7 @@ module Braintree
       :email,
       :fax,
       :first_name,
+      :id,
       :last_name,
       :payment_method_token,
       :phone,
