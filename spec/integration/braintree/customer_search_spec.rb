@@ -10,7 +10,7 @@ describe Braintree::Transaction, "search" do
       collection.maximum_size.should == 0
     end
 
-    it "returns one result for text field search" do
+    it "can search on text fields" do
       cctoken = "cctoken#{rand(1_000_000)}"
       customer = Braintree::Customer.create!(
         :first_name => "Timmy",
@@ -73,6 +73,15 @@ describe Braintree::Transaction, "search" do
         end
         collection.should be_empty
       end
+
+      collection = Braintree::Customer.search do |search|
+        search_criteria.each do |criterion, value|
+          search.send(criterion).is value
+        end
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.id.should == customer.id
     end
 
     it "can search by created_at" do
