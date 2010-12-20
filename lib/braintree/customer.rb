@@ -67,6 +67,11 @@ module Braintree
       return_object_or_raise(:transaction) { sale(customer_id, transaction_attributes) }
     end
 
+    # See http://www.braintreepaymentsolutions.com/docs/ruby/customers/search
+    def self.search(&block)
+      Configuration.gateway.customer.search(&block)
+    end
+
     # Returns a ResourceCollection of transactions for the customer with the given +customer_id+.
     def self.transactions(customer_id, options = {})
       Configuration.gateway.customer.transactions(customer_id, options = {})
