@@ -21,7 +21,7 @@ describe Braintree::Transaction, "search" do
         :phone => "5551231234",
         :website => "http://example.com",
         :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010",
           :token => cctoken,
           :billing_address => {
@@ -55,7 +55,8 @@ describe Braintree::Transaction, "search" do
         :address_locality            => "Chicago",
         :address_region              => "Illinois",
         :payment_method_token        => cctoken,
-        :credit_card_expiration_date => "05/2010"
+        :credit_card_expiration_date => "05/2010",
+        :credit_card_number          => Braintree::Test::CreditCardNumbers::Visa
       }
 
       search_criteria.each do |criterion, value|

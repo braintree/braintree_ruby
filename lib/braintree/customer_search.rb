@@ -20,6 +20,8 @@ module Braintree
       :website
     )
 
+    partial_match_fields :credit_card_number
+
     multiple_value_field :ids
 
     range_fields :created_at
