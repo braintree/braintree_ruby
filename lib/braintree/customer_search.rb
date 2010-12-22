@@ -8,6 +8,7 @@ module Braintree
       :address_postal_code,
       :address_region,
       :address_street_address,
+      :cardholder_name,
       :company,
       :credit_card_expiration_date,
       :email,
