@@ -1,3 +1,7 @@
+== 2.6.3
+
+* Allow passing of existing shipping_address_id on new transactions
+
 == 2.6.2
 
 * Added billing_address_id to allowed parameters for credit cards create and update
