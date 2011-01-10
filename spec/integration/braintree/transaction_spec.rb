@@ -904,6 +904,29 @@ describe Braintree::Transaction do
       transaction.vault_credit_card.token.should == payment_mehtod_token
     end
 
+    it "can specify existing shipping address" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2010"
+        }
+      )
+      address = Braintree::Address.create!(
+        :customer_id => customer.id,
+        :street_address => '123 Fake St.'
+      )
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :customer_id => customer.id,
+        :shipping_address_id => address.id
+      )
+      result.success?.should == true
+      transaction = result.transaction
+      transaction.shipping_details.street_address.should == '123 Fake St.'
+      transaction.customer_details.id.should == customer.id
+      transaction.shipping_details.id.should == address.id
+    end
+
     it "returns an error result if validations fail" do
       params = {
         :transaction => {
