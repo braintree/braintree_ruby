@@ -628,6 +628,19 @@ describe Braintree::Subscription do
       result.subscription.payment_method_token.should == new_credit_card.token
     end
 
+    it "allows chaning the descriptors" do
+      result = Braintree::Subscription.update(@subscription.id,
+        :descriptor => {
+          :name => 'aaa*1234',
+          :phone => '3334443333'
+        }
+      )
+
+      result.success?.should == true
+      result.subscription.descriptor.name.should == 'aaa*1234'
+      result.subscription.descriptor.phone.should == '3334443333'
+    end
+
     context "when successful" do
       it "returns a success response with the updated subscription if valid" do
         new_id = rand(36**9).to_s(36)

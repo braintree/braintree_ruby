@@ -82,7 +82,8 @@ module Braintree
           :prorate_charges,
           :replace_all_add_ons_and_discounts,
           :revert_subscription_on_proration_failure
-        ]}
+        ]},
+        {:descriptor => [:name, :phone]}
       ] + _add_on_discount_signature
     end
 
