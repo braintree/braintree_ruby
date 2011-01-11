@@ -520,6 +520,28 @@ describe Braintree::Subscription do
         result.errors.for(:subscription).for(:add_ons).for(:update).for_index(1).on(:quantity)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::QuantityIsInvalid
       end
     end
+
+    context "descriptors" do
+      it "accepts name and phone and copies them to the transaction" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :descriptor => {
+            :name => '123*123456789012345678',
+            :phone => '3334445555'
+          }
+        )
+
+        result.success?.should == true
+        result.subscription.descriptor.name.should == '123*123456789012345678'
+        result.subscription.descriptor.phone.should == '3334445555'
+
+        result.subscription.transactions.size.should == 1
+        transaction = result.subscription.transactions.first
+        transaction.descriptor.name.should == '123*123456789012345678'
+        transaction.descriptor.phone.should == '3334445555'
+      end
+    end
   end
 
   describe "self.create!" do

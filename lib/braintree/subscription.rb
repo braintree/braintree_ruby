@@ -27,6 +27,7 @@ module Braintree
     attr_reader :next_billing_period_amount
     attr_reader :number_of_billing_cycles, :billing_day_of_month
     attr_reader :add_ons, :discounts
+    attr_reader :descriptor
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/cancel
     def self.cancel(subscription_id)
@@ -70,6 +71,7 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       @balance = Util.to_big_decimal(balance)
       @price = Util.to_big_decimal(price)
+      @descriptor = Descriptor.new(@descriptor)
       transactions.map! { |attrs| Transaction._new(gateway, attrs) }
       add_ons.map! { |attrs| AddOn._new(attrs) }
       discounts.map! { |attrs| Discount._new(attrs) }
