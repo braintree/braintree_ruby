@@ -544,8 +544,8 @@ describe Braintree::Transaction do
           }
         )
         result.success?.should == false
-        result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Transaction::Descriptor::NameFormatIsInvalid
-        result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Transaction::Descriptor::PhoneFormatIsInvalid
+        result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
+        result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
       end
     end
 

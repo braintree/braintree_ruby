@@ -541,6 +541,20 @@ describe Braintree::Subscription do
         transaction.descriptor.name.should == '123*123456789012345678'
         transaction.descriptor.phone.should == '3334445555'
       end
+
+      it "has validation errors if format is invalid" do
+        result = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :descriptor => {
+            :name => 'badcompanyname12*badproduct12',
+            :phone => '%bad4445555'
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:subscription).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
+        result.errors.for(:subscription).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
+      end
     end
   end
 

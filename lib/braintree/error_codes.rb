@@ -78,6 +78,11 @@ module Braintree
       WebsiteIsTooLong = "81615"
     end
 
+    module Descriptor
+      PhoneFormatIsInvalid = "92202"
+      NameFormatIsInvalid = "92201"
+    end
+
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/validations
     module Subscription
       BillingDayOfMonthCannotBeUpdated = "91918"
@@ -175,10 +180,6 @@ module Braintree
       TaxAmountIsTooLarge = "81536"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
-      module Descriptor
-        NameFormatIsInvalid = "91532"
-        PhoneFormatIsInvalid = "91533"
-      end
       module Options
         VaultIsDisabled = "91525"
       end
