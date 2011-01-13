@@ -10,7 +10,6 @@ module Braintree
       :address_street_address,
       :cardholder_name,
       :company,
-      :credit_card_expiration_date,
       :email,
       :fax,
       :first_name,
@@ -20,6 +19,8 @@ module Braintree
       :phone,
       :website
     )
+
+    equality_fields :credit_card_expiration_date
 
     partial_match_fields :credit_card_number
 
