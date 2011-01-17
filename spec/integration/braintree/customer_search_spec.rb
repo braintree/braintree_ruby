@@ -55,6 +55,7 @@ describe Braintree::Transaction, "search" do
         :address_extended_address    => "Suite 3",
         :address_locality            => "Chicago",
         :address_region              => "Illinois",
+        :address_country_name        => "United States of America",
         :payment_method_token        => cctoken,
         :cardholder_name             => "Tim Tool",
         :credit_card_expiration_date => "05/2010",
