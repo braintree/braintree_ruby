@@ -73,6 +73,17 @@ describe Braintree::CreditCard do
       credit_card.billing_address.last_name.should == "Tables"
     end
 
+    it "accepts empty options hash" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+        :expiration_date => "05/2009",
+        :options => {}
+      )
+      result.success?.should == true
+    end
+
     it "verifies the credit card if options[verify_card]=true" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(

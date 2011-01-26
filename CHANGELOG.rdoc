@@ -1,3 +1,12 @@
+== 2.7.0
+
+* Added advanced vault search for customers and payment methods
+* Added dynamic descriptors
+* Added level 2 fields to transactions:
+  * tax_amount
+  * tax_exempt
+  * purchase_order_number
+
 == 2.6.3
 
 * Allow passing of existing shipping_address_id on new transactions

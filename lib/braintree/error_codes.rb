@@ -78,6 +78,11 @@ module Braintree
       WebsiteIsTooLong = "81615"
     end
 
+    module Descriptor
+      PhoneFormatIsInvalid = "92202"
+      NameFormatIsInvalid = "92201"
+    end
+
     # See http://www.braintreepaymentsolutions.com/docs/ruby/subscriptions/validations
     module Subscription
       BillingDayOfMonthCannotBeUpdated = "91918"
@@ -102,6 +107,7 @@ module Braintree
       PaymentMethodTokenCardTypeIsNotAccepted = "91902"
       PaymentMethodTokenIsInvalid = "91903"
       PaymentMethodTokenNotAssociatedWithCustomer = "91905"
+      PlanBillingFrequencyCannotBeUpdated = "91922"
       PlanIdIsInvalid = "91904"
       PriceCannotBeBlank = "81903"
       PriceFormatIsInvalid = "81904"
@@ -136,8 +142,8 @@ module Braintree
     # See http://www.braintreepaymentsolutions.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
-      AmountIsRequired = "81502"
       AmountIsInvalid = "81503"
+      AmountIsRequired = "81502"
       AmountIsTooLarge = "81528"
       AmountMustBeGreaterThanZero = "81531"
       BillingAddressConflict = "91530"
@@ -146,15 +152,15 @@ module Braintree
       CannotRefundUnlessSettled = "91506"
       CannotSubmitForSettlement = "91507"
       CreditCardIsRequired = "91508"
-      CustomerDefaultPaymentMethodCardTypeIsNotAccepted = "81509"
       CustomFieldIsInvalid = "91526"
       CustomFieldIsTooLong = "81527"
-      CustomerIdIsInvalid = "91510"
+      CustomerDefaultPaymentMethodCardTypeIsNotAccepted = "81509"
       CustomerDoesNotHaveCreditCard = "91511"
+      CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
       MerchantAccountIdIsInvalid = "91513"
-      MerchantAccountNameIsInvalid = "91513" # Deprecated
       MerchantAccountIsSuspended = "91514"
+      MerchantAccountNameIsInvalid = "91513" # Deprecated
       OrderIdIsTooLong = "91501"
       PaymentMethodConflict = "91515"
       PaymentMethodDoesNotBelongToCustomer = "91516"
@@ -163,11 +169,15 @@ module Braintree
       PaymentMethodTokenIsInvalid = "91518"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
+      PurchaseOrderNumberIsTooLong = "91537"
       RefundAmountIsTooLarge = "91521"
       SettlementAmountIsTooLarge = "91522"
       SubscriptionDoesNotBelongToCustomer = "91529"
       SubscriptionIdIsInvalid = "91528"
       SubscriptionStatusMustBePastDue = "91531"
+      TaxAmountCannotBeNegative = "81534"
+      TaxAmountFormatIsInvalid = "81535"
+      TaxAmountIsTooLarge = "81536"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
       module Options

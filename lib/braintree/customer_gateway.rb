@@ -7,7 +7,7 @@ module Braintree
 
     def all
       response = @config.http.post "/customers/advanced_search_ids"
-      ResourceCollection.new(response) { |ids| _fetch_customers(ids) }
+      ResourceCollection.new(response) { |ids| _fetch_customers(CustomerSearch.new, ids) }
     end
 
     def create(attributes = {})
@@ -38,6 +38,14 @@ module Braintree
       Customer._new(@gateway, response[:customer])
     rescue NotFoundError
       raise NotFoundError, "customer with id #{customer_id.inspect} not found"
+    end
+
+    def search(&block)
+      search = CustomerSearch.new
+      block.call(search) if block
+
+      response = @config.http.post "/customers/advanced_search_ids", {:search => search.to_hash}
+      ResourceCollection.new(response) { |ids| _fetch_customers(search, ids) }
     end
 
     def transactions(customer_id, options = {})
@@ -93,8 +101,9 @@ module Braintree
       end
     end
 
-    def _fetch_customers(ids) # :nodoc:
-      response = @config.http.post "/customers/advanced_search", {:search => {:ids => ids}}
+    def _fetch_customers(search, ids) # :nodoc:
+      search.ids.in ids
+      response = @config.http.post "/customers/advanced_search", {:search => search.to_hash}
       attributes = response[:customers]
       Util.extract_attribute_as_array(attributes, :customer).map { |attrs| Customer._new(@gateway, attrs) }
     end
