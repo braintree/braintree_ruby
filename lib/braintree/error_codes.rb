@@ -111,6 +111,7 @@ module Braintree
       PlanIdIsInvalid = "91904"
       PriceCannotBeBlank = "81903"
       PriceFormatIsInvalid = "81904"
+      PriceIsTooLarge = "81923"
       StatusIsCanceled = "81905"
       TokenFormatIsInvalid = "81906"
       TrialDurationFormatIsInvalid = "81907"
