@@ -121,6 +121,7 @@ module Braintree
       module Modification
         AmountCannotBeBlank = "92003"
         AmountIsInvalid = "92002"
+        AmountIsTooLarge = "92023"
         CannotEditModificationsOnPastDueSubscription = "92022"
         CannotUpdateAndRemove = "92015"
         ExistingIdIsIncorrectKind = "92020"
