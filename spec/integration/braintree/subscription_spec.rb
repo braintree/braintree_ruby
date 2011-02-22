@@ -1286,6 +1286,49 @@ describe Braintree::Subscription do
       end
     end
 
+    describe "transaction_id" do
+      it "returns matching results" do
+        matching_subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        ).subscription
+
+        non_matching_subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        ).subscription
+
+        collection = Braintree::Subscription.search do |search|
+          search.transaction_id.is matching_subscription.transactions.first.id
+        end
+
+        collection.should include(matching_subscription)
+        collection.should_not include(non_matching_subscription)
+      end
+    end
+
+    describe "next_billing_date" do
+      it "returns matching results" do
+        matching_subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        ).subscription
+
+        non_matching_subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id]
+        ).subscription
+
+        five_days_from_now = Time.now + (5 * 24 * 60 * 60)
+        collection = Braintree::Subscription.search do |search|
+          search.next_billing_date >= five_days_from_now
+        end
+
+        collection.should include(matching_subscription)
+        collection.should_not include(non_matching_subscription)
+      end
+    end
+
     it "returns multiple results" do
       (110 - Braintree::Subscription.search.maximum_size).times do
         Braintree::Subscription.create(:payment_method_token => @credit_card.token, :plan_id => SpecHelper::TrialPlan[:id])
