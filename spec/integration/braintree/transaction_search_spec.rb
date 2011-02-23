@@ -296,6 +296,7 @@ describe Braintree::Transaction, "search" do
         end
 
         collection.maximum_size.should > 0
+        collection.first.status.should == Braintree::Transaction::Status::AuthorizationExpired
       end
 
       it "searches on source" do
@@ -651,7 +652,8 @@ describe Braintree::Transaction, "search" do
             )
           end
 
-          collection.maximum_size.should == 1
+          collection.maximum_size.should > 0
+          collection.first.status.should == Braintree::Transaction::Status::AuthorizationExpired
         end
 
         it "finds transactions gateway_rejected in a given range" do
