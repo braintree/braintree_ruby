@@ -16,6 +16,7 @@ module Braintree
     end
 
     module Status
+      AuthorizationExpired = 'authorization_expired'
       Authorizing = 'authorizing'
       Authorized = 'authorized'
       GatewayRejected = 'gateway_rejected'

@@ -263,9 +263,9 @@ describe Braintree::Transaction, "search" do
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/12"
-        }
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/12"
+          }
         )
 
         collection = Braintree::Transaction.search do |search|
@@ -288,6 +288,14 @@ describe Braintree::Transaction, "search" do
         end
 
         collection.maximum_size.should == 0
+      end
+
+      it "finds expired authorizations by status" do
+        collection = Braintree::Transaction.search do |search|
+          search.status.in Braintree::Transaction::Status::AuthorizationExpired
+        end
+
+        collection.maximum_size.should > 0
       end
 
       it "searches on source" do
@@ -624,6 +632,26 @@ describe Braintree::Transaction, "search" do
 
           collection.maximum_size.should == 1
           collection.first.id.should == transaction.id
+        end
+
+        it "finds expired authorizations in a given range" do
+          collection = Braintree::Transaction.search do |search|
+            search.authorization_expired_at.between(
+              Date.today - 2,
+              Date.today - 1
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.authorization_expired_at.between(
+              Date.today - 1,
+              Date.today + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
         end
 
         it "finds transactions gateway_rejected in a given range" do

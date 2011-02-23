@@ -60,7 +60,8 @@ module Braintree
 
     key_value_fields :refund
 
-    range_fields :amount, :created_at, :authorized_at, :failed_at, :gateway_rejected_at, :processor_declined_at,
+    range_fields :amount, :created_at, :authorization_expired_at, :authorized_at,
+                 :failed_at, :gateway_rejected_at, :processor_declined_at,
                  :settled_at, :submitted_for_settlement_at, :voided_at
   end
 end
