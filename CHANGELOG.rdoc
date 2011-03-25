@@ -1,3 +1,8 @@
+== 2.9.1
+
+* Added a new transaction state, AuthorizationExpired.
+* Enabled searching by authorization_expired_at.
+
 == 2.8.0
 
 * Added next_billing_date and transaction_id to subscription search
