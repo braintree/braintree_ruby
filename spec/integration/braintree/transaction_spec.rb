@@ -598,6 +598,84 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsTooLong
       end
     end
+
+    context "store_in_vault_on_success" do
+      context "passed as true" do
+        it "stores vault records when transaction succeeds" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :customer => {
+              :last_name => "Doe"
+            },
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "12/12",
+            },
+            :options => { :store_in_vault_on_success => true }
+          )
+          result.success?.should == true
+          result.transaction.vault_customer.last_name.should == "Doe"
+          result.transaction.vault_credit_card.masked_number.should == "401288******1881"
+        end
+
+        it "does not store vault records when true and transaction fails" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Decline,
+            :customer => {
+              :last_name => "Doe"
+            },
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "12/12",
+            },
+            :options => { :store_in_vault_on_success => true }
+          )
+          result.success?.should == false
+          result.transaction.vault_customer.should be_nil
+          result.transaction.vault_credit_card.should be_nil
+        end
+      end
+
+      context "passed as false" do
+        it "does not store vault records when transaction succeeds" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :customer => {
+              :last_name => "Doe"
+            },
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "12/12",
+            },
+            :options => { :store_in_vault_on_success => false }
+          )
+          result.success?.should == true
+          result.transaction.vault_customer.should be_nil
+          result.transaction.vault_credit_card.should be_nil
+        end
+
+        it "does not store vault records when transaction fails" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Decline,
+            :customer => {
+              :last_name => "Doe"
+            },
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "12/12",
+            },
+            :options => { :store_in_vault_on_success => false }
+          )
+          result.success?.should == false
+          result.transaction.vault_customer.should be_nil
+          result.transaction.vault_credit_card.should be_nil
+        end
+      end
+    end
   end
 
   describe "self.create!" do
