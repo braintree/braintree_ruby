@@ -947,6 +947,28 @@ describe Braintree::CreditCard do
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2010"
     end
+
+    it "allows passing a cvv in addition to the token" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2010"
+        }
+      )
+      result = Braintree::CreditCard.sale(customer.credit_cards[0].token,
+        :amount => "100.00",
+        :credit_card => {
+          :cvv => "301"
+        }
+      )
+
+      result.success?.should == true
+      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.type.should == "sale"
+      result.transaction.customer_details.id.should == customer.id
+      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
+      result.transaction.cvv_response_code.should == "S"
+    end
   end
 
   describe "self.sale!" do
