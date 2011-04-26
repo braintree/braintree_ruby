@@ -36,6 +36,20 @@ describe Braintree::Subscription do
       result.subscription.payment_method_token.should == @credit_card.token
     end
 
+    it "returns a transaction with billing period populated" do
+      result = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      )
+
+      result.success?.should == true
+      subscription = result.subscription
+      transaction = subscription.transactions.first
+
+      transaction.subscription_details.billing_period_start_date.should == subscription.billing_period_start_date
+      transaction.subscription_details.billing_period_end_date.should == subscription.billing_period_end_date
+    end
+
     it "can set the id" do
       new_id = rand(36**9).to_s(36)
       result = Braintree::Subscription.create(

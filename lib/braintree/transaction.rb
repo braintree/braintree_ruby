@@ -42,7 +42,7 @@ module Braintree
     end
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
-    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :id
+    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :subscription_details, :id
     attr_reader :currency_iso_code
     attr_reader :custom_fields
     attr_reader :cvv_response_code
@@ -155,6 +155,7 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       @amount = Util.to_big_decimal(amount)
       @credit_card_details = CreditCardDetails.new(@credit_card)
+      @subscription_details = SubscriptionDetails.new(@subscription)
       @customer_details = CustomerDetails.new(@customer)
       @billing_details = AddressDetails.new(@billing)
       @shipping_details = AddressDetails.new(@shipping)
@@ -292,7 +293,7 @@ module Braintree
     end
 
     def self._attributes # :nodoc:
-      [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :type, :updated_at]
+      [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :subscription_details, :type, :updated_at]
     end
   end
 end

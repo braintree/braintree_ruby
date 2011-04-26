@@ -7,10 +7,10 @@ module Braintree
     module Address
       CannotBeBlank = "81801"
       CompanyIsTooLong = "81802"
-      CountryNameIsNotAccepted = "91803"
       CountryCodeAlpha2IsNotAccepted  = "91814"
       CountryCodeAlpha3IsNotAccepted  = "91816"
       CountryCodeNumericIsNotAccepted = "91817"
+      CountryNameIsNotAccepted = "91803"
       ExtendedAddressIsTooLong = "81804"
       FirstNameIsTooLong = "81805"
       InconsistentCountry = "91815"
@@ -22,6 +22,7 @@ module Braintree
       RegionIsTooLong = "81810"
       StreetAddressIsRequired = "81811"
       StreetAddressIsTooLong = "81812"
+      TooManyAddressesPerCustomer = "91818"
     end
 
     # See http://www.braintreepaymentsolutions.com/docs/ruby/credit_cards/validations
