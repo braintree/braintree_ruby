@@ -97,7 +97,13 @@ module Braintree
       end
 
       def self._xml_escape(key)
-        key.to_s.tr("_", "-").to_xs
+        dasherized_key = key.to_s.tr("_", "-")
+
+        if Builder::XChar.respond_to?(:encode)
+          Builder::XChar.encode(dasherized_key)
+        else
+          dasherized_key.to_xs
+        end
       end
     end
   end
