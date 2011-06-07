@@ -24,13 +24,13 @@ gem_spec = Gem::Specification.new do |s|
   s.summary = "Braintree Gateway Ruby Client Library"
   s.description = "Ruby library for integrating with the Braintree Gateway"
   s.version = Braintree::Version::String
-  s.author = "Braintree Payment Solutions"
-  s.email = "devs@getbraintree.com"
-  s.homepage = "http://www.braintreepaymentsolutions.com/gateway"
+  s.author = "Braintree"
+  s.email = "code@getbraintree.com"
+  s.homepage = "http://www.braintreepayments.com/"
   s.rubyforge_project = "braintree"
   s.has_rdoc = false
   s.files = FileList["README.rdoc", "LICENSE", "{lib,spec}/**/*.rb", "lib/**/*.crt"]
-  s.add_dependency "builder"
+  s.add_dependency "builder", ">= 2.0.0"
 end
 
 task :gem do

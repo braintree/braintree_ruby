@@ -1,5 +1,5 @@
 module Braintree
-  # See http://www.braintreepaymentsolutions.com/docs/ruby/addresses/details
+  # See http://www.braintreepayments.com/docs/ruby/addresses/details
   class Address
     include BaseModule # :nodoc:
 

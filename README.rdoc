@@ -67,7 +67,7 @@ Otherwise, we recommend using the non-bang methods.
 
 == More Information
 
-* Documentation[http://www.braintreepaymentsolutions.com/docs/ruby]
+* Documentation[http://www.braintreepayments.com/docs/ruby]
 
 == Tests
 

@@ -1,5 +1,5 @@
 module Braintree
-  # See http://www.braintreepaymentsolutions.com/docs/ruby/general/result_objects
+  # See http://www.braintreepayments.com/docs/ruby/general/result_objects
   class SuccessfulResult
     include BaseModule
 

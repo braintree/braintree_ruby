@@ -811,7 +811,7 @@ describe Braintree::Transaction do
           :email => "dan@example.com",
           :phone => "419-555-1234",
           :fax => "419-555-1235",
-          :website => "http://braintreepaymentsolutions.com"
+          :website => "http://braintreepayments.com"
         },
         :billing => {
           :first_name => "Carl",
@@ -862,7 +862,7 @@ describe Braintree::Transaction do
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
-      transaction.customer_details.website.should == "http://braintreepaymentsolutions.com"
+      transaction.customer_details.website.should == "http://braintreepayments.com"
       transaction.billing_details.first_name.should == "Carl"
       transaction.billing_details.last_name.should == "Jones"
       transaction.billing_details.company.should == "Braintree"
@@ -1390,7 +1390,7 @@ describe Braintree::Transaction do
             :email => "dan@example.com",
             :phone => "419-555-1234",
             :fax => "419-555-1235",
-            :website => "http://braintreepaymentsolutions.com"
+            :website => "http://braintreepayments.com"
           },
           :billing => {
             :first_name => "Carl",
@@ -1444,7 +1444,7 @@ describe Braintree::Transaction do
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
-      transaction.customer_details.website.should == "http://braintreepaymentsolutions.com"
+      transaction.customer_details.website.should == "http://braintreepayments.com"
       transaction.billing_details.first_name.should == "Carl"
       transaction.billing_details.last_name.should == "Jones"
       transaction.billing_details.company.should == "Braintree"

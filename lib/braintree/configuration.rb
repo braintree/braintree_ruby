@@ -1,5 +1,5 @@
 module Braintree
-  # See http://www.braintreepaymentsolutions.com/docs/ruby
+  # See http://www.braintreepayments.com/docs/ruby
   class Configuration
     API_VERSION = "2" # :nodoc:
 
