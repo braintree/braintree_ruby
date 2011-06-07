@@ -30,7 +30,7 @@ gem_spec = Gem::Specification.new do |s|
   s.rubyforge_project = "braintree"
   s.has_rdoc = false
   s.files = FileList["README.rdoc", "LICENSE", "{lib,spec}/**/*.rb", "lib/**/*.crt"]
-  s.add_dependency "builder"
+  s.add_dependency "builder", ">= 2.0.0"
 end
 
 task :gem do
