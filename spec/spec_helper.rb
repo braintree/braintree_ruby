@@ -71,6 +71,14 @@ unless defined?(SPEC_HELPER_LOADED)
     Discount11 = "discount_11"
     Discount15 = "discount_15"
 
+    module Maestro
+      ValidLookupExp = "01/2012"
+      InvalidLookupExp = "06/2012"
+
+      ValidAuthExp = "01/2012"
+      InvalidAuthExp = "03/2012"
+    end
+
     def self.make_past_due(subscription, number_of_days_past_due = 1)
       Braintree::Configuration.instantiate.http.put(
         "/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"

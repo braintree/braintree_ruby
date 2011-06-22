@@ -152,6 +152,28 @@ describe Braintree::Transaction do
       codes.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
+    context "maestro authentication" do
+      it "gets back a authentication response" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Maestro,
+            :expiration_date => SpecHelper::Maestro::ValidLookupExp
+          }
+        )
+
+        result.success?.should == false
+        result.payer_authentication_required?.should == true
+
+        result.payer_authentication.id.should match(/\A[a-z0-9]+\z/)
+        result.payer_authentication.post_url.should match(%r{\Ahttps?://})
+        result.payer_authentication.post_params.size.should == 1
+        result.payer_authentication.post_params.first.name.should == "PaReq"
+        result.payer_authentication.post_params.first.value.should_not be_empty
+      end
+    end
+
     context "gateway rejection reason" do
       it "exposes the cvv gateway rejection reason" do
         old_merchant = Braintree::Configuration.merchant_id
