@@ -157,6 +157,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "secure_code_ma",
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Maestro,
             :expiration_date => SpecHelper::Maestro::ValidLookupExp
@@ -166,11 +167,24 @@ describe Braintree::Transaction do
         result.success?.should == false
         result.payer_authentication_required?.should == true
 
-        result.payer_authentication.id.should match(/\A[a-z0-9]+\z/)
-        result.payer_authentication.post_url.should match(%r{\Ahttps?://})
-        result.payer_authentication.post_params.size.should == 1
-        result.payer_authentication.post_params.first.name.should == "PaReq"
-        result.payer_authentication.post_params.first.value.should_not be_empty
+        payer_authentication = result.payer_authentication
+        payer_authentication.id.should match(/\A[a-z0-9]+\z/)
+        payer_authentication.post_url.should match(%r{\Ahttps?://})
+        payer_authentication.post_params.size.should == 1
+        payer_authentication.post_params.first.name.should == "PaReq"
+        payer_authentication.post_params.first.value.should_not be_empty
+
+        result = Braintree::PayerAuthentication.authenticate(payer_authentication.id, "test_response_payload")
+
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Maestro[0, 6]
+        result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Maestro[-4..-1]
+        result.transaction.credit_card_details.expiration_date.should == SpecHelper::Maestro::ValidLookupExp
+        result.transaction.credit_card_details.customer_location.should == "US"
       end
     end
 

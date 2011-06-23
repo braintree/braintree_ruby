@@ -24,6 +24,10 @@ module Braintree
       CustomerGateway.new(self)
     end
 
+    def payer_authentication
+      PayerAuthenticationGateway.new(self)
+    end
+
     def subscription
       SubscriptionGateway.new(self)
     end

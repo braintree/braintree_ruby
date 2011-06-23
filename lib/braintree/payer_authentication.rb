@@ -4,6 +4,13 @@ module Braintree
 
     attr_reader :id, :post_params, :post_url
 
+    def self.authenticate(payer_authentication_id, response_payload)
+      Configuration.gateway.payer_authentication.authenticate(
+        payer_authentication_id,
+        response_payload
+      )
+    end
+
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
