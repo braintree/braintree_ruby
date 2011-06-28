@@ -153,14 +153,14 @@ describe Braintree::Transaction do
     end
 
     context "maestro authentication" do
-      it "gets back a authentication response" do
+      it "gets back a authentication response on successful lookup" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :merchant_account_id => "secure_code_ma",
           :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Maestro,
-            :expiration_date => SpecHelper::Maestro::ValidLookupExp
+            :number => Braintree::Test::CreditCardNumbers::PayerAuthentication::ValidMaestro,
+            :expiration_date => "01/2012"
           }
         )
 
@@ -183,7 +183,31 @@ describe Braintree::Transaction do
         result.transaction.processor_authorization_code.should_not be_nil
         result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Maestro[0, 6]
         result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Maestro[-4..-1]
-        result.transaction.credit_card_details.expiration_date.should == SpecHelper::Maestro::ValidLookupExp
+        result.transaction.credit_card_details.expiration_date.should == "01/2012"
+        result.transaction.credit_card_details.customer_location.should == "US"
+      end
+
+      it "runs a regular transaction on unsuccessful lookup" do
+        cc_number = Braintree::Test::CreditCardNumbers::PayerAuthentication::InvalidMaestro
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "secure_code_ma",
+          :credit_card => {
+            :number => cc_number,
+            :expiration_date => "01/2012"
+          }
+        )
+
+        result.payer_authentication_required?.should == false
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.credit_card_details.bin.should == cc_number[0, 6]
+        result.transaction.credit_card_details.last_4.should == cc_number[-4..-1]
+        result.transaction.credit_card_details.expiration_date.should == "01/2012"
         result.transaction.credit_card_details.customer_location.should == "US"
       end
     end

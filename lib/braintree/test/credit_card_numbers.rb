@@ -25,6 +25,11 @@ module Braintree
       Visas = %w[4009348888881881 4012888888881881 4111111111111111 4000111111111115]
       Unknowns = %w[1000000000000008]
 
+      module PayerAuthentication
+        ValidMaestro = "6304000000000000"
+        InvalidMaestro = "6304000000000042"
+      end
+
       module FailsSandboxVerification
         AmEx       = "378734493671000"
         Discover   = "6011000990139424"
