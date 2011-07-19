@@ -11,9 +11,9 @@ describe Braintree::Transaction, "search" do
     end
 
     it "can search on text fields" do
-      first_name = "Tim#{rand(10000)}"
-      token = "creditcard#{rand(10000)}"
-      customer_id = "customer#{rand(10000)}"
+      first_name = "Tim_#{rand(10**10)}"
+      token = "creditcard_#{rand(10**10)}"
+      customer_id = "customer_#{rand(10**10)}"
 
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,

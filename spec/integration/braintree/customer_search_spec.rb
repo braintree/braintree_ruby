@@ -11,7 +11,7 @@ describe Braintree::Transaction, "search" do
     end
 
     it "can search on text fields" do
-      cctoken = "cctoken#{rand(1_000_000)}"
+      cctoken = "cctoken_#{rand(10**10)}"
       customer = Braintree::Customer.create!(
         :first_name => "Timmy",
         :last_name => "O'Toole",

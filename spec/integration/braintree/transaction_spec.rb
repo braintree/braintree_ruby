@@ -1042,8 +1042,8 @@ describe Braintree::Transaction do
     end
 
     it "can specify the customer id and payment method token" do
-      customer_id = "customer_#{rand(1000000)}"
-      payment_mehtod_token = "credit_card_#{rand(1000000)}"
+      customer_id = "customer_#{rand(10**10)}"
+      payment_mehtod_token = "credit_card_#{rand(10**10)}"
       result = Braintree::Transaction.sale(
         :amount => "100",
         :customer => {

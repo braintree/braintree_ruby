@@ -40,7 +40,7 @@ describe Braintree::CreditCard do
     end
 
     it "can specify the desired token" do
-      token = "token_#{rand(1_000_000)}"
+      token = "token_#{rand(10**10)}"
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
@@ -673,8 +673,8 @@ describe Braintree::CreditCard do
 
   describe "self.update_from_transparent_redirect" do
     it "updates the credit card" do
-      old_token = "token#{rand(1_000_000)}"
-      new_token = "token#{rand(1_000_000)}"
+      old_token = "token_#{rand(10**10)}"
+      new_token = "token_#{rand(10**10)}"
       customer = Braintree::Customer.create!(
         :credit_card => {
           :cardholder_name => "Old Cardholder Name",
