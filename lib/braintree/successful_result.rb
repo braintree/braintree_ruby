@@ -19,7 +19,10 @@ module Braintree
       "#<#{self.class} #{inspected_attributes.join(" ")}>"
     end
 
-    # Always returns true.
+    def payer_authentication_required?
+      false
+    end
+
     def success?
       true
     end

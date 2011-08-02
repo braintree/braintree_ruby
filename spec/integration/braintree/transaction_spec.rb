@@ -152,6 +152,106 @@ describe Braintree::Transaction do
       codes.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
+    context "maestro authentication" do
+      it "returns an authentication response on successful lookup" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "secure_code_ma",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::PayerAuthentication::ValidMaestro,
+            :expiration_date => "01/2012"
+          }
+        )
+
+        result.success?.should == false
+        result.payer_authentication_required?.should == true
+
+        payer_authentication = result.payer_authentication
+        payer_authentication.id.should match(/\A[a-z0-9]+\z/)
+        payer_authentication.post_url.should match(%r{\Ahttps?://})
+        payer_authentication.post_params.size.should == 1
+        payer_authentication.post_params.first.name.should == "PaReq"
+        payer_authentication.post_params.first.value.should_not be_empty
+
+        result = Braintree::PayerAuthentication.authenticate(
+          payer_authentication.id,
+          Braintree::Test::CreditCardNumbers::PayerAuthentication::AuthenticationSuccessfulPayload
+        )
+
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Maestro[0, 6]
+        result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Maestro[-4..-1]
+        result.transaction.credit_card_details.expiration_date.should == "01/2012"
+        result.transaction.credit_card_details.customer_location.should == "US"
+      end
+
+      it "attempts to create the transaction on an unsuccessful authentication" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "secure_code_ma",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::PayerAuthentication::ValidMaestro,
+            :expiration_date => "01/2012"
+          }
+        )
+
+        result.success?.should == false
+        result.payer_authentication_required?.should == true
+
+        payer_authentication = result.payer_authentication
+        payer_authentication.id.should match(/\A[a-z0-9]+\z/)
+        payer_authentication.post_url.should match(%r{\Ahttps?://})
+        payer_authentication.post_params.size.should == 1
+        payer_authentication.post_params.first.name.should == "PaReq"
+        payer_authentication.post_params.first.value.should_not be_empty
+
+        result = Braintree::PayerAuthentication.authenticate(
+          payer_authentication.id,
+          Braintree::Test::CreditCardNumbers::PayerAuthentication::AuthenticationFailedPayload
+        )
+
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Maestro[0, 6]
+        result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Maestro[-4..-1]
+        result.transaction.credit_card_details.expiration_date.should == "01/2012"
+        result.transaction.credit_card_details.customer_location.should == "US"
+      end
+
+      it "runs a regular transaction on unsuccessful lookup" do
+        cc_number = Braintree::Test::CreditCardNumbers::PayerAuthentication::InvalidMaestro
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "secure_code_ma",
+          :credit_card => {
+            :number => cc_number,
+            :expiration_date => "01/2012"
+          }
+        )
+
+        result.payer_authentication_required?.should == false
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.credit_card_details.bin.should == cc_number[0, 6]
+        result.transaction.credit_card_details.last_4.should == cc_number[-4..-1]
+        result.transaction.credit_card_details.expiration_date.should == "01/2012"
+        result.transaction.credit_card_details.customer_location.should == "US"
+      end
+    end
+
     context "gateway rejection reason" do
       it "exposes the cvv gateway rejection reason" do
         old_merchant = Braintree::Configuration.merchant_id
@@ -1042,8 +1142,8 @@ describe Braintree::Transaction do
     end
 
     it "can specify the customer id and payment method token" do
-      customer_id = "customer_#{rand(1000000)}"
-      payment_mehtod_token = "credit_card_#{rand(1000000)}"
+      customer_id = "customer_#{rand(10**10)}"
+      payment_mehtod_token = "credit_card_#{rand(10**10)}"
       result = Braintree::Transaction.sale(
         :amount => "100",
         :customer => {

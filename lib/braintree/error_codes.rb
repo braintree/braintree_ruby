@@ -184,6 +184,8 @@ module Braintree
       TaxAmountIsTooLarge = "81536"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
+      UnsupportedVoiceAuthorization = "91539"
+
       module Options
         VaultIsDisabled = "91525"
       end
