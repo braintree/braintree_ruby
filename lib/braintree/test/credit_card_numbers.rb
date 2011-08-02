@@ -6,20 +6,14 @@ module Braintree
     #
     # See http://www.braintreepayments.com/docs/ruby/reference/sandbox
     module CreditCardNumbers
-      AmExes = %w[
-        378282246310005
-        371449635398431
-        378734493671000
-      ]
+      AmExes = %w[378282246310005 371449635398431 378734493671000]
       CarteBlanches = %w[30569309025904] # :nodoc:
       DinersClubs = %w[38520000023237] # :nodoc:
 
-      Discovers = %w[
-        6011111111111117
-        6011000990139424
-      ]
+      Discovers = %w[6011111111111117 6011000990139424]
       JCBs = %w[3530111333300000 3566002020360505] # :nodoc:
 
+      Maestro = "6304000000000000" # :nodoc:
       MasterCard = "5555555555554444"
       MasterCardInternational = "5105105105105100" # :nodoc:
 
@@ -28,15 +22,15 @@ module Braintree
       Visa = "4012888888881881"
       VisaInternational = "4009348888881881" # :nodoc:
 
-      Visas = %w[
-        4009348888881881
-        4012888888881881
-        4111111111111111
-        4000111111111115
-      ]
-      Unknowns = %w[
-        1000000000000008
-      ]
+      Visas = %w[4009348888881881 4012888888881881 4111111111111111 4000111111111115]
+      Unknowns = %w[1000000000000008]
+
+      module PayerAuthentication
+        ValidMaestro = "6304000000000000"
+        InvalidMaestro = "6304000000000117"
+        AuthenticationSuccessfulPayload = "authentication_successful_payload"
+        AuthenticationFailedPayload = "authentication_failed_payload"
+      end
 
       module FailsSandboxVerification
         AmEx       = "378734493671000"
