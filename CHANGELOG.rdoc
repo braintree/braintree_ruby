@@ -1,6 +1,6 @@
-== 2.10.2-maestro-beta
+== 2.10.2
 
-* Initial support for international Maestro cards with payer authentication
+* Added support for international Maestro cards with payer authentication
 
 == 2.10.1
 
