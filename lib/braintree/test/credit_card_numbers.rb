@@ -27,7 +27,7 @@ module Braintree
 
       module PayerAuthentication
         ValidMaestro = "6304000000000000"
-        InvalidMaestro = "6304000000000117"
+        InvalidMaestro = "6773900000000000007"
         AuthenticationSuccessfulPayload = "authentication_successful_payload"
         AuthenticationFailedPayload = "authentication_failed_payload"
       end
