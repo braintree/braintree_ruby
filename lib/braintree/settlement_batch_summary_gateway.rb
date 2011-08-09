@@ -8,7 +8,7 @@ module Braintree
     def generate(settlement_date)
       criteria = { :settlement_date => settlement_date }
       response = @config.http.get "/settlement_batch_summary?#{Util.hash_to_query_string(criteria)}"
-      SettlementBatchSummary._new(@gateway, response)
+      SettlementBatchSummary._new(@gateway, response[:settlement_batch_summary])
     end
   end
 end
