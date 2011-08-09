@@ -28,6 +28,10 @@ module Braintree
       PayerAuthenticationGateway.new(self)
     end
 
+    def settlement_batch_summary
+      SettlementBatchSummaryGateway.new(self)
+    end
+
     def subscription
       SubscriptionGateway.new(self)
     end
