@@ -4,7 +4,12 @@ module Braintree
     attr_reader :records
 
     def self.generate(settlement_date, options={})
-      Configuration.gateway.settlement_batch_summary.generate(settlement_date, options)
+      criteria = { :settlement_date => settlement_date }.merge(options)
+      Configuration.gateway.settlement_batch_summary.generate(criteria)
+    end
+
+    def self._signature
+      %w(settlement_date group_by_custom_field)
     end
 
     def initialize(gateway, attributes)
