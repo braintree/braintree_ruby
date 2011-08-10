@@ -3,8 +3,8 @@ module Braintree
     include BaseModule
     attr_reader :records
 
-    def self.generate(settlement_date)
-      Configuration.gateway.settlement_batch_summary.generate(settlement_date)
+    def self.generate(settlement_date, options={})
+      Configuration.gateway.settlement_batch_summary.generate(settlement_date, options)
     end
 
     def initialize(gateway, attributes)
