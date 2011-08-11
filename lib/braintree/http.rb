@@ -16,7 +16,7 @@ module Braintree
 
     def get(path)
       response = _http_do Net::HTTP::Get, path
-      if response.code.to_i == 200
+      if response.code.to_i == 200 || response.code.to_i == 422
         Xml.hash_from_xml(_body(response))
       else
         Util.raise_exception_for_status_code(response.code)

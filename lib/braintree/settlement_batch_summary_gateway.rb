@@ -8,7 +8,13 @@ module Braintree
     def generate(criteria)
       Util.verify_keys(SettlementBatchSummary._signature, criteria)
       response = @config.http.get "/settlement_batch_summary?#{Util.hash_to_query_string(criteria)}"
-      SettlementBatchSummary._new(@gateway, response[:settlement_batch_summary])
+      if response[:settlement_batch_summary]
+        SuccessfulResult.new(:settlement_batch_summary => SettlementBatchSummary._new(@gateway, response[:settlement_batch_summary]))
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :settlement_batch_summary or :api_error_response"
+      end
     end
   end
 end
