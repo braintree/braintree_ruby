@@ -49,10 +49,7 @@ describe Braintree::SettlementBatchSummary do
       )
       SpecHelper.settle_transaction transaction.id
 
-      result = Braintree::SettlementBatchSummary.generate(
-        Time.now.strftime("%Y-%m-%d"),
-        :group_by_custom_field => 'store_me'
-      )
+      result = Braintree::SettlementBatchSummary.generate(Time.now.strftime("%Y-%m-%d"), 'store_me')
       result.should be_success
 
       amex_records = result.settlement_batch_summary.records.select {|row| row[:store_me] == "1" }
