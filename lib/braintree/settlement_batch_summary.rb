@@ -9,10 +9,6 @@ module Braintree
       Configuration.gateway.settlement_batch_summary.generate(criteria)
     end
 
-    def self._signature
-      %w(settlement_date group_by_custom_field)
-    end
-
     def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
