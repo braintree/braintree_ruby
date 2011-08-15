@@ -107,6 +107,7 @@ module Braintree
       InconsistentStartDate = "91917"
       InvalidRequestFormat = "91921"
       MerchantAccountIdIsInvalid = "91901"
+      MismatchCurrencyISOCode = "91923"
       NumberOfBillingCyclesCannotBeBlank = "91912"
       NumberOfBillingCyclesIsTooSmall = "91909"
       NumberOfBillingCyclesMustBeGreaterThanZero = "91907"
