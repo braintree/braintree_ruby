@@ -24,10 +24,6 @@ module Braintree
       CustomerGateway.new(self)
     end
 
-    def payer_authentication
-      PayerAuthenticationGateway.new(self)
-    end
-
     def settlement_batch_summary
       SettlementBatchSummaryGateway.new(self)
     end
