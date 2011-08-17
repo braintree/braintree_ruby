@@ -1,6 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::Transaction do
+  describe "self.clone_transaction" do
+    it "raises an exception if hash includes an invalid key" do
+      expect do
+        Braintree::Transaction.clone_transaction("an_id", :amount => "10.00", :invalid_key => "foo")
+      end.to raise_error(ArgumentError, "invalid keys: invalid_key")
+    end
+  end
+
   describe "self.create" do
     it "raises an exception if hash includes an invalid key" do
       expect do

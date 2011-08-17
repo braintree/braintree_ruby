@@ -10,6 +10,11 @@ module Braintree
       _do_create "/transactions", :transaction => attributes
     end
 
+    def clone_transaction(transaction_id, attributes)
+      Util.verify_keys(TransactionGateway._clone_signature, attributes)
+      _do_create "/transactions/#{transaction_id}/clone", :transaction_clone => attributes
+    end
+
     # Deprecated
     def create_from_transparent_redirect(query_string)
       params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
@@ -85,6 +90,10 @@ module Braintree
       else
         raise UnexpectedError, "expected :transaction or :api_error_response"
       end
+    end
+
+    def self._clone_signature # :nodoc:
+      [:amount]
     end
 
     def self._create_signature # :nodoc:
