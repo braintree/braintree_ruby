@@ -50,6 +50,20 @@ describe Braintree::Transaction do
 
       transaction.customer_details.last_name.should == "Adama"
     end
+
+    it "handles validation errors" do
+      transaction = Braintree::Transaction.credit!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result = Braintree::Transaction.clone_transaction(transaction.id, :amount => "112.44")
+      result.success?.should be_false
+
+      result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotCloneCredit
+    end
   end
 
   describe "self.clone_transaction!" do
