@@ -49,6 +49,24 @@ describe Braintree::Transaction do
       transaction.credit_card_details.expiration_date.should == "05/2012"
 
       transaction.customer_details.last_name.should == "Adama"
+      transaction.status.should == Braintree::Transaction::Status::Authorized
+    end
+
+    it "submit for settlement option" do
+      result = Braintree::Transaction.sale(
+        :amount => "112.44",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        }
+      )
+
+      result.success?.should be_true
+
+      clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {:submit_for_settlement => true})
+      clone_result.success?.should == true
+
+      clone_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
     end
 
     it "handles validation errors" do
