@@ -2,7 +2,17 @@ module Braintree
   class Modification # :nodoc:
     include BaseModule
 
-    attr_reader :amount, :id, :number_of_billing_cycles, :quantity
+    attr_reader :amount
+    attr_reader :created_at
+    attr_reader :description
+    attr_reader :id
+    attr_reader :kind
+    attr_reader :merchant_id
+    attr_reader :name
+    attr_reader :never_expires
+    attr_reader :number_of_billing_cycles
+    attr_reader :quantity
+    attr_reader :updated_at
 
     class << self
       protected :new
