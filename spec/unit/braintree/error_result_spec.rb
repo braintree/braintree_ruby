@@ -74,17 +74,4 @@ describe Braintree::ErrorResult do
       result.inspect.should_not include("transaction")
     end
   end
-
-  describe "payer_authentication_required?" do
-    it "is true if payer_authentication is in the response" do
-      result = Braintree::ErrorResult.new(
-        :gateway,
-        :payer_authentication => {:id => "public_id", :post_url => "post_url", :post_params => []},
-        :errors => {},
-        :verification => nil,
-        :transaction => nil
-      )
-      result.payer_authentication_required?.should be_true
-    end
-  end
 end

@@ -84,6 +84,12 @@ module Braintree
       NameFormatIsInvalid = "92201"
     end
 
+    module SettlementBatchSummary
+      CustomFieldIsInvalid = "82303"
+      SettlementDateIsInvalid = "82302"
+      SettlementDateIsRequired = "82301"
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/validations
     module Subscription
       BillingDayOfMonthCannotBeUpdated = "91918"
@@ -101,6 +107,7 @@ module Braintree
       InconsistentStartDate = "91917"
       InvalidRequestFormat = "91921"
       MerchantAccountIdIsInvalid = "91901"
+      MismatchCurrencyISOCode = "91923"
       NumberOfBillingCyclesCannotBeBlank = "91912"
       NumberOfBillingCyclesIsTooSmall = "91909"
       NumberOfBillingCyclesMustBeGreaterThanZero = "91907"

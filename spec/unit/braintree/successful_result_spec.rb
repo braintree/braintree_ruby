@@ -24,10 +24,4 @@ describe Braintree::SuccessfulResult do
       result.inspect.should == "#<Braintree::SuccessfulResult foo:\"foo_value\">"
     end
   end
-
-  describe "payer_authentication_required?" do
-    it "is always false" do
-      Braintree::SuccessfulResult.new.payer_authentication_required?.should be_false
-    end
-  end
 end
