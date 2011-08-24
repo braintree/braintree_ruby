@@ -30,6 +30,7 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       add_ons.map! { |attrs| AddOn._new(attrs) }
       discounts.map! { |attrs| Discount._new(attrs) }
+      @price = Util.to_big_decimal(price)
     end
 
     class << self
