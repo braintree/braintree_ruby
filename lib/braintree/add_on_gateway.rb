@@ -7,7 +7,7 @@ module Braintree
 
     def all
       response = @config.http.get "/add_ons"
-      attributes_collection = response[:modifications]
+      attributes_collection = response[:add_ons]
       attributes_collection.map do |attributes|
         AddOn._new(attributes)
       end
