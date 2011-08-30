@@ -198,6 +198,7 @@ module Braintree
       UnsupportedVoiceAuthorization = "91539"
 
       module Options
+        SubmitForSettlementIsRequiredForCloning = "91544"
         VaultIsDisabled = "91525"
       end
     end
