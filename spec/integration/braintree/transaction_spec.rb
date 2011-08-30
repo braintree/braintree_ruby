@@ -83,36 +83,7 @@ describe Braintree::Transaction do
       result.success?.should be_false
 
       result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotCloneCredit
-    end
-
-    it "handles SubmitForSettlementIsRequiredForClonging error" do
-      result = Braintree::Transaction.sale(
-        :amount => "112.44",
-        :customer => {
-          :last_name => "Adama",
-        },
-        :credit_card => {
-          :number => "5105105105105100",
-          :expiration_date => "05/2012"
-        },
-        :billing => {
-          :country_name => "Botswana",
-          :country_code_alpha2 => "BW",
-          :country_code_alpha3 => "BWA",
-          :country_code_numeric => "072"
-        },
-        :shipping => {
-          :country_name => "Bhutan",
-          :country_code_alpha2 => "BT",
-          :country_code_alpha3 => "BTN",
-          :country_code_numeric => "064"
-        }
-      )
-      result.success?.should == true
-
-      clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44")
-      clone_result.success?.should == false
-      clone_result.errors.for(:transaction).on(:submit_for_settlement).first.code.should == Braintree::ErrorCodes::Transaction::Options::SubmitForSettlementIsRequiredForCloning
+      result.errors.for(:transaction).on(:submit_for_settlement).first.code.should == Braintree::ErrorCodes::Transaction::Options::SubmitForSettlementIsRequiredForCloning
     end
   end
 
