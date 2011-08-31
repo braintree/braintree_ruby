@@ -1,6 +1,120 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::Transaction do
+  describe "self.clone_transaction" do
+    it "creates a new transaction from the card of the transaction to clone" do
+      result = Braintree::Transaction.sale(
+        :amount => "112.44",
+        :customer => {
+          :last_name => "Adama",
+        },
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :country_name => "Botswana",
+          :country_code_alpha2 => "BW",
+          :country_code_alpha3 => "BWA",
+          :country_code_numeric => "072"
+        },
+        :shipping => {
+          :country_name => "Bhutan",
+          :country_code_alpha2 => "BT",
+          :country_code_alpha3 => "BTN",
+          :country_code_numeric => "064"
+        }
+      )
+      result.success?.should == true
+
+      clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {
+        :submit_for_settlement => false
+      })
+      clone_result.success?.should == true
+
+      transaction = clone_result.transaction
+
+      transaction.id.should_not == result.transaction.id
+      transaction.amount.should == BigDecimal.new("112.44")
+
+      transaction.billing_details.country_name.should == "Botswana"
+      transaction.billing_details.country_code_alpha2.should == "BW"
+      transaction.billing_details.country_code_alpha3.should == "BWA"
+      transaction.billing_details.country_code_numeric.should == "072"
+
+      transaction.shipping_details.country_name.should == "Bhutan"
+      transaction.shipping_details.country_code_alpha2.should == "BT"
+      transaction.shipping_details.country_code_alpha3.should == "BTN"
+      transaction.shipping_details.country_code_numeric.should == "064"
+
+      transaction.credit_card_details.masked_number.should == "510510******5100"
+      transaction.credit_card_details.expiration_date.should == "05/2012"
+
+      transaction.customer_details.last_name.should == "Adama"
+      transaction.status.should == Braintree::Transaction::Status::Authorized
+    end
+
+    it "submit for settlement option" do
+      result = Braintree::Transaction.sale(
+        :amount => "112.44",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        }
+      )
+
+      result.success?.should be_true
+
+      clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {:submit_for_settlement => true})
+      clone_result.success?.should == true
+
+      clone_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+    end
+
+    it "handles validation errors" do
+      transaction = Braintree::Transaction.credit!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result = Braintree::Transaction.clone_transaction(transaction.id, :amount => "112.44")
+      result.success?.should be_false
+
+      result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotCloneCredit
+      result.errors.for(:transaction).on(:submit_for_settlement).first.code.should == Braintree::ErrorCodes::Transaction::Options::SubmitForSettlementIsRequiredForCloning
+    end
+  end
+
+  describe "self.clone_transaction!" do
+    it "returns the transaction if valid" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "112.44", :options => {:submit_for_settlement => false})
+      clone_transaction.id.should_not == transaction.id
+    end
+
+    it "raises a validationsfailed if invalid" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      expect do
+        clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "im not a number")
+        clone_transaction.id.should_not == transaction.id
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
   describe "self.create" do
     it "returns a successful result if successful" do
       result = Braintree::Transaction.create(
@@ -150,106 +264,6 @@ describe Braintree::Transaction do
       result.success?.should == false
       codes = result.errors.for(:transaction).for(:billing).on(:country_code_numeric).map { |e| e.code }
       codes.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
-    end
-
-    context "maestro authentication" do
-      it "returns an authentication response on successful lookup" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => "secure_code_ma",
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::PayerAuthentication::ValidMaestro,
-            :expiration_date => "01/2012"
-          }
-        )
-
-        result.success?.should == false
-        result.payer_authentication_required?.should == true
-
-        payer_authentication = result.payer_authentication
-        payer_authentication.id.should match(/\A[a-z0-9]+\z/)
-        payer_authentication.post_url.should match(%r{\Ahttps?://})
-        payer_authentication.post_params.size.should == 1
-        payer_authentication.post_params.first.name.should == "PaReq"
-        payer_authentication.post_params.first.value.should_not be_empty
-
-        result = Braintree::PayerAuthentication.authenticate(
-          payer_authentication.id,
-          Braintree::Test::CreditCardNumbers::PayerAuthentication::AuthenticationSuccessfulPayload
-        )
-
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6}$/
-        result.transaction.type.should == "sale"
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.processor_authorization_code.should_not be_nil
-        result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Maestro[0, 6]
-        result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Maestro[-4..-1]
-        result.transaction.credit_card_details.expiration_date.should == "01/2012"
-        result.transaction.credit_card_details.customer_location.should == "US"
-      end
-
-      it "attempts to create the transaction on an unsuccessful authentication" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => "secure_code_ma",
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::PayerAuthentication::ValidMaestro,
-            :expiration_date => "01/2012"
-          }
-        )
-
-        result.success?.should == false
-        result.payer_authentication_required?.should == true
-
-        payer_authentication = result.payer_authentication
-        payer_authentication.id.should match(/\A[a-z0-9]+\z/)
-        payer_authentication.post_url.should match(%r{\Ahttps?://})
-        payer_authentication.post_params.size.should == 1
-        payer_authentication.post_params.first.name.should == "PaReq"
-        payer_authentication.post_params.first.value.should_not be_empty
-
-        result = Braintree::PayerAuthentication.authenticate(
-          payer_authentication.id,
-          Braintree::Test::CreditCardNumbers::PayerAuthentication::AuthenticationFailedPayload
-        )
-
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6}$/
-        result.transaction.type.should == "sale"
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.processor_authorization_code.should_not be_nil
-        result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Maestro[0, 6]
-        result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Maestro[-4..-1]
-        result.transaction.credit_card_details.expiration_date.should == "01/2012"
-        result.transaction.credit_card_details.customer_location.should == "US"
-      end
-
-      it "runs a regular transaction on unsuccessful lookup" do
-        cc_number = Braintree::Test::CreditCardNumbers::PayerAuthentication::InvalidMaestro
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => "secure_code_ma",
-          :credit_card => {
-            :number => cc_number,
-            :expiration_date => "01/2012"
-          }
-        )
-
-        result.payer_authentication_required?.should == false
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6}$/
-        result.transaction.type.should == "sale"
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.processor_authorization_code.should_not be_nil
-        result.transaction.credit_card_details.bin.should == cc_number[0, 6]
-        result.transaction.credit_card_details.last_4.should == cc_number[-4..-1]
-        result.transaction.credit_card_details.expiration_date.should == "01/2012"
-        result.transaction.credit_card_details.customer_location.should == "US"
-      end
     end
 
     context "gateway rejection reason" do

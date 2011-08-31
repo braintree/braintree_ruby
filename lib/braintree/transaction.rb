@@ -81,6 +81,14 @@ module Braintree
       return_object_or_raise(:transaction) { create(attributes) }
     end
 
+    def self.clone_transaction(transaction_id, attributes)
+      Configuration.gateway.transaction.clone_transaction(transaction_id, attributes)
+    end
+
+    def self.clone_transaction!(transaction_id, attributes)
+      return_object_or_raise(:transaction) { clone_transaction(transaction_id, attributes) }
+    end
+
     # Deprecated. Use Braintree::TransparentRedirect.confirm
     #
     # See http://www.braintreepayments.com/docs/ruby/transactions/create_tr
