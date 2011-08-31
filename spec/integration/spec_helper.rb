@@ -17,4 +17,5 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     10.times { unless File.exists?(web_server_pid_file); sleep 1; end }
     Process.kill "INT", File.read(web_server_pid_file).to_i
   end
+
 end

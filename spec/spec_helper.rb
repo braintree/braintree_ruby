@@ -26,6 +26,10 @@ unless defined?(SPEC_HELPER_LOADED)
     end
   end
 
+  def now_in_eastern
+      (Time.now.utc - 5*60*60).strftime("%Y-%m-%d")
+  end
+
   module SpecHelper
 
     DefaultMerchantAccountId = "sandbox_credit_card"
