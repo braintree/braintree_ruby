@@ -1,3 +1,5 @@
+$:.unshift File.expand_path(File.dirname(__FILE__))
+
 require "bigdecimal"
 require "cgi"
 require "date"
@@ -15,62 +17,54 @@ require "zlib"
 require "builder"
 
 module Braintree
+  autoload :BaseModule,                    'braintree/base_module'
+  autoload :Modification,                  'braintree/modification'
+  autoload :AddOn,                         'braintree/add_on'
+  autoload :AddOnGateway,                  'braintree/add_on_gateway'
+  autoload :Address,                       'braintree/address'
+  autoload :AddressGateway,                'braintree/address_gateway'
+  autoload :AdvancedSearch,                'braintree/advanced_search'
+  autoload :Configuration,                 'braintree/configuration'
+  autoload :CreditCard,                    'braintree/credit_card'
+  autoload :CreditCardGateway,             'braintree/credit_card_gateway'
+  autoload :CreditCardVerification,        'braintree/credit_card_verification'
+  autoload :Customer,                      'braintree/customer'
+  autoload :CustomerGateway,               'braintree/customer_gateway'
+  autoload :CustomerSearch,                'braintree/customer_search'
+  autoload :Descriptor,                    'braintree/descriptor'
+  autoload :Digest,                        'braintree/digest'
+  autoload :Discount,                      'braintree/discount'
+  autoload :DiscountGateway,               'braintree/discount_gateway'
+  autoload :ErrorCodes,                    'braintree/error_codes'
+  autoload :ErrorResult,                   'braintree/error_result'
+  autoload :Errors,                        'braintree/errors'
+  autoload :Gateway,                       'braintree/gateway'
+  autoload :Http,                          'braintree/http'
+  autoload :Plan,                          'braintree/plan'
+  autoload :PlanGateway,                   'braintree/plan_gateway'
+  autoload :SettlementBatchSummary,        'braintree/settlement_batch_summary'
+  autoload :SettlementBatchSummaryGateway, 'braintree/settlement_batch_summary_gateway'
+  autoload :ResourceCollection,            'braintree/resource_collection'
+  autoload :Subscription,                  'braintree/subscription'
+  autoload :SubscriptionGateway,           'braintree/subscription_gateway'
+  autoload :SubscriptionSearch,            'braintree/subscription_search'
+  autoload :SuccessfulResult,              'braintree/successful_result'
+
+  module Test
+    autoload :CreditCardNumbers,           'braintree/test/credit_card_numbers'
+    autoload :TransactionAmounts,          'braintree/test/transaction_amounts'
+  end
+
+  autoload :Transaction,                   'braintree/transaction'
+  autoload :TransactionGateway,            'braintree/transaction_gateway'
+  autoload :TransactionSearch,             'braintree/transaction_search'
+  autoload :TransparentRedirect,           'braintree/transparent_redirect'
+  autoload :TransparentRedirectGateway,    'braintree/transparent_redirect_gateway'
+  autoload :Util,                          'braintree/util'
+  autoload :ValidationError,               'braintree/validation_error'
+  autoload :ValidationErrorCollection,     'braintree/validation_error_collection'
+  autoload :Xml,                           'braintree/xml'
+  autoload :Version,                       'braintree/version'
 end
 
-require File.dirname(__FILE__) + "/braintree/exceptions"
-require File.dirname(__FILE__) + "/braintree/base_module"
-require File.dirname(__FILE__) + "/braintree/modification"
-
-require File.dirname(__FILE__) + "/braintree/add_on"
-require File.dirname(__FILE__) + "/braintree/add_on_gateway"
-require File.dirname(__FILE__) + "/braintree/address/country_names"
-require File.dirname(__FILE__) + "/braintree/address"
-require File.dirname(__FILE__) + "/braintree/address_gateway"
-require File.dirname(__FILE__) + "/braintree/advanced_search"
-require File.dirname(__FILE__) + "/braintree/configuration"
-require File.dirname(__FILE__) + "/braintree/credit_card"
-require File.dirname(__FILE__) + "/braintree/credit_card_gateway"
-require File.dirname(__FILE__) + "/braintree/credit_card_verification"
-require File.dirname(__FILE__) + "/braintree/customer"
-require File.dirname(__FILE__) + "/braintree/customer_gateway"
-require File.dirname(__FILE__) + "/braintree/customer_search"
-require File.dirname(__FILE__) + "/braintree/descriptor"
-require File.dirname(__FILE__) + "/braintree/digest"
-require File.dirname(__FILE__) + "/braintree/discount"
-require File.dirname(__FILE__) + "/braintree/discount_gateway"
-require File.dirname(__FILE__) + "/braintree/error_codes"
-require File.dirname(__FILE__) + "/braintree/error_result"
-require File.dirname(__FILE__) + "/braintree/errors"
-require File.dirname(__FILE__) + "/braintree/gateway"
-require File.dirname(__FILE__) + "/braintree/http"
-require File.dirname(__FILE__) + "/braintree/plan"
-require File.dirname(__FILE__) + "/braintree/plan_gateway"
-require File.dirname(__FILE__) + "/braintree/settlement_batch_summary"
-require File.dirname(__FILE__) + "/braintree/settlement_batch_summary_gateway"
-require File.dirname(__FILE__) + "/braintree/resource_collection"
-require File.dirname(__FILE__) + "/braintree/subscription"
-require File.dirname(__FILE__) + "/braintree/subscription_gateway"
-require File.dirname(__FILE__) + "/braintree/subscription_search"
-require File.dirname(__FILE__) + "/braintree/successful_result"
-require File.dirname(__FILE__) + "/braintree/test/credit_card_numbers"
-require File.dirname(__FILE__) + "/braintree/test/transaction_amounts"
-require File.dirname(__FILE__) + "/braintree/transaction"
-require File.dirname(__FILE__) + "/braintree/transaction/address_details"
-require File.dirname(__FILE__) + "/braintree/transaction/credit_card_details"
-require File.dirname(__FILE__) + "/braintree/transaction/customer_details"
-require File.dirname(__FILE__) + "/braintree/transaction/subscription_details"
-require File.dirname(__FILE__) + "/braintree/transaction_gateway"
-require File.dirname(__FILE__) + "/braintree/transaction_search"
-require File.dirname(__FILE__) + "/braintree/transaction/status_details"
-require File.dirname(__FILE__) + "/braintree/transparent_redirect"
-require File.dirname(__FILE__) + "/braintree/transparent_redirect_gateway"
-require File.dirname(__FILE__) + "/braintree/util"
-require File.dirname(__FILE__) + "/braintree/validation_error"
-require File.dirname(__FILE__) + "/braintree/validation_error_collection"
-require File.dirname(__FILE__) + "/braintree/version"
-require File.dirname(__FILE__) + "/braintree/xml"
-require File.dirname(__FILE__) + "/braintree/xml/generator"
-require File.dirname(__FILE__) + "/braintree/xml/libxml"
-require File.dirname(__FILE__) + "/braintree/xml/rexml"
-require File.dirname(__FILE__) + "/braintree/xml/parser"
-
+require "braintree/exceptions"
