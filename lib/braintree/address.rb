@@ -1,3 +1,5 @@
+require 'braintree/address/country_names'
+
 module Braintree
   # See http://www.braintreepayments.com/docs/ruby/addresses/details
   class Address
