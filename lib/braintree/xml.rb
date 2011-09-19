@@ -1,3 +1,8 @@
+require 'braintree/xml/generator'
+require 'braintree/xml/libxml'
+require 'braintree/xml/rexml'
+require 'braintree/xml/parser'
+
 module Braintree
   module Xml # :nodoc:
     def self.hash_from_xml(xml)
