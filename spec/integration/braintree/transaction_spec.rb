@@ -83,7 +83,6 @@ describe Braintree::Transaction do
       result.success?.should be_false
 
       result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotCloneCredit
-      result.errors.for(:transaction).on(:submit_for_settlement).first.code.should == Braintree::ErrorCodes::Transaction::Options::SubmitForSettlementIsRequiredForCloning
     end
   end
 
