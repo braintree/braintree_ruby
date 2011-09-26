@@ -15,7 +15,8 @@ module Braintree
         standardized_hash_structure = parser.parse(xml)
         with_underscores_in_keys = _unrename_keys(standardized_hash_structure)
         typecasted_xml = _typecast_xml_value(with_underscores_in_keys)
-        Util.symbolize_keys(typecasted_xml)
+        result = Util.symbolize_keys(typecasted_xml)
+        result
       end
 
       def self._determine_parser
