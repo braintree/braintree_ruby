@@ -184,6 +184,8 @@ module Braintree
       PaymentMethodTokenIsInvalid = "91518"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
+      ProcessorDoesNotSupportCredits = "91546"
+      ProcessorDoesNotSupportVoiceAuthorizations = "91545"
       PurchaseOrderNumberIsTooLong = "91537"
       RefundAmountIsTooLarge = "91521"
       SettlementAmountIsTooLarge = "91522"
