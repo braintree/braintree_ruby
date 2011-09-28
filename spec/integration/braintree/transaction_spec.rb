@@ -1624,6 +1624,13 @@ describe Braintree::Transaction do
         Braintree::Transaction.find("invalid-id")
       end.to raise_error(Braintree::NotFoundError, 'transaction with id "invalid-id" not found')
     end
+
+    # This exposes the problem found in Github Issue #12/Mingle #2621
+    # it "raises a NotFoundError exception if the id is an empty string" do
+    #   expect do
+    #     Braintree::Transaction.find("")
+    #   end.to raise_error(Braintree::NotFoundError, 'transaction with id "invalid-id" not found')
+    # end
   end
 
   describe "self.void" do
