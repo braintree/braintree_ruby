@@ -1,9 +1,3 @@
-require 'braintree/transaction/address_details'
-require 'braintree/transaction/credit_card_details'
-require 'braintree/transaction/customer_details'
-require 'braintree/transaction/subscription_details'
-require 'braintree/transaction/status_details'
-
 module Braintree
   # See http://www.braintreepayments.com/docs/ruby/transactions/overview
   class Transaction
