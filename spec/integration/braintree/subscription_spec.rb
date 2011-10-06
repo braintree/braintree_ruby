@@ -623,13 +623,6 @@ describe Braintree::Subscription do
         Braintree::Subscription.find('noSuchSubscription')
       }.to raise_error(Braintree::NotFoundError, 'subscription with id "noSuchSubscription" not found')
     end
-
-    # This exposes the problem found in Github Issue #12/Mingle #2621
-    # it "raises Braintree::NotFoundError if id is empty string" do
-    #   expect {
-    #     Braintree::Subscription.find('')
-    #   }.to raise_error(Braintree::NotFoundError, 'subscription with id "noSuchSubscription" not found')
-    # end
   end
 
   describe "self.update" do
