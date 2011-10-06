@@ -27,7 +27,7 @@ describe Braintree::SettlementBatchSummary do
       )
       SpecHelper.settle_transaction transaction.id
 
-      result = Braintree::SettlementBatchSummary.generate(Time.now.strftime("%Y-%m-%d"))
+      result = Braintree::SettlementBatchSummary.generate(now_in_eastern)
       result.should be_success
       amex_records = result.settlement_batch_summary.records.select {|row| row[:card_type] == Braintree::CreditCard::CardType::AmEx }
       amex_records.first[:count].to_i.should >= 1
@@ -49,7 +49,7 @@ describe Braintree::SettlementBatchSummary do
       )
       SpecHelper.settle_transaction transaction.id
 
-      result = Braintree::SettlementBatchSummary.generate(Time.now.strftime("%Y-%m-%d"), 'store_me')
+      result = Braintree::SettlementBatchSummary.generate(now_in_eastern, 'store_me')
       result.should be_success
 
       amex_records = result.settlement_batch_summary.records.select {|row| row[:store_me] == "1" }

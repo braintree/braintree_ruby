@@ -12,6 +12,10 @@ module Braintree
       end
     end
 
+    def add_on
+      AddOnGateway.new(self)
+    end
+
     def address
       AddressGateway.new(self)
     end
@@ -22,6 +26,14 @@ module Braintree
 
     def customer
       CustomerGateway.new(self)
+    end
+
+    def discount
+      DiscountGateway.new(self)
+    end
+
+    def plan
+      PlanGateway.new(self)
     end
 
     def settlement_batch_summary

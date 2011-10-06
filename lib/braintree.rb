@@ -14,14 +14,13 @@ require "zlib"
 
 require "builder"
 
-module Braintree
-end
-
 require File.dirname(__FILE__) + "/braintree/exceptions"
+
 require File.dirname(__FILE__) + "/braintree/base_module"
 require File.dirname(__FILE__) + "/braintree/modification"
 
 require File.dirname(__FILE__) + "/braintree/add_on"
+require File.dirname(__FILE__) + "/braintree/add_on_gateway"
 require File.dirname(__FILE__) + "/braintree/address/country_names"
 require File.dirname(__FILE__) + "/braintree/address"
 require File.dirname(__FILE__) + "/braintree/address_gateway"
@@ -36,11 +35,14 @@ require File.dirname(__FILE__) + "/braintree/customer_search"
 require File.dirname(__FILE__) + "/braintree/descriptor"
 require File.dirname(__FILE__) + "/braintree/digest"
 require File.dirname(__FILE__) + "/braintree/discount"
+require File.dirname(__FILE__) + "/braintree/discount_gateway"
 require File.dirname(__FILE__) + "/braintree/error_codes"
 require File.dirname(__FILE__) + "/braintree/error_result"
 require File.dirname(__FILE__) + "/braintree/errors"
 require File.dirname(__FILE__) + "/braintree/gateway"
 require File.dirname(__FILE__) + "/braintree/http"
+require File.dirname(__FILE__) + "/braintree/plan"
+require File.dirname(__FILE__) + "/braintree/plan_gateway"
 require File.dirname(__FILE__) + "/braintree/settlement_batch_summary"
 require File.dirname(__FILE__) + "/braintree/settlement_batch_summary_gateway"
 require File.dirname(__FILE__) + "/braintree/resource_collection"
@@ -69,4 +71,3 @@ require File.dirname(__FILE__) + "/braintree/xml/generator"
 require File.dirname(__FILE__) + "/braintree/xml/libxml"
 require File.dirname(__FILE__) + "/braintree/xml/rexml"
 require File.dirname(__FILE__) + "/braintree/xml/parser"
-

@@ -158,6 +158,10 @@ module Braintree
       AmountMustBeGreaterThanZero = "81531"
       BillingAddressConflict = "91530"
       CannotBeVoided = "91504"
+      CannotCloneCredit = "91543"
+      CannotCloneTransactionWithVaultCreditCard = "91540"
+      CannotCloneUnsuccessfulTransaction = "91542"
+      CannotCloneVoiceAuthorizations = "91541"
       CannotRefundCredit = "91505"
       CannotRefundUnlessSettled = "91506"
       CannotRefundWithSuspendedMerchantAccount = "91538"
@@ -180,6 +184,8 @@ module Braintree
       PaymentMethodTokenIsInvalid = "91518"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
+      ProcessorDoesNotSupportCredits = "91546"
+      ProcessorDoesNotSupportVoiceAuthorizations = "91545"
       PurchaseOrderNumberIsTooLong = "91537"
       RefundAmountIsTooLarge = "91521"
       SettlementAmountIsTooLarge = "91522"
@@ -194,6 +200,7 @@ module Braintree
       UnsupportedVoiceAuthorization = "91539"
 
       module Options
+        SubmitForSettlementIsRequiredForCloning = "91544"
         VaultIsDisabled = "91525"
       end
     end

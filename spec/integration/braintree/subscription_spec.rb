@@ -591,6 +591,7 @@ describe Braintree::Subscription do
       subscription.paid_through_date.should match(date_format)
 
       subscription.failure_count.should == 0
+      subscription.current_billing_cycle.should == 1
       subscription.next_bill_amount.should == "12.34"
       subscription.next_billing_period_amount.should == "12.34"
       subscription.payment_method_token.should == @credit_card.token

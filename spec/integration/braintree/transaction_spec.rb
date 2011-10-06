@@ -1,6 +1,119 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::Transaction do
+  describe "self.clone_transaction" do
+    it "creates a new transaction from the card of the transaction to clone" do
+      result = Braintree::Transaction.sale(
+        :amount => "112.44",
+        :customer => {
+          :last_name => "Adama",
+        },
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :country_name => "Botswana",
+          :country_code_alpha2 => "BW",
+          :country_code_alpha3 => "BWA",
+          :country_code_numeric => "072"
+        },
+        :shipping => {
+          :country_name => "Bhutan",
+          :country_code_alpha2 => "BT",
+          :country_code_alpha3 => "BTN",
+          :country_code_numeric => "064"
+        }
+      )
+      result.success?.should == true
+
+      clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {
+        :submit_for_settlement => false
+      })
+      clone_result.success?.should == true
+
+      transaction = clone_result.transaction
+
+      transaction.id.should_not == result.transaction.id
+      transaction.amount.should == BigDecimal.new("112.44")
+
+      transaction.billing_details.country_name.should == "Botswana"
+      transaction.billing_details.country_code_alpha2.should == "BW"
+      transaction.billing_details.country_code_alpha3.should == "BWA"
+      transaction.billing_details.country_code_numeric.should == "072"
+
+      transaction.shipping_details.country_name.should == "Bhutan"
+      transaction.shipping_details.country_code_alpha2.should == "BT"
+      transaction.shipping_details.country_code_alpha3.should == "BTN"
+      transaction.shipping_details.country_code_numeric.should == "064"
+
+      transaction.credit_card_details.masked_number.should == "510510******5100"
+      transaction.credit_card_details.expiration_date.should == "05/2012"
+
+      transaction.customer_details.last_name.should == "Adama"
+      transaction.status.should == Braintree::Transaction::Status::Authorized
+    end
+
+    it "submit for settlement option" do
+      result = Braintree::Transaction.sale(
+        :amount => "112.44",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        }
+      )
+
+      result.success?.should be_true
+
+      clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {:submit_for_settlement => true})
+      clone_result.success?.should == true
+
+      clone_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+    end
+
+    it "handles validation errors" do
+      transaction = Braintree::Transaction.credit!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result = Braintree::Transaction.clone_transaction(transaction.id, :amount => "112.44")
+      result.success?.should be_false
+
+      result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotCloneCredit
+    end
+  end
+
+  describe "self.clone_transaction!" do
+    it "returns the transaction if valid" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "112.44", :options => {:submit_for_settlement => false})
+      clone_transaction.id.should_not == transaction.id
+    end
+
+    it "raises a validationsfailed if invalid" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      expect do
+        clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "im not a number")
+        clone_transaction.id.should_not == transaction.id
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
   describe "self.create" do
     it "returns a successful result if successful" do
       result = Braintree::Transaction.create(

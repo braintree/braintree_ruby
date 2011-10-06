@@ -28,6 +28,7 @@ module Braintree
     attr_reader :number_of_billing_cycles, :billing_day_of_month
     attr_reader :add_ons, :discounts
     attr_reader :descriptor
+    attr_reader :current_billing_cycle
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/cancel
     def self.cancel(subscription_id)
