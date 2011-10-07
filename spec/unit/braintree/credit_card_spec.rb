@@ -119,6 +119,26 @@ describe Braintree::CreditCard do
     end
   end
 
+  describe "self.find" do
+    it "raises error if passed empty string" do
+      expect do
+        Braintree::CreditCard.find("")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed invalid string" do
+      expect do
+        Braintree::CreditCard.find("\t")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed nil" do
+      expect do
+        Braintree::CreditCard.find(nil)
+      end.to raise_error(ArgumentError)
+    end
+  end
+
   describe "inspect" do
     it "includes the token first" do
       output = Braintree::CreditCard._new(:gateway, :token => "cc123").inspect

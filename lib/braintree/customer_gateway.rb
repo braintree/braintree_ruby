@@ -33,7 +33,7 @@ module Braintree
 
     def find(customer_id)
       raise ArgumentError, "customer_id contains invalid characters" unless customer_id.to_s =~ /\A[\w-]+\z/
-      raise ArgumentError, "customer_id cannot be blank" if customer_id.to_s == ""
+      raise ArgumentError, "customer_id cannot be blank" if customer_id.nil?|| customer_id.strip.to_s == ""
       response = @config.http.get("/customers/#{customer_id}")
       Customer._new(@gateway, response[:customer])
     rescue NotFoundError

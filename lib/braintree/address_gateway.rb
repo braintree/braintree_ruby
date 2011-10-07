@@ -31,6 +31,7 @@ module Braintree
 
     def find(customer_or_customer_id, address_id)
       customer_id = _determine_customer_id(customer_or_customer_id)
+      raise ArgumentError if address_id.nil? || address_id.strip.to_s == ""
       response = @config.http.get("/customers/#{customer_id}/addresses/#{address_id}")
       Address._new(@gateway, response[:address])
     rescue NotFoundError

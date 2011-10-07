@@ -41,6 +41,20 @@ describe Braintree::Customer do
     end
   end
 
+  describe "self.find" do
+    it "raises an exception if the id is blank" do
+      expect do
+        Braintree::Customer.find("  ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the id is nil" do
+      expect do
+        Braintree::Customer.find(nil)
+      end.to raise_error(ArgumentError)
+    end
+  end
+
   describe "self.update" do
     it "raises an exception if hash includes an invalid key" do
       expect do
