@@ -1,4 +1,5 @@
-require 'lib/braintree/version'
+$:.push File.expand_path("../lib", __FILE__)
+require 'braintree/version'
 
 Gem::Specification.new do |s|
   s.name = "braintree"
@@ -10,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://www.braintreepayments.com/"
   s.rubyforge_project = "braintree"
   s.has_rdoc = false
-  s.files = Dir.glob ["README.rdoc", "LICENSE", "{lib,spec}/**/*.rb", "lib/**/*.crt", "braintree.gemspec"]
+  s.files = Dir.glob ["README.rdoc", "LICENSE", "{lib,spec}/**/*.rb", "lib/**/*.crt", "*.gemspec"]
   s.add_dependency "builder", ">= 2.0.0"
 end
 
