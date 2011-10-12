@@ -101,7 +101,7 @@ module Braintree
       when :production
         "www.braintreegateway.com"
       when :qa
-        "qa-master.braintreegateway.com"
+        "qa.braintreegateway.com"
       when :sandbox
         "sandbox.braintreegateway.com"
       end
