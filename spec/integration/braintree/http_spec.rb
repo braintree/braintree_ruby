@@ -88,7 +88,7 @@ describe Braintree::Http do
       it "rejects when the certificate isn't verified by our certificate authority (self-signed)" do
         config = Braintree::Configuration.instantiate
         config.stub(:ssl?).and_return(true)
-        config.stub(:port).and_return(8443)
+        config.stub(:port).and_return(SSL_TEST_PORT)
 
         start_ssl_server do
           expect do
@@ -104,7 +104,7 @@ describe Braintree::Http do
           File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "ssl", "geotrust_global.crt"))
         )
         config.stub(:ssl?).and_return(true)
-        config.stub(:port).and_return(8443)
+        config.stub(:port).and_return(SSL_TEST_PORT)
 
         start_ssl_server do
           expect do
