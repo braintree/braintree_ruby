@@ -1,14 +1,10 @@
+require "bundler"
+Bundler.setup
+require 'braintree'
+require 'xml/libxml'
+
 unless defined?(SPEC_HELPER_LOADED)
   SPEC_HELPER_LOADED = true
-
-  project_root = File.expand_path(File.dirname(__FILE__) + "/..")
-  require "rubygems"
-  gem "libxml-ruby", ENV["LIBXML_VERSION"] || "1.1.3"
-  require "libxml"
-  gem "builder", ENV["BUILDER_VERSION"] || "2.1.2"
-  braintree_lib = "#{project_root}/lib"
-  $LOAD_PATH << braintree_lib
-  require "braintree"
 
   Braintree::Configuration.environment = :development
   Braintree::Configuration.merchant_id = "integration_merchant_id"
