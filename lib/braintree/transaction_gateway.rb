@@ -31,6 +31,7 @@ module Braintree
     end
 
     def find(id)
+      raise ArgumentError if id.nil? || id.strip.to_s == ""
       response = @config.http.get "/transactions/#{id}"
       Transaction._new(@gateway, response[:transaction])
     rescue NotFoundError

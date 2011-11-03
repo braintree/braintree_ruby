@@ -174,7 +174,8 @@ module Braintree
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
       MerchantAccountIdIsInvalid = "91513"
-      MerchantAccountIsSuspended = "91514"
+      MerchantAccountIsSuspended = "91515"
+      MerchantAccountDoesNotSupportRefunds = "91547"
       MerchantAccountNameIsInvalid = "91513" # Deprecated
       OrderIdIsTooLong = "91501"
       PaymentMethodConflict = "91515"

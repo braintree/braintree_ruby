@@ -56,7 +56,7 @@ module Braintree
       Transaction::Source::ControlPanel,
       Transaction::Source::Recurring
     ]
-    multiple_value_field :type
+    multiple_value_field :type, :allows => Transaction::Type::All
 
     key_value_fields :refund
 

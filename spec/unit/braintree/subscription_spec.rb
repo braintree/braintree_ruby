@@ -22,6 +22,26 @@ describe Braintree::Subscription do
     end
   end
 
+  describe "self.find" do
+    it "raises error if passed empty string" do
+      expect do
+        Braintree::Subscription.find("")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed empty string wth space" do
+      expect do
+        Braintree::Subscription.find(" ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed nil" do
+      expect do
+        Braintree::Subscription.find(nil)
+      end.to raise_error(ArgumentError)
+    end
+  end
+
   describe "self.search" do
     it "only allows specified values for status" do
       lambda do

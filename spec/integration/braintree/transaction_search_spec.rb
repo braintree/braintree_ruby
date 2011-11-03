@@ -381,6 +381,17 @@ describe Braintree::Transaction, "search" do
       end
     end
 
+    context "invalid search" do
+      it "raises an exception on invalid transaction type" do
+        expect do
+          collection = Braintree::Transaction.search do |search|
+            search.customer_id.is "9171566"
+            search.type.is "settled"
+          end
+        end.to raise_error(ArgumentError)
+      end
+    end
+
     context "range fields" do
       context "amount" do
         it "searches on amount" do

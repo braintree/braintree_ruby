@@ -39,6 +39,8 @@ module Braintree
     module Type # :nodoc:
       Credit = "credit" # :nodoc:
       Sale = "sale" # :nodoc:
+
+      All = constants.map { |c| const_get(c) }
     end
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code

@@ -66,6 +66,18 @@ describe Braintree::Address do
         Braintree::Address.find("spaces not allowed", "address_id")
       end.to raise_error(ArgumentError, "customer_id contains invalid characters")
     end
+
+    it "raises an error if address_id is blank" do
+      expect do
+        Braintree::Address.find("customer_id", "")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an error if address_id is blank" do
+      expect do
+        Braintree::Address.find("customer_id", nil)
+      end.to raise_error(ArgumentError)
+    end
   end
 
   describe "self.new" do

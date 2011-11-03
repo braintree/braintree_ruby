@@ -195,6 +195,11 @@ describe Braintree::Configuration do
       Braintree::Configuration.environment = :sandbox
       Braintree::Configuration.instantiate.server.should == "sandbox.braintreegateway.com"
     end
+
+    it "is qa.braintreegateway.com for qa" do
+      Braintree::Configuration.environment = :qa
+      Braintree::Configuration.instantiate.server.should == "qa.braintreegateway.com"
+    end
   end
 
   describe "ssl?" do
