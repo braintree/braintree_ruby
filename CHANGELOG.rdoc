@@ -1,3 +1,8 @@
+== 2.13.0
+
+* Added new error code for merchant accounts that do not support refunds
+* Added GEMSPEC file
+
 == 2.12.0
 
 * Added ability to retrieve all Plans, AddOns and Discounts
