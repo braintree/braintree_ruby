@@ -108,6 +108,7 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       @credit_cards = (@credit_cards || []).map { |pm| CreditCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
+      @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault

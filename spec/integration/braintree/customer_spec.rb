@@ -211,6 +211,16 @@ describe Braintree::Customer do
       result.customer.custom_fields[:store_me].should == "custom value"
     end
 
+    it "returns empty hash for custom fields when blank" do
+      result = Braintree::Customer.create(
+        :first_name => "Bill",
+        :last_name => "Gates",
+        :custom_fields => { :store_me => "" }
+      )
+      result.success?.should == true
+      result.customer.custom_fields.should == {}
+    end
+
     it "returns nested errors if credit card and/or billing address are invalid" do
       result = Braintree::Customer.create(
         :email => "invalid",
