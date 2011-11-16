@@ -396,6 +396,23 @@ describe Braintree::Transaction do
       result.transaction.custom_fields.should == {:store_me => "custom value"}
     end
 
+    it "returns nil if a custom field is not defined" do
+      create_result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2012"
+        },
+        :custom_fields => {
+          :store_me => ""
+        }
+      )
+
+      result = Braintree::Transaction.find(create_result.transaction.id)
+
+      result.custom_fields.should == {}
+    end
+
     it "returns an error if custom_field is not registered" do
       result = Braintree::Transaction.create(
         :type => "sale",

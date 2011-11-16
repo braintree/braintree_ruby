@@ -172,6 +172,7 @@ module Braintree
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @tax_amount = Util.to_big_decimal(tax_amount)
       @descriptor = Descriptor.new(@descriptor)
+      @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
     end

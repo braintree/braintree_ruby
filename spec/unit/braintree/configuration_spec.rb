@@ -11,9 +11,10 @@ describe Braintree::Configuration do
 
   after do
     Braintree::Configuration.merchant_id = @original_merchant_id
-    Braintree::Configuration.public_key  = @original_public_key
+    Braintree::Configuration.public_key = @original_public_key
     Braintree::Configuration.private_key = @original_private_key
     Braintree::Configuration.environment = @original_environment
+    Braintree::Configuration.endpoint = Braintree::Configuration::DEFAULT_ENDPOINT
   end
 
   describe "base_merchant_path" do
@@ -180,7 +181,7 @@ describe Braintree::Configuration do
 
   end
 
-  describe "self.server" do
+  describe "server" do
     it "is localhost for development" do
       Braintree::Configuration.environment = :development
       Braintree::Configuration.instantiate.server.should == "localhost"
@@ -199,6 +200,12 @@ describe Braintree::Configuration do
     it "is qa.braintreegateway.com for qa" do
       Braintree::Configuration.environment = :qa
       Braintree::Configuration.instantiate.server.should == "qa.braintreegateway.com"
+    end
+
+    it "can by changed by configuring the production endpoint" do
+      Braintree::Configuration.environment = :production
+      Braintree::Configuration.endpoint = "custom-endpoint"
+      Braintree::Configuration.instantiate.server.should == "custom-endpoint.braintreegateway.com"
     end
   end
 

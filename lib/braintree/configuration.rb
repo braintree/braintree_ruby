@@ -2,9 +2,10 @@ module Braintree
   # See http://www.braintreepayments.com/docs/ruby
   class Configuration
     API_VERSION = "2" # :nodoc:
+    DEFAULT_ENDPOINT = "www" # :nodoc:
 
     class << self
-      attr_writer :custom_user_agent, :logger, :merchant_id, :public_key, :private_key
+      attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id, :public_key, :private_key
     end
     attr_reader :merchant_id, :public_key, :private_key
 
@@ -34,6 +35,7 @@ module Braintree
     def self.instantiate # :nodoc:
       config = new(
         :custom_user_agent => @custom_user_agent,
+        :endpoint => @endpoint,
         :environment => environment,
         :logger => logger,
         :merchant_id => merchant_id,
@@ -47,7 +49,7 @@ module Braintree
     end
 
     def initialize(options = {})
-      [:environment, :merchant_id, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
+      [:endpoint, :environment, :merchant_id, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
         instance_variable_set "@#{attr}", options[attr]
       end
     end
@@ -71,6 +73,10 @@ module Braintree
       when :production
         File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "www_braintreegateway_com.ca.crt"))
       end
+    end
+
+    def endpoint
+      @endpoint || DEFAULT_ENDPOINT
     end
 
     def http # :nodoc:
@@ -99,7 +105,7 @@ module Braintree
       when :development
         "localhost"
       when :production
-        "www.braintreegateway.com"
+        "#{endpoint}.braintreegateway.com"
       when :qa
         "qa.braintreegateway.com"
       when :sandbox
