@@ -1,3 +1,7 @@
+== 2.13.1
+
+* Made the production endpoint configurable
+
 == 2.13.0
 
 * Added new error code for merchant accounts that do not support refunds
