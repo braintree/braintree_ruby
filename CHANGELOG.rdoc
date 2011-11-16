@@ -1,3 +1,7 @@
+== 2.10.3
+
+* Made the production endpoint configurable
+
 == 2.10.2
 
 * Added support for international Maestro cards with payer authentication
