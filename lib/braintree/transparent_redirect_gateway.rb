@@ -39,7 +39,7 @@ module Braintree
 
     def parse_and_validate_query_string(query_string) # :nodoc:
       params = Util.symbolize_keys(Util.parse_query_string(query_string))
-      query_string_without_hash = query_string.split("&").reject{|param| param.start_with?("hash=")}.join("&")
+      query_string_without_hash = query_string.split("&").reject{|param| param =~ /\Ahash=/}.join("&")
 
       if params[:http_status] == nil
         raise UnexpectedError, "expected query string to have an http_status param"
