@@ -747,7 +747,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
           },
-            :purchase_order_number => "ßå∂"
+            :purchase_order_number => "\303\237\303\245\342\210\202"
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsInvalid
