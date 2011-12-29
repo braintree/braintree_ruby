@@ -188,6 +188,7 @@ module Braintree
       ProcessorDoesNotSupportCredits = "91546"
       ProcessorDoesNotSupportVoiceAuthorizations = "91545"
       PurchaseOrderNumberIsTooLong = "91537"
+      PurchaseOrderNumberIsInvalid = "91548"
       RefundAmountIsTooLarge = "91521"
       SettlementAmountIsTooLarge = "91522"
       SubscriptionDoesNotBelongToCustomer = "91529"
