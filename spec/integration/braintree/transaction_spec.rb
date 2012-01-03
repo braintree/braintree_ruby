@@ -713,19 +713,45 @@ describe Braintree::Transaction do
         result.transaction.purchase_order_number.should be_nil
       end
 
-      it "has validation errors" do
-        result = Braintree::Transaction.sale(
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
+      context "validations" do
+        it "tax_amount" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
           },
-          :tax_amount => 'abcd',
-          :purchase_order_number => 'a' * 18
-        )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::Transaction::TaxAmountFormatIsInvalid
-        result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsTooLong
+            :tax_amount => 'abcd'
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::Transaction::TaxAmountFormatIsInvalid
+        end
+
+        it "purchase_order_number length" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+            :purchase_order_number => 'a' * 18
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsTooLong
+        end
+
+        it "purchase_order_number format" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+            :purchase_order_number => "\303\237\303\245\342\210\202"
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsInvalid
+        end
       end
     end
 

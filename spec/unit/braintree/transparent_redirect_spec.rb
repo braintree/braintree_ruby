@@ -31,6 +31,24 @@ describe Braintree::TransparentRedirect do
       result.should == {:one => "1", :two => "2", :http_status => "200", :hash => hash}
     end
 
+    it "returns the parsed query string params if the hash is valid and hash is first parameter" do
+      query_string_without_hash = "one=1&two=2&http_status=200"
+      hash = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, query_string_without_hash)
+
+      query_string_with_hash = "hash=#{hash}&#{query_string_without_hash}"
+      result = Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string query_string_with_hash
+      result.should == {:one => "1", :two => "2", :http_status => "200", :hash => hash}
+    end
+
+    it "returns the parsed query string params regardless of hash position if the hash is valid" do
+      query_string_without_hash = "one=1&two=2&http_status=200"
+      hash = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, query_string_without_hash)
+
+      query_string_with_hash = "one=1&hash=#{hash}&two=2&http_status=200"
+      result = Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string query_string_with_hash
+      result.should == {:one => "1", :two => "2", :http_status => "200", :hash => hash}
+    end
+
     it "raises Braintree::ForgedQueryString if the hash param is not valid" do
       query_string_without_hash = "http_status=200&one=1&two=2"
       hash = Digest::SHA1.hexdigest("invalid#{query_string_without_hash}")
