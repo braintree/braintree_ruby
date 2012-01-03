@@ -1,3 +1,9 @@
+== 2.13.2
+
+* Added error code for invalid purchase order number
+* Changes transparent redirect query string regexp to allow hash to appear
+anywhere in params string
+
 == 2.13.1
 
 * Made the production endpoint configurable
