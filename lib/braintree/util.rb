@@ -20,13 +20,17 @@ module Braintree
     def self.parse_query_string(qs)
       qs.split('&').inject({}) do |result, couplet|
         pair = couplet.split('=')
-        result[CGI.unescape(pair[0]).to_sym] = CGI.unescape(pair[1])
+        result[url_decode(pair[0]).to_sym] = url_decode(pair[1])
         result
       end
     end
 
     def self.url_encode(text)
       CGI.escape text.to_s
+    end
+
+    def self.url_decode(text)
+      CGI.unescape text.to_s
     end
 
     def self.symbolize_keys(hash)
