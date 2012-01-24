@@ -577,7 +577,7 @@ describe Braintree::Transaction do
       end
     end
 
-    it "snapshots add_ons and discounts from subscription" do
+    it "snapshots plan, add_ons and discounts from subscription" do
       customer = Braintree::Customer.create!(
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
@@ -618,6 +618,8 @@ describe Braintree::Transaction do
 
       result.success?.should be_true
       transaction = result.subscription.transactions.first
+
+      transaction.plan_id.should == SpecHelper::TriallessPlan[:id]
 
       transaction.add_ons.size.should == 2
       add_ons = transaction.add_ons.sort_by { |add_on| add_on.id }
