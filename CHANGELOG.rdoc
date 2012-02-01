@@ -1,6 +1,7 @@
 == 2.13.3
 
 * Exposes plan_id on transactions
+* Fixes GitHub issue #19 - Unescapes escaped characters in query string
 
 == 2.13.2
 
