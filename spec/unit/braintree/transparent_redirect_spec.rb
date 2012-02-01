@@ -49,6 +49,22 @@ describe Braintree::TransparentRedirect do
       result.should == {:one => "1", :two => "2", :http_status => "200", :hash => hash}
     end
 
+    it "does not raise ForgedQueryString regardless of hash position and urlencoded parameters if the hash is valid" do
+
+      original_hash = "79befea22ba113f04b9ec35fc18b2526dca69c56"
+
+      query_string_without_hash = "http_status=200&id=c287ttnpywp4y4jt&kind=create_customer&nested_param%5Bsub_param%5D=testing"
+      url_encoded_query_string = "#{query_string_without_hash}&hash=#{original_hash}"
+
+      rehash = Braintree::Configuration.gateway.transparent_redirect._hash(Braintree::Util.url_decode(query_string_without_hash))
+      rehash.should == original_hash
+
+      expect do
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_encoded_query_string
+      end.to_not raise_error(Braintree::ForgedQueryString)
+
+    end
+
     it "raises Braintree::ForgedQueryString if the hash param is not valid" do
       query_string_without_hash = "http_status=200&one=1&two=2"
       hash = Digest::SHA1.hexdigest("invalid#{query_string_without_hash}")

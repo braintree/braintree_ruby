@@ -5,6 +5,10 @@
 
 == 2.13.2
 
+* Fixing parse_and_validate_query_string when the query_string contains URL-encoded parameters.
+
+== 2.13.2
+
 * Added error code for invalid purchase order number
 * Changes transparent redirect query string regexp to allow hash to appear
 anywhere in params string
