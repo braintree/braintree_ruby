@@ -65,6 +65,19 @@ describe Braintree::TransparentRedirect do
       end.to raise_error(Braintree::ForgedQueryString)
     end
 
+    it "does not raise ForgedQueryString if any parameter is url encoded" do
+      url_encoded_query_string_without_hash = "http_status=200&nested_param%5Bsub_param%5D=testing"
+      url_decoded_query_string_without_hash = Braintree::Util.url_decode(url_encoded_query_string_without_hash)
+
+      hash = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, url_decoded_query_string_without_hash)
+
+      url_encoded_query_string = "#{url_encoded_query_string_without_hash}&hash=#{hash}"
+
+      expect do
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_encoded_query_string
+      end.to_not raise_error(Braintree::ForgedQueryString)
+    end
+
     it "raises an AuthenticationError if authentication fails" do
       expect do
         Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string add_hash_to_query_string("http_status=401")

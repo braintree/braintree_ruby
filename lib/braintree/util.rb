@@ -25,6 +25,10 @@ module Braintree
       end
     end
 
+    def self.url_decode(text)
+      CGI.unescape text.to_s
+    end
+
     def self.url_encode(text)
       CGI.escape text.to_s
     end
