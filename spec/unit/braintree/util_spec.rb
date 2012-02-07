@@ -259,7 +259,7 @@ describe Braintree::Util do
   end
 
   describe "self.url_decode" do
-    it "url encodes the given text" do
+    it "url decodes the given text" do
       Braintree::Util.url_decode("foo%3Fbar").should == "foo?bar"
     end
   end
