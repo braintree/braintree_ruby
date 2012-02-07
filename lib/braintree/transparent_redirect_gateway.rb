@@ -40,7 +40,8 @@ module Braintree
     def parse_and_validate_query_string(query_string) # :nodoc:
       params = Util.symbolize_keys(Util.parse_query_string(query_string))
       query_string_without_hash = query_string.split("&").reject{|param| param =~ /\Ahash=/}.join("&")
-      query_string_without_hash = Util.url_decode(query_string_without_hash)
+      decoded_query_string_without_hash = Util.url_decode(query_string_without_hash)
+      encoded_query_string_without_hash = Util.url_encode(query_string_without_hash)
 
       if params[:http_status] == nil
         raise UnexpectedError, "expected query string to have an http_status param"
@@ -48,7 +49,9 @@ module Braintree
         Util.raise_exception_for_status_code(params[:http_status], params[:bt_message])
       end
 
-      if _hash(query_string_without_hash) == params[:hash]
+      query_strings_without_hash = [query_string_without_hash, encoded_query_string_without_hash, decoded_query_string_without_hash]
+
+      if query_strings_without_hash.any? { |query_string| _hash(query_string) == params[:hash] }
         params
       else
         raise ForgedQueryString

@@ -65,8 +65,8 @@ describe Braintree::TransparentRedirect do
       end.to raise_error(Braintree::ForgedQueryString)
     end
 
-    it "does not raise ForgedQueryString if any parameter is url encoded" do
-      url_encoded_query_string_without_hash = "http_status=200&nested_param%5Bsub_param%5D=testing"
+    it "does not raise Braintree::ForgedQueryString if query string is url encoded" do
+      url_encoded_query_string_without_hash = "http_status%3D200%26nested_param%5Bsub_param%5D%3Dtesting"
       url_decoded_query_string_without_hash = Braintree::Util.url_decode(url_encoded_query_string_without_hash)
 
       hash = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, url_decoded_query_string_without_hash)
@@ -75,6 +75,31 @@ describe Braintree::TransparentRedirect do
 
       expect do
         Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_encoded_query_string
+      end.to_not raise_error(Braintree::ForgedQueryString)
+    end
+
+    it "does not raise Braintree::ForgedQueryString if query string is url decoded" do
+      url_decoded_query_string_without_hash = "http_status=200&nested_param[sub_param]=testing"
+      url_encoded_query_string_without_hash = Braintree::Util.url_encode(url_decoded_query_string_without_hash)
+
+      hash = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, url_encoded_query_string_without_hash)
+
+      url_decoded_query_string = "#{url_decoded_query_string_without_hash}&hash=#{hash}"
+
+      expect do
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_decoded_query_string
+      end.to_not raise_error(Braintree::ForgedQueryString)
+    end
+
+    it "does not raise Braintree::ForgedQueryString if the query string is partially encoded" do
+      url_partially_encoded_query_string_without_hash = "http_status=200&nested_param%5Bsub_param%5D=testing"
+
+      hash = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, url_partially_encoded_query_string_without_hash)
+
+      url_partially_encoded_query_string = "#{url_partially_encoded_query_string_without_hash}&hash=#{hash}"
+
+      expect do
+        Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_partially_encoded_query_string
       end.to_not raise_error(Braintree::ForgedQueryString)
     end
 
