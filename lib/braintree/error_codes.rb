@@ -36,6 +36,7 @@ module Braintree
       CustomerIdIsRequired = "91704"
       CvvIsInvalid = "81707"
       CvvIsRequired = "81706"
+      DuplicateCardExists = "81724"
       ExpirationDateConflict = "91708"
       ExpirationDateIsInvalid = "81710"
       ExpirationDateIsRequired = "81709"
