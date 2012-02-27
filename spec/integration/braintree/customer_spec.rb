@@ -127,6 +127,27 @@ describe Braintree::Customer do
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
+    it "fails on create if credit_card[options][fail_on_duplicate_payment_method]=true and there is a duplicated payment method" do
+      customer = Braintree::Customer.create!
+      Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2015"
+      )
+
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
+          :expiration_date => "05/2015",
+          :options => {:fail_on_duplicate_payment_method => true}
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Duplicate card exists in the vault."
+    end
+
     it "allows the user to specify the merchant account for verification" do
       result = Braintree::Customer.create(
         :first_name => "Mike",
