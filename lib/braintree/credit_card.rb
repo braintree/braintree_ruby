@@ -68,6 +68,11 @@ module Braintree
       Configuration.gateway.credit_card.delete(token)
     end
 
+    # See http://www.braintreepayments.com/docs/ruby/credit_cards/duplicates
+    def self.duplicates(token)
+      Configuration.gateway.credit_card.duplicates(token)
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/search
     def self.expired(options = {})
       Configuration.gateway.credit_card.expired(options)

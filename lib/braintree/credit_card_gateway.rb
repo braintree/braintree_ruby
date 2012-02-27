@@ -28,6 +28,11 @@ module Braintree
       @config.http.delete("/payment_methods/#{token}")
     end
 
+    def duplicates(token)
+      response = @config.http.post("/payment_methods/#{token}/duplicate_ids")
+      ResourceCollection.new(response) { |ids| _fetch_duplicates(token, ids) }
+    end
+
     def expired(options = {})
       response = @config.http.post("/payment_methods/all/expired_ids")
       ResourceCollection.new(response) { |ids| _fetch_expired(ids) }
@@ -115,6 +120,12 @@ module Braintree
       else
         raise UnexpectedError, "expected :credit_card or :api_error_response"
       end
+    end
+
+    def _fetch_duplicates(token, ids) # :nodoc:
+      response = @config.http.post("/payment_methods/#{token}/duplicates", :search => {:ids => ids})
+      attributes = response[:payment_methods]
+      Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(@gateway, attrs) }
     end
 
     def _fetch_expired(ids) # :nodoc:
