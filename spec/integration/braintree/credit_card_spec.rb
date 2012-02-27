@@ -834,11 +834,13 @@ describe Braintree::CreditCard do
   end
 
   describe "self.duplicates" do
+    let(:duplicate_credit_card_number) { "4012000033330026" }
+
     it "can iterate over all items, and make sure bin and last_4 match" do
       customer = Braintree::Customer.create.customer
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :number => duplicate_credit_card_number,
         :expiration_date => "05/2012"
       )
 
@@ -847,24 +849,23 @@ describe Braintree::CreditCard do
 
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :number => duplicate_credit_card_number,
         :expiration_date => "05/2012"
       )
 
       result.success?.should == true
       credit_card2 = result.credit_card
 
-      duplicated_credit_cards = Braintree::CreditCard.duplicates(credit_card1.token)
-
-      duplicated_credit_cards.map(&:bin).uniq.size.should == 1
-      duplicated_credit_cards.map(&:last_4).uniq.size.should == 1
+      Braintree::CreditCard.duplicates(credit_card1.token).map do |card|
+        [card.bin, card.last_4]
+      end.uniq.size.should == 1
     end
 
     it "returns credit cards with a duplicated credit card number for the given payment token" do
       customer = Braintree::Customer.create.customer
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :number => duplicate_credit_card_number,
         :expiration_date => "05/2012"
       )
 
@@ -873,7 +874,7 @@ describe Braintree::CreditCard do
 
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :number => duplicate_credit_card_number,
         :expiration_date => "05/2012"
       )
 
