@@ -833,61 +833,6 @@ describe Braintree::CreditCard do
     end
   end
 
-  describe "self.duplicates" do
-    let(:duplicate_credit_card_number) { "4012000033330026" }
-
-    it "can iterate over all items, and make sure bin and last_4 match" do
-      customer = Braintree::Customer.create.customer
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => duplicate_credit_card_number,
-        :expiration_date => "05/2012"
-      )
-
-      result.success?.should == true
-      credit_card1 = result.credit_card
-
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => duplicate_credit_card_number,
-        :expiration_date => "05/2012"
-      )
-
-      result.success?.should == true
-      credit_card2 = result.credit_card
-
-      Braintree::CreditCard.duplicates(credit_card1.token).map do |card|
-        [card.bin, card.last_4]
-      end.uniq.size.should == 1
-    end
-
-    it "returns credit cards with a duplicated credit card number for the given payment token" do
-      customer = Braintree::Customer.create.customer
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => duplicate_credit_card_number,
-        :expiration_date => "05/2012"
-      )
-
-      result.success?.should == true
-      credit_card1 = result.credit_card
-
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => duplicate_credit_card_number,
-        :expiration_date => "05/2012"
-      )
-
-      result.success?.should == true
-      credit_card2 = result.credit_card
-
-      tokens = Braintree::CreditCard.duplicates(credit_card1.token).collect { |card| card.token }
-
-      tokens.should include(credit_card1.token)
-      tokens.should include(credit_card2.token)
-    end
-  end
-
   describe "self.expired" do
     it "can iterate over all items, and make sure they are all expired" do
       customer = Braintree::Customer.all.first
