@@ -1,3 +1,8 @@
+== 2.14.0
+
+* Adds search for duplicate credit cards given a payment method token
+* Adds flag to fail saving credit card to vault if card is duplicate
+
 == 2.13.4
 
 * Allows both url encoded and decoded query string and hash
