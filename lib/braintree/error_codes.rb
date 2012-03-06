@@ -36,6 +36,7 @@ module Braintree
       CustomerIdIsRequired = "91704"
       CvvIsInvalid = "81707"
       CvvIsRequired = "81706"
+      DuplicateCardExists = "81724"
       ExpirationDateConflict = "91708"
       ExpirationDateIsInvalid = "81710"
       ExpirationDateIsRequired = "81709"
@@ -174,7 +175,7 @@ module Braintree
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
       MerchantAccountIdIsInvalid = "91513"
-      MerchantAccountIsSuspended = "91515"
+      MerchantAccountIsSuspended = "91514"
       MerchantAccountDoesNotSupportRefunds = "91547"
       MerchantAccountNameIsInvalid = "91513" # Deprecated
       OrderIdIsTooLong = "91501"

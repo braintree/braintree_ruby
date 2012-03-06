@@ -76,15 +76,17 @@ module Braintree
 
     def self._signature(type) # :nodoc:
       billing_address_params = AddressGateway._shared_signature
+      options = [:make_default, :verification_merchant_account_id, :verify_card]
       signature = [
         :billing_address_id, :cardholder_name, :cvv, :expiration_date,
         :expiration_month, :expiration_year, :number, :token,
-        {:options => [:make_default, :verification_merchant_account_id, :verify_card]},
+        {:options => options},
         {:billing_address => billing_address_params}
       ]
 
       case type
       when :create
+        options << :fail_on_duplicate_payment_method
         signature << :customer_id
       when :update
         billing_address_params << {:options => [:update_existing]}

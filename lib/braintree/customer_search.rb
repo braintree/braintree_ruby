@@ -21,6 +21,8 @@ module Braintree
       :website
     )
 
+    is_fields :payment_method_token_with_duplicates
+
     equality_fields :credit_card_expiration_date
 
     partial_match_fields :credit_card_number

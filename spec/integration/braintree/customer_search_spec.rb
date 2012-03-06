@@ -89,6 +89,31 @@ describe Braintree::Transaction, "search" do
       collection.first.id.should == customer.id
     end
 
+    it "can find duplicate credit cards for a give payment method token " do
+      jim = Braintree::Customer.create(
+        :first_name => "Jim",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Maestro,
+          :expiration_date => "05/2012"
+        }
+      ).customer
+
+      joe = Braintree::Customer.create(
+        :first_name => "Joe",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Maestro,
+          :expiration_date => "05/2012"
+        }
+      ).customer
+
+      collection = Braintree::Customer.search do |search|
+        search.payment_method_token_with_duplicates.is jim.credit_cards.first.token
+      end
+
+      collection.should include(jim)
+      collection.should include(joe)
+    end
+
     it "can search by created_at" do
       company = "Company #{rand(1_000_000)}"
       customer = Braintree::Customer.create!(

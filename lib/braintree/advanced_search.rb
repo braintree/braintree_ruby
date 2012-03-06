@@ -14,8 +14,12 @@ module Braintree
       end
     end
 
-    class EqualityNode < SearchNode # :nodoc:
-      operators :is, :is_not
+    class IsNode < SearchNode # :nodoc:
+      operators :is
+    end
+
+    class EqualityNode < IsNode # :nodoc:
+      operators :is_not
     end
 
     class PartialMatchNode < EqualityNode # :nodoc:
@@ -91,6 +95,10 @@ module Braintree
 
     def self.equality_fields(*fields)
       _create_field_accessors(fields, EqualityNode)
+    end
+
+    def self.is_fields(*fields)
+      _create_field_accessors(fields, IsNode)
     end
 
     def self.partial_match_fields(*fields)
