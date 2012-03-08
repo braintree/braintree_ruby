@@ -1,3 +1,4 @@
+require 'base64'
 require "bigdecimal"
 require "cgi"
 require "date"
@@ -41,6 +42,7 @@ require "braintree/error_result"
 require "braintree/errors"
 require "braintree/gateway"
 require "braintree/http"
+require "braintree/notification"
 require "braintree/plan"
 require "braintree/plan_gateway"
 require "braintree/settlement_batch_summary"
