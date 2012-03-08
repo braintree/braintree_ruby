@@ -22,6 +22,9 @@ module Braintree # :nodoc:
   class ForgedQueryString < BraintreeError; end
 
   # See http://www.braintreepayments.com/docs/ruby/general/exceptions
+  class InvalidSignature < BraintreeError; end
+
+  # See http://www.braintreepayments.com/docs/ruby/general/exceptions
   class NotFoundError < BraintreeError; end
 
   # See http://www.braintreepayments.com/docs/ruby/general/exceptions

@@ -10,7 +10,39 @@ describe Braintree::Webhook do
 
       notification = Braintree::Webhook.parse(signature, payload)
 
+      notification.kind.should == Braintree::Webhook::Kind::SubscriptionPastDue
       notification.subscription.id.should == "my_id"
+    end
+
+    it "includes a valid signature" do
+      signature, payload = Braintree::Webhook.sample_notification(Braintree::Webhook::Kind::SubscriptionPastDue, "my_id")
+      expected_signature = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, payload)
+
+      signature.should == "#{Braintree::Configuration.public_key}|#{expected_signature}"
+    end
+  end
+
+  describe "parse" do
+    it "raises InvalidSignature error the signature is completely invalid" do
+      signature, payload = Braintree::Webhook.sample_notification(
+        Braintree::Webhook::Kind::SubscriptionPastDue,
+        "my_id"
+      )
+
+      expect do
+        notification = Braintree::Webhook.parse("not a valid signature", payload)
+      end.to raise_error(Braintree::InvalidSignature)
+    end
+
+    it "raises InvalidSignature error the payload has been changed" do
+      signature, payload = Braintree::Webhook.sample_notification(
+        Braintree::Webhook::Kind::SubscriptionPastDue,
+        "my_id"
+      )
+
+      expect do
+        notification = Braintree::Webhook.parse(signature, payload + "bad stuff")
+      end.to raise_error(Braintree::InvalidSignature)
     end
   end
 
