@@ -51,5 +51,9 @@ module Braintree
     def transaction
       TransactionGateway.new(self)
     end
+
+    def webhook
+      WebhookGateway.new(self)
+    end
   end
 end

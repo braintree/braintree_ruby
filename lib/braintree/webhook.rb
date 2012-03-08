@@ -1,8 +1,7 @@
 module Braintree
-  module Webhook
+  class Webhook
     def self.verify(challenge)
-      digest = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, challenge)
-      "#{Braintree::Configuration.public_key}|#{digest}"
+      Configuration.gateway.webhook.verify(challenge)
     end
   end
 end
