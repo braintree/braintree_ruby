@@ -1,5 +1,5 @@
 module Braintree
-  class Notification
+  class WebhookNotification
     include BaseModule
 
     class << self

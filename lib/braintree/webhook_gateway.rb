@@ -8,7 +8,7 @@ module Braintree
     def parse(signature_string, payload)
       _verify_signature(signature_string, payload)
       attributes = Xml.hash_from_xml(Base64.decode64(payload))
-      Notification._new(@gateway, attributes[:notification])
+      WebhookNotification._new(@gateway, attributes[:notification])
     end
 
     def sample_notification(kind, id)
