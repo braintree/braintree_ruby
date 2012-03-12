@@ -1,9 +1,5 @@
 module Braintree
   class Webhook
-    module Kind
-      SubscriptionPastDue = "subscription_past_due"
-    end
-
     def self.parse(signature, payload)
       Configuration.gateway.webhook.parse(signature, payload)
     end
