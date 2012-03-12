@@ -9,7 +9,7 @@ module Braintree
       end
     end
 
-    attr_reader :subscription, :kind
+    attr_reader :subscription, :kind, :timestamp
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway

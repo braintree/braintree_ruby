@@ -15,7 +15,7 @@ module Braintree
     def _sample_xml(kind, id)
       <<-XML
         <notification>
-          <timestamp>#{Time.now}</timestamp>
+          <timestamp type="datetime">#{Time.now.utc.iso8601}</timestamp>
           <kind>#{kind}</kind>
           <subject>
             #{_subscription_sample_xml(kind, id)}
