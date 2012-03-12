@@ -55,5 +55,9 @@ module Braintree
     def webhook
       WebhookGateway.new(self)
     end
+
+    def webhook_testing
+      WebhookTestingGateway.new(self)
+    end
   end
 end

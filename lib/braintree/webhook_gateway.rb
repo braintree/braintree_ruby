@@ -11,12 +11,6 @@ module Braintree
       WebhookNotification._new(@gateway, attributes[:notification])
     end
 
-    def sample_notification(kind, id)
-      payload = Base64.encode64(_sample_xml(kind, id))
-      signature_string = "#{@config.public_key}|#{Braintree::Digest.hexdigest(Braintree::Configuration.private_key, payload)}"
-      return signature_string, payload
-    end
-
     def verify(challenge)
       digest = Braintree::Digest.hexdigest(@config.private_key, challenge)
       "#{@config.public_key}|#{digest}"
@@ -29,32 +23,6 @@ module Braintree
       valid_pairs.detect do |public_key, signature|
         public_key == @config.public_key
       end
-    end
-
-    def _sample_xml(kind, id)
-      <<-XML
-        <notification>
-          <timestamp>#{Time.now}</timestamp>
-          <kind>#{kind}</kind>
-          <subject>
-            #{_subscription_sample_xml(kind, id)}
-          </subject>
-        </notification>
-      XML
-    end
-
-    def _subscription_sample_xml(kind, id)
-      <<-XML
-        <subscription>
-          <id>#{id}</id>
-          <transactions type="array">
-          </transactions>
-          <add_ons type="array">
-          </add_ons>
-          <discounts type="array">
-          </discounts>
-        </subscription>
-      XML
     end
 
     def _verify_signature(signature, payload)

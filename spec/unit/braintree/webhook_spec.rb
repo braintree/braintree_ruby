@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe Braintree::Webhook do
   describe "self.sample_notification" do
     it "builds a sample notification and signature given an identifier and kind" do
-      signature, payload = Braintree::Webhook.sample_notification(
+      signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::Webhook::Kind::SubscriptionPastDue,
         "my_id"
       )
@@ -15,7 +15,7 @@ describe Braintree::Webhook do
     end
 
     it "includes a valid signature" do
-      signature, payload = Braintree::Webhook.sample_notification(Braintree::Webhook::Kind::SubscriptionPastDue, "my_id")
+      signature, payload = Braintree::WebhookTesting.sample_notification(Braintree::Webhook::Kind::SubscriptionPastDue, "my_id")
       expected_signature = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, payload)
 
       signature.should == "#{Braintree::Configuration.public_key}|#{expected_signature}"
@@ -24,7 +24,7 @@ describe Braintree::Webhook do
 
   describe "parse" do
     it "raises InvalidSignature error the signature is completely invalid" do
-      signature, payload = Braintree::Webhook.sample_notification(
+      signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::Webhook::Kind::SubscriptionPastDue,
         "my_id"
       )
@@ -35,7 +35,7 @@ describe Braintree::Webhook do
     end
 
     it "raises InvalidSignature error the payload has been changed" do
-      signature, payload = Braintree::Webhook.sample_notification(
+      signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::Webhook::Kind::SubscriptionPastDue,
         "my_id"
       )
