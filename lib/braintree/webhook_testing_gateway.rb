@@ -18,13 +18,13 @@ module Braintree
           <timestamp type="datetime">#{Time.now.utc.iso8601}</timestamp>
           <kind>#{kind}</kind>
           <subject>
-            #{_subscription_sample_xml(kind, id)}
+            #{_subscription_sample_xml(id)}
           </subject>
         </notification>
       XML
     end
 
-    def _subscription_sample_xml(kind, id)
+    def _subscription_sample_xml(id)
       <<-XML
         <subscription>
           <id>#{id}</id>
