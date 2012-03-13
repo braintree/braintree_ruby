@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
-describe Braintree::Webhook do
+describe Braintree::WebhookNotification do
   describe "self.sample_notification" do
     it "builds a sample notification and signature given an identifier and kind" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
@@ -8,7 +8,7 @@ describe Braintree::Webhook do
         "my_id"
       )
 
-      notification = Braintree::Webhook.parse(signature, payload)
+      notification = Braintree::WebhookNotification.parse(signature, payload)
 
       notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionPastDue
       notification.subscription.id.should == "my_id"
@@ -31,7 +31,7 @@ describe Braintree::Webhook do
       )
 
       expect do
-        notification = Braintree::Webhook.parse("not a valid signature", payload)
+        notification = Braintree::WebhookNotification.parse("not a valid signature", payload)
       end.to raise_error(Braintree::InvalidSignature)
     end
 
@@ -42,14 +42,14 @@ describe Braintree::Webhook do
       )
 
       expect do
-        notification = Braintree::Webhook.parse(signature, payload + "bad stuff")
+        notification = Braintree::WebhookNotification.parse(signature, payload + "bad stuff")
       end.to raise_error(Braintree::InvalidSignature)
     end
   end
 
   describe "self.verify" do
     it "creates a verification string" do
-      response = Braintree::Webhook.verify("verification_token")
+      response = Braintree::WebhookNotification.verify("verification_token")
       response.should == "integration_public_key|c9f15b74b0d98635cd182c51e2703cffa83388c3"
     end
   end

@@ -8,6 +8,14 @@ module Braintree
 
     attr_reader :subscription, :kind, :timestamp
 
+    def self.parse(signature, payload)
+      Configuration.gateway.webhook_notification.parse(signature, payload)
+    end
+
+    def self.verify(challenge)
+      Configuration.gateway.webhook_notification.verify(challenge)
+    end
+
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
