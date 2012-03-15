@@ -5,10 +5,14 @@ module Braintree
     end
 
     def self.secure_compare(left, right)
-      return false unless _bytesize(left) == _bytesize(right)
+      return false unless left && right && _bytesize(left) == _bytesize(right)
+
+      left_bytes = left.unpack("C*")
+      right_bytes = right.unpack("C*")
+      return false if left_bytes.size != right_bytes.size
 
       result = 0
-      left.bytes.zip(right.bytes).each do |left_byte, right_byte|
+      left_bytes.zip(right_bytes).each do |left_byte, right_byte|
         result |= left_byte ^ right_byte
       end
       result == 0
