@@ -7,10 +7,10 @@ module Braintree
     def self.secure_compare(left, right)
       return false unless left.bytesize == right.bytesize
 
-      left_bytes = left.unpack "C#{left.bytesize}"
-
       result = 0
-      right.each_byte { |byte| result |= byte ^ left_bytes.shift }
+      left.bytes.zip(right.bytes).each do |left_byte, right_byte|
+        result |= left_byte ^ right_byte
+      end
       result == 0
     end
 
