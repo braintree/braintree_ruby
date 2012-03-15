@@ -5,7 +5,7 @@ module Braintree
     end
 
     def self.secure_compare(left, right)
-      return false unless left && right && _bytesize(left) == _bytesize(right)
+      return false unless left && right
 
       left_bytes = left.unpack("C*")
       right_bytes = right.unpack("C*")
@@ -22,10 +22,6 @@ module Braintree
       key_digest = ::Digest::SHA1.digest(key)
       sha1 = OpenSSL::Digest::Digest.new("sha1")
       OpenSSL::HMAC.hexdigest(sha1, key_digest, message.to_s)
-    end
-
-    def self._bytesize(string)
-      string.bytes.to_a.size
     end
   end
 end
