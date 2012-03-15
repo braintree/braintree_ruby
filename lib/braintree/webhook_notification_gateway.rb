@@ -26,10 +26,11 @@ module Braintree
     end
 
     def _verify_signature(signature, payload)
-      matching_pair = _matching_signature_pair(signature)
+      public_key, signature = _matching_signature_pair(signature)
+      payload_signature = Braintree::Digest.hexdigest(@config.private_key, payload)
 
-      raise InvalidSignature if matching_pair.nil?
-      raise InvalidSignature unless matching_pair.last == Braintree::Digest.hexdigest(@config.private_key, payload)
+      raise InvalidSignature if public_key.nil?
+      raise InvalidSignature unless Braintree::Digest.secure_compare(signature, payload_signature)
     end
   end
 end
