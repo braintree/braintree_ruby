@@ -3,7 +3,13 @@ module Braintree
     include BaseModule
 
     module Kind
-      SubscriptionPastDue = "subscription_past_due"
+      SubscriptionCanceled = "subscription_canceled"
+      SubscriptionChargedSuccessfully = "subscription_charged_successfully"
+      SubscriptionChargedUnsuccessfully = "subscription_charged_unsuccessfully"
+      SubscriptionExpired = "subscription_expired"
+      SubscriptionTrialEnded = "subscription_trial_ended"
+      SubscriptionWentActive = "subscription_went_active"
+      SubscriptionWentPastDue = "subscription_went_past_due"
     end
 
     attr_reader :subscription, :kind, :timestamp
