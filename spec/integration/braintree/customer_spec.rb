@@ -111,6 +111,7 @@ describe Braintree::Customer do
       result.customer.credit_cards[0].bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
       result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
       result.customer.credit_cards[0].expiration_date.should == "05/2010"
+      result.customer.credit_cards[0].number_unique_identifier.should =~ /\A\w{32}\z/
     end
 
     it "verifies the card if credit_card[options][verify_card]=true" do
