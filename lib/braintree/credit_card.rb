@@ -27,7 +27,7 @@ module Braintree
     end
 
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-      :expiration_year, :last_4, :number_unique_identifier, :subscriptions, :token, :updated_at
+      :expiration_year, :last_4, :unique_number_identifier, :subscriptions, :token, :updated_at
 
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create(attributes)
