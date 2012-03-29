@@ -126,6 +126,11 @@ module Braintree
       Configuration.gateway.transaction.refund(id, amount)
     end
 
+    # See http://www.braintreepayments.com/docs/ruby/transactions/refund
+    def self.refund!(id, amount = nil)
+      return_object_or_raise(:transaction) { refund(id, amount) }
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
     def self.sale(attributes)
       Configuration.gateway.transaction.sale(attributes)
