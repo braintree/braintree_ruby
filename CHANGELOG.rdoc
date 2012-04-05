@@ -1,3 +1,7 @@
+== 2.15.0
+
+* Adds unique_number_identifier attribute to CreditCard
+
 == 2.14.0
 
 * Adds search for duplicate credit cards given a payment method token
