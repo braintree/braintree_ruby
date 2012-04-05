@@ -22,6 +22,7 @@ describe Braintree::CreditCard do
       credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       credit_card.expiration_date.should == "05/2009"
+      credit_card.unique_number_identifier.should =~ /\A\w{32}\z/
     end
 
     it "can provide expiration month and year separately" do
