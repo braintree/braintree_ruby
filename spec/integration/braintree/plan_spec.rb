@@ -22,8 +22,8 @@ describe Braintree::Plan do
 
       add_on_name = "ruby_add_on"
       discount_name = "ruby_discount"
-      create_modification_for_tests({ :kind => "add_on", :plan_id => plan_token, :amount => "1.00", :name => add_on_name })
-      create_modification_for_tests({ :kind => "discount", :plan_id => plan_token, :amount => "1.00", :name => discount_name })
+      create_modification_for_tests(:kind => "add_on", :plan_id => plan_token, :amount => "1.00", :name => add_on_name)
+      create_modification_for_tests(:kind => "discount", :plan_id => plan_token, :amount => "1.00", :name => discount_name)
 
       plans = Braintree::Plan.all
       plan = plans.select { |plan| plan.id == plan_token }.first
@@ -43,6 +43,12 @@ describe Braintree::Plan do
       plan.updated_at.should_not be_nil
       plan.add_ons.first.name.should == add_on_name
       plan.discounts.first.name.should == discount_name
+    end
+
+    it "returns an empty array if there are no plans" do
+      gateway = Braintree::Gateway.new(SpecHelper::TestMerchantConfig)
+      plans = gateway.plan.all
+      plans.should == []
     end
   end
 

@@ -75,6 +75,13 @@ unless defined?(SPEC_HELPER_LOADED)
     Discount11 = "discount_11"
     Discount15 = "discount_15"
 
+    TestMerchantConfig = Braintree::Configuration.new(
+      :environment => :development,
+      :merchant_id => "test_merchant_id",
+      :public_key => "test_public_key",
+      :private_key => "test_private_key"
+    )
+
     def self.make_past_due(subscription, number_of_days_past_due = 1)
       Braintree::Configuration.instantiate.http.put(
         "/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"
