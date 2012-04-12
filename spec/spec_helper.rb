@@ -76,6 +76,7 @@ unless defined?(SPEC_HELPER_LOADED)
     Discount15 = "discount_15"
 
     TestMerchantConfig = Braintree::Configuration.new(
+      :logger => Logger.new("/dev/null"),
       :environment => :development,
       :merchant_id => "test_merchant_id",
       :public_key => "test_public_key",
