@@ -51,5 +51,13 @@ module Braintree
     def transaction
       TransactionGateway.new(self)
     end
+
+    def webhook_notification
+      WebhookNotificationGateway.new(self)
+    end
+
+    def webhook_testing
+      WebhookTestingGateway.new(self)
+    end
   end
 end

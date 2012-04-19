@@ -934,6 +934,27 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "self.refund!" do
+    it "returns the refund if valid refund" do
+      transaction = create_transaction_to_refund
+
+      refund_transaction = Braintree::Transaction.refund!(transaction.id)
+
+      refund_transaction.refunded_transaction_id.should == transaction.id
+      refund_transaction.type.should == "credit"
+      transaction.amount.should == refund_transaction.amount
+    end
+
+    it "raises a ValidationsFailed if invalid" do
+      transaction = create_transaction_to_refund
+      invalid_refund_amount = transaction.amount + 1
+      invalid_refund_amount.should be > transaction.amount
+
+      expect do
+        Braintree::Transaction.refund!(transaction.id,invalid_refund_amount)
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
   describe "self.sale" do
     it "returns a successful result with type=sale if successful" do
       result = Braintree::Transaction.sale(

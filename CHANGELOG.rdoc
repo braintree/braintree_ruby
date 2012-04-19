@@ -1,3 +1,9 @@
+== 2.16.0
+
+* Adds webhook gateways for parsing, verifying, and testing incoming
+notifications
+* Adds Transaction.refund!(id, amount = nil)
+
 == 2.15.0
 
 * Adds unique_number_identifier attribute to CreditCard
