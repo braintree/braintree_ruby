@@ -24,7 +24,7 @@ module Braintree
     end
 
     def find(id)
-      raise ArgumentError if id.nil? || id.strip.to_s == ""
+      raise ArgumentError if id.nil? || id.to_s.strip == ""
       response = @config.http.get "/subscriptions/#{id}"
       Subscription._new(@gateway, response[:subscription])
     rescue NotFoundError
