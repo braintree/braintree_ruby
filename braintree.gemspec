@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://www.braintreepayments.com/"
   s.rubyforge_project = "braintree"
   s.has_rdoc = false
-  s.files = Dir.glob ["README.rdoc", "LICENSE", "{lib,spec}/**/*.rb", "lib/**/*.crt", "*.gemspec"]
+  s.files = Dir.glob ["README.rdoc", "LICENSE", "lib/**/*.{rb,crt}", "spec/**/*", "*.gemspec"]
   s.add_dependency "builder", ">= 2.0.0"
 end
 
