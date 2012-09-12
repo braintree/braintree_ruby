@@ -243,6 +243,43 @@ describe Braintree::CreditCard do
 
       Braintree::CreditCard.find(card1.token).should_not be_default
     end
+
+    it "sets the prepaid field if the card is prepaid" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::VisaPrepaid,
+        :expiration_date => "05/2014",
+        :options => {:verify_card => true}
+      )
+      credit_card = result.credit_card
+      credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+    end
+
+    it "sets negative card type identifiers" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2014",
+        :options => {:verify_card => true}
+      )
+      credit_card = result.credit_card
+      credit_card.prepaid.should == Braintree::CreditCard::Prepaid::No
+    end
+
+    it "doesn't set the card type identifiers for an un-identified card" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "05/2014",
+        :options => {:verify_card => true}
+      )
+      credit_card = result.credit_card
+      credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Unknown
+    end
+
   end
 
   describe "self.create!" do

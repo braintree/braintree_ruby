@@ -26,8 +26,14 @@ module Braintree
       US = "us"
     end
 
+    module Prepaid
+      Yes = "Yes"
+      No = "No"
+      Unknown = "Unknown"
+    end
+
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-      :expiration_year, :last_4, :unique_number_identifier, :subscriptions, :token, :updated_at
+      :expiration_year, :last_4, :prepaid, :unique_number_identifier, :subscriptions, :token, :updated_at
 
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create(attributes)
@@ -227,7 +233,7 @@ module Braintree
     def self._attributes # :nodoc:
       [
         :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-        :expiration_year, :last_4, :token, :updated_at
+        :expiration_year, :last_4, :token, :updated_at, :prepaid
       ]
     end
 
