@@ -757,6 +757,22 @@ describe Braintree::Transaction do
       end
     end
 
+    context "recurring" do
+      it "marks a transaction as recurring" do
+        result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "12/12",
+            },
+            :recurring => true
+          )
+          result.success?.should == true
+          result.transaction.recurring.should == true
+      end
+    end
+
     context "store_in_vault_on_success" do
       context "passed as true" do
         it "stores vault records when transaction succeeds" do
