@@ -78,6 +78,13 @@ describe Braintree::Address do
         Braintree::Address.find("customer_id", nil)
       end.to raise_error(ArgumentError)
     end
+
+    it "does not raise an error if address_id does not respond to strip" do
+      Braintree::Http.stub(:new).and_return stub.as_null_object
+      expect do
+        Braintree::Address.find("customer_id", 8675309)
+      end.to_not raise_error(NoMethodError)
+    end
   end
 
   describe "self.new" do

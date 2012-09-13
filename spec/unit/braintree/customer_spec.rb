@@ -53,6 +53,13 @@ describe Braintree::Customer do
         Braintree::Customer.find(nil)
       end.to raise_error(ArgumentError)
     end
+
+    it "does not raise an exception if the id is a fixnum" do
+      Braintree::Http.stub(:new).and_return stub.as_null_object
+      expect do
+        Braintree::Customer.find(8675309)
+      end.to_not raise_error(NoMethodError)
+    end
   end
 
   describe "self.update" do

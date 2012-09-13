@@ -140,7 +140,7 @@ describe Braintree::Customer do
         :first_name => "Mike",
         :last_name => "Jones",
         :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2015",
           :options => {:fail_on_duplicate_payment_method => true}
         }

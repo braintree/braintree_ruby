@@ -41,7 +41,7 @@ module Braintree
     end
 
     def find(token)
-      raise ArgumentError if token.nil? || token.strip.to_s == ""
+      raise ArgumentError if token.nil? || token.to_s.strip == ""
       response = @config.http.get "/payment_methods/#{token}"
       CreditCard._new(@gateway, response[:credit_card])
     rescue NotFoundError
