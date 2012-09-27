@@ -26,14 +26,45 @@ module Braintree
       US = "us"
     end
 
+    module Commercial
+      Yes = "Yes"
+      No = "No"
+      Unknown = "Unknown"
+    end
+
+    module Debit
+      Yes = "Yes"
+      No = "No"
+      Unknown = "Unknown"
+    end
+
+    module DurbinRegulated
+      Yes = "Yes"
+      No = "No"
+      Unknown = "Unknown"
+    end
+
+    module Healthcare
+      Yes = "Yes"
+      No = "No"
+      Unknown = "Unknown"
+    end
+
+    module Payroll
+      Yes = "Yes"
+      No = "No"
+      Unknown = "Unknown"
+    end
+
     module Prepaid
       Yes = "Yes"
       No = "No"
       Unknown = "Unknown"
     end
 
-    attr_reader :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-      :expiration_year, :last_4, :prepaid, :unique_number_identifier, :subscriptions, :token, :updated_at
+    attr_reader :billing_address, :bin, :card_type, :cardholder_name, :commercial, :created_at,
+      :customer_id, :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare,
+      :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at
 
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create(attributes)
@@ -233,7 +264,8 @@ module Braintree
     def self._attributes # :nodoc:
       [
         :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-        :expiration_year, :last_4, :token, :updated_at, :prepaid
+        :expiration_year, :last_4, :token, :updated_at, :prepaid, :payroll, :commercial, :debit, :durbin_regulated,
+        :healthcare
       ]
     end
 
