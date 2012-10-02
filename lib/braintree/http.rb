@@ -42,7 +42,7 @@ module Braintree
     end
 
     def _build_xml(params)
-      return nil if params.nil?
+      return ""if params.nil?
       Braintree::Xml.hash_to_xml params
     end
 
