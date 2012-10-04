@@ -244,40 +244,112 @@ describe Braintree::CreditCard do
       Braintree::CreditCard.find(card1.token).should_not be_default
     end
 
-    it "sets the prepaid field if the card is prepaid" do
-      customer = Braintree::Customer.create!
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::VisaPrepaid,
-        :expiration_date => "05/2014",
-        :options => {:verify_card => true}
-      )
-      credit_card = result.credit_card
-      credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Yes
-    end
+    context "card type indicators" do
+      it "sets the prepaid field if the card is prepaid" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+      end
 
-    it "sets negative card type identifiers" do
-      customer = Braintree::Customer.create!
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2014",
-        :options => {:verify_card => true}
-      )
-      credit_card = result.credit_card
-      credit_card.prepaid.should == Braintree::CreditCard::Prepaid::No
-    end
+      it "sets the healthcare field if the card is healthcare" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Healthcare,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.healthcare.should == Braintree::CreditCard::Healthcare::Yes
+      end
 
-    it "doesn't set the card type identifiers for an un-identified card" do
-      customer = Braintree::Customer.create!
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::MasterCard,
-        :expiration_date => "05/2014",
-        :options => {:verify_card => true}
-      )
-      credit_card = result.credit_card
-      credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Unknown
+      it "sets the durbin regulated field if the card is durbin regulated" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::DurbinRegulated,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
+      end
+
+      it "sets the payroll field if the card is payroll" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Payroll,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.payroll.should == Braintree::CreditCard::Payroll::Yes
+      end
+
+      it "sets the debit field if the card is debit" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Debit,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.debit.should == Braintree::CreditCard::Debit::Yes
+      end
+
+      it "sets the commercial field if the card is commercial" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Commercial,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.commercial.should == Braintree::CreditCard::Commercial::Yes
+      end
+
+      it "sets negative card type identifiers" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::No,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.prepaid.should == Braintree::CreditCard::Prepaid::No
+        credit_card.commercial.should == Braintree::CreditCard::Prepaid::No
+        credit_card.payroll.should == Braintree::CreditCard::Prepaid::No
+        credit_card.debit.should == Braintree::CreditCard::Prepaid::No
+        credit_card.durbin_regulated.should == Braintree::CreditCard::Prepaid::No
+        credit_card.healthcare.should == Braintree::CreditCard::Prepaid::No
+      end
+
+      it "doesn't set the card type identifiers for an un-identified card" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Unknown,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Unknown
+        credit_card.commercial.should == Braintree::CreditCard::Prepaid::Unknown
+        credit_card.payroll.should == Braintree::CreditCard::Prepaid::Unknown
+        credit_card.debit.should == Braintree::CreditCard::Prepaid::Unknown
+        credit_card.durbin_regulated.should == Braintree::CreditCard::Prepaid::Unknown
+        credit_card.healthcare.should == Braintree::CreditCard::Prepaid::Unknown
+      end
     end
 
   end
