@@ -1,3 +1,7 @@
+== 2.18.0
+* Additional card information, such as prepaid, debit, commercial, Durbin regulated, healthcare, and payroll, are returned on credit card responses
+* Allows transactions to be specified as recurring
+
 == 2.17.0
 * Adds prepaid attribute to credit cards (possible values: Yes, No, Unknown)
 
