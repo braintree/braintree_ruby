@@ -12,7 +12,7 @@ module Braintree
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code,
       :cvv_response_code, :merchant_account_id, :processor_response_code, :processor_response_text, :status,
-      :gateway_rejection_reason
+      :id, :gateway_rejection_reason, :credit_card_details, :billing, :created_at
 
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
@@ -37,6 +37,19 @@ module Braintree
 
     def self._new(*args) # :nodoc:
       self.new *args
+    end
+
+    def self.find(id)
+      Configuration.gateway.verification.find(id)
+    end
+
+    def self.search(&block)
+      Configuration.gateway.verification.search(&block)
+    end
+
+    def ==(other)
+      return false unless other.is_a?(CreditCardVerification)
+      id == other.id
     end
   end
 end

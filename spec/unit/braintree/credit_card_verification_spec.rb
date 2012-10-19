@@ -32,5 +32,54 @@ describe Braintree::CreditCardVerification do
       verification.status.should == Braintree::CreditCardVerification::Status::VERIFIED
     end
   end
+
+  describe "self.find" do
+    it "raises error if passed empty string" do
+      expect do
+        Braintree::CreditCardVerification.find("")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed empty string wth space" do
+      expect do
+        Braintree::CreditCardVerification.find(" ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed nil" do
+      expect do
+        Braintree::CreditCardVerification.find(nil)
+      end.to raise_error(ArgumentError)
+    end
+  end
+
+  describe "==" do
+    it "returns true for verifications with the same id" do
+      first = Braintree::CreditCardVerification._new(:id => 123)
+      second = Braintree::CreditCardVerification._new(:id => 123)
+
+      first.should == second
+      second.should == first
+    end
+
+    it "returns false for verifications with different ids" do
+      first = Braintree::CreditCardVerification._new(:id => 123)
+      second = Braintree::CreditCardVerification._new(:id => 124)
+
+      first.should_not == second
+      second.should_not == first
+    end
+
+    it "returns false when comparing to nil" do
+      Braintree::CreditCardVerification._new({}).should_not == nil
+    end
+
+    it "returns false when comparing to non-verifications" do
+      same_id_different_object = Object.new
+      def same_id_different_object.id; 123; end
+      verification = Braintree::CreditCardVerification._new(:id => 123)
+      verification.should_not == same_id_different_object
+    end
+  end
 end
 
