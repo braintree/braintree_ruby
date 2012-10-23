@@ -23,7 +23,7 @@ module Braintree
         :status, :processor_response_code, :processor_response_text,
         :cvv_response_code, :avs_error_response_code,
         :avs_postal_code_response_code, :avs_street_address_response_code,
-        :merchant_account_id, :gateway_rejection_reason
+        :merchant_account_id, :gateway_rejection_reason, :id, :credit_card_details, :billing, :created_at
       ]
       formatted_attrs = attr_order.map do |attr|
         "#{attr}: #{send(attr).inspect}"
