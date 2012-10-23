@@ -17,6 +17,7 @@ describe Braintree::CreditCardVerification, "search" do
 
       found_verification = Braintree::CreditCardVerification.find(created_verification.id)
       found_verification.should == created_verification
+      found_verification.credit_card.should == created_verification.credit_card
     end
 
     it "raises a NotFoundError exception if verification cannot be found" do
