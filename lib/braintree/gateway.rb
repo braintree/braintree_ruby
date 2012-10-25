@@ -52,6 +52,10 @@ module Braintree
       TransactionGateway.new(self)
     end
 
+    def verification
+      CreditCardVerificationGateway.new(self)
+    end
+
     def webhook_notification
       WebhookNotificationGateway.new(self)
     end
