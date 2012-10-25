@@ -1,3 +1,6 @@
+== 2.19.0
+* Adds verification search
+
 == 2.18.0
 * Additional card information, such as prepaid, debit, commercial, Durbin regulated, healthcare, and payroll, are returned on credit card responses
 * Allows transactions to be specified as recurring
