@@ -62,9 +62,9 @@ module Braintree
       Unknown = "Unknown"
     end
 
-    attr_reader :billing_address, :bin, :card_type, :cardholder_name, :commercial, :created_at,
-      :customer_id, :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare,
-      :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at
+    attr_reader :billing_address, :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance,
+      :created_at, :customer_id, :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare,
+      :issuing_bank, :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at
 
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create(attributes)

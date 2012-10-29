@@ -47,5 +47,10 @@ module Braintree
 
       All = AmExes + Discovers + MasterCards + Visas
     end
+
+    module CreditCardDefaults
+      CountryOfIssuance = "USA"
+      IssuingBank = "NETWORK ONLY"
+    end
   end
 end

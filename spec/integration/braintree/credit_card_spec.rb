@@ -281,6 +281,30 @@ describe Braintree::CreditCard do
         credit_card.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
       end
 
+      it "sets the country of issuance field" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.country_of_issuance.should == Braintree::Test::CreditCardDefaults::CountryOfIssuance
+      end
+
+    it "sets the issuing bank field" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true}
+        )
+        credit_card = result.credit_card
+        credit_card.issuing_bank.should == Braintree::Test::CreditCardDefaults::IssuingBank
+      end
+
       it "sets the payroll field if the card is payroll" do
         customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
