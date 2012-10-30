@@ -26,41 +26,14 @@ module Braintree
       US = "us"
     end
 
-    module Commercial
+    module CardTypeIndicator
       Yes = "Yes"
       No = "No"
       Unknown = "Unknown"
     end
 
-    module Debit
-      Yes = "Yes"
-      No = "No"
-      Unknown = "Unknown"
-    end
-
-    module DurbinRegulated
-      Yes = "Yes"
-      No = "No"
-      Unknown = "Unknown"
-    end
-
-    module Healthcare
-      Yes = "Yes"
-      No = "No"
-      Unknown = "Unknown"
-    end
-
-    module Payroll
-      Yes = "Yes"
-      No = "No"
-      Unknown = "Unknown"
-    end
-
-    module Prepaid
-      Yes = "Yes"
-      No = "No"
-      Unknown = "Unknown"
-    end
+    Commercial = Debit = DurbinRegulated = Healthcare = Payroll = Prepaid =
+      IssuingBank = CountryOfIssuance = CardTypeIndicator
 
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance,
       :created_at, :customer_id, :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare,

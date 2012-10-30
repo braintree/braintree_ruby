@@ -285,7 +285,7 @@ describe Braintree::CreditCard do
         customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
           :customer_id => customer.id,
-          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::CountryOfIssuance,
           :expiration_date => "05/2014",
           :options => {:verify_card => true}
         )
@@ -297,7 +297,7 @@ describe Braintree::CreditCard do
         customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
           :customer_id => customer.id,
-          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::IssuingBank,
           :expiration_date => "05/2014",
           :options => {:verify_card => true}
         )
@@ -373,6 +373,8 @@ describe Braintree::CreditCard do
         credit_card.debit.should == Braintree::CreditCard::Prepaid::Unknown
         credit_card.durbin_regulated.should == Braintree::CreditCard::Prepaid::Unknown
         credit_card.healthcare.should == Braintree::CreditCard::Prepaid::Unknown
+        credit_card.country_of_issuance == Braintree::CreditCard::CountryOfIssuance::Unknown
+        credit_card.issuing_bank == Braintree::CreditCard::IssuingBank::Unknown
       end
     end
 
