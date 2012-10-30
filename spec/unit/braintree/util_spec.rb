@@ -192,6 +192,11 @@ describe Braintree::Util do
       query_string = "foo=bar%20baz&hash=a1b2c3"
       Braintree::Util.parse_query_string(query_string).should == {:foo => "bar baz", :hash => "a1b2c3"}
     end
+
+    it "parses the query string when a key has an empty value" do
+      query_string = "foo=bar%20baz&hash=a1b2c3&vat_number="
+      Braintree::Util.parse_query_string(query_string).should == {:foo => "bar baz", :hash => "a1b2c3", :vat_number => ""}
+    end
   end
 
   describe "self.raise_exception_for_status_code" do
