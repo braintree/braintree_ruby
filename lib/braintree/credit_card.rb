@@ -238,7 +238,7 @@ module Braintree
       [
         :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
         :expiration_year, :last_4, :token, :updated_at, :prepaid, :payroll, :commercial, :debit, :durbin_regulated,
-        :healthcare
+        :healthcare, :country_of_issuance, :issuing_bank
       ]
     end
 
