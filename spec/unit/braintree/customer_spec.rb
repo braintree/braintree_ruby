@@ -90,7 +90,7 @@ describe Braintree::Customer do
           :expiration_year,
           :number,
           :token,
-          {:options => [:make_default, :verification_merchant_account_id, :verify_card, :fail_on_duplicate_payment_method]},
+          {:options => [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session, :fail_on_duplicate_payment_method]},
           {:billing_address => [
             :company,
             :country_code_alpha2,
@@ -135,6 +135,7 @@ describe Braintree::Customer do
             :make_default,
             :verification_merchant_account_id,
             :verify_card,
+            :venmo_sdk_session,
             :update_existing_token
           ]},
           {:billing_address => [
