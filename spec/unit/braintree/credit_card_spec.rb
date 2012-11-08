@@ -20,6 +20,7 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
+        :venmo_sdk_payment_method_code,
         {:options => [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session, :fail_on_duplicate_payment_method]},
         {:billing_address => [
           :company,
@@ -51,6 +52,7 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
+        :venmo_sdk_payment_method_code,
         {:options => [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session]},
         {:billing_address => [
           :company,
