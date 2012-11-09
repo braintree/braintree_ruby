@@ -76,10 +76,10 @@ module Braintree
 
     def self._signature(type) # :nodoc:
       billing_address_params = AddressGateway._shared_signature
-      options = [:make_default, :verification_merchant_account_id, :verify_card]
+      options = [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session]
       signature = [
         :billing_address_id, :cardholder_name, :cvv, :expiration_date,
-        :expiration_month, :expiration_year, :number, :token,
+        :expiration_month, :expiration_year, :number, :token, :venmo_sdk_payment_method_code,
         {:options => options},
         {:billing_address => billing_address_params}
       ]
