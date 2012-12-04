@@ -180,6 +180,7 @@ module Braintree
       MerchantAccountNameIsInvalid = "91513" # Deprecated
       OrderIdIsTooLong = "91501"
       PaymentMethodConflict = "91515"
+      PaymentMethodConflictWithVenmoSDK = "91549"
       PaymentMethodDoesNotBelongToCustomer = "91516"
       PaymentMethodDoesNotBelongToSubscription = "91527"
       PaymentMethodTokenCardTypeIsNotAccepted = "91517"
