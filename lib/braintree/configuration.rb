@@ -126,6 +126,14 @@ module Braintree
       base_user_agent = "Braintree Ruby Gem #{Braintree::Version::String}"
       @custom_user_agent ? "#{base_user_agent} (#{@custom_user_agent})" : base_user_agent
     end
+    
+    def inspect # :nodoc:
+      nice_attributes = self.class._attributes.map { |attr|
+        # avoid leaking the private key into logs etc.
+        "#{attr}: #{send(attr).inspect}" unless attr == :private_key
+      }.compact
+      "#<#{self.class} #{nice_attributes.join(', ')}>"
+    end
 
     def self._default_logger # :nodoc:
       logger = Logger.new(STDOUT)
