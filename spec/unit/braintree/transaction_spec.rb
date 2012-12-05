@@ -95,7 +95,15 @@ describe Braintree::Transaction do
           :card_type => "Visa",
           :expiration_month => "08",
           :expiration_year => "2009",
-          :customer_location => "US"
+          :customer_location => "US",
+          :prepaid => "Yes",
+          :healthcare => "Yes",
+          :durbin_regulated => "Yes",
+          :debit => "Yes",
+          :commercial => "No",
+          :payroll => "Unknown",
+          :country_of_issuance => "Narnia",
+          :issuing_bank => "Mr Tumnus"
         }
       )
       transaction.credit_card_details.token.should == "mzg2"
@@ -105,6 +113,13 @@ describe Braintree::Transaction do
       transaction.credit_card_details.expiration_month.should == "08"
       transaction.credit_card_details.expiration_year.should == "2009"
       transaction.credit_card_details.customer_location.should == "US"
+      transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+      transaction.credit_card_details.healthcare.should == Braintree::CreditCard::Healthcare::Yes
+      transaction.credit_card_details.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
+      transaction.credit_card_details.debit.should == Braintree::CreditCard::Debit::Yes
+      transaction.credit_card_details.commercial.should == Braintree::CreditCard::Commercial::No
+      transaction.credit_card_details.country_of_issuance.should == "Narnia"
+      transaction.credit_card_details.issuing_bank.should == "Mr Tumnus"
     end
 
     it "sets up history attributes in status_history" do

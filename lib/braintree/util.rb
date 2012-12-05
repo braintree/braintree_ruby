@@ -26,11 +26,11 @@ module Braintree
     end
 
     def self.url_decode(text)
-      CGI.unescape text.to_s
+      CGI.unescape text.to_s.to_str
     end
 
     def self.url_encode(text)
-      CGI.escape text.to_s
+      CGI.escape text.to_s.to_str
     end
 
     def self.symbolize_keys(hash)

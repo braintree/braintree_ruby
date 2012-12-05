@@ -115,6 +115,21 @@ describe Braintree::Transaction do
   end
 
   describe "self.create" do
+
+    describe "card type indicators" do
+      it "sets the prepaid field if the card is prepaid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+          :expiration_date => "05/2009"
+        }
+        )
+        result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+      end
+    end
+
     it "returns a successful result if successful" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -461,7 +476,7 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.create(params[:transaction])
       result.success?.should == false
-      result.errors.for(:transaction).on(:base).map{|error| error.code}.should include(Braintree::ErrorCodes::Transaction::PaymentMethodConflict)
+      result.errors.for(:transaction).on(:base).map{|error| error.code}.should include(Braintree::ErrorCodes::Transaction::PaymentMethodConflictWithVenmoSDK)
       result.errors.for(:transaction).on(:base).map{|error| error.code}.should include(Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer)
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
       result.errors.for(:transaction).on(:customer_id)[0].code.should == Braintree::ErrorCodes::Transaction::CustomerIdIsInvalid

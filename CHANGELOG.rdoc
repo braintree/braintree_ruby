@@ -1,5 +1,7 @@
+== 2.21.0
+* Add card type indicators to transactions and verifications
+
 == 2.20.0
-* Add params for Venmo SDK
 * Add additional card types for card type indicators
 * Added ability to allow TR query parameters with no value (thanks @dmathieu!)
 

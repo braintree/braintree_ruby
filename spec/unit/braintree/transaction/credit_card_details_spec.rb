@@ -21,10 +21,19 @@ describe Braintree::Transaction::CreditCardDetails do
         :expiration_year => "2012",
         :last_4 => "6789",
         :token => "token",
-        :customer_location => "US"
+        :customer_location => "US",
+        :healthcare => "No",
+        :prepaid => "Yes",
+        :durbin_regulated => "No",
+        :debit => "Yes",
+        :commercial => "Unknown",
+        :payroll => "Unknown",
+        :country_of_issuance => "Lilliput",
+        :issuing_bank => "Gulliver Bank"
       )
-      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US">)
+      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US", prepaid: "Yes", healthcare: "No", durbin_regulated: "No", debit: "Yes", commercial: "Unknown", payroll: "Unknown", country_of_issuance: "Lilliput", issuing_bank: "Gulliver Bank">)
     end
+
   end
 
   describe "masked_number" do
