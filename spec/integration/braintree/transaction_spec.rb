@@ -27,15 +27,21 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
 
-      clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {
-        :submit_for_settlement => false
-      })
+      clone_result = Braintree::Transaction.clone_transaction(
+        result.transaction.id,
+        :amount => "112.44",
+        :channel => "MyShoppingCartProvider",
+        :options => {
+          :submit_for_settlement => false
+        }
+      )
       clone_result.success?.should == true
 
       transaction = clone_result.transaction
 
       transaction.id.should_not == result.transaction.id
       transaction.amount.should == BigDecimal.new("112.44")
+      transaction.channel.should == "MyShoppingCartProvider"
 
       transaction.billing_details.country_name.should == "Botswana"
       transaction.billing_details.country_code_alpha2.should == "BW"

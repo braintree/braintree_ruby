@@ -94,7 +94,7 @@ module Braintree
     end
 
     def self._clone_signature # :nodoc:
-      [:amount, {:options => [:submit_for_settlement]}]
+      [:amount, :channel, {:options => [:submit_for_settlement]}]
     end
 
     def self._create_signature # :nodoc:
