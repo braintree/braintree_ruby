@@ -471,6 +471,7 @@ describe Braintree::Transaction do
           },
           :customer_id => "invalid",
           :order_id => "too long" * 250,
+          :channel => "too long" * 250,
           :payment_method_token => "too long and doesn't belong to customer" * 250
         }
       }
@@ -481,6 +482,7 @@ describe Braintree::Transaction do
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
       result.errors.for(:transaction).on(:customer_id)[0].code.should == Braintree::ErrorCodes::Transaction::CustomerIdIsInvalid
       result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
+      result.errors.for(:transaction).on(:channel)[0].code.should == Braintree::ErrorCodes::Transaction::ChannelIsTooLong
       result.errors.for(:transaction).on(:payment_method_token)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodTokenIsInvalid
       result.errors.for(:transaction).on(:type)[0].code.should == Braintree::ErrorCodes::Transaction::TypeIsInvalid
     end
@@ -1008,6 +1010,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.sale(
         :amount => "100.00",
         :order_id => "123",
+        :channel => "MyShoppingCartProvider",
         :credit_card => {
           :cardholder_name => "The Cardholder",
           :number => "5105105105105100",
@@ -1054,6 +1057,7 @@ describe Braintree::Transaction do
       transaction.amount.should == BigDecimal.new("100.00")
       transaction.currency_iso_code.should == "USD"
       transaction.order_id.should == "123"
+      transaction.channel.should == "MyShoppingCartProvider"
       transaction.processor_response_code.should == "1000"
       transaction.created_at.between?(Time.now - 60, Time.now).should == true
       transaction.updated_at.between?(Time.now - 60, Time.now).should == true
@@ -1586,6 +1590,7 @@ describe Braintree::Transaction do
         :transaction => {
           :amount => "100.00",
           :order_id => "123",
+          :channel => "MyShoppingCartProvider",
           :type => "sale",
           :credit_card => {
             :cardholder_name => "The Cardholder",
@@ -1636,6 +1641,7 @@ describe Braintree::Transaction do
       transaction.status.should == Braintree::Transaction::Status::Authorized
       transaction.amount.should == BigDecimal.new("100.00")
       transaction.order_id.should == "123"
+      transaction.channel.should == "MyShoppingCartProvider"
       transaction.processor_response_code.should == "1000"
       transaction.created_at.between?(Time.now - 60, Time.now).should == true
       transaction.updated_at.between?(Time.now - 60, Time.now).should == true

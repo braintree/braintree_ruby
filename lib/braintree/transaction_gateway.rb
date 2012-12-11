@@ -99,7 +99,7 @@ module Braintree
 
     def self._create_signature # :nodoc:
       [
-        :amount, :customer_id, :merchant_account_id, :order_id, :payment_method_token,
+        :amount, :customer_id, :merchant_account_id, :order_id, :channel, :payment_method_token,
         :purchase_order_number, :recurring, :shipping_address_id, :type, :tax_amount, :tax_exempt, :venmo_sdk_payment_method_code,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
