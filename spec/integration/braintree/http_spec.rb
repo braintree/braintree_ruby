@@ -97,7 +97,7 @@ describe Braintree::Http do
         end
       end
 
-      it "rejets when the certificate is signed by a different (but valid) root CA" do
+      it "rejects when the certificate is signed by a different (but valid) root CA" do
         # Random CA root file from a different certificate authority
         config = Braintree::Configuration.instantiate
         config.stub(:ca_file).and_return(
