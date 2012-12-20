@@ -52,6 +52,7 @@ module Braintree
     attr_reader :gateway_rejection_reason
     attr_reader :merchant_account_id
     attr_reader :order_id
+    attr_reader :channel
     attr_reader :billing_details, :shipping_details
     attr_reader :plan_id
     # The authorization code from the processor.
