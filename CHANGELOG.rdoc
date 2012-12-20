@@ -1,3 +1,6 @@
+== 2.22.0
+* Adds channel field to transactions.
+
 == 2.21.0
 * Add card type indicators to transactions and verifications
 
