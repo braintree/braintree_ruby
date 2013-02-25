@@ -7,5 +7,5 @@ if [ $# -eq 0 ]; then
 else
   rvm use $1 --create --install
   rvm gemset import braintree-ruby.gems
-  rake --trace
+  rake _0.8.7_ --trace
 fi
