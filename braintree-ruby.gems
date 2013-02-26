@@ -1,6 +1,7 @@
 # braintree-ruby.gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
 builder -v2.1.2
 libxml-ruby -v1.1.3
+libxml-ruby -v2.6.0
 rake_commit -v0.11.0
 rake -v0.8.7
 rspec -v1.2.9
