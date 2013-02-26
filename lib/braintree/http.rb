@@ -101,9 +101,10 @@ module Braintree
       if preverify_ok != true || ssl_context.error != 0
         err_msg = "SSL Verification failed -- Preverify: #{preverify_ok}, Error: #{ssl_context.error_string} (#{ssl_context.error})"
         @config.logger.error err_msg
-        raise SSLCertificateError.new(err_msg)
+        false
+      else
+        true
       end
-      true
     end
   end
 end
