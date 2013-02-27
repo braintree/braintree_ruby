@@ -93,7 +93,7 @@ describe Braintree::Http do
         start_ssl_server do
           expect do
             config.http._http_do(Net::HTTP::Get, "/login")
-          end.to raise_error(Braintree::SSLCertificateError, /Preverify: false, Error: self signed certificate/)
+          end.to raise_error(Braintree::SSLCertificateError)
         end
       end
 
@@ -109,7 +109,7 @@ describe Braintree::Http do
         start_ssl_server do
           expect do
             config.http._http_do(Net::HTTP::Get, "/login")
-          end.to raise_error(Braintree::SSLCertificateError, /Preverify: false, Error: self signed certificate/)
+          end.to raise_error(Braintree::SSLCertificateError)
         end
       end
 
@@ -160,19 +160,15 @@ describe Braintree::Http do
   end
 
   describe "self._verify_ssl_certificate" do
-    it "raises if preverify is false" do
+    it "is false if preverify is false" do
       context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
-      expect do
-        Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context)
-      end.to raise_error(Braintree::SSLCertificateError)
+      Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context).should == false
     end
 
-    it "raise if ssl_context doesn't have an error code of 0" do
+    it "returns false if ssl_context doesn't have an error code of 0" do
       context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
       context.error = 19 # ca_file incorrect, self-signed
-      expect do
-        Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context)
-      end.to raise_error(Braintree::SSLCertificateError)
+      Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context).should == false
     end
 
     it "doesn't raise if there is no error" do
@@ -190,9 +186,7 @@ describe Braintree::Http do
         utc_or_gmt = Time.now.utc.strftime("%Z")
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
         context.error = 19
-        expect do
-          Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context)
-        end.to raise_error(Braintree::SSLCertificateError)
+        Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context).should == false
         output.string.should include("SSL Verification failed -- Preverify: false, Error: self signed certificate in certificate chain (19)")
       ensure
         Braintree::Configuration.logger = old_logger
@@ -208,7 +202,7 @@ describe Braintree::Http do
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
         expect do
           Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context)
-        end.to_not raise_error(Braintree::SSLCertificateError)
+        end.to_not raise_error(OpenSSL::SSL::SSLError)
         output.string.should == ""
       ensure
         Braintree::Configuration.logger = old_logger
