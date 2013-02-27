@@ -31,6 +31,9 @@ module Braintree # :nodoc:
   class ServerError < BraintreeError; end
 
   # See http://www.braintreepayments.com/docs/ruby/general/exceptions
+  class SSLCertificateError < BraintreeError; end
+
+  # See http://www.braintreepayments.com/docs/ruby/general/exceptions
   class UnexpectedError < BraintreeError; end
 
   # See http://www.braintreepayments.com/docs/ruby/general/exceptions

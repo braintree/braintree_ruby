@@ -76,6 +76,8 @@ module Braintree
         end
         response
       end
+    rescue OpenSSL::SSL::SSLError
+      raise Braintree::SSLCertificateError
     end
 
     def _body(response)

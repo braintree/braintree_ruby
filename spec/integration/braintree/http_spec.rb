@@ -93,7 +93,7 @@ describe Braintree::Http do
         start_ssl_server do
           expect do
             config.http._http_do(Net::HTTP::Get, "/login")
-          end.to raise_error(OpenSSL::SSL::SSLError)
+          end.to raise_error(Braintree::SSLCertificateError)
         end
       end
 
@@ -109,7 +109,7 @@ describe Braintree::Http do
         start_ssl_server do
           expect do
             config.http._http_do(Net::HTTP::Get, "/login")
-          end.to raise_error(OpenSSL::SSL::SSLError)
+          end.to raise_error(Braintree::SSLCertificateError)
         end
       end
 
@@ -151,7 +151,7 @@ describe Braintree::Http do
 
           expect do
             config.http._http_do(Net::HTTP::Get, "/login")
-          end.to raise_error(OpenSSL::SSL::SSLError)
+          end.to raise_error(Braintree::SSLCertificateError)
         ensure
           Braintree::Configuration.environment = original_env
         end
