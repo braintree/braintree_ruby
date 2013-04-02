@@ -121,16 +121,15 @@ describe Braintree::Transaction do
   end
 
   describe "self.create" do
-
     describe "card type indicators" do
       it "sets the prepaid field if the card is prepaid" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => 1_00,
           :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-          :expiration_date => "05/2009"
-        }
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          }
         )
         result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
       end
@@ -873,6 +872,47 @@ describe Braintree::Transaction do
         end
       end
     end
+
+    context "service fees" do
+      it "allous specifying service fees" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee => {
+            :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+            :amount => "1.00"
+          }
+        )
+        result.success?.should == true
+        result.transaction.service_fee_details.amount.should == BigDecimal.new("1.00")
+        result.transaction.service_fee_details.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+      end
+
+      it "raises an error if service fee amount is negative" do
+        result = Braintree::Transaction.create(
+          :service_fee => {
+            :amount => "-1"
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::TransactionServiceFee::AmountCannotBeNegative
+      end
+
+      it "raises an error if service fee amount is invalid" do
+        result = Braintree::Transaction.create(
+          :service_fee => {
+            :amount => "invalid amount"
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::TransactionServiceFee::AmountFormatIsInvalid
+      end
+    end
   end
 
   describe "self.create!" do
@@ -994,6 +1034,7 @@ describe Braintree::Transaction do
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
+
   describe "self.sale" do
     it "returns a successful result with type=sale if successful" do
       result = Braintree::Transaction.sale(

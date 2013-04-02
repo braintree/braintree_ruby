@@ -229,5 +229,16 @@ module Braintree
         VaultIsDisabled = "91525"
       end
     end
+
+    module TransactionServiceFee
+      AmountCannotBeNegative = "92501"
+      AmountIsRequired = "92503"
+      AmountFormatIsInvalid = "92503"
+      AmountIsTooLarge = "92504"
+      MerchantAccountNotSupported = "92505"
+      MerchantAccountIdIsInvalid = "92506"
+      MerchantAccountCannotMatchTransactionMerchantAccount = "92507"
+      MerchantAccountCurrenciesMustMatch = "92508"
+    end
   end
 end
