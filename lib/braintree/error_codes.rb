@@ -233,7 +233,7 @@ module Braintree
 
     module TransactionServiceFee
       AmountCannotBeNegative = "92501"
-      AmountIsRequired = "92503"
+      AmountIsRequired = "92502"
       AmountFormatIsInvalid = "92503"
       AmountIsTooLarge = "92504"
       MerchantAccountNotSupported = "92505"
