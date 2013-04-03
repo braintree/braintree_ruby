@@ -874,7 +874,7 @@ describe Braintree::Transaction do
     end
 
     context "service fees" do
-      it "allous specifying service fees" do
+      it "allows specifying service fees" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -1454,6 +1454,26 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.submit_for_settlement(transaction.id)
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement
+    end
+
+    context "service fees" do
+      it "returns an error result if amount submitted for settlement is less than service fee amount" do
+        transaction = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+          :service_fee => {
+            :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :amount => "1.00"
+          }
+        ).transaction
+        result = Braintree::Transaction.submit_for_settlement(transaction.id, "0.01")
+        result.success?.should == false
+        result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsLessThanServiceFeeAmount
+      end
     end
   end
 
