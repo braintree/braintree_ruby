@@ -900,7 +900,7 @@ describe Braintree::Transaction do
           }
         )
         result.success?.should == false
-        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::TransactionServiceFee::AmountCannotBeNegative
+        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::ServiceFee::AmountCannotBeNegative
       end
 
       it "raises an error if service fee amount is invalid" do
@@ -910,7 +910,7 @@ describe Braintree::Transaction do
           }
         )
         result.success?.should == false
-        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::TransactionServiceFee::AmountFormatIsInvalid
+        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::ServiceFee::AmountFormatIsInvalid
       end
     end
   end

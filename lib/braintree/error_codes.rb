@@ -231,7 +231,7 @@ module Braintree
       end
     end
 
-    module TransactionServiceFee
+    module ServiceFee
       AmountCannotBeNegative = "92501"
       AmountIsRequired = "92502"
       AmountFormatIsInvalid = "92503"
