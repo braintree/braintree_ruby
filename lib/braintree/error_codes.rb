@@ -213,6 +213,7 @@ module Braintree
       PurchaseOrderNumberIsTooLong = "91537"
       PurchaseOrderNumberIsInvalid = "91548"
       RefundAmountIsTooLarge = "91521"
+      ServiceFeeIsNotAllowedOnCredits = "91552"
       SettlementAmountIsLessThanServiceFeeAmount = "91551"
       SettlementAmountIsTooLarge = "91522"
       SubscriptionDoesNotBelongToCustomer = "91529"

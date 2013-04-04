@@ -1564,6 +1564,25 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
     end
+
+    it "disallows service fee on a credit" do
+      params = {
+        :transaction => {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :service_fee => {
+            :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :amount => "1.00"
+          }
+        }
+      }
+      result = Braintree::Transaction.credit(params[:transaction])
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeIsNotAllowedOnCredits)
+    end
   end
 
   describe "self.credit!" do
