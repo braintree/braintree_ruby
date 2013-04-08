@@ -378,6 +378,18 @@ describe Braintree::CreditCard do
       end
     end
 
+    describe "venmo_sdk" do
+      it "can pass a venmo sdk payment method code" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
+        )
+        result.success?.should == true
+        result.credit_card.bin.should == "400934"
+        result.credit_card.last_4.should == "1881"
+      end
+    end
   end
 
   describe "self.create!" do

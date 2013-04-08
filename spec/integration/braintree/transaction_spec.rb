@@ -913,6 +913,19 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::ServiceFee::AmountFormatIsInvalid
       end
     end
+
+    describe "venmo_sdk" do
+      it "can create a card with a venmo sdk payment method code" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.bin.should == "400934"
+        result.transaction.credit_card_details.last_4.should == "1881"
+      end
+    end
   end
 
   describe "self.create!" do
