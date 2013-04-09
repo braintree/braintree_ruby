@@ -121,6 +121,11 @@ module Braintree
       return_object_or_raise(:transaction) { credit(transaction_attributes) }
     end
 
+    # Returns the default credit card of the customer
+    def default_credit_card
+       @credit_cards.find {|credit_card| credit_card.default? }
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/customers/delete
     def delete
       @gateway.customer.delete(id)

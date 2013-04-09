@@ -1056,4 +1056,31 @@ describe Braintree::Customer do
       customer.website.should == "new.website.com"
     end
   end
+
+  describe "default_credit_card" do
+    it "should return the default credit card for a given customer" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2015",
+          :options => {
+            :make_default => false
+          }
+        }
+      )
+
+      default_credit_card = Braintree::CreditCard.create!(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "11/2015",
+        :options => {
+          :make_default => true
+        }
+      )
+
+      customer = Braintree::Customer.find(customer.id)
+
+      customer.default_credit_card.should == default_credit_card
+    end
+  end
 end
