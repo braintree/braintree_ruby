@@ -241,4 +241,12 @@ describe Braintree::Configuration do
       Braintree::Configuration.instantiate.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String}"
     end
   end
+
+  describe "inspect" do
+    it "masks the private_key" do
+      config = Braintree::Configuration.new(:private_key => "secret_key")
+      config.inspect.should include('@private_key="[FILTERED]"')
+      config.inspect.should_not include('secret_key')
+    end
+  end
 end

@@ -132,5 +132,9 @@ module Braintree
       logger.level = Logger::INFO
       logger
     end
+
+    def inspect
+      super.gsub(/@private_key=\".*\"/, '@private_key="[FILTERED]"')
+    end
   end
 end
