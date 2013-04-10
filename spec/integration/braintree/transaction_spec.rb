@@ -1828,7 +1828,7 @@ describe Braintree::Transaction do
 
       context "deposit_details" do
         it "includes deposit_details on found transactions" do
-          found_transaction = Braintree::Transaction.find("wellsdeposit")
+          found_transaction = Braintree::Transaction.find("deposit_transaction")
           deposit = found_transaction.deposit_details
           deposit.deposit_date.should == "2013-04-10"
           deposit.disbursed_at.should == Time.parse("2013-04-11 00:00:00 UTC")

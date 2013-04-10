@@ -583,6 +583,116 @@ describe Braintree::Transaction, "search" do
         end
       end
 
+      context "deposit_date" do
+        it "searches on deposit_date in UTC" do
+          deposit_time = Time.parse("2013-04-10 00:00:00 UTC")
+          transaction_id = "deposit_transaction"
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date.between(
+              deposit_time - 60,
+              deposit_time + 60
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date >= deposit_time - 1
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date <= deposit_time + 1
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date.between(
+              deposit_time - 300,
+              deposit_time - 100
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date.is deposit_time
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+        end
+
+        it "searches on deposit_date in local time" do
+          now = Time.parse("2013-04-09 18:00:00 CST")
+          transaction_id = "deposit_transaction"
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date.between(
+              now - 60,
+              now + 60
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date >= now - 60
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date <= now + 60
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.deposit_date.between(
+              now - 300,
+              now - 100
+            )
+          end
+
+          collection.maximum_size.should == 0
+        end
+
+        it "searches on deposit_date with dates" do
+          deposit_date = Date.new(2013, 4, 10)
+          transaction_id = "deposit_transaction"
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.created_at.between(
+              deposit_date - 1,
+              deposit_date + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+        end
+      end
+
       context "status date ranges" do
         it "finds transactions authorized in a given range" do
           transaction = Braintree::Transaction.sale!(
