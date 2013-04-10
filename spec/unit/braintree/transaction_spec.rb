@@ -93,7 +93,8 @@ describe Braintree::Transaction do
           :disbursed_at => Time.parse("2013-04-04 00:00:00 UTC"),
           :settlement_amount => "120.00",
           :settlement_currency_iso_code => "USD",
-          :settlement_currency_exchange_rate => "1"
+          :settlement_currency_exchange_rate => "1",
+          :funds_held => false
         }
       )
       deposit = transaction.deposit_details
@@ -102,6 +103,7 @@ describe Braintree::Transaction do
       deposit.settlement_amount.should == "120.00"
       deposit.settlement_currency_iso_code.should == "USD"
       deposit.settlement_currency_exchange_rate.should == "1"
+      deposit.funds_held?.should == false
     end
 
     it "sets up credit card attributes in credit_card_details" do

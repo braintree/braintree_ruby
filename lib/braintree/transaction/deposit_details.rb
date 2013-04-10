@@ -8,6 +8,10 @@ module Braintree
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
       end
+
+      def funds_held?
+        @funds_held
+      end
     end
   end
 end

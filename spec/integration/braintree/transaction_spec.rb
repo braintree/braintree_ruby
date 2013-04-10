@@ -1835,6 +1835,7 @@ describe Braintree::Transaction do
           deposit.settlement_amount.should == "100.00"
           deposit.settlement_currency_iso_code.should == "USD"
           deposit.settlement_currency_exchange_rate.should == "1"
+          deposit.funds_held?.should == false
         end
       end
     end
