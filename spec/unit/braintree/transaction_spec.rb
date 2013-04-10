@@ -85,6 +85,25 @@ describe Braintree::Transaction do
       transaction.customer_details.fax.should == "012-161-8055"
     end
 
+    it "sets up deposit attributes in deposit_details" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :deposit_details => {
+          :deposit_date => "2013-04-03",
+          :disbursed_at => Time.parse("2013-04-04 00:00:00 UTC"),
+          :settlement_amount => "120.00",
+          :settlement_currency_iso_code => "USD",
+          :settlement_currency_exchange_rate => "1"
+        }
+      )
+      deposit = transaction.deposit_details
+      deposit.deposit_date.should == "2013-04-03"
+      deposit.disbursed_at.should == Time.parse("2013-04-04 00:00:00 UTC")
+      deposit.settlement_amount.should == "120.00"
+      deposit.settlement_currency_iso_code.should == "USD"
+      deposit.settlement_currency_exchange_rate.should == "1"
+    end
+
     it "sets up credit card attributes in credit_card_details" do
       transaction = Braintree::Transaction._new(
         :gateway,

@@ -1825,6 +1825,18 @@ describe Braintree::Transaction do
       expect do
         Braintree::Transaction.find("invalid-id")
       end.to raise_error(Braintree::NotFoundError, 'transaction with id "invalid-id" not found')
+
+      context "deposit_details" do
+        it "includes deposit_details on found transactions" do
+          found_transaction = Braintree::Transaction.find("wellsdeposit")
+          deposit = found_transaction.deposit_details
+          deposit.deposit_date.should == "2013-04-10"
+          deposit.disbursed_at.should == Time.parse("2013-04-11 00:00:00 UTC")
+          deposit.settlement_amount.should == "100.00"
+          deposit.settlement_currency_iso_code.should == "USD"
+          deposit.settlement_currency_exchange_rate.should == "1"
+        end
+      end
     end
   end
 
