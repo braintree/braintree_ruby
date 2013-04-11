@@ -676,13 +676,13 @@ describe Braintree::Transaction, "search" do
           collection.maximum_size.should == 0
         end
 
-        it "searches on deposit_date with dates" do
+        it "searches on deposit_date with date ranges" do
           deposit_date = Date.new(2013, 4, 10)
           transaction_id = "deposit_transaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.created_at.between(
+            search.deposit_date.between(
               deposit_date - 1,
               deposit_date + 1
             )
