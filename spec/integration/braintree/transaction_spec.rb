@@ -1825,18 +1825,36 @@ describe Braintree::Transaction do
       expect do
         Braintree::Transaction.find("invalid-id")
       end.to raise_error(Braintree::NotFoundError, 'transaction with id "invalid-id" not found')
+    end
 
-      context "deposit_details" do
-        it "includes deposit_details on found transactions" do
-          found_transaction = Braintree::Transaction.find("deposit_transaction")
-          deposit = found_transaction.deposit_details
-          deposit.deposit_date.should == "2013-04-10"
-          deposit.disbursed_at.should == Time.parse("2013-04-11 00:00:00 UTC")
-          deposit.settlement_amount.should == "100.00"
-          deposit.settlement_currency_iso_code.should == "USD"
-          deposit.settlement_currency_exchange_rate.should == "1"
-          deposit.funds_held?.should == false
-        end
+    context "deposit_details" do
+      it "includes deposit_details on found transactions" do
+        found_transaction = Braintree::Transaction.find("deposit_transaction")
+
+        found_transaction.deposited?.should == true
+        deposit = found_transaction.deposit_details
+
+        deposit.deposit_date.should == "2013-04-10"
+        deposit.disbursed_at.should == Time.parse("2013-04-11 00:00:00 UTC")
+        deposit.settlement_amount.should == "100.00"
+        deposit.settlement_currency_iso_code.should == "USD"
+        deposit.settlement_currency_exchange_rate.should == "1"
+        deposit.funds_held?.should == false
+      end
+
+      it "includes deposit_details on found transactions" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        )
+        result.success?.should == true
+        created_transaction = result.transaction
+
+        created_transaction.deposited?.should == false
       end
     end
   end

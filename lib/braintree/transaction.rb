@@ -226,6 +226,11 @@ module Braintree
       !@refund_id.nil?
     end
 
+    # Returns true if the transaction has been deposited. False otherwise.
+    def deposited?
+      @deposit_details.valid?
+    end
+
     def refund_id
       warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use TransparentRedirect.refund_ids"
       @refund_id

@@ -12,6 +12,10 @@ module Braintree
       def funds_held?
         @funds_held
       end
+
+      def valid?
+        !deposit_date.nil?
+      end
     end
   end
 end
