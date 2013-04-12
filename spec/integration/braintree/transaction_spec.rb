@@ -1829,7 +1829,7 @@ describe Braintree::Transaction do
 
     context "deposit_details" do
       it "includes deposit_details on found transactions" do
-        found_transaction = Braintree::Transaction.find("deposit_transaction")
+        found_transaction = Braintree::Transaction.find("deposittransaction")
 
         found_transaction.deposited?.should == true
         deposit = found_transaction.deposit_details

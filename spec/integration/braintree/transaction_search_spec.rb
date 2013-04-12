@@ -586,7 +586,7 @@ describe Braintree::Transaction, "search" do
       context "deposit_date" do
         it "searches on deposit_date in UTC" do
           deposit_time = Time.parse("2013-04-10 00:00:00 UTC")
-          transaction_id = "deposit_transaction"
+          transaction_id = "deposittransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
@@ -636,7 +636,7 @@ describe Braintree::Transaction, "search" do
 
         it "searches on deposit_date in local time" do
           now = Time.parse("2013-04-09 18:00:00 CST")
-          transaction_id = "deposit_transaction"
+          transaction_id = "deposittransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
@@ -678,7 +678,7 @@ describe Braintree::Transaction, "search" do
 
         it "searches on deposit_date with date ranges" do
           deposit_date = Date.new(2013, 4, 10)
-          transaction_id = "deposit_transaction"
+          transaction_id = "deposittransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
