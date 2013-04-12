@@ -1835,7 +1835,7 @@ describe Braintree::Transaction do
         deposit = found_transaction.deposit_details
 
         deposit.deposit_date.should == "2013-04-10"
-        deposit.disbursed_at.should == Time.parse("2013-04-11 00:00:00 UTC")
+        deposit.disbursed_at.should == Time.parse("2013-04-09 00:00:00 UTC")
         deposit.settlement_amount.should == "100.00"
         deposit.settlement_currency_iso_code.should == "USD"
         deposit.settlement_currency_exchange_rate.should == "1"
