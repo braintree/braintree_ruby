@@ -1,9 +1,9 @@
 module Braintree
   class Transaction
-    class DepositDetails # :nodoc:
+    class DisbursementDetails # :nodoc:
       include BaseModule
 
-      attr_reader :deposit_date, :disbursed_at, :settlement_amount, :settlement_currency_iso_code, :settlement_currency_exchange_rate
+      attr_reader :disbursement_date, :settlement_amount, :settlement_currency_iso_code, :settlement_currency_exchange_rate
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
@@ -14,7 +14,7 @@ module Braintree
       end
 
       def valid?
-        !deposit_date.nil?
+        !disbursement_date.nil?
       end
     end
   end

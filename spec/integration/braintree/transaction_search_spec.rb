@@ -583,16 +583,16 @@ describe Braintree::Transaction, "search" do
         end
       end
 
-      context "deposit_date" do
-        it "searches on deposit_date in UTC" do
-          deposit_time = Time.parse("2013-04-10 00:00:00 UTC")
+      context "disbursement_date" do
+        it "searches on disbursement_date in UTC" do
+          disbursement_time = Time.parse("2013-04-10 00:00:00 UTC")
           transaction_id = "deposittransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date.between(
-              deposit_time - 60,
-              deposit_time + 60
+            search.disbursement_date.between(
+              disbursement_time - 60,
+              disbursement_time + 60
             )
           end
 
@@ -601,7 +601,7 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date >= deposit_time - 1
+            search.disbursement_date >= disbursement_time - 1
           end
 
           collection.maximum_size.should == 1
@@ -609,7 +609,7 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date <= deposit_time + 1
+            search.disbursement_date <= disbursement_time + 1
           end
 
           collection.maximum_size.should == 1
@@ -617,9 +617,9 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date.between(
-              deposit_time - 300,
-              deposit_time - 100
+            search.disbursement_date.between(
+              disbursement_time - 300,
+              disbursement_time - 100
             )
           end
 
@@ -627,20 +627,20 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date.is deposit_time
+            search.disbursement_date.is disbursement_time
           end
 
           collection.maximum_size.should == 1
           collection.first.id.should == transaction_id
         end
 
-        it "searches on deposit_date in local time" do
+        it "searches on disbursement_date in local time" do
           now = Time.parse("2013-04-09 18:00:00 CST")
           transaction_id = "deposittransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date.between(
+            search.disbursement_date.between(
               now - 60,
               now + 60
             )
@@ -651,7 +651,7 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date >= now - 60
+            search.disbursement_date >= now - 60
           end
 
           collection.maximum_size.should == 1
@@ -659,7 +659,7 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date <= now + 60
+            search.disbursement_date <= now + 60
           end
 
           collection.maximum_size.should == 1
@@ -667,7 +667,7 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date.between(
+            search.disbursement_date.between(
               now - 300,
               now - 100
             )
@@ -676,15 +676,15 @@ describe Braintree::Transaction, "search" do
           collection.maximum_size.should == 0
         end
 
-        it "searches on deposit_date with date ranges" do
-          deposit_date = Date.new(2013, 4, 10)
+        it "searches on disbursement_date with date ranges" do
+          disbursement_date = Date.new(2013, 4, 10)
           transaction_id = "deposittransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
-            search.deposit_date.between(
-              deposit_date - 1,
-              deposit_date + 1
+            search.disbursement_date.between(
+              disbursement_date - 1,
+              disbursement_date + 1
             )
           end
 

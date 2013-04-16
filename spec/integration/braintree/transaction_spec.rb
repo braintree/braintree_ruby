@@ -1827,22 +1827,21 @@ describe Braintree::Transaction do
       end.to raise_error(Braintree::NotFoundError, 'transaction with id "invalid-id" not found')
     end
 
-    context "deposit_details" do
-      it "includes deposit_details on found transactions" do
+    context "disbursement_details" do
+      it "includes disbursement_details on found transactions" do
         found_transaction = Braintree::Transaction.find("deposittransaction")
 
-        found_transaction.deposited?.should == true
-        deposit = found_transaction.deposit_details
+        found_transaction.disbursed?.should == true
+        disbursement = found_transaction.disbursement_details
 
-        deposit.deposit_date.should == "2013-04-10"
-        deposit.disbursed_at.should == Time.parse("2013-04-09 00:00:00 UTC")
-        deposit.settlement_amount.should == "100.00"
-        deposit.settlement_currency_iso_code.should == "USD"
-        deposit.settlement_currency_exchange_rate.should == "1"
-        deposit.funds_held?.should == false
+        disbursement.disbursement_date.should == "2013-04-10"
+        disbursement.settlement_amount.should == "100.00"
+        disbursement.settlement_currency_iso_code.should == "USD"
+        disbursement.settlement_currency_exchange_rate.should == "1"
+        disbursement.funds_held?.should == false
       end
 
-      it "includes deposit_details on found transactions" do
+      it "is not disbursed" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -1854,7 +1853,7 @@ describe Braintree::Transaction do
         result.success?.should == true
         created_transaction = result.transaction
 
-        created_transaction.deposited?.should == false
+        created_transaction.disbursed?.should == false
       end
     end
   end

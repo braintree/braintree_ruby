@@ -48,7 +48,7 @@ module Braintree
     attr_reader :currency_iso_code
     attr_reader :custom_fields
     attr_reader :cvv_response_code
-    attr_reader :deposit_details
+    attr_reader :disbursement_details
     attr_reader :descriptor
     attr_reader :gateway_rejection_reason
     attr_reader :merchant_account_id
@@ -178,7 +178,7 @@ module Braintree
       @subscription_details = SubscriptionDetails.new(@subscription)
       @customer_details = CustomerDetails.new(@customer)
       @billing_details = AddressDetails.new(@billing)
-      @deposit_details = DepositDetails.new(@deposit_details)
+      @disbursement_details = DisbursementDetails.new(@disbursement_details)
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @tax_amount = Util.to_big_decimal(tax_amount)
@@ -226,9 +226,9 @@ module Braintree
       !@refund_id.nil?
     end
 
-    # Returns true if the transaction has been deposited. False otherwise.
-    def deposited?
-      @deposit_details.valid?
+    # Returns true if the transaction has been disbursed. False otherwise.
+    def disbursed?
+      @disbursement_details.valid?
     end
 
     def refund_id
