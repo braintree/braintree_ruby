@@ -1136,14 +1136,14 @@ describe Braintree::Subscription do
 
         # not testing for specific number since the
         # create subscriptions accumulate over time
-        collection.maximum_size.should > 1
+        collection.maximum_size.should >= 1
 
         collection = Braintree::Subscription.search do |search|
           search.merchant_account_id.in subscription.merchant_account_id, "bogus_merchant_account_id"
           search.price.is "11.38"
         end
 
-        collection.maximum_size.should > 1
+        collection.maximum_size.should >= 1
 
         collection = Braintree::Subscription.search do |search|
           search.merchant_account_id.is "bogus_merchant_account_id"
