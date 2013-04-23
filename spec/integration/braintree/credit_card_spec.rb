@@ -24,6 +24,7 @@ describe Braintree::CreditCard do
       credit_card.expiration_date.should == "05/2009"
       credit_card.unique_number_identifier.should =~ /\A\w{32}\z/
       credit_card.venmo_sdk?.should == false
+      credit_card.image_url.should_not be_nil
     end
 
     it "can provide expiration month and year separately" do
