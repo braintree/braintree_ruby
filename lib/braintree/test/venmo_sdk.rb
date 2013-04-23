@@ -10,6 +10,10 @@ module Braintree
       JCBPaymentMethodCode = generate_test_payment_method_code(CreditCardNumbers::JCBs.first)
       MasterCardPaymentMethodCode = generate_test_payment_method_code(CreditCardNumbers::MasterCards.first)
       VisaPaymentMethodCode = generate_test_payment_method_code(CreditCardNumbers::Visas.first)
+      InvalidPaymentMethodCode = "stub-invalid-payment-method-code"
+
+      Session = "stub-session"
+      InvalidSession = "stub-invalid-session"
     end
   end
 end

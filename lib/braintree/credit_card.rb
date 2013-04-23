@@ -224,6 +224,11 @@ module Braintree
       return_object_or_raise(:credit_card) { update(attributes) }
     end
 
+    # Returns true if the card is associated with Venmo SDK
+    def venmo_sdk?
+      @venmo_sdk
+    end
+
     # Returns true if +other+ is a +CreditCard+ with the same token.
     def ==(other)
       return false unless other.is_a?(CreditCard)
