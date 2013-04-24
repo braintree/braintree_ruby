@@ -34,6 +34,7 @@ unless defined?(SPEC_HELPER_LOADED)
 
     DefaultMerchantAccountId = "sandbox_credit_card"
     NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
+    NonDefaultSubMerchantAccountId = "sandbox_sub_merchant_account"
 
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",

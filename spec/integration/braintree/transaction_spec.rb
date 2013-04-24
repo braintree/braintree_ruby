@@ -878,7 +878,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
@@ -1474,6 +1474,7 @@ describe Braintree::Transaction do
         transaction = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "06/2009"
