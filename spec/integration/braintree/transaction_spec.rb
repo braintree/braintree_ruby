@@ -909,7 +909,7 @@ describe Braintree::Transaction do
         )
         result.success?.should == false
         expected_error_code = Braintree::ErrorCodes::ServiceFee::MasterMerchantAccountDoesNotSupportServiceFees
-        result.errors.for(:transaction).for(:service_fee).on(:merchant_account_id)[0].code.should == expected_error_code
+        result.errors.for(:transaction).for(:service_fee).on(:base)[0].code.should == expected_error_code
       end
 
       it "raises an error if service fee merchant account is a sub merchant account" do
