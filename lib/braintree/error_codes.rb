@@ -217,6 +217,7 @@ module Braintree
       ServiceFeeIsNotAllowedOnCredits = "91552"
       SettlementAmountIsLessThanServiceFeeAmount = "91551"
       SettlementAmountIsTooLarge = "91522"
+      SubMerchantAccountRequiresServiceFee = "91553"
       SubscriptionDoesNotBelongToCustomer = "91529"
       SubscriptionIdIsInvalid = "91528"
       SubscriptionStatusMustBePastDue = "91531"
@@ -242,6 +243,8 @@ module Braintree
       MerchantAccountIdIsInvalid = "92506"
       MerchantAccountCannotMatchTransactionMerchantAccount = "92507"
       MerchantAccountCurrenciesMustMatch = "92508"
+      MerchantAccountCannotBeASubMerchantAccount = "92509"
+      MasterMerchantAccountDoesNotSupportServiceFees = "92510"
     end
   end
 end

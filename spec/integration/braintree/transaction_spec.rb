@@ -893,6 +893,59 @@ describe Braintree::Transaction do
         result.transaction.service_fee_details.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
       end
 
+      it "raises an error if transaction merchant account is a master" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee => {
+            :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+            :amount => "1.00"
+          }
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::ServiceFee::MasterMerchantAccountDoesNotSupportServiceFees
+        result.errors.for(:transaction).for(:service_fee).on(:merchant_account_id)[0].code.should == expected_error_code
+      end
+
+      it "raises an error if service fee merchant account is a sub merchant account" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee => {
+            :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+            :amount => "1.00"
+          }
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::ServiceFee::MerchantAccountCannotBeASubMerchantAccount
+        result.errors.for(:transaction).for(:service_fee).on(:merchant_account_id)[0].code.should == expected_error_code
+      end
+
+      it "raises an error if no service fee is present on a sub merchant account transaction" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          }
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFee
+        result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == expected_error_code
+      end
+
       it "raises an error if service fee amount is negative" do
         result = Braintree::Transaction.create(
           :service_fee => {
