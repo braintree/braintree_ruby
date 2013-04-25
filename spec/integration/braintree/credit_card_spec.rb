@@ -402,6 +402,8 @@ describe Braintree::CreditCard do
           )
 
           result.success?.should == false
+          result.message.should == "Invalid VenmoSDK payment method code"
+          result.errors.first.code.should == "91727"
         end
       end
 
