@@ -908,7 +908,7 @@ describe Braintree::Transaction do
           }
         )
         result.success?.should == false
-        expected_error_code = Braintree::ErrorCodes::ServiceFee::MasterMerchantAccountDoesNotSupportServiceFees
+        expected_error_code = Braintree::ErrorCodes::ServiceFee::MerchantAccountNotSupported
         result.errors.for(:transaction).for(:service_fee).on(:base)[0].code.should == expected_error_code
       end
 

@@ -244,7 +244,6 @@ module Braintree
       MerchantAccountCannotMatchTransactionMerchantAccount = "92507"
       MerchantAccountCurrenciesMustMatch = "92508"
       MerchantAccountCannotBeASubMerchantAccount = "92509"
-      MasterMerchantAccountDoesNotSupportServiceFees = "92510"
     end
   end
 end
