@@ -214,10 +214,7 @@ module Braintree
       PurchaseOrderNumberIsTooLong = "91537"
       PurchaseOrderNumberIsInvalid = "91548"
       RefundAmountIsTooLarge = "91521"
-      ServiceFeeIsNotAllowedOnCredits = "91552"
-      SettlementAmountIsLessThanServiceFeeAmount = "91551"
       SettlementAmountIsTooLarge = "91522"
-      SubMerchantAccountRequiresServiceFee = "91553"
       SubscriptionDoesNotBelongToCustomer = "91529"
       SubscriptionIdIsInvalid = "91528"
       SubscriptionStatusMustBePastDue = "91531"
@@ -232,18 +229,6 @@ module Braintree
         SubmitForSettlementIsRequiredForCloning = "91544"
         VaultIsDisabled = "91525"
       end
-    end
-
-    module ServiceFee
-      AmountCannotBeNegative = "92501"
-      AmountIsRequired = "92502"
-      AmountFormatIsInvalid = "92503"
-      AmountIsTooLarge = "92504"
-      MerchantAccountNotSupported = "92505"
-      MerchantAccountIdIsInvalid = "92506"
-      MerchantAccountCannotMatchTransactionMerchantAccount = "92507"
-      MerchantAccountCurrenciesMustMatch = "92508"
-      MerchantAccountCannotBeASubMerchantAccount = "92509"
     end
   end
 end
