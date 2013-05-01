@@ -9,4 +9,3 @@ module Braintree
     end
   end
 end
-

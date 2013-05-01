@@ -1,3 +1,7 @@
+== 2.23.0
+* Adds disbursement details to transactions.
+* Adds image_url to transactions.
+
 == 2.22.0
 * Adds channel field to transactions.
 

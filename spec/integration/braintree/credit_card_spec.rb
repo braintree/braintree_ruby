@@ -23,6 +23,8 @@ describe Braintree::CreditCard do
       credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       credit_card.expiration_date.should == "05/2009"
       credit_card.unique_number_identifier.should =~ /\A\w{32}\z/
+      credit_card.venmo_sdk?.should == false
+      credit_card.image_url.should_not be_nil
     end
 
     it "can provide expiration month and year separately" do
@@ -378,6 +380,65 @@ describe Braintree::CreditCard do
       end
     end
 
+    context "venmo_sdk" do
+      describe "venmo_sdk_payment_method_code" do
+        it "can pass a venmo sdk payment method code" do
+          customer = Braintree::Customer.create!
+          result = Braintree::CreditCard.create(
+            :customer_id => customer.id,
+            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
+          )
+          result.success?.should == true
+          result.credit_card.venmo_sdk?.should == true
+          result.credit_card.bin.should == "400934"
+          result.credit_card.last_4.should == "1881"
+        end
+
+        it "success? returns false when given an invalid venmo sdk payment method code" do
+          customer = Braintree::Customer.create!
+          result = Braintree::CreditCard.create(
+            :customer_id => customer.id,
+            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode
+          )
+
+          result.success?.should == false
+          result.message.should == "Invalid VenmoSDK payment method code"
+          result.errors.first.code.should == "91727"
+        end
+      end
+
+      describe "venmo_sdk_session" do
+        it "venmo_sdk? returns true when given a valid session" do
+          customer = Braintree::Customer.create!
+          result = Braintree::CreditCard.create(
+            :customer_id => customer.id,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009",
+            :cvv => "100",
+            :options => {
+              :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
+            }
+          )
+          result.success?.should == true
+          result.credit_card.venmo_sdk?.should == true
+        end
+
+        it "venmo_sdk? returns false when given an invalid session" do
+          customer = Braintree::Customer.create!
+          result = Braintree::CreditCard.create(
+            :customer_id => customer.id,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009",
+            :cvv => "100",
+            :options => {
+              :venmo_sdk_session => Braintree::Test::VenmoSDK::InvalidSession
+            }
+          )
+          result.success?.should == true
+          result.credit_card.venmo_sdk?.should == false
+        end
+      end
+    end
   end
 
   describe "self.create!" do

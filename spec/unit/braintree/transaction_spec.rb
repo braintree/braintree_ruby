@@ -85,6 +85,25 @@ describe Braintree::Transaction do
       transaction.customer_details.fax.should == "012-161-8055"
     end
 
+    it "sets up disbursement attributes in disbursement_details" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :disbursement_details => {
+          :disbursement_date => "2013-04-03",
+          :settlement_amount => "120.00",
+          :settlement_currency_iso_code => "USD",
+          :settlement_currency_exchange_rate => "1",
+          :funds_held => false
+        }
+      )
+      disbursement = transaction.disbursement_details
+      disbursement.disbursement_date.should == "2013-04-03"
+      disbursement.settlement_amount.should == "120.00"
+      disbursement.settlement_currency_iso_code.should == "USD"
+      disbursement.settlement_currency_exchange_rate.should == "1"
+      disbursement.funds_held?.should == false
+    end
+
     it "sets up credit card attributes in credit_card_details" do
       transaction = Braintree::Transaction._new(
         :gateway,

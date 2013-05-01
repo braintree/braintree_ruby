@@ -1119,6 +1119,41 @@ describe Braintree::Subscription do
       end
     end
 
+    describe "search on merchant account id" do
+      it "searches on merchant_account_id" do
+        id = rand(36**8).to_s(36)
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TrialPlan[:id],
+          :id => "subscription1_#{id}",
+          :price => "11.38"
+        ).subscription
+
+        collection = Braintree::Subscription.search do |search|
+          search.merchant_account_id.is subscription.merchant_account_id
+          search.price.is "11.38"
+        end
+
+        # not testing for specific number since the
+        # create subscriptions accumulate over time
+        collection.maximum_size.should >= 1
+
+        collection = Braintree::Subscription.search do |search|
+          search.merchant_account_id.in subscription.merchant_account_id, "bogus_merchant_account_id"
+          search.price.is "11.38"
+        end
+
+        collection.maximum_size.should >= 1
+
+        collection = Braintree::Subscription.search do |search|
+          search.merchant_account_id.is "bogus_merchant_account_id"
+          search.price.is "11.38"
+        end
+
+        collection.maximum_size.should == 0
+      end
+    end
+
     describe "id" do
       it "works using the is operator" do
         id = rand(36**8).to_s(36)

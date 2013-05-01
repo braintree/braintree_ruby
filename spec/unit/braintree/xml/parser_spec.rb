@@ -36,6 +36,15 @@ describe Braintree::Xml::Parser do
       xml.should parse_to(:root => {:created_at => Time.utc(2009, 10, 28, 10, 19, 49)})
     end
 
+    it "doesn't typecast dates" do
+      xml = <<-END
+        <root>
+          <created-at type="date">2009-10-28</created-at>
+        </root>
+      END
+      xml.should parse_to(:root => {:created_at => "2009-10-28"})
+    end
+
     it "builds an array if type=array" do
       xml = <<-END
         <root>

@@ -336,6 +336,21 @@ describe Braintree::Customer do
       result.success?.should == false
       result.errors.for(:customer).on(:custom_fields)[0].message.should == "Custom field is invalid: spouse_name."
     end
+
+    describe "venmo_sdk" do
+      it "can create a customer with a venmo sdk payment method code" do
+        result = Braintree::Customer.create(
+          :first_name => "Steve",
+          :last_name => "Hamlin",
+          :credit_card => {
+            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
+          }
+        )
+        result.success?.should == true
+        result.customer.credit_cards.first.bin.should == "400934"
+        result.customer.credit_cards.first.last_4.should == "1881"
+      end
+    end
   end
 
   describe "self.create!" do
@@ -1039,6 +1054,33 @@ describe Braintree::Customer do
       customer.phone.should == "888.111.2222"
       customer.fax.should == "999.222.3333"
       customer.website.should == "new.website.com"
+    end
+  end
+
+  describe "default_credit_card" do
+    it "should return the default credit card for a given customer" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2015",
+          :options => {
+            :make_default => false
+          }
+        }
+      )
+
+      default_credit_card = Braintree::CreditCard.create!(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "11/2015",
+        :options => {
+          :make_default => true
+        }
+      )
+
+      customer = Braintree::Customer.find(customer.id)
+
+      customer.default_credit_card.should == default_credit_card
     end
   end
 end

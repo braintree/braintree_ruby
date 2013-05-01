@@ -37,7 +37,8 @@ module Braintree
 
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance,
       :created_at, :customer_id, :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare,
-      :issuing_bank, :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at
+      :issuing_bank, :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at,
+      :image_url
 
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create(attributes)
@@ -224,6 +225,11 @@ module Braintree
       return_object_or_raise(:credit_card) { update(attributes) }
     end
 
+    # Returns true if the card is associated with Venmo SDK
+    def venmo_sdk?
+      @venmo_sdk
+    end
+
     # Returns true if +other+ is a +CreditCard+ with the same token.
     def ==(other)
       return false unless other.is_a?(CreditCard)
@@ -238,7 +244,7 @@ module Braintree
       [
         :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
         :expiration_year, :last_4, :token, :updated_at, :prepaid, :payroll, :commercial, :debit, :durbin_regulated,
-        :healthcare, :country_of_issuance, :issuing_bank
+        :healthcare, :country_of_issuance, :issuing_bank, :image_url
       ]
     end
 

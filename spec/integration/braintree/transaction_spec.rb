@@ -121,16 +121,15 @@ describe Braintree::Transaction do
   end
 
   describe "self.create" do
-
     describe "card type indicators" do
       it "sets the prepaid field if the card is prepaid" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => 1_00,
           :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-          :expiration_date => "05/2009"
-        }
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          }
         )
         result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
       end
@@ -873,6 +872,19 @@ describe Braintree::Transaction do
         end
       end
     end
+
+    describe "venmo_sdk" do
+      it "can create a card with a venmo sdk payment method code" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.bin.should == "400934"
+        result.transaction.credit_card_details.last_4.should == "1881"
+      end
+    end
   end
 
   describe "self.create!" do
@@ -994,6 +1006,7 @@ describe Braintree::Transaction do
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
+
   describe "self.sale" do
     it "returns a successful result with type=sale if successful" do
       result = Braintree::Transaction.sale(
@@ -1732,6 +1745,36 @@ describe Braintree::Transaction do
       expect do
         Braintree::Transaction.find("invalid-id")
       end.to raise_error(Braintree::NotFoundError, 'transaction with id "invalid-id" not found')
+    end
+
+    context "disbursement_details" do
+      it "includes disbursement_details on found transactions" do
+        found_transaction = Braintree::Transaction.find("deposittransaction")
+
+        found_transaction.disbursed?.should == true
+        disbursement = found_transaction.disbursement_details
+
+        disbursement.disbursement_date.should == "2013-04-10"
+        disbursement.settlement_amount.should == "100.00"
+        disbursement.settlement_currency_iso_code.should == "USD"
+        disbursement.settlement_currency_exchange_rate.should == "1"
+        disbursement.funds_held?.should == false
+      end
+
+      it "is not disbursed" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        )
+        result.success?.should == true
+        created_transaction = result.transaction
+
+        created_transaction.disbursed?.should == false
+      end
     end
   end
 

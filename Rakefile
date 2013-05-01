@@ -1,6 +1,5 @@
 require "rubygems"
 require "spec/rake/spectask"
-require "rake/rdoctask"
 
 task :default => %w[spec:unit spec:integration]
 

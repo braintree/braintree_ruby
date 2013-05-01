@@ -583,6 +583,116 @@ describe Braintree::Transaction, "search" do
         end
       end
 
+      context "disbursement_date" do
+        it "searches on disbursement_date in UTC" do
+          disbursement_time = Time.parse("2013-04-10 00:00:00 UTC")
+          transaction_id = "deposittransaction"
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date.between(
+              disbursement_time - 60,
+              disbursement_time + 60
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date >= disbursement_time - 1
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date <= disbursement_time + 1
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date.between(
+              disbursement_time - 300,
+              disbursement_time - 100
+            )
+          end
+
+          collection.maximum_size.should == 0
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date.is disbursement_time
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+        end
+
+        it "searches on disbursement_date in local time" do
+          now = Time.parse("2013-04-09 18:00:00 CST")
+          transaction_id = "deposittransaction"
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date.between(
+              now - 60,
+              now + 60
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date >= now - 60
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date <= now + 60
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date.between(
+              now - 300,
+              now - 100
+            )
+          end
+
+          collection.maximum_size.should == 0
+        end
+
+        it "searches on disbursement_date with date ranges" do
+          disbursement_date = Date.new(2013, 4, 10)
+          transaction_id = "deposittransaction"
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction_id
+            search.disbursement_date.between(
+              disbursement_date - 1,
+              disbursement_date + 1
+            )
+          end
+
+          collection.maximum_size.should == 1
+          collection.first.id.should == transaction_id
+        end
+      end
+
       context "status date ranges" do
         it "finds transactions authorized in a given range" do
           transaction = Braintree::Transaction.sale!(

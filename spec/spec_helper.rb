@@ -3,7 +3,7 @@ unless defined?(SPEC_HELPER_LOADED)
 
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
-  gem "libxml-ruby", ENV["LIBXML_VERSION"] || "1.1.3"
+  gem "libxml-ruby", ENV["LIBXML_VERSION"] || (RUBY_VERSION == "1.9.3" ? "2.6.0" : "1.1.3")
   require "libxml"
   gem "builder", ENV["BUILDER_VERSION"] || "2.1.2"
   braintree_lib = "#{project_root}/lib"
@@ -34,6 +34,7 @@ unless defined?(SPEC_HELPER_LOADED)
 
     DefaultMerchantAccountId = "sandbox_credit_card"
     NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
+    NonDefaultSubMerchantAccountId = "sandbox_sub_merchant_account"
 
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",
