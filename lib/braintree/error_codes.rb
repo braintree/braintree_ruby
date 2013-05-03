@@ -68,7 +68,7 @@ module Braintree
 
       module Options
         UpdateExistingTokenIsInvalid = "91723"
-        UpdateExistingTokenNotAllowed = "91727"
+        UpdateExistingTokenNotAllowed = "91729"
         VerificationMerchantAccountIdIsInvalid = "91728"
       end
     end
