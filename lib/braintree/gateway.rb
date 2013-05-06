@@ -36,6 +36,10 @@ module Braintree
       PlanGateway.new(self)
     end
 
+    def merchant_account
+      MerchantAccountGateway.new(self)
+    end
+
     def settlement_batch_summary
       SettlementBatchSummaryGateway.new(self)
     end
