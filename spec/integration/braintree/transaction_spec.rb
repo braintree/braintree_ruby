@@ -897,10 +897,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :service_fee => {
-            :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
-            :amount => "1.00"
-          }
+          :service_fee_amount => "1.00"
         )
         result.success?.should == true
         result.transaction.service_fee_details.amount.should == BigDecimal.new("1.00")
@@ -916,33 +913,11 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :service_fee => {
-            :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
-            :amount => "1.00"
-          }
+          :service_fee_amount => "1.00"
         )
         result.success?.should == false
-        expected_error_code = Braintree::ErrorCodes::ServiceFee::MerchantAccountNotSupported
-        result.errors.for(:transaction).for(:service_fee).on(:base)[0].code.should == expected_error_code
-      end
-
-      it "raises an error if service fee merchant account is a sub merchant account" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/12",
-          },
-          :service_fee => {
-            :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-            :amount => "1.00"
-          }
-        )
-        result.success?.should == false
-        expected_error_code = Braintree::ErrorCodes::ServiceFee::MerchantAccountCannotBeASubMerchantAccount
-        result.errors.for(:transaction).for(:service_fee).on(:merchant_account_id)[0].code.should == expected_error_code
+        expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeMerchantAccountNotSupported
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == expected_error_code
       end
 
       it "raises an error if no service fee is present on a sub merchant account transaction" do
@@ -962,22 +937,18 @@ describe Braintree::Transaction do
 
       it "raises an error if service fee amount is negative" do
         result = Braintree::Transaction.create(
-          :service_fee => {
-            :amount => "-1"
-          }
+          :service_fee_amount => "-1.00"
         )
         result.success?.should == false
-        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::ServiceFee::AmountCannotBeNegative
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountCannotBeNegative
       end
 
       it "raises an error if service fee amount is invalid" do
         result = Braintree::Transaction.create(
-          :service_fee => {
-            :amount => "invalid amount"
-          }
+          :service_fee_amount => "invalid amount"
         )
         result.success?.should == false
-        result.errors.for(:transaction).for(:service_fee).on(:amount)[0].code.should == Braintree::ErrorCodes::ServiceFee::AmountFormatIsInvalid
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountFormatIsInvalid
       end
     end
 
@@ -1546,10 +1517,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "06/2009"
           },
-          :service_fee => {
-            :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
-            :amount => "1.00"
-          }
+          :service_fee_amount => "1.00"
         ).transaction
         result = Braintree::Transaction.submit_for_settlement(transaction.id, "0.01")
         result.success?.should == false
@@ -1654,10 +1622,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
           },
-          :service_fee => {
-            :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
-            :amount => "1.00"
-          }
+          :service_fee_amount => "1.00"
         }
       }
       result = Braintree::Transaction.credit(params[:transaction])

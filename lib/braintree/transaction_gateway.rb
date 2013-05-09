@@ -101,7 +101,7 @@ module Braintree
       [
         :amount, :customer_id, :merchant_account_id, :order_id, :channel, :payment_method_token,
         :purchase_order_number, :recurring, :shipping_address_id, :type, :tax_amount, :tax_exempt,
-        :venmo_sdk_payment_method_code, :device_session_id,
+        :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {
@@ -110,7 +110,6 @@ module Braintree
         {
           :shipping => AddressGateway._shared_signature
         },
-        {:service_fee => [:merchant_account_id, :amount]},
         {:options => [:store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone]}
