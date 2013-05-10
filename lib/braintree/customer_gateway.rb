@@ -73,7 +73,7 @@ module Braintree
     def self._create_signature # :nodoc:
       credit_card_signature = CreditCardGateway._create_signature - [:customer_id]
       [
-        :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
+        :company, :email, :fax, :first_name, :id, :last_name, :phone, :website, :device_session_id,
         {:credit_card => credit_card_signature},
         {:custom_fields => :_any_key_}
       ]

@@ -81,6 +81,7 @@ describe Braintree::Customer do
         :last_name,
         :phone,
         :website,
+        :device_session_id,
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,
