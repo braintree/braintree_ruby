@@ -900,8 +900,7 @@ describe Braintree::Transaction do
           :service_fee_amount => "1.00"
         )
         result.success?.should == true
-        result.transaction.service_fee_details.amount.should == BigDecimal.new("1.00")
-        result.transaction.service_fee_details.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+        result.transaction.service_fee_amount.should == BigDecimal.new("1.00")
       end
 
       it "raises an error if transaction merchant account is a master" do
@@ -916,7 +915,7 @@ describe Braintree::Transaction do
           :service_fee_amount => "1.00"
         )
         result.success?.should == false
-        expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeMerchantAccountNotSupported
+        expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeAmountNotAllowedOnMasterMerchantAccount
         result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == expected_error_code
       end
 
@@ -931,7 +930,7 @@ describe Braintree::Transaction do
           }
         )
         result.success?.should == false
-        expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFee
+        expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFeeAmount
         result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == expected_error_code
       end
 
@@ -1627,7 +1626,7 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.credit(params[:transaction])
       result.success?.should == false
-      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeIsNotAllowedOnCredits)
+      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeAmountIsNotAllowedOnCredits)
     end
   end
 
