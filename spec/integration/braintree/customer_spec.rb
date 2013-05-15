@@ -54,7 +54,15 @@ describe Braintree::Customer do
     end
 
     it "supports creation with a device session ID" do
-      result = Braintree::Customer.create(:device_session_id => "abc123")
+      result = Braintree::Customer.create(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :cvv => "100",
+          :device_session_id => "abc123"
+        }
+      )
+
       result.should be_success
     end
 
