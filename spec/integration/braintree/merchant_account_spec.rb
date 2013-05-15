@@ -6,8 +6,14 @@ describe Braintree::MerchantAccount do
       result = Braintree::MerchantAccount.create(
         :first_name => "Joe",
         :last_name => "Bloggs",
+        :email => "joe@bloggs.com",
         :address => {
           :street_address => "123 Credibility St.",
+          :extended_address => "Apt. 666",
+          :postal_code => "60606",
+          :locality => "Chicago",
+          :region => "IL",
+          :country_code_alpha2 => "US"
         },
         :date_of_birth => "10/9/1980",
         :ssn => "123-000-1234",
