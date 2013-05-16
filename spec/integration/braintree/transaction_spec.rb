@@ -887,6 +887,72 @@ describe Braintree::Transaction do
       end
     end
 
+    context "service fees" do
+      it "allows specifying service fees" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "1.00"
+        )
+        result.success?.should == true
+        result.transaction.service_fee_amount.should == BigDecimal.new("1.00")
+      end
+
+      it "raises an error if transaction merchant account is a master" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "1.00"
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeAmountNotAllowedOnMasterMerchantAccount
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == expected_error_code
+      end
+
+      it "raises an error if no service fee is present on a sub merchant account transaction" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          }
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFeeAmount
+        result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == expected_error_code
+      end
+
+      it "raises an error if service fee amount is negative" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :service_fee_amount => "-1.00"
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountCannotBeNegative
+      end
+
+      it "raises an error if service fee amount is invalid" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :service_fee_amount => "invalid amount"
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountFormatIsInvalid
+      end
+    end
+
     describe "venmo_sdk" do
       it "can create a card with a venmo sdk payment method code" do
         result = Braintree::Transaction.create(
@@ -1441,6 +1507,24 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement
     end
+
+    context "service fees" do
+      it "returns an error result if amount submitted for settlement is less than service fee amount" do
+        transaction = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+          :service_fee_amount => "1.00"
+        ).transaction
+        result = Braintree::Transaction.submit_for_settlement(transaction.id, "0.01")
+        result.success?.should == false
+        result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsLessThanServiceFeeAmount
+      end
+    end
   end
 
   describe "self.submit_for_settlement!" do
@@ -1529,6 +1613,22 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+    end
+
+    it "disallows service fee on a credit" do
+      params = {
+        :transaction => {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :service_fee_amount => "1.00"
+        }
+      }
+      result = Braintree::Transaction.credit(params[:transaction])
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeAmountIsNotAllowedOnCredits)
     end
   end
 
