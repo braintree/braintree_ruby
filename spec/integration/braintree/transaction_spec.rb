@@ -936,6 +936,7 @@ describe Braintree::Transaction do
 
       it "raises an error if service fee amount is negative" do
         result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
           :service_fee_amount => "-1.00"
         )
         result.success?.should == false
@@ -944,6 +945,7 @@ describe Braintree::Transaction do
 
       it "raises an error if service fee amount is invalid" do
         result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
           :service_fee_amount => "invalid amount"
         )
         result.success?.should == false
