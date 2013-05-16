@@ -11,7 +11,11 @@ module Braintree
 
     def _do_create(url, params=nil) # :nodoc:
       response = @config.http.post url, params
-      SuccessfulResult.new(:merchant_account => MerchantAccount._new(@gateway, response[:merchant_account]))
+      if response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        SuccessfulResult.new(:merchant_account => MerchantAccount._new(@gateway, response[:merchant_account]))
+      end
     end
   end
 end
