@@ -230,5 +230,19 @@ module Braintree
         VaultIsDisabled = "91525"
       end
     end
+
+    module MerchantAccount
+      IdIsTooLong = "82602"
+      IdFormatIsInvalid = "82603"
+      IdIsInUse = "82604"
+      IdIsNotAllowed = "82605"
+      MasterMerchantAccountIdIsRequired = "82606"
+      MasterMerchantAccountIdIsInvalid = "82607"
+      MasterMerchantAccountMustBeActive = "82608"
+
+      module ApplicantDetails
+        FirstNameIsRequired = "82609"
+      end
+    end
   end
 end
