@@ -2,6 +2,16 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::WebhookNotification do
   describe "self.sample_notification" do
+    it "supports id-only invocation" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(signature, payload)
+      notification.subscription.id.should == "my_id"
+    end
+
     it "builds a sample notification and signature given an identifier and kind" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,

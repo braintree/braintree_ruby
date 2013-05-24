@@ -6,6 +6,8 @@ module Braintree
     end
 
     def sample_notification(kind, data)
+      data = {:id => data} unless data.is_a? Hash
+
       payload = Base64.encode64(_sample_xml(kind, data))
       signature_string = "#{Braintree::Configuration.public_key}|#{Braintree::Digest.hexdigest(Braintree::Configuration.private_key, payload)}"
 
