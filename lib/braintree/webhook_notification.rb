@@ -10,9 +10,11 @@ module Braintree
       SubscriptionTrialEnded = "subscription_trial_ended"
       SubscriptionWentActive = "subscription_went_active"
       SubscriptionWentPastDue = "subscription_went_past_due"
+
+      PartnerConnectionCreated = "partner_connection_created"
     end
 
-    attr_reader :subscription, :kind, :timestamp
+    attr_reader :subscription, :kind, :timestamp, :partner_connection
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -26,6 +28,7 @@ module Braintree
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
+      @partner_connection = OpenStruct.new(@subject[:partner_connection]) if @subject.has_key?(:partner_connection)
     end
 
     class << self

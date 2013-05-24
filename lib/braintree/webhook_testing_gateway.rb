@@ -27,7 +27,11 @@ module Braintree
     end
 
     def _subject_sample_xml(kind, data)
-      _subscription_sample_xml(data)
+      if kind != Braintree::WebhookNotification::Kind::PartnerConnectionCreated
+        _subscription_sample_xml(data)
+      else
+        _partner_connection_sample_xml(data)
+      end
     end
 
     def _subscription_sample_xml(data)
@@ -41,6 +45,17 @@ module Braintree
           <discounts type="array">
           </discounts>
         </subscription>
+      XML
+    end
+
+    def _partner_connection_sample_xml(data)
+      <<-XML
+        <partner_connection>
+          <merchant_public_id>#{data[:merchant_public_id]}</merchant_public_id>
+          <public_key>#{data[:public_key]}</public_key>
+          <private_key>#{data[:private_key]}</private_key>
+          <partnership_user_id>#{data[:partnership_user_id]}</partnership_user_id>
+        </partner_connection>
       XML
     end
   end
