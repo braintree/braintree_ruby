@@ -59,7 +59,7 @@ describe Braintree::MerchantAccount do
           }
         )
       result.should_not be_success
-      result.errors.for(:merchant_account).on(:first_name).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::FirstNameIsRequired
+      result.errors.for(:merchant_account).for(:applicant_details).on(:first_name).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::FirstNameIsRequired
     end
   end
 end
