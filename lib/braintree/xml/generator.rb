@@ -13,10 +13,10 @@ module Braintree
         "Time"       => "datetime",
       }
 
-			XML_FORMATTING_NAMES = {
-				"BigDecimal" => "bigdecimal",
-				"Symbol"     => "symbol"
-			}.merge(XML_TYPE_NAMES)
+      XML_FORMATTING_NAMES = {
+        "BigDecimal" => "bigdecimal",
+        "Symbol"     => "symbol"
+      }.merge(XML_TYPE_NAMES)
 
       XML_FORMATTING = {
         "symbol"     => Proc.new { |symbol| symbol.to_s },
