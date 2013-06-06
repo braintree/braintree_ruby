@@ -51,13 +51,10 @@ describe Braintree::MerchantAccount do
       result.errors.for(:merchant_account).on(:master_merchant_account_id).first.code.should == Braintree::ErrorCodes::MerchantAccount::MasterMerchantAccountIdIsRequired
     end
 
-    it "simulates missing applicant details" do
+    it "requires all fields" do
       result = Braintree::MerchantAccount.create(
-          :master_merchant_account_id => "sandbox_master_merchant_account",
-          :applicant_details => {
-            :first_name => "FAIL"
-          }
-        )
+        :master_merchant_account_id => "sandbox_master_merchant_account"
+      )
       result.should_not be_success
       result.errors.for(:merchant_account).for(:applicant_details).on(:first_name).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::FirstNameIsRequired
     end
