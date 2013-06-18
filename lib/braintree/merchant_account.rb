@@ -4,6 +4,8 @@ module Braintree
 
     module Status
       Pending = "pending"
+      Active = "active"
+      Suspended = "suspended"
     end
 
     attr_reader :status, :id, :master_merchant_account

@@ -27,14 +27,20 @@ module Braintree
     end
 
     def _subject_sample_xml(kind, data)
-      if kind != Braintree::WebhookNotification::Kind::PartnerConnectionCreated
-        _subscription_sample_xml(data)
-      else
+      case kind
+      when Braintree::WebhookNotification::Kind::PartnerConnectionCreated
         _partner_connection_sample_xml(data)
+      when Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
+        _merchant_account_sample_xml(data)
+      when Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
+        _merchant_account_declined_sample_xml(data)
+      else
+        _subscription_sample_xml(data)
       end
     end
 
     def _subscription_sample_xml(data)
+
       <<-XML
         <subscription>
           <id>#{data[:id]}</id>
@@ -49,6 +55,7 @@ module Braintree
     end
 
     def _partner_connection_sample_xml(data)
+
       <<-XML
         <partner_connection>
           <merchant_public_id>#{data[:merchant_public_id]}</merchant_public_id>
@@ -56,6 +63,52 @@ module Braintree
           <private_key>#{data[:private_key]}</private_key>
           <partnership_user_id>#{data[:partnership_user_id]}</partnership_user_id>
         </partner_connection>
+      XML
+    end
+
+    def _merchant_account_sample_xml(data)
+
+      <<-XML
+        <merchant_account>
+          <id>#{data[:id]}</id>
+          <master_merchant_account>
+            <id>#{data[:master_merchant_account][:id]}</id>
+            <status>#{data[:master_merchant_account][:status]}</status>
+          </master_merchant_account>
+          <status>#{data[:status]}</status>
+        </merchant_account>
+      XML
+    end
+
+    def _merchant_account_declined_sample_xml(data)
+
+      <<-XML
+        <api-error-response>
+          <message>#{data[:message]}</message>
+          <errors>
+            <merchant-account>
+              <errors type="array">
+                #{_errors_sample_xml(data[:errors])}
+              </errors>
+            </merchant-account>
+          </errors>
+          #{_merchant_account_sample_xml(data[:merchant_account])}
+        </api-error-response>
+      XML
+    end
+
+    def _errors_sample_xml(errors)
+      errors.map { |error| _error_sample_xml(error) }.join("\n")
+    end
+
+    def _error_sample_xml(error)
+
+      <<-XML
+        <error>
+          <attribute>#{error[:attribute]}</attribute>
+          <code>#{error[:code]}</code>
+          <message>#{error[:message]}</message>
+        </error>
       XML
     end
   end

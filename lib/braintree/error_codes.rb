@@ -247,9 +247,22 @@ module Braintree
       MasterMerchantAccountIdIsRequired = "82606"
       MasterMerchantAccountIdIsInvalid = "82607"
       MasterMerchantAccountMustBeActive = "82608"
+      TosAcceptedIsRequired = "82610"
 
       module ApplicantDetails
         FirstNameIsRequired = "82609"
+        LastNameIsRequired = "82611"
+        DateOfBirthIsRequired = "82612"
+        RoutingNumberIsRequired = "82613"
+        AccountNumberIsRequired = "82614"
+        SsnIsInvalid = "82615"
+        EmailAddressIsInvalid = "82616"
+        DeclinedOFAC = "82621"
+        DeclinedMasterCardMatch = "82622"
+        DeclinedPreciseId = "82623"
+        DeclinedSsnInvalid = "82624"
+        DeclinedSsnMatchesDeceased = "82625"
+        Declined = "82626"
       end
     end
   end

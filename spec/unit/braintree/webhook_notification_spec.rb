@@ -44,6 +44,58 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
+    context "merchant account" do
+      it "builds a sample notification for a merchant account approved webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::SubMerchantAccountApproved,
+          :id => "sub_merchant_account_id",
+          :status => Braintree::MerchantAccount::Status::Active,
+          :master_merchant_account => {
+            :id => "master_merchant_account_id",
+            :status => Braintree::MerchantAccount::Status::Active
+          }
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
+        notification.merchant_account.id.should == "sub_merchant_account_id"
+        notification.merchant_account.status.should == Braintree::MerchantAccount::Status::Active
+        notification.merchant_account.master_merchant_account.id.should == "master_merchant_account_id"
+        notification.merchant_account.master_merchant_account.status.should == Braintree::MerchantAccount::Status::Active
+      end
+
+      it "builds a sample notification for a merchant account declined webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined,
+          :message => "Applicant declined due to OFAC.",
+          :merchant_account => {
+            :id => "sub_merchant_account_id",
+            :status => Braintree::MerchantAccount::Status::Suspended,
+            :master_merchant_account => {
+              :id => "master_merchant_account_id",
+              :status => Braintree::MerchantAccount::Status::Active
+            }
+          },
+          :errors => [{
+            :attribute => :base,
+            :code => "82621",
+            :message => "Applicant declined due to OFAC."
+          }]
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
+        notification.errors.merchant_account.id.should == "sub_merchant_account_id"
+        notification.errors.merchant_account.status.should == Braintree::MerchantAccount::Status::Suspended
+        notification.errors.merchant_account.master_merchant_account.id.should == "master_merchant_account_id"
+        notification.errors.merchant_account.master_merchant_account.status.should == Braintree::MerchantAccount::Status::Active
+        notification.errors.message.should == "Applicant declined due to OFAC."
+        notification.errors.errors.for(:merchant_account).on(:base).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::DeclinedOFAC
+      end
+    end
+
     it "includes a valid signature" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
