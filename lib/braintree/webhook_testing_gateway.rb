@@ -34,6 +34,8 @@ module Braintree
         _merchant_account_sample_xml(data)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
         _merchant_account_declined_sample_xml(data)
+      when Braintree::WebhookNotification::Kind::TransactionsDisbursed
+        _transactions_disbursed_sample_xml(data)
       else
         _subscription_sample_xml(data)
       end
@@ -95,6 +97,19 @@ module Braintree
           #{_merchant_account_sample_xml(data[:merchant_account])}
         </api-error-response>
       XML
+    end
+
+    def _transactions_disbursed_sample_xml(data)
+
+      <<-XML
+        <transaction-ids type="array">
+          #{_ids_string(data[:transaction_ids])}
+        </transaction-ids>
+      XML
+    end
+
+    def _ids_string(ids)
+      ids.map { |id| "<id>#{id}</id>" }.join("\n")
     end
 
     def _errors_sample_xml(errors)
