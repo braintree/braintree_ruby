@@ -2237,4 +2237,59 @@ describe Braintree::Transaction do
     response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
     Braintree::Transaction.find(transaction.id)
   end
+
+  context "venmo sdk" do
+    describe "venmo_sdk_payment_method_code" do
+      it "can create a transaction with venmo_sdk_payment_method_code" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK.generate_test_payment_method_code(Braintree::Test::CreditCardNumbers::Visa)
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == true
+      end
+
+      it "errors when an invalid payment method code is passed" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode
+        )
+        result.success?.should == false
+        result.message.should == "Invalid VenmoSDK payment method code"
+        result.errors.first.code.should == "91727"
+      end
+    end
+
+    describe "venmo_sdk_session" do
+      it "can create a transaction and vault a card when a venmo_sdk_session is present" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :options => {
+            :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == true
+      end
+
+      it "venmo_sdk boolean is false when an invalid session is passed" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :options => {
+            :venmo_sdk_session => Braintree::Test::VenmoSDK::InvalidSession
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == false
+      end
+    end
+  end
 end
