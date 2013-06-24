@@ -25,22 +25,22 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
-    it "builds a sample notification for a partner connection created webhook" do
+    it "builds a sample notification for a partner user created webhook" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::PartnerConnectionCreated,
+        Braintree::WebhookNotification::Kind::PartnerUserCreated,
         :merchant_public_id => "public_id",
         :public_key => "public_key",
         :private_key => "private_key",
-        :partnership_user_id => "abc123"
+        :partner_user_id => "abc123"
       )
 
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
-      notification.kind.should == Braintree::WebhookNotification::Kind::PartnerConnectionCreated
-      notification.partner_connection.merchant_public_id.should == "public_id"
-      notification.partner_connection.public_key.should == "public_key"
-      notification.partner_connection.private_key.should == "private_key"
-      notification.partner_connection.partnership_user_id.should == "abc123"
+      notification.kind.should == Braintree::WebhookNotification::Kind::PartnerUserCreated
+      notification.partner_credentials.merchant_public_id.should == "public_id"
+      notification.partner_credentials.public_key.should == "public_key"
+      notification.partner_credentials.private_key.should == "private_key"
+      notification.partner_credentials.partner_user_id.should == "abc123"
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
