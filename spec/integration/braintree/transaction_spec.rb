@@ -1628,7 +1628,7 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.credit(params[:transaction])
       result.success?.should == false
-      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeAmountIsNotAllowedOnCredits)
+      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeIsNotAllowedOnCredits)
     end
   end
 

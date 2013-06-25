@@ -99,8 +99,8 @@ module Braintree
 
     module Descriptor
       DynamicDescriptorsDisabled = "92203"
-      InternationalPhoneFormatIsInvalid = "92205"
       InternationalNameFormatIsInvalid = "92204"
+      InternationalPhoneFormatIsInvalid = "92205"
       NameFormatIsInvalid = "92201"
       PhoneFormatIsInvalid = "92202"
     end
@@ -174,8 +174,8 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
-      AmountIsInvalid = "81503"
       AmountFormatIsInvalid = "81503"
+      AmountIsInvalid = "81503"
       AmountIsRequired = "81502"
       AmountIsTooLarge = "81528"
       AmountMustBeGreaterThanZero = "81531"
@@ -187,6 +187,7 @@ module Braintree
       CannotCloneVoiceAuthorizations = "91541"
       CannotRefundCredit = "91505"
       CannotRefundUnlessSettled = "91506"
+      CannotRefundWithPendingMerchantAccount = "91559"
       CannotRefundWithSuspendedMerchantAccount = "91538"
       CannotSubmitForSettlement = "91507"
       ChannelIsTooLong = "91550"
@@ -197,9 +198,10 @@ module Braintree
       CustomerDoesNotHaveCreditCard = "91511"
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
+      MerchantAccountDoesNotSupportMOTO = "91558"
+      MerchantAccountDoesNotSupportRefunds = "91547"
       MerchantAccountIdIsInvalid = "91513"
       MerchantAccountIsSuspended = "91514"
-      MerchantAccountDoesNotSupportRefunds = "91547"
       MerchantAccountNameIsInvalid = "91513" # Deprecated
       OrderIdIsTooLong = "91501"
       PaymentMethodConflict = "91515"
@@ -212,12 +214,12 @@ module Braintree
       ProcessorAuthorizationCodeIsInvalid = "81520"
       ProcessorDoesNotSupportCredits = "91546"
       ProcessorDoesNotSupportVoiceAuthorizations = "91545"
-      PurchaseOrderNumberIsTooLong = "91537"
       PurchaseOrderNumberIsInvalid = "91548"
+      PurchaseOrderNumberIsTooLong = "91537"
       RefundAmountIsTooLarge = "91521"
       ServiceFeeAmountCannotBeNegative = "91554"
       ServiceFeeAmountFormatIsInvalid = "91555"
-      ServiceFeeAmountIsNotAllowedOnCredits = "91552"
+      ServiceFeeIsNotAllowedOnCredits = "91552"
       ServiceFeeAmountIsTooLarge = "91556"
       ServiceFeeAmountNotAllowedOnMasterMerchantAccount = "91557"
       SettlementAmountIsLessThanServiceFeeAmount = "91551"
@@ -240,30 +242,47 @@ module Braintree
     end
 
     module MerchantAccount
-      IdIsTooLong = "82602"
       IdFormatIsInvalid = "82603"
       IdIsInUse = "82604"
       IdIsNotAllowed = "82605"
-      MasterMerchantAccountIdIsRequired = "82606"
+      IdIsTooLong = "82602"
       MasterMerchantAccountIdIsInvalid = "82607"
+      MasterMerchantAccountIdIsRequired = "82606"
       MasterMerchantAccountMustBeActive = "82608"
       TosAcceptedIsRequired = "82610"
 
       module ApplicantDetails
-        FirstNameIsRequired = "82609"
-        LastNameIsRequired = "82611"
-        DateOfBirthIsRequired = "82612"
-        RoutingNumberIsRequired = "82613"
         AccountNumberIsRequired = "82614"
-        SsnIsInvalid = "82615"
-        EmailAddressIsInvalid = "82616"
-        DeclinedOFAC = "82621"
+        CompanyNameIsInvalid = "82631"
+        CompanyNameIsRequiredWithTaxId = "82633"
+        DateOfBirthIsRequired = "82612"
+        Declined = "82626"
         DeclinedMasterCardMatch = "82622"
+        DeclinedOFAC = "82621"
         DeclinedPreciseId = "82623"
         DeclinedSsnInvalid = "82624"
         DeclinedSsnMatchesDeceased = "82625"
-        Declined = "82626"
+        EmailAddressIsInvalid = "82616"
+        FirstNameIsInvalid = "82627"
+        FirstNameIsRequired = "82609"
+        LastNameIsInvalid = "82628"
+        LastNameIsRequired = "82611"
+        RoutingNumberIsInvalid = "82635"
+        RoutingNumberIsRequired = "82613"
+        SsnIsInvalid = "82615"
+        TaxIdIsInvalid = "82632"
+        TaxIdIsRequiredWithCompanyName = "82634"
+
+        module Address
+          LocalityIsRequired = "82618"
+          PostalCodeIsInvalid = "82630"
+          PostalCodeIsRequired = "82619"
+          RegionIsRequired = "82620"
+          StreetAddressIsInvalid = "82629"
+          StreetAddressIsRequired = "82617"
+        end
       end
     end
   end
 end
+
