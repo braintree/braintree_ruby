@@ -32,8 +32,8 @@ module Braintree
         _merchant_account_approved_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
         _merchant_account_declined_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::TransactionsDisbursed
-        _transactions_disbursed_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::TransactionDisbursed
+        _transaction_disbursed_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -58,10 +58,10 @@ module Braintree
 
       <<-XML
         <partner_credentials>
-          <merchant_public_id>#{data[:merchant_public_id]}</merchant_public_id>
-          <public_key>#{data[:public_key]}</public_key>
-          <private_key>#{data[:private_key]}</private_key>
-          <partner_user_id>#{data[:partner_user_id]}</partner_user_id>
+          <merchant_public_id>public_id</merchant_public_id>
+          <public_key>public_key</public_key>
+          <private_key>private_key</private_key>
+          <partner_user_id>abc123</partner_user_id>
         </partner_credentials>
       XML
     end
@@ -109,17 +109,17 @@ module Braintree
       XML
     end
 
-    def _transactions_disbursed_sample_xml(data)
+    def _transaction_disbursed_sample_xml(id)
 
       <<-XML
-        <transaction-ids type="array">
-          #{_ids_string(data[:transaction_ids])}
-        </transaction-ids>
+        <transaction>
+          <id>#{id}</id>
+          <amount>100</amount>
+          <disbursement-details>
+            <disbursement-date type="datetime">2013-07-09T18:23:29Z</disbursement-date>
+          </disbursement-details>
+        </transaction>
       XML
-    end
-
-    def _ids_string(ids)
-      ids.map { |id| "<id>#{id}</id>" }.join("\n")
     end
   end
 end

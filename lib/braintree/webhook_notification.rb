@@ -13,11 +13,11 @@ module Braintree
 
       SubMerchantAccountApproved = "sub_merchant_account_approved"
       SubMerchantAccountDeclined = "sub_merchant_account_declined"
-      TransactionsDisbursed = "transactions_disbursed"
+      TransactionDisbursed = "transaction_disbursed"
       PartnerUserCreated = "partner_user_created"
     end
 
-    attr_reader :subscription, :kind, :timestamp, :partner_credentials, :merchant_account, :errors, :transaction_ids
+    attr_reader :subscription, :kind, :timestamp, :partner_credentials, :merchant_account, :errors, :transaction
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -34,7 +34,7 @@ module Braintree
       @partner_credentials = OpenStruct.new(@subject[:partner_credentials]) if @subject.has_key?(:partner_credentials)
       @merchant_account = MerchantAccount._new(gateway, @subject[:merchant_account]) if @subject.has_key?(:merchant_account)
       @errors = ErrorResult.new(gateway, @subject[:api_error_response]) if @subject.has_key?(:api_error_response)
-      @transaction_ids = @subject[:transaction_ids] if @subject.has_key?(:transaction_ids)
+      @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
     end
 
     class << self

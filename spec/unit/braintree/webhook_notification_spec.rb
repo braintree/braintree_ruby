@@ -16,13 +16,9 @@ describe Braintree::WebhookNotification do
     end
 
     it "builds a sample notification for a partner user created webhook" do
-      pending
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::PartnerUserCreated,
-        :merchant_public_id => "public_id",
-        :public_key => "public_key",
-        :private_key => "private_key",
-        :partner_user_id => "abc123"
+        "my_id"
       )
 
       notification = Braintree::WebhookNotification.parse(signature, payload)
@@ -35,18 +31,18 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
-    it "builds a sample notification for transactions disbursed webhook" do
-      pending
-      transaction_ids = %w(a b c d)
+    it "builds a sample notification for a transaction disbursed webhook" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::TransactionsDisbursed,
-        :transaction_ids => transaction_ids
+        Braintree::WebhookNotification::Kind::TransactionDisbursed,
+        "my_id"
       )
 
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
-      notification.kind.should == Braintree::WebhookNotification::Kind::TransactionsDisbursed
-      notification.transaction_ids.should == transaction_ids
+      notification.kind.should == Braintree::WebhookNotification::Kind::TransactionDisbursed
+      notification.transaction.id.should == "my_id"
+      notification.transaction.amount.should == 1_00
+      notification.transaction.disbursement_details.disbursement_date.should == Time.utc(2013, 7, 9, 18, 23, 29)
     end
 
     context "merchant account" do
