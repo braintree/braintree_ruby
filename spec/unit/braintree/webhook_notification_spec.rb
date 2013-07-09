@@ -2,20 +2,10 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::WebhookNotification do
   describe "self.sample_notification" do
-    it "supports id-only invocation" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
-        "my_id"
-      )
-
-      notification = Braintree::WebhookNotification.parse(signature, payload)
-      notification.subscription.id.should == "my_id"
-    end
-
     it "builds a sample notification and signature given an identifier and kind" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
-        :id => "my_id"
+        "my_id"
       )
 
       notification = Braintree::WebhookNotification.parse(signature, payload)
@@ -26,6 +16,7 @@ describe Braintree::WebhookNotification do
     end
 
     it "builds a sample notification for a partner user created webhook" do
+      pending
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::PartnerUserCreated,
         :merchant_public_id => "public_id",
@@ -45,6 +36,7 @@ describe Braintree::WebhookNotification do
     end
 
     it "builds a sample notification for transactions disbursed webhook" do
+      pending
       transaction_ids = %w(a b c d)
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::TransactionsDisbursed,
@@ -61,50 +53,32 @@ describe Braintree::WebhookNotification do
       it "builds a sample notification for a merchant account approved webhook" do
         signature, payload = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::SubMerchantAccountApproved,
-          :id => "sub_merchant_account_id",
-          :status => Braintree::MerchantAccount::Status::Active,
-          :master_merchant_account => {
-            :id => "master_merchant_account_id",
-            :status => Braintree::MerchantAccount::Status::Active
-          }
+          "my_id"
         )
 
         notification = Braintree::WebhookNotification.parse(signature, payload)
 
         notification.kind.should == Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
-        notification.merchant_account.id.should == "sub_merchant_account_id"
+        notification.merchant_account.id.should == "my_id"
         notification.merchant_account.status.should == Braintree::MerchantAccount::Status::Active
-        notification.merchant_account.master_merchant_account.id.should == "master_merchant_account_id"
+        notification.merchant_account.master_merchant_account.id.should == "master_ma_for_my_id"
         notification.merchant_account.master_merchant_account.status.should == Braintree::MerchantAccount::Status::Active
       end
 
       it "builds a sample notification for a merchant account declined webhook" do
         signature, payload = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined,
-          :message => "Applicant declined due to OFAC.",
-          :merchant_account => {
-            :id => "sub_merchant_account_id",
-            :status => Braintree::MerchantAccount::Status::Suspended,
-            :master_merchant_account => {
-              :id => "master_merchant_account_id",
-              :status => Braintree::MerchantAccount::Status::Active
-            }
-          },
-          :errors => [{
-            :attribute => :base,
-            :code => "82621",
-            :message => "Applicant declined due to OFAC."
-          }]
+          "my_id"
         )
 
         notification = Braintree::WebhookNotification.parse(signature, payload)
 
         notification.kind.should == Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
-        notification.errors.merchant_account.id.should == "sub_merchant_account_id"
+        notification.errors.merchant_account.id.should == "my_id"
         notification.errors.merchant_account.status.should == Braintree::MerchantAccount::Status::Suspended
-        notification.errors.merchant_account.master_merchant_account.id.should == "master_merchant_account_id"
-        notification.errors.merchant_account.master_merchant_account.status.should == Braintree::MerchantAccount::Status::Active
-        notification.errors.message.should == "Applicant declined due to OFAC."
+        notification.errors.merchant_account.master_merchant_account.id.should == "master_ma_for_my_id"
+        notification.errors.merchant_account.master_merchant_account.status.should == Braintree::MerchantAccount::Status::Suspended
+        notification.errors.message.should == "Credit score is too low"
         notification.errors.errors.for(:merchant_account).on(:base).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::DeclinedOFAC
       end
     end
@@ -112,7 +86,7 @@ describe Braintree::WebhookNotification do
     it "includes a valid signature" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
-        :id => "my_id"
+        "my_id"
       )
       expected_signature = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, payload)
 
@@ -124,7 +98,7 @@ describe Braintree::WebhookNotification do
     it "raises InvalidSignature error the signature is completely invalid" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
-        :id => "my_id"
+        "my_id"
       )
 
       expect do
@@ -135,7 +109,7 @@ describe Braintree::WebhookNotification do
     it "raises InvalidSignature error the payload has been changed" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
-        :id => "my_id"
+        "my_id"
       )
 
       expect do
