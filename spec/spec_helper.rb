@@ -1,12 +1,7 @@
 project_root = File.expand_path(File.dirname(__FILE__) + "/..")
 require "rubygems"
-
-ruby_version = RUBY_VERSION.split('.').map(&:to_i)
-modern_ruby = (ruby_version[0] >= 2 || (ruby_version[0] == '1' && ruby_version[1] == '9'))
-gem "libxml-ruby", ENV["LIBXML_VERSION"] || (modern_ruby ? "2.6.0" : "1.1.3")
 require "libxml"
 
-gem "builder", ENV["BUILDER_VERSION"] || "2.1.2"
 braintree_lib = "#{project_root}/lib"
 $LOAD_PATH << braintree_lib
 require "braintree"
