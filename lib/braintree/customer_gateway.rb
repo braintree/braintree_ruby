@@ -74,7 +74,7 @@ module Braintree
       credit_card_signature = CreditCardGateway._create_signature - [:customer_id]
       [
         :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
-        :bundled_params,
+        :device_data,
         {:credit_card => credit_card_signature},
         {:custom_fields => :_any_key_}
       ]
@@ -123,7 +123,7 @@ module Braintree
       credit_card_options[:options] << :update_existing_token
       [
         :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
-        :bundled_params,
+        :device_data,
         {:credit_card => credit_card_signature},
         {:custom_fields => :_any_key_}
       ]
