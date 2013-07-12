@@ -84,7 +84,7 @@ describe Braintree::Customer do
         found_customer = Braintree::Customer.find(result.customer.id)
         found_customer.first_name.should == first_name
         found_customer.last_name.should == last_name
-      elsif RUBY_VERSION =~ /^1.9/
+      else
         result.customer.first_name.should == "José"
         result.customer.first_name.bytes.map {|b| b.to_s(8)}.should == ["112", "157", "163", "303", "251"]
         result.customer.last_name.should == "Muñoz"
@@ -95,8 +95,6 @@ describe Braintree::Customer do
         found_customer.first_name.bytes.map {|b| b.to_s(8)}.should == ["112", "157", "163", "303", "251"]
         found_customer.last_name.should == "Muñoz"
         found_customer.last_name.bytes.map {|b| b.to_s(8)}.should == ["115", "165", "303", "261", "157", "172"]
-      else
-        raise "unknown ruby version: #{RUBY_VERSION.inspect}"
       end
     end
 
