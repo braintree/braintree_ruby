@@ -7,6 +7,6 @@ if [ $# -eq 0 ]; then
 else
   rvm use $1 --create --install
   gem install bundler
-  bundler install
+  bundle install
   bundle exec rake _0.8.7_ --trace
 fi
