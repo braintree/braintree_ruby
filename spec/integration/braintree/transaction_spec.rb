@@ -953,6 +953,42 @@ describe Braintree::Transaction do
       end
     end
 
+    context "escrow" do
+      it "allows specifying transactions to be held for escrow" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "10.00",
+          :options => {:hold_for_escrow => true}
+        )
+
+        result.success?.should == true
+        result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForEscrow
+      end
+
+      it "raises an error if transaction merchant account is a master" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "1.00",
+          :options => {:hold_for_escrow => true}
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldForEscrow
+        result.errors.for(:transaction).on(:base)[0].code.should == expected_error_code
+      end
+    end
+
     describe "venmo_sdk" do
       it "can create a card with a venmo sdk payment method code" do
         result = Braintree::Transaction.create(

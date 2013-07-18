@@ -8,6 +8,14 @@ module Braintree
       Token = 'token'
     end
 
+    module EscrowStatus
+      SubmittedForEscrow = 'submitted_for_escrow'
+      HeldInEscrow = 'held_in_escrow'
+      SubmittedForRelease = 'submitted_for_release'
+      Released = 'released'
+      RefundedFromEscrow = 'refunded_from_escrow'
+    end
+
     module GatewayRejectionReason
       AVS = "avs"
       AVSAndCVV = "avs_and_cvv"
@@ -50,6 +58,7 @@ module Braintree
     attr_reader :cvv_response_code
     attr_reader :disbursement_details
     attr_reader :descriptor
+    attr_reader :escrow_status
     attr_reader :gateway_rejection_reason
     attr_reader :merchant_account_id
     attr_reader :order_id

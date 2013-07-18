@@ -110,7 +110,7 @@ module Braintree
         {
           :shipping => AddressGateway._shared_signature
         },
-        {:options => [:store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
+        {:options => [:hold_for_escrow, :store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone]}
       ]
