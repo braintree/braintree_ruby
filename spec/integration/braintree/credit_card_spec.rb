@@ -27,6 +27,18 @@ describe Braintree::CreditCard do
       credit_card.image_url.should_not be_nil
     end
 
+    it "supports creation of cards with security params" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009",
+        :cvv => "100",
+        :device_session_id => "abc123"
+      )
+      result.success?.should == true
+    end
+
     it "can provide expiration month and year separately" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(

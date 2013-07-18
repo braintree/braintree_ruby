@@ -53,6 +53,19 @@ describe Braintree::Customer do
       result.customer.updated_at.between?(Time.now - 10, Time.now).should == true
     end
 
+    it "supports creation with a device session ID" do
+      result = Braintree::Customer.create(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :cvv => "100",
+          :device_session_id => "abc123"
+        }
+      )
+
+      result.should be_success
+    end
+
     it "can create without any attributes" do
       result = Braintree::Customer.create
       result.success?.should == true

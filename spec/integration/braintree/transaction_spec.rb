@@ -155,6 +155,20 @@ describe Braintree::Transaction do
       result.transaction.credit_card_details.customer_location.should == "US"
     end
 
+    it "accepts additional security parameters like device_session_id" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :device_session_id => "abc123"
+      )
+
+      result.success?.should == true
+    end
+
     it "returns processor response code and text if declined" do
       result = Braintree::Transaction.create(
         :type => "sale",
