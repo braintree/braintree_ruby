@@ -70,6 +70,18 @@ module Braintree
       ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
     end
 
+    def submit_for_release(transaction_id)
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.put "/transactions/#{transaction_id}/submit_for_release"
+      if response[:transaction]
+        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :transaction or :response"
+      end
+    end
+
     def submit_for_settlement(transaction_id, amount = nil)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
       response = @config.http.put "/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount}
