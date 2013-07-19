@@ -2023,6 +2023,76 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "self.hold_for_escrow" do
+    it "returns the transaction if successful" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/12",
+        },
+        :service_fee_amount => "10.00"
+      )
+
+      result.transaction.escrow_status.should be_nil
+      result = Braintree::Transaction.hold_for_escrow(result.transaction.id)
+
+      result.success?.should be_true
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForEscrow
+    end
+
+    it "returns an error result if the transaction cannot be held in escrow" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result = Braintree::Transaction.hold_for_escrow(transaction.id)
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotHoldForEscrow
+    end
+  end
+
+  describe "self.hold_for_escrow!" do
+    it "returns the transaction if successful" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/12",
+        },
+        :service_fee_amount => "10.00"
+      )
+
+      result.transaction.escrow_status.should be_nil
+      transaction = Braintree::Transaction.hold_for_escrow!(result.transaction.id)
+
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForEscrow
+    end
+
+    it "raises an error if the transaction cannot be held in escrow" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      expect do
+        Braintree::Transaction.hold_for_escrow!(transaction.id)
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
   describe "self.void" do
     it "returns a successful result if successful" do
       transaction = Braintree::Transaction.sale!(

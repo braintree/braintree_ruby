@@ -141,6 +141,14 @@ module Braintree
       Configuration.gateway.transaction.find(id)
     end
 
+    def self.hold_for_escrow(id)
+      Configuration.gateway.transaction.hold_for_escrow(id)
+    end
+
+    def self.hold_for_escrow!(id)
+      return_object_or_raise(:transaction) { hold_for_escrow(id) }
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/transactions/refund
     def self.refund(id, amount = nil)
       Configuration.gateway.transaction.refund(id, amount)

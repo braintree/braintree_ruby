@@ -16,6 +16,12 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def hold_for_escrow(transaction_id)
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.put "/transactions/#{transaction_id}/hold_for_escrow"
+      _handle_transaction_response(response)
+    end
+
     def _handle_transaction_response(response)
       if response[:transaction]
         SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
