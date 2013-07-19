@@ -162,6 +162,10 @@ module Braintree
       Configuration.gateway.transaction.submit_for_release(transaction_id)
     end
 
+    def self.submit_for_release!(transaction_id)
+      return_object_or_raise(:transaction) { submit_for_release(transaction_id) }
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/transactions/submit_for_settlement
     def self.submit_for_settlement(transaction_id, amount = nil)
       Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount)

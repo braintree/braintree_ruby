@@ -1597,7 +1597,6 @@ describe Braintree::Transaction do
       original_transaction = create_escrowed_transcation
 
       result = Braintree::Transaction.submit_for_release(original_transaction.id)
-      result.success?.should be_true
       result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
     end
 
@@ -1616,6 +1615,33 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.submit_for_release(transaction.id)
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForRelease
+    end
+  end
+
+  describe "self.submit_for_release!" do
+    it "returns the transaction when successful" do
+      original_transaction = create_escrowed_transcation
+
+      transaction = Braintree::Transaction.submit_for_release!(original_transaction.id)
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
+    end
+
+    it "raises an error when transaction is not successful" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :service_fee_amount => '1.00'
+      )
+
+      transaction.escrow_status.should be_nil
+
+      expect do
+        Braintree::Transaction.submit_for_release!(transaction.id)
+      end.to raise_error(Braintree::ValidationsFailed)
     end
   end
 
