@@ -96,6 +96,14 @@ module Braintree
       return_object_or_raise(:transaction) { create(attributes) }
     end
 
+    def self.cancel_release(transaction_id)
+      Configuration.gateway.transaction.cancel_release(transaction_id)
+    end
+
+    def self.cancel_release!(transaction_id)
+      return_object_or_raise(:transaction) { cancel_release(transaction_id) }
+    end
+
     def self.clone_transaction(transaction_id, attributes)
       Configuration.gateway.transaction.clone_transaction(transaction_id, attributes)
     end

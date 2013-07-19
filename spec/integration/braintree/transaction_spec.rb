@@ -1645,6 +1645,48 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "self.cancel_release" do
+    it "returns the transaction if successful" do
+      transaction = create_escrowed_transcation
+      result = Braintree::Transaction.submit_for_release(transaction.id)
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
+
+      result = Braintree::Transaction.cancel_release(transaction.id)
+
+      result.success?.should be_true
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HeldInEscrow
+    end
+
+    it "returns an error result if escrow_status is not SubmittedForRelease" do
+      transaction = create_escrowed_transcation
+
+      result = Braintree::Transaction.cancel_release(transaction.id)
+
+      result.success?.should be_false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotCancelRelease
+    end
+  end
+
+  describe "self.cancel_release!" do
+    it "returns the transaction when release is cancelled" do
+      transaction = create_escrowed_transcation
+      result = Braintree::Transaction.submit_for_release(transaction.id)
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
+
+      transaction = Braintree::Transaction.cancel_release!(transaction.id)
+
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HeldInEscrow
+    end
+
+    it "raises an error when release cannot be cancelled" do
+      transaction = create_escrowed_transcation
+
+      expect {
+        transaction = Braintree::Transaction.cancel_release!(transaction.id)
+      }.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
   describe "self.credit" do
     it "returns a successful result with type=credit if successful" do
       result = Braintree::Transaction.credit(

@@ -10,6 +10,22 @@ module Braintree
       _do_create "/transactions", :transaction => attributes
     end
 
+    def cancel_release(transaction_id)
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.put "/transactions/#{transaction_id}/cancel_release"
+      _handle_transaction_response(response)
+    end
+
+    def _handle_transaction_response(response)
+      if response[:transaction]
+        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :transaction or :response"
+      end
+    end
+
     def clone_transaction(transaction_id, attributes)
       Util.verify_keys(TransactionGateway._clone_signature, attributes)
       _do_create "/transactions/#{transaction_id}/clone", :transaction_clone => attributes
@@ -40,13 +56,7 @@ module Braintree
 
     def refund(transaction_id, amount = nil)
       response = @config.http.post "/transactions/#{transaction_id}/refund", :transaction => {:amount => amount}
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      _handle_transaction_response(response)
     end
 
     def retry_subscription_charge(subscription_id, amount=nil)
@@ -73,36 +83,18 @@ module Braintree
     def submit_for_release(transaction_id)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
       response = @config.http.put "/transactions/#{transaction_id}/submit_for_release"
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :response"
-      end
+      _handle_transaction_response(response)
     end
 
     def submit_for_settlement(transaction_id, amount = nil)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
       response = @config.http.put "/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount}
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :response"
-      end
+      _handle_transaction_response(response)
     end
 
     def void(transaction_id)
       response = @config.http.put "/transactions/#{transaction_id}/void"
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      _handle_transaction_response(response)
     end
 
     def self._clone_signature # :nodoc:
@@ -130,13 +122,7 @@ module Braintree
 
     def _do_create(url, params=nil) # :nodoc:
       response = @config.http.post url, params
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      _handle_transaction_response(response)
     end
 
     def _fetch_transactions(search, ids) # :nodoc:
