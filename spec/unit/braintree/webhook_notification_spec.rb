@@ -70,12 +70,12 @@ describe Braintree::WebhookNotification do
         notification = Braintree::WebhookNotification.parse(signature, payload)
 
         notification.kind.should == Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
-        notification.errors.merchant_account.id.should == "my_id"
-        notification.errors.merchant_account.status.should == Braintree::MerchantAccount::Status::Suspended
-        notification.errors.merchant_account.master_merchant_account.id.should == "master_ma_for_my_id"
-        notification.errors.merchant_account.master_merchant_account.status.should == Braintree::MerchantAccount::Status::Suspended
-        notification.errors.message.should == "Credit score is too low"
-        notification.errors.errors.for(:merchant_account).on(:base).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::DeclinedOFAC
+        notification.merchant_account.id.should == "my_id"
+        notification.merchant_account.status.should == Braintree::MerchantAccount::Status::Suspended
+        notification.merchant_account.master_merchant_account.id.should == "master_ma_for_my_id"
+        notification.merchant_account.master_merchant_account.status.should == Braintree::MerchantAccount::Status::Suspended
+        notification.message.should == "Credit score is too low"
+        notification.errors.for(:merchant_account).on(:base).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::DeclinedOFAC
       end
     end
 
