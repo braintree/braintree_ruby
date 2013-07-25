@@ -30,10 +30,10 @@ module Braintree
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
-      @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
-      @partner_credentials = OpenStruct.new(@subject[:partner_credentials]) if @subject.has_key?(:partner_credentials)
-      @merchant_account = MerchantAccount._new(gateway, @subject[:merchant_account]) if @subject.has_key?(:merchant_account)
       @error_result = ErrorResult.new(gateway, @subject[:api_error_response]) if @subject.has_key?(:api_error_response)
+      @merchant_account = MerchantAccount._new(gateway, @subject[:merchant_account]) if @subject.has_key?(:merchant_account)
+      @partner_credentials = OpenStruct.new(@subject[:partner_credentials]) if @subject.has_key?(:partner_credentials)
+      @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
       @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
     end
 
