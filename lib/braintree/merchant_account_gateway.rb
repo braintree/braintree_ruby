@@ -22,7 +22,8 @@ module Braintree
     def self._create_signature # :nodoc:
       [
         {:applicant_details => [
-          :first_name, :last_name, :email, :date_of_birth, :ssn, :routing_number, :account_number,
+          :first_name, :last_name, :email, :date_of_birth, :ssn, :routing_number,
+          :account_number, :tax_id, :company_name,
           {:address => [:street_address, :postal_code, :locality, :region]}]
         },
         :tos_accepted, :master_merchant_account_id, :id
