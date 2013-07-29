@@ -62,7 +62,7 @@ describe Braintree::MerchantAccount do
     it "accepts tax_id and business_name fields" do
       params = VALID_APPLICATION_PARAMS.clone
       params[:applicant_details][:company_name] = "Test Company"
-      params[:applicant_details][:tax_id] = 123456789
+      params[:applicant_details][:tax_id] = "123456789"
       result = Braintree::MerchantAccount.create(params)
       result.should be_success
       result.merchant_account.status.should == Braintree::MerchantAccount::Status::Pending
