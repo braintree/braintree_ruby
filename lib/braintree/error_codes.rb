@@ -63,6 +63,7 @@ module Braintree
       NumberMustBeTestNumber = "81717"
       PaymentMethodConflict = "81725"
       VenmoSDKPaymentMethodCodeCardTypeIsNotAccepted = "91726"
+      VerificationNotSupportedOnThisMerchantAccount = "91730"
 
       module Options
         UpdateExistingTokenIsInvalid = "91723"
