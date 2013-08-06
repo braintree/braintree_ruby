@@ -9,11 +9,11 @@ module Braintree
     end
 
     module EscrowStatus
-      SubmittedForEscrow = 'submitted_for_escrow'
-      HeldInEscrow = 'held_in_escrow'
-      SubmittedForRelease = 'submitted_for_release'
+      PendingTransactionSettlement = 'pending_transaction_settlement'
+      Held = 'held'
+      ReleasePending = 'release_pending'
       Released = 'released'
-      RefundedFromEscrow = 'refunded_from_escrow'
+      Refunded = 'refunded'
     end
 
     module GatewayRejectionReason
@@ -141,12 +141,12 @@ module Braintree
       Configuration.gateway.transaction.find(id)
     end
 
-    def self.hold_for_escrow(id)
-      Configuration.gateway.transaction.hold_for_escrow(id)
+    def self.hold_in_escrow(id)
+      Configuration.gateway.transaction.hold_in_escrow(id)
     end
 
-    def self.hold_for_escrow!(id)
-      return_object_or_raise(:transaction) { hold_for_escrow(id) }
+    def self.hold_in_escrow!(id)
+      return_object_or_raise(:transaction) { hold_in_escrow(id) }
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/refund

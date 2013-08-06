@@ -964,11 +964,11 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :service_fee_amount => "10.00",
-          :options => {:hold_for_escrow => true}
+          :options => {:hold_in_escrow => true}
         )
 
         result.success?.should == true
-        result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForEscrow
+        result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::PendingTransactionSettlement
       end
 
       it "raises an error if transaction merchant account is a master" do
@@ -981,7 +981,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :service_fee_amount => "1.00",
-          :options => {:hold_for_escrow => true}
+          :options => {:hold_in_escrow => true}
         )
         result.success?.should == false
         expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldForEscrow
@@ -1597,7 +1597,7 @@ describe Braintree::Transaction do
       original_transaction = create_escrowed_transcation
 
       result = Braintree::Transaction.submit_for_release(original_transaction.id)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
     end
 
     it "returns an error result if escrow_status is not HeldForEscrow" do
@@ -1623,7 +1623,7 @@ describe Braintree::Transaction do
       original_transaction = create_escrowed_transcation
 
       transaction = Braintree::Transaction.submit_for_release!(original_transaction.id)
-      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
     end
 
     it "raises an error when transaction is not successful" do
@@ -1649,15 +1649,15 @@ describe Braintree::Transaction do
     it "returns the transaction if successful" do
       transaction = create_escrowed_transcation
       result = Braintree::Transaction.submit_for_release(transaction.id)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
 
       result = Braintree::Transaction.cancel_release(transaction.id)
 
       result.success?.should be_true
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HeldInEscrow
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::Held
     end
 
-    it "returns an error result if escrow_status is not SubmittedForRelease" do
+    it "returns an error result if escrow_status is not ReleasePending" do
       transaction = create_escrowed_transcation
 
       result = Braintree::Transaction.cancel_release(transaction.id)
@@ -1671,11 +1671,11 @@ describe Braintree::Transaction do
     it "returns the transaction when release is cancelled" do
       transaction = create_escrowed_transcation
       result = Braintree::Transaction.submit_for_release(transaction.id)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForRelease
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
 
       transaction = Braintree::Transaction.cancel_release!(transaction.id)
 
-      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HeldInEscrow
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::Held
     end
 
     it "raises an error when release cannot be cancelled" do
@@ -2023,7 +2023,7 @@ describe Braintree::Transaction do
     end
   end
 
-  describe "self.hold_for_escrow" do
+  describe "self.hold_in_escrow" do
     it "returns the transaction if successful" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -2037,10 +2037,10 @@ describe Braintree::Transaction do
       )
 
       result.transaction.escrow_status.should be_nil
-      result = Braintree::Transaction.hold_for_escrow(result.transaction.id)
+      result = Braintree::Transaction.hold_in_escrow(result.transaction.id)
 
       result.success?.should be_true
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForEscrow
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::PendingTransactionSettlement
     end
 
     it "returns an error result if the transaction cannot be held in escrow" do
@@ -2053,12 +2053,12 @@ describe Braintree::Transaction do
         }
       )
 
-      result = Braintree::Transaction.hold_for_escrow(transaction.id)
+      result = Braintree::Transaction.hold_in_escrow(transaction.id)
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotHoldForEscrow
     end
   end
 
-  describe "self.hold_for_escrow!" do
+  describe "self.hold_in_escrow!" do
     it "returns the transaction if successful" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -2072,9 +2072,9 @@ describe Braintree::Transaction do
       )
 
       result.transaction.escrow_status.should be_nil
-      transaction = Braintree::Transaction.hold_for_escrow!(result.transaction.id)
+      transaction = Braintree::Transaction.hold_in_escrow!(result.transaction.id)
 
-      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::SubmittedForEscrow
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::PendingTransactionSettlement
     end
 
     it "raises an error if the transaction cannot be held in escrow" do
@@ -2088,7 +2088,7 @@ describe Braintree::Transaction do
       )
 
       expect do
-        Braintree::Transaction.hold_for_escrow!(transaction.id)
+        Braintree::Transaction.hold_in_escrow!(transaction.id)
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
@@ -2448,7 +2448,7 @@ describe Braintree::Transaction do
         :expiration_date => "05/2009"
       },
         :service_fee_amount => '1.00',
-        :options => { :hold_for_escrow => true }
+        :options => { :hold_in_escrow => true }
     )
 
     response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"

@@ -16,9 +16,9 @@ module Braintree
       _handle_transaction_response(response)
     end
 
-    def hold_for_escrow(transaction_id)
+    def hold_in_escrow(transaction_id)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put "/transactions/#{transaction_id}/hold_for_escrow"
+      response = @config.http.put "/transactions/#{transaction_id}/hold_in_escrow"
       _handle_transaction_response(response)
     end
 
@@ -120,7 +120,7 @@ module Braintree
         {
           :shipping => AddressGateway._shared_signature
         },
-        {:options => [:hold_for_escrow, :store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
+        {:options => [:hold_in_escrow, :store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone]}
       ]
