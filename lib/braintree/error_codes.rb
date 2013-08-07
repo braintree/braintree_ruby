@@ -164,7 +164,8 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
-      AmountIsInvalid = "81503"
+      AmountFormatIsInvalid = "81503" # Keep for backwards compatibility
+      AmountIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsRequired = "81502"
       AmountIsTooLarge = "81528"
       AmountMustBeGreaterThanZero = "81531"
@@ -260,7 +261,7 @@ module Braintree
         RoutingNumberIsInvalid = "82635"
         DeclinedOFAC = "82621"
         DeclinedMasterCardMatch = "82622"
-        DeclinedPreciseId = "82623"
+        DeclinedFailedKYC = "82623"
         DeclinedSsnInvalid = "82624"
         DeclinedSsnMatchesDeceased = "82625"
         Declined = "82626"
