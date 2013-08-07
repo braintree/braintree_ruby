@@ -264,6 +264,7 @@ module Braintree
         DeclinedSsnInvalid = "82624"
         DeclinedSsnMatchesDeceased = "82625"
         Declined = "82626"
+        PhoneIsInvalid = "82636"
 
         module Address
           StreetAddressIsRequired = "82617"
