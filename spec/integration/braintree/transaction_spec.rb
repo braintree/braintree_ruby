@@ -984,7 +984,7 @@ describe Braintree::Transaction do
           :options => {:hold_in_escrow => true}
         )
         result.success?.should == false
-        expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldForEscrow
+        expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
         result.errors.for(:transaction).on(:base)[0].code.should == expected_error_code
       end
     end
@@ -2054,7 +2054,7 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.hold_in_escrow(transaction.id)
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotHoldForEscrow
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
     end
   end
 
