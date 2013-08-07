@@ -86,9 +86,9 @@ module Braintree
       ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
     end
 
-    def submit_for_release(transaction_id)
+    def release_from_escrow(transaction_id)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put "/transactions/#{transaction_id}/submit_for_release"
+      response = @config.http.put "/transactions/#{transaction_id}/release_from_escrow"
       _handle_transaction_response(response)
     end
 

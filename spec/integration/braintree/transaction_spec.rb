@@ -1592,11 +1592,11 @@ describe Braintree::Transaction do
     end
   end
 
-  describe "self.submit_for_release" do
+  describe "self.release_from_escrow" do
     it "returns the transaction if successful" do
       original_transaction = create_escrowed_transcation
 
-      result = Braintree::Transaction.submit_for_release(original_transaction.id)
+      result = Braintree::Transaction.release_from_escrow(original_transaction.id)
       result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
     end
 
@@ -1613,16 +1613,16 @@ describe Braintree::Transaction do
 
       transaction.escrow_status.should be_nil
 
-      result = Braintree::Transaction.submit_for_release(transaction.id)
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForRelease
+      result = Braintree::Transaction.release_from_escrow(transaction.id)
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotReleaseFromEscrow
     end
   end
 
-  describe "self.submit_for_release!" do
+  describe "self.release_from_escrow!" do
     it "returns the transaction when successful" do
       original_transaction = create_escrowed_transcation
 
-      transaction = Braintree::Transaction.submit_for_release!(original_transaction.id)
+      transaction = Braintree::Transaction.release_from_escrow!(original_transaction.id)
       transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
     end
 
@@ -1640,7 +1640,7 @@ describe Braintree::Transaction do
       transaction.escrow_status.should be_nil
 
       expect do
-        Braintree::Transaction.submit_for_release!(transaction.id)
+        Braintree::Transaction.release_from_escrow!(transaction.id)
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
@@ -1648,7 +1648,7 @@ describe Braintree::Transaction do
   describe "self.cancel_release" do
     it "returns the transaction if successful" do
       transaction = create_escrowed_transcation
-      result = Braintree::Transaction.submit_for_release(transaction.id)
+      result = Braintree::Transaction.release_from_escrow(transaction.id)
       result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
 
       result = Braintree::Transaction.cancel_release(transaction.id)
@@ -1670,7 +1670,7 @@ describe Braintree::Transaction do
   describe "self.cancel_release!" do
     it "returns the transaction when release is cancelled" do
       transaction = create_escrowed_transcation
-      result = Braintree::Transaction.submit_for_release(transaction.id)
+      result = Braintree::Transaction.release_from_escrow(transaction.id)
       result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
 
       transaction = Braintree::Transaction.cancel_release!(transaction.id)

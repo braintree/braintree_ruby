@@ -5,8 +5,8 @@
 * Updates webhook notification to provide errors and merchant account at the top level
 * Adds cancel_release and cancel_release! methods
 * Refactors transaction_gatway
-* Adds submit_for_release!
-* Adds submit_for_release functionality
+* Adds release_from_escrow!
+* Adds release_from_escrow functionality
 
 == 2.24.0
 * Adds device data to transactions, customers, and credit cards.
