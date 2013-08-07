@@ -9,7 +9,7 @@ module Braintree
     end
 
     module EscrowStatus
-      PendingTransactionSettlement = 'pending_transaction_settlement'
+      HoldPending = 'hold_pending'
       Held = 'held'
       ReleasePending = 'release_pending'
       Released = 'released'

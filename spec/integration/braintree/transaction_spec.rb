@@ -968,7 +968,7 @@ describe Braintree::Transaction do
         )
 
         result.success?.should == true
-        result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::PendingTransactionSettlement
+        result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
       end
 
       it "raises an error if transaction merchant account is a master" do
@@ -2040,7 +2040,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.hold_in_escrow(result.transaction.id)
 
       result.success?.should be_true
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::PendingTransactionSettlement
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
     end
 
     it "returns an error result if the transaction cannot be held in escrow" do
@@ -2074,7 +2074,7 @@ describe Braintree::Transaction do
       result.transaction.escrow_status.should be_nil
       transaction = Braintree::Transaction.hold_in_escrow!(result.transaction.id)
 
-      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::PendingTransactionSettlement
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
     end
 
     it "raises an error if the transaction cannot be held in escrow" do
