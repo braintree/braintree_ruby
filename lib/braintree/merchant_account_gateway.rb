@@ -23,7 +23,7 @@ module Braintree
       [
         {:applicant_details => [
           :first_name, :last_name, :email, :date_of_birth, :ssn, :routing_number,
-          :account_number, :tax_id, :company_name,
+          :account_number, :tax_id, :company_name, :phone,
           {:address => [:street_address, :postal_code, :locality, :region]}]
         },
         :tos_accepted, :master_merchant_account_id, :id

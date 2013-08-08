@@ -5,6 +5,7 @@ VALID_APPLICATION_PARAMS = {
     :first_name => "Joe",
     :last_name => "Bloggs",
     :email => "joe@bloggs.com",
+    :phone => "312-555-1234",
     :address => {
       :street_address => "123 Credibility St.",
       :postal_code => "60606",
@@ -12,7 +13,7 @@ VALID_APPLICATION_PARAMS = {
       :region => "IL",
     },
     :date_of_birth => "10/9/1980",
-    :ssn => "123-000-1234",
+    :ssn => "123-00-1234",
     :routing_number => "1234567890",
     :account_number => "43759348798"
   },
