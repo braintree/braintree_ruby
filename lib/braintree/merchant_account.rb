@@ -26,5 +26,13 @@ module Braintree
         self.new *args
       end
     end
+
+    def inspect
+      order = [:id, :status, :master_merchant_account]
+      nice_attributes = order.map do |attr|
+        "#{attr}: #{send(attr).inspect}"
+      end
+      "#<#{self.class}: #{nice_attributes.join(', ')}>"
+    end
   end
 end
