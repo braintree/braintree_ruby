@@ -1000,6 +1000,22 @@ describe Braintree::Transaction do
         result.transaction.credit_card_details.bin.should == "400934"
         result.transaction.credit_card_details.last_4.should == "1881"
       end
+
+      it "can create a transaction with venmo sdk session" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :options => {
+            :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == true
+      end
     end
   end
 

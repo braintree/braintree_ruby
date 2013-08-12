@@ -361,6 +361,22 @@ describe Braintree::Customer do
         result.customer.credit_cards.first.bin.should == "400934"
         result.customer.credit_cards.first.last_4.should == "1881"
       end
+
+      it "can create a customer with a venmo sdk session" do
+        result = Braintree::Customer.create(
+          :first_name => "Steve",
+          :last_name => "Hamlin",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "05/2010",
+            :options => {
+              :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
+            }
+          }
+        )
+        result.success?.should == true
+        result.customer.credit_cards.first.venmo_sdk?.should == true
+      end
     end
   end
 
