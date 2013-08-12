@@ -27,9 +27,7 @@ module Braintree
     def _subject_sample_xml(kind, id)
       case kind
       when Braintree::WebhookNotification::Kind::PartnerUserCreated
-        _partner_user_created_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::PartnerUserDeleted
-        _partner_user_deleted_sample_xml(id)
+        _partner_credentials_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
         _merchant_account_approved_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
@@ -56,22 +54,13 @@ module Braintree
       XML
     end
 
-    def _partner_user_created_sample_xml(data)
+    def _partner_credentials_sample_xml(data)
 
       <<-XML
         <partner_credentials>
           <merchant_public_id>public_id</merchant_public_id>
           <public_key>public_key</public_key>
           <private_key>private_key</private_key>
-          <partner_user_id>abc123</partner_user_id>
-        </partner_credentials>
-      XML
-    end
-
-    def _partner_user_deleted_sample_xml(data)
-
-      <<-XML
-        <partner_credentials>
           <partner_user_id>abc123</partner_user_id>
         </partner_credentials>
       XML
