@@ -5,13 +5,13 @@ module Braintree
   module ErrorCodes
     # See http://www.braintreepayments.com/docs/ruby/addresses/validations
     module Address
-      CannotBeBlank = "81801"
       CompanyIsInvalid = "91821"
-      CompanyIsTooLong = "81802"
-      CountryCodeAlpha2IsNotAccepted  = "91814"
-      CountryCodeAlpha3IsNotAccepted  = "91816"
-      CountryCodeNumericIsNotAccepted = "91817"
       CountryNameIsNotAccepted = "91803"
+      CountryCodeAlpha2IsNotAccepted = "91814"
+      CountryCodeAlpha3IsNotAccepted = "91816"
+      CountryCodeNumericIsNotAccepted = "91817"
+      CannotBeBlank = "81801"
+      CompanyIsTooLong = "81802"
       ExtendedAddressIsInvalid = "91823"
       ExtendedAddressIsTooLong = "81804"
       FirstNameIsInvalid = "91819"
@@ -37,77 +37,68 @@ module Braintree
     module CreditCard
       BillingAddressConflict = "91701"
       BillingAddressIdIsInvalid = "91702"
+      CustomerIdIsRequired = "91704"
+      CustomerIdIsInvalid = "91705"
+      ExpirationDateConflict = "91708"
+      TokenFormatIsInvalid = "91718"
+      TokenIsInUse = "91719"
+      TokenIsTooLong = "91720"
+      TokenIsNotAllowed = "91721"
+      TokenIsRequired = "91722"
       CardholderNameIsTooLong = "81723"
       CreditCardTypeIsNotAccepted = "81703"
       CreditCardTypeIsNotAcceptedBySubscriptionMerchantAccount = "81718"
-      CustomerIdIsInvalid = "91705"
-      CustomerIdIsRequired = "91704"
-      CvvIsInvalid = "81707"
       CvvIsRequired = "81706"
+      CvvIsInvalid = "81707"
       DuplicateCardExists = "81724"
-      ExpirationDateConflict = "91708"
-      ExpirationDateIsInvalid = "81710"
       ExpirationDateIsRequired = "81709"
+      ExpirationDateIsInvalid = "81710"
       ExpirationDateYearIsInvalid = "81711"
       ExpirationMonthIsInvalid = "81712"
       ExpirationYearIsInvalid = "81713"
       InvalidVenmoSDKPaymentMethodCode = "91727"
-      NumberHasInvalidLength = "81716"
-      NumberLengthIsInvalid = "81716"
-      NumberIsInvalid = "81715"
       NumberIsRequired = "81714"
+      NumberIsInvalid = "81715"
+      NumberLengthIsInvalid = "81716"
       NumberMustBeTestNumber = "81717"
       PaymentMethodConflict = "81725"
-      TokenInvalid = "91718"
-      TokenFormatIsInvalid = "91718"
-      TokenIsInUse = "91719"
-      TokenIsNotAllowed = "91721"
-      TokenIsRequired = "91722"
-      TokenIsTooLong = "91720"
       VenmoSDKPaymentMethodCodeCardTypeIsNotAccepted = "91726"
+      VerificationNotSupportedOnThisMerchantAccount = "91730"
 
       module Options
         UpdateExistingTokenIsInvalid = "91723"
         VerificationMerchantAccountIdIsInvalid = "91728"
+        UpdateExistingTokenNotAllowed = "91729"
       end
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/validations
     module Customer
-      CompanyIsTooLong = "81601"
       CustomFieldIsInvalid = "91602"
-      CustomFieldIsTooLong = "81603"
-      EmailIsInvalid = "81604"
-      EmailFormatIsInvalid = "81604"
-      EmailIsRequired = "81606"
-      EmailIsTooLong = "81605"
-      FaxIsTooLong = "81607"
-      FirstNameIsTooLong = "81608"
       IdIsInUse = "91609"
-      IdIsInvaild = "91610" # Deprecated
       IdIsInvalid = "91610"
       IdIsNotAllowed = "91611"
       IdIsRequired = "91613"
       IdIsTooLong = "91612"
+      CompanyIsTooLong = "81601"
+      CustomFieldIsTooLong = "81603"
+      EmailFormatIsInvalid = "81604"
+      EmailIsTooLong = "81605"
+      EmailIsRequired = "81606"
+      FaxIsTooLong = "81607"
+      FirstNameIsTooLong = "81608"
       LastNameIsTooLong = "81613"
       PhoneIsTooLong = "81614"
-      WebsiteIsInvalid = "81616"
-      WebsiteFormatIsInvalid = "81616"
       WebsiteIsTooLong = "81615"
+      WebsiteFormatIsInvalid = "81616"
     end
 
     module Descriptor
-      DynamicDescriptorsDisabled = "92203"
-      InternationalPhoneFormatIsInvalid = "92205"
-      InternationalNameFormatIsInvalid = "92204"
       NameFormatIsInvalid = "92201"
       PhoneFormatIsInvalid = "92202"
-    end
-
-    module SettlementBatchSummary
-      CustomFieldIsInvalid = "82303"
-      SettlementDateIsInvalid = "82302"
-      SettlementDateIsRequired = "82301"
+      DynamicDescriptorsDisabled = "92203"
+      InternationalNameFormatIsInvalid = "92204"
+      InternationalPhoneFormatIsInvalid = "92205"
     end
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/validations
@@ -173,22 +164,26 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
-      AmountIsInvalid = "81503"
-      AmountFormatIsInvalid = "81503"
+      AmountFormatIsInvalid = "81503" # Keep for backwards compatibility
+      AmountIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsRequired = "81502"
       AmountIsTooLarge = "81528"
       AmountMustBeGreaterThanZero = "81531"
       BillingAddressConflict = "91530"
       CannotBeVoided = "91504"
+      CannotCancelRelease = "91562"
       CannotCloneCredit = "91543"
       CannotCloneTransactionWithVaultCreditCard = "91540"
       CannotCloneUnsuccessfulTransaction = "91542"
       CannotCloneVoiceAuthorizations = "91541"
+      CannotHoldInEscrow = "91560"
+      CannotPartiallyRefundEscrowedTransaction = "91563"
       CannotRefundCredit = "91505"
       CannotRefundUnlessSettled = "91506"
+      CannotRefundWithPendingMerchantAccount = "91559"
       CannotRefundWithSuspendedMerchantAccount = "91538"
+      CannotReleaseFromEscrow = "91561"
       CannotSubmitForSettlement = "91507"
-      ChannelIsTooLong = "91550"
       CreditCardIsRequired = "91508"
       CustomFieldIsInvalid = "91526"
       CustomFieldIsTooLong = "81527"
@@ -196,11 +191,12 @@ module Braintree
       CustomerDoesNotHaveCreditCard = "91511"
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
+      MerchantAccountDoesNotSupportRefunds = "91547"
+      MerchantAccountDoesNotSupportMOTO = "91558"
       MerchantAccountIdIsInvalid = "91513"
       MerchantAccountIsSuspended = "91514"
-      MerchantAccountDoesNotSupportRefunds = "91547"
-      MerchantAccountNameIsInvalid = "91513" # Deprecated
       OrderIdIsTooLong = "91501"
+      ChannelIsTooLong = "91550"
       PaymentMethodConflict = "91515"
       PaymentMethodConflictWithVenmoSDK = "91549"
       PaymentMethodDoesNotBelongToCustomer = "91516"
@@ -211,10 +207,17 @@ module Braintree
       ProcessorAuthorizationCodeIsInvalid = "81520"
       ProcessorDoesNotSupportCredits = "91546"
       ProcessorDoesNotSupportVoiceAuthorizations = "91545"
-      PurchaseOrderNumberIsTooLong = "91537"
       PurchaseOrderNumberIsInvalid = "91548"
+      PurchaseOrderNumberIsTooLong = "91537"
       RefundAmountIsTooLarge = "91521"
+      ServiceFeeAmountCannotBeNegative = "91554"
+      ServiceFeeAmountFormatIsInvalid = "91555"
+      ServiceFeeAmountIsTooLarge = "91556"
+      ServiceFeeIsNotAllowedOnCredits = "91552"
+      ServiceFeeAmountNotAllowedOnMasterMerchantAccount = "91557"
+      SettlementAmountIsLessThanServiceFeeAmount = "91551"
       SettlementAmountIsTooLarge = "91522"
+      SubMerchantAccountRequiresServiceFeeAmount = "91553"
       SubscriptionDoesNotBelongToCustomer = "91529"
       SubscriptionIdIsInvalid = "91528"
       SubscriptionStatusMustBePastDue = "91531"
@@ -230,5 +233,56 @@ module Braintree
         VaultIsDisabled = "91525"
       end
     end
+
+    module MerchantAccount
+      IdIsTooLong = "82602"
+      IdFormatIsInvalid = "82603"
+      IdIsInUse = "82604"
+      IdIsNotAllowed = "82605"
+      MasterMerchantAccountIdIsRequired = "82606"
+      MasterMerchantAccountIdIsInvalid = "82607"
+      MasterMerchantAccountMustBeActive = "82608"
+      TosAcceptedIsRequired = "82610"
+
+      module ApplicantDetails
+        FirstNameIsRequired = "82609"
+        LastNameIsRequired = "82611"
+        DateOfBirthIsRequired = "82612"
+        RoutingNumberIsRequired = "82613"
+        AccountNumberIsRequired = "82614"
+        SsnIsInvalid = "82615"
+        EmailAddressIsInvalid = "82616"
+        FirstNameIsInvalid = "82627"
+        LastNameIsInvalid = "82628"
+        CompanyNameIsInvalid = "82631"
+        TaxIdIsInvalid = "82632"
+        CompanyNameIsRequiredWithTaxId = "82633"
+        TaxIdIsRequiredWithCompanyName = "82634"
+        RoutingNumberIsInvalid = "82635"
+        DeclinedOFAC = "82621"
+        DeclinedMasterCardMatch = "82622"
+        DeclinedFailedKYC = "82623"
+        DeclinedSsnInvalid = "82624"
+        DeclinedSsnMatchesDeceased = "82625"
+        Declined = "82626"
+        PhoneIsInvalid = "82636"
+
+        module Address
+          StreetAddressIsRequired = "82617"
+          LocalityIsRequired = "82618"
+          PostalCodeIsRequired = "82619"
+          RegionIsRequired = "82620"
+          StreetAddressIsInvalid = "82629"
+          PostalCodeIsInvalid = "82630"
+        end
+      end
+    end
+
+    module SettlementBatchSummary
+      SettlementDateIsRequired = "82301"
+      SettlementDateIsInvalid = "82302"
+      CustomFieldIsInvalid = "82303"
+    end
   end
 end
+

@@ -887,6 +887,108 @@ describe Braintree::Transaction do
       end
     end
 
+    context "service fees" do
+      it "allows specifying service fees" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "1.00"
+        )
+        result.success?.should == true
+        result.transaction.service_fee_amount.should == BigDecimal.new("1.00")
+      end
+
+      it "raises an error if transaction merchant account is a master" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "1.00"
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeAmountNotAllowedOnMasterMerchantAccount
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == expected_error_code
+      end
+
+      it "raises an error if no service fee is present on a sub merchant account transaction" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          }
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFeeAmount
+        result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == expected_error_code
+      end
+
+      it "raises an error if service fee amount is negative" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :service_fee_amount => "-1.00"
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountCannotBeNegative
+      end
+
+      it "raises an error if service fee amount is invalid" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :service_fee_amount => "invalid amount"
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountFormatIsInvalid
+      end
+    end
+
+    context "escrow" do
+      it "allows specifying transactions to be held for escrow" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "10.00",
+          :options => {:hold_in_escrow => true}
+        )
+
+        result.success?.should == true
+        result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
+      end
+
+      it "raises an error if transaction merchant account is a master" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :service_fee_amount => "1.00",
+          :options => {:hold_in_escrow => true}
+        )
+        result.success?.should == false
+        expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
+        result.errors.for(:transaction).on(:base)[0].code.should == expected_error_code
+      end
+    end
+
     describe "venmo_sdk" do
       it "can create a card with a venmo sdk payment method code" do
         result = Braintree::Transaction.create(
@@ -897,6 +999,22 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.credit_card_details.bin.should == "400934"
         result.transaction.credit_card_details.last_4.should == "1881"
+      end
+
+      it "can create a transaction with venmo sdk session" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :options => {
+            :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == true
       end
     end
   end
@@ -1441,6 +1559,24 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement
     end
+
+    context "service fees" do
+      it "returns an error result if amount submitted for settlement is less than service fee amount" do
+        transaction = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+          :service_fee_amount => "1.00"
+        ).transaction
+        result = Braintree::Transaction.submit_for_settlement(transaction.id, "0.01")
+        result.success?.should == false
+        result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsLessThanServiceFeeAmount
+      end
+    end
   end
 
   describe "self.submit_for_settlement!" do
@@ -1469,6 +1605,101 @@ describe Braintree::Transaction do
       expect do
         Braintree::Transaction.submit_for_settlement!(transaction.id, "1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
+  describe "self.release_from_escrow" do
+    it "returns the transaction if successful" do
+      original_transaction = create_escrowed_transcation
+
+      result = Braintree::Transaction.release_from_escrow(original_transaction.id)
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+    end
+
+    it "returns an error result if escrow_status is not HeldForEscrow" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :service_fee_amount => '1.00'
+      )
+
+      transaction.escrow_status.should be_nil
+
+      result = Braintree::Transaction.release_from_escrow(transaction.id)
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotReleaseFromEscrow
+    end
+  end
+
+  describe "self.release_from_escrow!" do
+    it "returns the transaction when successful" do
+      original_transaction = create_escrowed_transcation
+
+      transaction = Braintree::Transaction.release_from_escrow!(original_transaction.id)
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+    end
+
+    it "raises an error when transaction is not successful" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :service_fee_amount => '1.00'
+      )
+
+      transaction.escrow_status.should be_nil
+
+      expect do
+        Braintree::Transaction.release_from_escrow!(transaction.id)
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
+  describe "self.cancel_release" do
+    it "returns the transaction if successful" do
+      transaction = create_escrowed_transcation
+      result = Braintree::Transaction.release_from_escrow(transaction.id)
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+
+      result = Braintree::Transaction.cancel_release(transaction.id)
+
+      result.success?.should be_true
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::Held
+    end
+
+    it "returns an error result if escrow_status is not ReleasePending" do
+      transaction = create_escrowed_transcation
+
+      result = Braintree::Transaction.cancel_release(transaction.id)
+
+      result.success?.should be_false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotCancelRelease
+    end
+  end
+
+  describe "self.cancel_release!" do
+    it "returns the transaction when release is cancelled" do
+      transaction = create_escrowed_transcation
+      result = Braintree::Transaction.release_from_escrow(transaction.id)
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+
+      transaction = Braintree::Transaction.cancel_release!(transaction.id)
+
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::Held
+    end
+
+    it "raises an error when release cannot be cancelled" do
+      transaction = create_escrowed_transcation
+
+      expect {
+        transaction = Braintree::Transaction.cancel_release!(transaction.id)
+      }.to raise_error(Braintree::ValidationsFailed)
     end
   end
 
@@ -1529,6 +1760,22 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+    end
+
+    it "disallows service fee on a credit" do
+      params = {
+        :transaction => {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :service_fee_amount => "1.00"
+        }
+      }
+      result = Braintree::Transaction.credit(params[:transaction])
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeIsNotAllowedOnCredits)
     end
   end
 
@@ -1789,6 +2036,76 @@ describe Braintree::Transaction do
 
         created_transaction.disbursed?.should == false
       end
+    end
+  end
+
+  describe "self.hold_in_escrow" do
+    it "returns the transaction if successful" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/12",
+        },
+        :service_fee_amount => "10.00"
+      )
+
+      result.transaction.escrow_status.should be_nil
+      result = Braintree::Transaction.hold_in_escrow(result.transaction.id)
+
+      result.success?.should be_true
+      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
+    end
+
+    it "returns an error result if the transaction cannot be held in escrow" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result = Braintree::Transaction.hold_in_escrow(transaction.id)
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
+    end
+  end
+
+  describe "self.hold_in_escrow!" do
+    it "returns the transaction if successful" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/12",
+        },
+        :service_fee_amount => "10.00"
+      )
+
+      result.transaction.escrow_status.should be_nil
+      transaction = Braintree::Transaction.hold_in_escrow!(result.transaction.id)
+
+      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
+    end
+
+    it "raises an error if the transaction cannot be held in escrow" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      expect do
+        Braintree::Transaction.hold_in_escrow!(transaction.id)
+      end.to raise_error(Braintree::ValidationsFailed)
     end
   end
 
@@ -2136,5 +2453,77 @@ describe Braintree::Transaction do
 
     response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
     Braintree::Transaction.find(transaction.id)
+  end
+
+  def create_escrowed_transcation
+    transaction = Braintree::Transaction.sale!(
+      :amount => Braintree::Test::TransactionAmounts::Authorize,
+      :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+      :credit_card => {
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009"
+      },
+        :service_fee_amount => '1.00',
+        :options => { :hold_in_escrow => true }
+    )
+
+    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
+    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/escrow"
+    Braintree::Transaction.find(transaction.id)
+  end
+
+  context "venmo sdk" do
+    describe "venmo_sdk_payment_method_code" do
+      it "can create a transaction with venmo_sdk_payment_method_code" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK.generate_test_payment_method_code(Braintree::Test::CreditCardNumbers::Visa)
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == true
+      end
+
+      it "errors when an invalid payment method code is passed" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode
+        )
+        result.success?.should == false
+        result.message.should == "Invalid VenmoSDK payment method code"
+        result.errors.first.code.should == "91727"
+      end
+    end
+
+    describe "venmo_sdk_session" do
+      it "can create a transaction and vault a card when a venmo_sdk_session is present" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :options => {
+            :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == true
+      end
+
+      it "venmo_sdk boolean is false when an invalid session is passed" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :options => {
+            :venmo_sdk_session => Braintree::Test::VenmoSDK::InvalidSession
+          }
+        )
+        result.success?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == false
+      end
+    end
   end
 end

@@ -1,3 +1,15 @@
+== 2.25.0
+* Adds hold_in_escrow and hold_in_escrow! methods
+* Add error codes for verification not supported error
+* Add company_name and tax_id to merchant account create
+* Updates webhook notification to provide errors and merchant account at the top level
+* Adds cancel_release and cancel_release! methods
+* Refactors transaction_gatway
+* Adds release_from_escrow!
+* Adds release_from_escrow functionality
+* Adds owner_phone to merchant account signature.
+* Adds merchant account phone error code.
+
 == 2.24.0
 * Adds device data to transactions, customers, and credit cards.
 

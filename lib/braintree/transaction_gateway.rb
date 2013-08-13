@@ -10,6 +10,28 @@ module Braintree
       _do_create "/transactions", :transaction => attributes
     end
 
+    def cancel_release(transaction_id)
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.put "/transactions/#{transaction_id}/cancel_release"
+      _handle_transaction_response(response)
+    end
+
+    def hold_in_escrow(transaction_id)
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.put "/transactions/#{transaction_id}/hold_in_escrow"
+      _handle_transaction_response(response)
+    end
+
+    def _handle_transaction_response(response)
+      if response[:transaction]
+        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :transaction or :response"
+      end
+    end
+
     def clone_transaction(transaction_id, attributes)
       Util.verify_keys(TransactionGateway._clone_signature, attributes)
       _do_create "/transactions/#{transaction_id}/clone", :transaction_clone => attributes
@@ -40,13 +62,7 @@ module Braintree
 
     def refund(transaction_id, amount = nil)
       response = @config.http.post "/transactions/#{transaction_id}/refund", :transaction => {:amount => amount}
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      _handle_transaction_response(response)
     end
 
     def retry_subscription_charge(subscription_id, amount=nil)
@@ -70,27 +86,21 @@ module Braintree
       ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
     end
 
+    def release_from_escrow(transaction_id)
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.put "/transactions/#{transaction_id}/release_from_escrow"
+      _handle_transaction_response(response)
+    end
+
     def submit_for_settlement(transaction_id, amount = nil)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
       response = @config.http.put "/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount}
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :response"
-      end
+      _handle_transaction_response(response)
     end
 
     def void(transaction_id)
       response = @config.http.put "/transactions/#{transaction_id}/void"
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      _handle_transaction_response(response)
     end
 
     def self._clone_signature # :nodoc:
@@ -101,7 +111,7 @@ module Braintree
       [
         :amount, :customer_id, :merchant_account_id, :order_id, :channel, :payment_method_token,
         :purchase_order_number, :recurring, :shipping_address_id, :type, :tax_amount, :tax_exempt,
-        :venmo_sdk_payment_method_code, :device_session_id, :device_data,
+        :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {
@@ -110,7 +120,7 @@ module Braintree
         {
           :shipping => AddressGateway._shared_signature
         },
-        {:options => [:store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
+        {:options => [:hold_in_escrow, :store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone]}
       ]
@@ -118,13 +128,7 @@ module Braintree
 
     def _do_create(url, params=nil) # :nodoc:
       response = @config.http.post url, params
-      if response[:transaction]
-        SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
-      elsif response[:api_error_response]
-        ErrorResult.new(@gateway, response[:api_error_response])
-      else
-        raise UnexpectedError, "expected :transaction or :api_error_response"
-      end
+      _handle_transaction_response(response)
     end
 
     def _fetch_transactions(search, ids) # :nodoc:

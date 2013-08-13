@@ -8,6 +8,14 @@ module Braintree
       Token = 'token'
     end
 
+    module EscrowStatus
+      HoldPending = 'hold_pending'
+      Held = 'held'
+      ReleasePending = 'release_pending'
+      Released = 'released'
+      Refunded = 'refunded'
+    end
+
     module GatewayRejectionReason
       AVS = "avs"
       AVSAndCVV = "avs_and_cvv"
@@ -44,12 +52,13 @@ module Braintree
     end
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
-    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :subscription_details, :id
+    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :subscription_details, :service_fee_amount, :id
     attr_reader :currency_iso_code
     attr_reader :custom_fields
     attr_reader :cvv_response_code
     attr_reader :disbursement_details
     attr_reader :descriptor
+    attr_reader :escrow_status
     attr_reader :gateway_rejection_reason
     attr_reader :merchant_account_id
     attr_reader :order_id
@@ -85,6 +94,14 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
     def self.create!(attributes)
       return_object_or_raise(:transaction) { create(attributes) }
+    end
+
+    def self.cancel_release(transaction_id)
+      Configuration.gateway.transaction.cancel_release(transaction_id)
+    end
+
+    def self.cancel_release!(transaction_id)
+      return_object_or_raise(:transaction) { cancel_release(transaction_id) }
     end
 
     def self.clone_transaction(transaction_id, attributes)
@@ -124,6 +141,14 @@ module Braintree
       Configuration.gateway.transaction.find(id)
     end
 
+    def self.hold_in_escrow(id)
+      Configuration.gateway.transaction.hold_in_escrow(id)
+    end
+
+    def self.hold_in_escrow!(id)
+      return_object_or_raise(:transaction) { hold_in_escrow(id) }
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/transactions/refund
     def self.refund(id, amount = nil)
       Configuration.gateway.transaction.refund(id, amount)
@@ -147,6 +172,14 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/transactions/search
     def self.search(&block)
       Configuration.gateway.transaction.search(&block)
+    end
+
+    def self.release_from_escrow(transaction_id)
+      Configuration.gateway.transaction.release_from_escrow(transaction_id)
+    end
+
+    def self.release_from_escrow!(transaction_id)
+      return_object_or_raise(:transaction) { release_from_escrow(transaction_id) }
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/submit_for_settlement
@@ -174,6 +207,7 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       @amount = Util.to_big_decimal(amount)
       @credit_card_details = CreditCardDetails.new(@credit_card)
+      @service_fee_amount = Util.to_big_decimal(service_fee_amount)
       @subscription_details = SubscriptionDetails.new(@subscription)
       @customer_details = CustomerDetails.new(@customer)
       @billing_details = AddressDetails.new(@billing)

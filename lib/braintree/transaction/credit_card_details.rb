@@ -27,6 +27,10 @@ module Braintree
       def masked_number
         "#{bin}******#{last_4}"
       end
+
+      def venmo_sdk?
+        @venmo_sdk
+      end
     end
   end
 end
