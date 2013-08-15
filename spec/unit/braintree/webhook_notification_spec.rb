@@ -24,10 +24,10 @@ describe Braintree::WebhookNotification do
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerUserCreated
-      notification.partner_credentials.merchant_public_id.should == "public_id"
-      notification.partner_credentials.public_key.should == "public_key"
-      notification.partner_credentials.private_key.should == "private_key"
-      notification.partner_credentials.partner_user_id.should == "abc123"
+      notification.partner_user.merchant_public_id.should == "public_id"
+      notification.partner_user.public_key.should == "public_key"
+      notification.partner_user.private_key.should == "private_key"
+      notification.partner_user.partner_user_id.should == "abc123"
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
@@ -40,7 +40,7 @@ describe Braintree::WebhookNotification do
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerUserDeleted
-      notification.partner_user_deleted.partner_user_id.should == "abc123"
+      notification.partner_user.partner_user_id.should == "abc123"
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 

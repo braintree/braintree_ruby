@@ -59,21 +59,21 @@ module Braintree
     def _partner_user_created_sample_xml(data)
 
       <<-XML
-        <partner_credentials>
+        <partner_user>
           <merchant_public_id>public_id</merchant_public_id>
           <public_key>public_key</public_key>
           <private_key>private_key</private_key>
           <partner_user_id>abc123</partner_user_id>
-        </partner_credentials>
+        </partner_user>
       XML
     end
 
     def _partner_user_deleted_sample_xml(data)
 
       <<-XML
-        <partner_user_deletion_notification>
+        <partner_user>
           <partner_user_id>abc123</partner_user_id>
-        </partner_user_deletion_notification>
+        </partner_user>
       XML
     end
 
