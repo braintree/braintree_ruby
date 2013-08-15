@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module Braintree
   class WebhookNotification
     include BaseModule
@@ -18,7 +20,7 @@ module Braintree
       PartnerUserDeleted = "partner_user_deleted"
     end
 
-    attr_reader :subscription, :kind, :timestamp, :partner_credentials, :transaction
+    attr_reader :subscription, :kind, :timestamp, :partner_credentials, :transaction, :partner_user_deleted
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -34,6 +36,7 @@ module Braintree
       @error_result = ErrorResult.new(gateway, @subject[:api_error_response]) if @subject.has_key?(:api_error_response)
       @merchant_account = MerchantAccount._new(gateway, @subject[:merchant_account]) if @subject.has_key?(:merchant_account)
       @partner_credentials = OpenStruct.new(@subject[:partner_credentials]) if @subject.has_key?(:partner_credentials)
+      @partner_user_deleted = OpenStruct.new(@subject[:partner_user_deletion_notification]) if @subject.has_key?(:partner_user_deletion_notification)
       @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
       @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
     end

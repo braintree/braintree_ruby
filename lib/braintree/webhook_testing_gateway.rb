@@ -71,9 +71,9 @@ module Braintree
     def _partner_user_deleted_sample_xml(data)
 
       <<-XML
-        <partner_credentials>
+        <partner_user_deletion_notification>
           <partner_user_id>abc123</partner_user_id>
-        </partner_credentials>
+        </partner_user_deletion_notification>
       XML
     end
 

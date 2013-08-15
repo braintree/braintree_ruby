@@ -40,10 +40,7 @@ describe Braintree::WebhookNotification do
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerUserDeleted
-      notification.partner_credentials.merchant_public_id.should be_nil
-      notification.partner_credentials.public_key.should be_nil
-      notification.partner_credentials.private_key.should be_nil
-      notification.partner_credentials.partner_user_id.should == "abc123"
+      notification.partner_user_deleted.partner_user_id.should == "abc123"
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
