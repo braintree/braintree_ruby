@@ -35,6 +35,10 @@ The Braintree gem provides integration access to the Braintree Gateway.
     p result.errors
   end
 
+== Initialize in Rails
+
+  rails g braintree:initializer # creates template at config/initializers/braintree.rb
+
 == Bang Methods
 
 Most methods have a bang and a non-bang version (e.g. <tt>Braintree::Customer.create</tt> and <tt>Braintree::Customer.create!</tt>).
