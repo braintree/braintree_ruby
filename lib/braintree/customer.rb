@@ -162,6 +162,11 @@ module Braintree
       @gateway.customer.transactions(id, options)
     end
 
+    # Returns the default +CreditCard+ for the customer.
+    def default_credit_card
+      @credit_cards.find {|credit_card| credit_card.default? }
+    end
+
     # Deprecated. Use Braintree::Customer.update
     #
     # See http://www.braintreepayments.com/docs/ruby/customers/update
