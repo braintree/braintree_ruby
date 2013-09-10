@@ -209,7 +209,7 @@ describe Braintree::TransparentRedirect do
   end
 
   def add_hash_to_query_string(query_string_without_hash)
-    hash = Braintree::Configuration.gateway.transparent_redirect._hash(query_string_without_hash)
+    hash = Braintree::SignatureService.new(Braintree::Configuration.private_key).hash(query_string_without_hash)
     query_string_without_hash + "&hash=" + hash
   end
 end

@@ -10,6 +10,7 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @signature_service = SignatureService.new(@config.private_key)
     end
 
     def confirm(query_string)
@@ -51,7 +52,7 @@ module Braintree
 
       query_strings_without_hash = [query_string_without_hash, encoded_query_string_without_hash, decoded_query_string_without_hash]
 
-      if query_strings_without_hash.any? { |query_string| _hash(query_string) == params[:hash] }
+      if query_strings_without_hash.any? { |query_string| @signature_service.hash(query_string) == params[:hash] }
         params
       else
         raise ForgedQueryString
@@ -92,17 +93,12 @@ module Braintree
 
     def _data(params) # :nodoc:
       raise ArgumentError, "expected params to contain :redirect_url" unless params[:redirect_url]
-      tr_data_segment = Util.hash_to_query_string(params.merge(
+
+      @signature_service.sign(params.merge(
         :api_version => @config.api_version,
         :time => Time.now.utc.strftime("%Y%m%d%H%M%S"),
         :public_key => @config.public_key
       ))
-      tr_data_hash = _hash(tr_data_segment)
-      "#{tr_data_hash}|#{tr_data_segment}"
-    end
-
-    def _hash(string) # :nodoc:
-      ::Braintree::Digest.hexdigest(@config.private_key, string)
     end
   end
 end
