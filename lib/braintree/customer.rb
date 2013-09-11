@@ -103,11 +103,12 @@ module Braintree
       Configuration.gateway.customer.update_from_transparent_redirect(query_string)
     end
 
-    def self.authorization_token(customer_id, created_at=Time.now.to_i)
+    def self.authorization_token(customer_id)
+
       Configuration.signature_service.sign(
         :customer_id => customer_id,
         :public_key => Configuration.public_key,
-        :created_at => created_at
+        :created_at => _now_timestamp
       )
     end
 
@@ -209,6 +210,10 @@ module Braintree
         :addresses, :company, :credit_cards, :email, :fax, :first_name, :id, :last_name, :phone, :website,
         :created_at, :updated_at
       ]
+    end
+
+    def self._now_timestamp # :nodoc:
+      Time.now.to_i
     end
   end
 end
