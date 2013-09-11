@@ -275,4 +275,12 @@ describe Braintree::Configuration do
       config.inspect.should_not include('secret_key')
     end
   end
+
+  describe "signature_service" do
+    it "has a signature service initialized with the private key" do
+      config = Braintree::Configuration.new(:private_key => "secret_key")
+
+      config.signature_service.key.should == "secret_key"
+    end
+  end
 end

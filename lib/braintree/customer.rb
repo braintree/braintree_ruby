@@ -103,6 +103,14 @@ module Braintree
       Configuration.gateway.customer.update_from_transparent_redirect(query_string)
     end
 
+    def self.authorization_token(customer_id, created_at=Time.now.to_i)
+      Configuration.signature_service.sign(
+        :customer_id => customer_id,
+        :public_key => Configuration.public_key,
+        :created_at => created_at
+      )
+    end
+
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)

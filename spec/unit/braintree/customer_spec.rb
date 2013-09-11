@@ -177,6 +177,17 @@ describe Braintree::Customer do
     end
   end
 
+  describe "self.authorization_token" do
+    it "generates a client API authorization token" do
+      now = Time.now.to_i
+      authorization_token = Braintree::Customer.authorization_token("my_customer_id", now)
+
+      authorization_token.should include("customer_id=my_customer_id")
+      authorization_token.should include("public_key=integration_public_key")
+      authorization_token.should include("created_at=#{now}")
+    end
+  end
+
   describe "==" do
     it "returns true when given a customer with the same id" do
       first = Braintree::Customer._new(:gateway, :id => 123)

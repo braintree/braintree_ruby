@@ -48,6 +48,10 @@ module Braintree
       @logger ||= _default_logger
     end
 
+    def self.signature_service
+      instantiate.signature_service
+    end
+
     def initialize(options = {})
       [:endpoint, :environment, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
         instance_variable_set "@#{attr}", options[attr]
@@ -132,6 +136,10 @@ module Braintree
 
     def inspect
       super.gsub(/@private_key=\".*\"/, '@private_key="[FILTERED]"')
+    end
+
+    def signature_service
+      @signature_service ||= SignatureService.new(@private_key)
     end
   end
 end

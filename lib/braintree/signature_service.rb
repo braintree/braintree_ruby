@@ -1,5 +1,7 @@
 module Braintree
   class SignatureService
+    attr_reader :key
+
     def initialize(key, digest=Braintree::Digest)
       @key = key
       @digest = digest
