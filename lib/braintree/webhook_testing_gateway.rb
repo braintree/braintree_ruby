@@ -30,6 +30,8 @@ module Braintree
         _partner_user_created_sample_xml(id)
       when Braintree::WebhookNotification::Kind::PartnerUserDeleted
         _partner_user_deleted_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::PartnerMerchantDeclined
+        _partner_merchant_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
         _merchant_account_approved_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
@@ -69,6 +71,15 @@ module Braintree
     end
 
     def _partner_user_deleted_sample_xml(data)
+
+      <<-XML
+        <partner_user>
+          <partner_user_id>abc123</partner_user_id>
+        </partner_user>
+      XML
+    end
+
+    def _partner_merchant_declined_sample_xml(data)
 
       <<-XML
         <partner_user>

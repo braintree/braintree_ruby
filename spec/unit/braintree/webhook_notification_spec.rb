@@ -44,6 +44,19 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
+    it "builds a sample notification for a partner merchant declined webhook" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::PartnerMerchantDeclined,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(signature, payload)
+
+      notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantDeclined
+      notification.partner_user.partner_user_id.should == "abc123"
+      notification.timestamp.should be_close(Time.now.utc, 10)
+    end
+
     it "builds a sample notification for a transaction disbursed webhook" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::TransactionDisbursed,

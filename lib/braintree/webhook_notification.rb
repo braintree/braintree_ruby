@@ -18,6 +18,7 @@ module Braintree
       TransactionDisbursed = "transaction_disbursed"
       PartnerUserCreated = "partner_user_created"
       PartnerUserDeleted = "partner_user_deleted"
+      PartnerMerchantDeclined = "partner_merchant_declined"
     end
 
     attr_reader :subscription, :kind, :timestamp, :transaction, :partner_user
