@@ -6,42 +6,48 @@ module Braintree
     module CreatedUsing
       FullInformation = 'full_information'
       Token = 'token'
+      Unrecognized = 'unrecognized'
     end
 
     module EscrowStatus
-      HoldPending = 'hold_pending'
-      Held = 'held'
+      HoldPending    = 'hold_pending'
+      Held           = 'held'
       ReleasePending = 'release_pending'
-      Released = 'released'
-      Refunded = 'refunded'
+      Released       = 'released'
+      Refunded       = 'refunded'
+      Unrecognized   = 'unrecognized'
     end
 
     module GatewayRejectionReason
-      AVS = "avs"
-      AVSAndCVV = "avs_and_cvv"
-      CVV = "cvv"
-      Duplicate = "duplicate"
+      AVS          = "avs"
+      AVSAndCVV    = "avs_and_cvv"
+      CVV          = "cvv"
+      Duplicate    = "duplicate"
+      Fraud        = "fraud"
+      Unrecognized = "unrecognized"
     end
 
     module Status
-      AuthorizationExpired = 'authorization_expired'
-      Authorizing = 'authorizing'
-      Authorized = 'authorized'
-      GatewayRejected = 'gateway_rejected'
-      Failed = 'failed'
-      ProcessorDeclined = 'processor_declined'
-      Settled = 'settled'
-      Settling = 'settling'
+      AuthorizationExpired   = 'authorization_expired'
+      Authorizing            = 'authorizing'
+      Authorized             = 'authorized'
+      GatewayRejected        = 'gateway_rejected'
+      Failed                 = 'failed'
+      ProcessorDeclined      = 'processor_declined'
+      Settled                = 'settled'
+      Settling               = 'settling'
       SubmittedForSettlement = 'submitted_for_settlement'
-      Voided = 'voided'
+      Voided                 = 'voided'
+      Unrecognized           = 'unrecognized'
 
       All = constants.map { |c| const_get(c) }
     end
 
     module Source
-      Api = "api"
+      Api          = "api"
       ControlPanel = "control_panel"
-      Recurring = "recurring"
+      Recurring    = "recurring"
+      Unrecognized = "unrecognized"
     end
 
     module Type # :nodoc:
