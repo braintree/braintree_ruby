@@ -4,7 +4,7 @@
 * Add company_name and tax_id to merchant account create
 * Updates webhook notification to provide errors and merchant account at the top level
 * Adds cancel_release and cancel_release! methods
-* Refactors transaction_gatway
+* Refactors transaction_gateway
 * Adds release_from_escrow!
 * Adds release_from_escrow functionality
 * Adds owner_phone to merchant account signature.
