@@ -77,6 +77,7 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    attr_reader :voice_referral_number
     attr_reader :purchase_order_number
     attr_reader :recurring
     attr_reader :refund_ids, :refunded_transaction_id
