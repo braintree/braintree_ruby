@@ -272,7 +272,7 @@ module Braintree
     end
 
     def refund_id
-      warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use TransparentRedirect.refund_ids"
+      warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use Transaction.refund_ids"
       @refund_id
     end
 
