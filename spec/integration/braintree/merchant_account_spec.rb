@@ -5,7 +5,7 @@ VALID_APPLICATION_PARAMS = {
     :first_name => "Joe",
     :last_name => "Bloggs",
     :email => "joe@bloggs.com",
-    :phone => "312-555-1234",
+    :phone => "3125551234",
     :address => {
       :street_address => "123 Credibility St.",
       :postal_code => "60606",
@@ -14,7 +14,7 @@ VALID_APPLICATION_PARAMS = {
     },
     :date_of_birth => "10/9/1980",
     :ssn => "123-00-1234",
-    :routing_number => "1234567890",
+    :routing_number => "011103093",
     :account_number => "43759348798"
   },
   :tos_accepted => true,
@@ -41,7 +41,7 @@ VALID_MERCHANT_ACCOUNT_PARAMS = {
     :tax_id => "123456789"
   },
   :funding => {
-    :routing_number => "1234567890",
+    :routing_number => "011103093",
     :account_number => "43759348798"
   },
   :id => "sandbox_sub_merchant_account",
@@ -117,6 +117,9 @@ describe Braintree::MerchantAccount do
       result = Braintree::MerchantAccount.update("sandbox_sub_merchant_account", params)
 
       result.should be_success
+      result.merchant_account.status.should == "active"
+      result.merchant_account.id.should == "sandbox_sub_merchant_account"
+      result.merchant_account.master_merchant_account.id.should == "sandbox_master_merchant_account"
       result.merchant_account.individual_details.first_name.should == "John"
       result.merchant_account.individual_details.last_name.should == "Doe"
       result.merchant_account.individual_details.email.should == "john.doe@example.com"
