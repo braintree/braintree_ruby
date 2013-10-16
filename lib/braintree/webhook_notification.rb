@@ -16,12 +16,12 @@ module Braintree
       SubMerchantAccountApproved = "sub_merchant_account_approved"
       SubMerchantAccountDeclined = "sub_merchant_account_declined"
       TransactionDisbursed = "transaction_disbursed"
-      PartnerUserCreated = "partner_user_created"
-      PartnerUserDeleted = "partner_user_deleted"
+      PartnerMerchantConnected = "partner_merchant_connected"
+      PartnerMerchantDisconnected = "partner_merchant_disconnected"
       PartnerMerchantDeclined = "partner_merchant_declined"
     end
 
-    attr_reader :subscription, :kind, :timestamp, :transaction, :partner_user
+    attr_reader :subscription, :kind, :timestamp, :transaction, :partner_merchant
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -36,7 +36,7 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       @error_result = ErrorResult.new(gateway, @subject[:api_error_response]) if @subject.has_key?(:api_error_response)
       @merchant_account = MerchantAccount._new(gateway, @subject[:merchant_account]) if @subject.has_key?(:merchant_account)
-      @partner_user = OpenStruct.new(@subject[:partner_user]) if @subject.has_key?(:partner_user)
+      @partner_merchant = OpenStruct.new(@subject[:partner_merchant]) if @subject.has_key?(:partner_merchant)
       @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
       @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
     end
