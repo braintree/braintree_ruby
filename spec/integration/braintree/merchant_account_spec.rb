@@ -5,7 +5,7 @@ VALID_APPLICATION_PARAMS = {
     :first_name => "Joe",
     :last_name => "Bloggs",
     :email => "joe@bloggs.com",
-    :phone => "312-555-1234",
+    :phone => "3125551234",
     :address => {
       :street_address => "123 Credibility St.",
       :postal_code => "60606",
@@ -14,10 +14,37 @@ VALID_APPLICATION_PARAMS = {
     },
     :date_of_birth => "10/9/1980",
     :ssn => "123-00-1234",
-    :routing_number => "121000248",
+    :routing_number => "011103093",
     :account_number => "43759348798"
   },
   :tos_accepted => true,
+  :master_merchant_account_id => "sandbox_master_merchant_account"
+}
+
+VALID_MERCHANT_ACCOUNT_PARAMS = {
+  :individual => {
+    :first_name => "Joe",
+    :last_name => "Bloggs",
+    :email => "joe@bloggs.com",
+    :phone => "3125551234",
+    :address => {
+      :street_address => "123 Credibility St.",
+      :postal_code => "60606",
+      :locality => "Chicago",
+      :region => "IL",
+    },
+    :date_of_birth => "10/9/1980",
+    :ssn => "123-00-1234",
+  },
+  :business => {
+    :dba_name => "Joe's Bloggs",
+    :tax_id => "123456789"
+  },
+  :funding => {
+    :routing_number => "011103093",
+    :account_number => "43759348798"
+  },
+  :id => "sandbox_sub_merchant_account",
   :master_merchant_account_id => "sandbox_master_merchant_account"
 }
 
@@ -54,9 +81,7 @@ describe Braintree::MerchantAccount do
 
     it "requires all fields" do
       result = Braintree::MerchantAccount.create(
-        :master_merchant_account_id => "sandbox_master_merchant_account",
-        :tos_accepted => true,
-        :applicant_details => {}
+        :master_merchant_account_id => "sandbox_master_merchant_account"
       )
       result.should_not be_success
       result.errors.for(:merchant_account).for(:applicant_details).on(:first_name).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::FirstNameIsRequired

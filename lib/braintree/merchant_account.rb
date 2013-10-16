@@ -8,16 +8,24 @@ module Braintree
       Suspended = "suspended"
     end
 
-    attr_reader :status, :id, :master_merchant_account
+    attr_reader :status, :id, :master_merchant_account,
+      :individual_details, :business_details, :funding_details
 
     def self.create(attributes)
       Configuration.gateway.merchant_account.create(attributes)
     end
 
+    def self.update(id, attributes)
+      Configuration.gateway.merchant_account.update(id, attributes)
+    end
+
     def initialize(gateway, attributes) # :nodoc
       @gateway = gateway
-      @master_merchant_account = MerchantAccount._new(@gateway, attributes.delete(:master_merchant_account)) if attributes[:master_merchant_account]
       set_instance_variables_from_hash(attributes)
+      @individual_details = IndividualDetails.new(@individual)
+      @business_details = BusinessDetails.new(@business)
+      @funding_details = FundingDetails.new(@funding)
+      @master_merchant_account = MerchantAccount._new(@gateway, attributes.delete(:master_merchant_account)) if attributes[:master_merchant_account]
     end
 
     class << self
