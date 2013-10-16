@@ -276,39 +276,6 @@ module Braintree
           PostalCodeIsInvalid = "82630"
         end
       end
-
-      module Individual
-        FirstNameIsRequired = "82637"
-        LastNameIsRequired = "82638"
-        DateOfBirthIsRequired = "82639"
-        SsnIsInvalid = "82642"
-        EmailAddressIsInvalid = "82643"
-        FirstNameIsInvalid = "82644"
-        LastNameIsInvalid = "82645"
-        PhoneIsInvalid = "82656"
-
-        module Address
-          StreetAddressIsRequired = "82657"
-          LocalityIsRequired = "82658"
-          PostalCodeIsRequired = "82659"
-          RegionIsRequired = "82660"
-          StreetAddressIsInvalid = "82661"
-          PostalCodeIsInvalid = "82662"
-        end
-      end
-
-      module Business
-        NameIsInvalid = "82646"
-        TaxIdIsInvalid = "82647"
-        NameIsRequiredWithTaxId = "82647"
-        TaxIdIsRequiredWithName = "82648"
-      end
-
-      module Funding
-        RoutingNumberIsRequired = "82640"
-        AccountNumberIsRequired = "82641"
-        RoutingNumberIsInvalid = "82649"
-      end
     end
 
     module SettlementBatchSummary
