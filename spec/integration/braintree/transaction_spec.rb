@@ -156,7 +156,7 @@ describe Braintree::Transaction do
       result.transaction.credit_card_details.customer_location.should == "US"
     end
 
-    it "accepts additional security parameters like device_session_id" do
+    it "accepts additional security parameters: device_session_id and fraud_merchant_id" do
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -164,7 +164,8 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         },
-        :device_session_id => "abc123"
+        :device_session_id => "abc123",
+        :fraud_merchant_id => "7"
       )
 
       result.success?.should == true
