@@ -1090,5 +1090,15 @@ describe Braintree::Transaction, "search" do
         collection.maximum_size.should == 0
       end
     end
+
+    context "when the search times out" do
+      it "raises a Down for Maintenance Error" do
+        expect {
+          collection = Braintree::Transaction.search do |search|
+            search.amount.is -10
+          end
+        }.to raise_error(Braintree::DownForMaintenanceError)
+      end
+    end
   end
 end
