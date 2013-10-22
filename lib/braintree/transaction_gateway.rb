@@ -83,7 +83,12 @@ module Braintree
       block.call(search) if block
 
       response = @config.http.post "/transactions/advanced_search_ids", {:search => search.to_hash}
-      ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
+
+      if response.has_key?(:search_results)
+        ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
+      else
+        raise DownForMaintenanceError
+      end
     end
 
     def release_from_escrow(transaction_id)
