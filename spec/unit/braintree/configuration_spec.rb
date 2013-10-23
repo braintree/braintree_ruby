@@ -58,12 +58,12 @@ describe Braintree::Configuration do
 
     it "returns the expected url for the sandbox env" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.base_merchant_url.should == "https://sandbox.braintreegateway.com:443/merchants/integration_merchant_id"
+      Braintree::Configuration.instantiate.base_merchant_url.should == "https://api.sandbox.braintreegateway.com:443/merchants/integration_merchant_id"
     end
 
     it "returns the expected url for the production env" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.base_merchant_url.should == "https://www.braintreegateway.com:443/merchants/integration_merchant_id"
+      Braintree::Configuration.instantiate.base_merchant_url.should == "https://api.braintreegateway.com:443/merchants/integration_merchant_id"
     end
   end
 
@@ -71,21 +71,21 @@ describe Braintree::Configuration do
     it "qa" do
       Braintree::Configuration.environment = :qa
       ca_file = Braintree::Configuration.instantiate.ca_file
-      ca_file.should match(/sandbox_braintreegateway_com.ca.crt$/)
+      ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
       File.exists?(ca_file).should == true
     end
 
     it "sandbox" do
       Braintree::Configuration.environment = :sandbox
       ca_file = Braintree::Configuration.instantiate.ca_file
-      ca_file.should match(/sandbox_braintreegateway_com.ca.crt$/)
+      ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
       File.exists?(ca_file).should == true
     end
 
     it "production" do
       Braintree::Configuration.environment = :production
       ca_file = Braintree::Configuration.instantiate.ca_file
-      ca_file.should match(/www_braintreegateway_com.ca.crt$/)
+      ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
       File.exists?(ca_file).should == true
     end
   end
@@ -213,14 +213,14 @@ describe Braintree::Configuration do
       Braintree::Configuration.instantiate.server.should == "localhost"
     end
 
-    it "is www.braintreegateway.com for production" do
+    it "is api.braintreegateway.com for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.server.should == "www.braintreegateway.com"
+      Braintree::Configuration.instantiate.server.should == "api.braintreegateway.com"
     end
 
-    it "is sandbox.braintreegateway.com for sandbox" do
+    it "is api.sandbox.braintreegateway.com for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.server.should == "sandbox.braintreegateway.com"
+      Braintree::Configuration.instantiate.server.should == "api.sandbox.braintreegateway.com"
     end
 
     it "is qa.braintreegateway.com for qa" do

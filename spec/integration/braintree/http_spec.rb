@@ -113,6 +113,20 @@ describe Braintree::Http do
         end
       end
 
+      it "accepts the certificate on the qa server" do
+        begin
+          original_env = Braintree::Configuration.environment
+          Braintree::Configuration.environment = :qa
+          Braintree::Configuration.stub(:base_merchant_path).and_return("/")
+
+          expect do
+            Braintree::Configuration.instantiate.http._http_do(Net::HTTP::Get, "/login")
+          end.to_not raise_error
+        ensure
+          Braintree::Configuration.environment = original_env
+        end
+      end
+
       it "accepts the certificate on the sandbox server" do
         begin
           original_env = Braintree::Configuration.environment

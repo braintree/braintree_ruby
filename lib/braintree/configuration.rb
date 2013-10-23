@@ -2,7 +2,7 @@ module Braintree
   # See http://www.braintreepayments.com/docs/ruby
   class Configuration
     API_VERSION = "3" # :nodoc:
-    DEFAULT_ENDPOINT = "www" # :nodoc:
+    DEFAULT_ENDPOINT = "api" # :nodoc:
 
     class << self
       attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id, :public_key, :private_key
@@ -69,12 +69,7 @@ module Braintree
     end
 
     def ca_file # :nodoc:
-      case @environment
-      when :qa, :sandbox
-        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "sandbox_braintreegateway_com.ca.crt"))
-      when :production
-        File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "www_braintreegateway_com.ca.crt"))
-      end
+      File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "api_braintreegateway_com.ca.crt"))
     end
 
     def endpoint
@@ -111,7 +106,7 @@ module Braintree
       when :qa
         "qa.braintreegateway.com"
       when :sandbox
-        "sandbox.braintreegateway.com"
+        "api.sandbox.braintreegateway.com"
       end
     end
 
