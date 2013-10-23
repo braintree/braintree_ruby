@@ -49,9 +49,11 @@ module Braintree
     end
 
     def initialize(options = {})
-      [:endpoint, :environment, :merchant_id, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
+      [:endpoint, :environment, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
         instance_variable_set "@#{attr}", options[attr]
       end
+
+      @merchant_id = options[:merchant_id] || options[:partner_id]
     end
 
     def api_version # :nodoc:

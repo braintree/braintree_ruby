@@ -17,6 +17,32 @@ describe Braintree::Configuration do
     Braintree::Configuration.endpoint = Braintree::Configuration::DEFAULT_ENDPOINT
   end
 
+  describe "initialize" do
+    it "accepts merchant credentials" do
+      config = Braintree::Configuration.new(
+        :merchant_id => 'merchant_id',
+        :public_key => 'public_key',
+        :private_key => 'private_key'
+      )
+
+      config.merchant_id.should == 'merchant_id'
+      config.public_key.should == 'public_key'
+      config.private_key.should == 'private_key'
+    end
+
+    it "accepts partner credentials" do
+      config = Braintree::Configuration.new(
+        :partner_id => 'partner_id',
+        :public_key => 'public_key',
+        :private_key => 'private_key'
+      )
+
+      config.merchant_id.should == 'partner_id'
+      config.public_key.should == 'public_key'
+      config.private_key.should == 'private_key'
+    end
+  end
+
   describe "base_merchant_path" do
     it "returns /merchants/{merchant_id}" do
       Braintree::Configuration.instantiate.base_merchant_path.should == "/merchants/integration_merchant_id"
