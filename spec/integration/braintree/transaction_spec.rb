@@ -149,13 +149,14 @@ describe Braintree::Transaction do
       result.transaction.type.should == "sale"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.processor_authorization_code.should_not be_nil
+      result.transaction.voice_referral_number.should be_nil
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
       result.transaction.credit_card_details.customer_location.should == "US"
     end
 
-    it "accepts additional security parameters like device_session_id" do
+    it "accepts additional security parameters: device_session_id and fraud_merchant_id" do
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -163,7 +164,8 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         },
-        :device_session_id => "abc123"
+        :device_session_id => "abc123",
+        :fraud_merchant_id => "7"
       )
 
       result.success?.should == true
@@ -384,6 +386,19 @@ describe Braintree::Transaction do
           Braintree::Configuration.public_key = old_public_key
           Braintree::Configuration.private_key = old_private_key
         end
+      end
+
+      it "exposes the fraud gateway rejection reason" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Fraud,
+            :expiration_date => "05/2017",
+            :cvv => "333"
+          }
+        )
+        result.success?.should == false
+        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
       end
     end
 

@@ -53,13 +53,14 @@ describe Braintree::Customer do
       result.customer.updated_at.between?(Time.now - 10, Time.now).should == true
     end
 
-    it "supports creation with a device session ID" do
+    it "supports creation with a device session ID and (optional) fraud_merchant_id" do
       result = Braintree::Customer.create(
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "05/2010",
           :cvv => "100",
-          :device_session_id => "abc123"
+          :device_session_id => "abc123",
+          :fraud_merchant_id => "7"
         }
       )
 

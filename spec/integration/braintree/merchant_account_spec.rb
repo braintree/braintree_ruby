@@ -14,7 +14,7 @@ VALID_APPLICATION_PARAMS = {
     },
     :date_of_birth => "10/9/1980",
     :ssn => "123-00-1234",
-    :routing_number => "1234567890",
+    :routing_number => "121000248",
     :account_number => "43759348798"
   },
   :tos_accepted => true,
@@ -54,7 +54,9 @@ describe Braintree::MerchantAccount do
 
     it "requires all fields" do
       result = Braintree::MerchantAccount.create(
-        :master_merchant_account_id => "sandbox_master_merchant_account"
+        :master_merchant_account_id => "sandbox_master_merchant_account",
+        :tos_accepted => true,
+        :applicant_details => {}
       )
       result.should_not be_success
       result.errors.for(:merchant_account).for(:applicant_details).on(:first_name).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::FirstNameIsRequired

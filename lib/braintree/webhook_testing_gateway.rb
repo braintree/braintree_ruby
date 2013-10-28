@@ -26,8 +26,12 @@ module Braintree
 
     def _subject_sample_xml(kind, id)
       case kind
-      when Braintree::WebhookNotification::Kind::PartnerUserCreated
-        _partner_credentials_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::PartnerMerchantConnected
+        _partner_merchant_connected_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected
+        _partner_merchant_disconnected_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::PartnerMerchantDeclined
+        _partner_merchant_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
         _merchant_account_approved_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
@@ -54,15 +58,34 @@ module Braintree
       XML
     end
 
-    def _partner_credentials_sample_xml(data)
+    def _partner_merchant_connected_sample_xml(data)
 
       <<-XML
-        <partner_credentials>
+        <partner_merchant>
           <merchant_public_id>public_id</merchant_public_id>
           <public_key>public_key</public_key>
           <private_key>private_key</private_key>
-          <partner_user_id>abc123</partner_user_id>
-        </partner_credentials>
+          <partner_merchant_id>abc123</partner_merchant_id>
+          <client_side_encryption_key>cse_key</client_side_encryption_key>
+        </partner_merchant>
+      XML
+    end
+
+    def _partner_merchant_disconnected_sample_xml(data)
+
+      <<-XML
+        <partner_merchant>
+          <partner_merchant_id>abc123</partner_merchant_id>
+        </partner_merchant>
+      XML
+    end
+
+    def _partner_merchant_declined_sample_xml(data)
+
+      <<-XML
+        <partner_merchant>
+          <partner_merchant_id>abc123</partner_merchant_id>
+        </partner_merchant>
       XML
     end
 

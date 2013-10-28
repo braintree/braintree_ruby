@@ -6,42 +6,48 @@ module Braintree
     module CreatedUsing
       FullInformation = 'full_information'
       Token = 'token'
+      Unrecognized = 'unrecognized'
     end
 
     module EscrowStatus
-      HoldPending = 'hold_pending'
-      Held = 'held'
+      HoldPending    = 'hold_pending'
+      Held           = 'held'
       ReleasePending = 'release_pending'
-      Released = 'released'
-      Refunded = 'refunded'
+      Released       = 'released'
+      Refunded       = 'refunded'
+      Unrecognized   = 'unrecognized'
     end
 
     module GatewayRejectionReason
-      AVS = "avs"
-      AVSAndCVV = "avs_and_cvv"
-      CVV = "cvv"
-      Duplicate = "duplicate"
+      AVS          = "avs"
+      AVSAndCVV    = "avs_and_cvv"
+      CVV          = "cvv"
+      Duplicate    = "duplicate"
+      Fraud        = "fraud"
+      Unrecognized = "unrecognized"
     end
 
     module Status
-      AuthorizationExpired = 'authorization_expired'
-      Authorizing = 'authorizing'
-      Authorized = 'authorized'
-      GatewayRejected = 'gateway_rejected'
-      Failed = 'failed'
-      ProcessorDeclined = 'processor_declined'
-      Settled = 'settled'
-      Settling = 'settling'
+      AuthorizationExpired   = 'authorization_expired'
+      Authorizing            = 'authorizing'
+      Authorized             = 'authorized'
+      GatewayRejected        = 'gateway_rejected'
+      Failed                 = 'failed'
+      ProcessorDeclined      = 'processor_declined'
+      Settled                = 'settled'
+      Settling               = 'settling'
       SubmittedForSettlement = 'submitted_for_settlement'
-      Voided = 'voided'
+      Voided                 = 'voided'
+      Unrecognized           = 'unrecognized'
 
       All = constants.map { |c| const_get(c) }
     end
 
     module Source
-      Api = "api"
+      Api          = "api"
       ControlPanel = "control_panel"
-      Recurring = "recurring"
+      Recurring    = "recurring"
+      Unrecognized = "unrecognized"
     end
 
     module Type # :nodoc:
@@ -71,6 +77,7 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    attr_reader :voice_referral_number
     attr_reader :purchase_order_number
     attr_reader :recurring
     attr_reader :refund_ids, :refunded_transaction_id
@@ -265,7 +272,7 @@ module Braintree
     end
 
     def refund_id
-      warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use TransparentRedirect.refund_ids"
+      warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use Transaction.refund_ids"
       @refund_id
     end
 
