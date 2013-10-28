@@ -1,3 +1,7 @@
+== 2.26.0
+* Official support for Partnerships
+* Changed visibility of methods used in multi-tenancy
+
 == 2.25.0
 * Adds hold_in_escrow and hold_in_escrow! methods
 * Add error codes for verification not supported error

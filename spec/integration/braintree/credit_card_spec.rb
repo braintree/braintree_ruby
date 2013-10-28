@@ -34,7 +34,8 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
         :cvv => "100",
-        :device_session_id => "abc123"
+        :device_session_id => "abc123",
+        :fraud_merchant_id => "7"
       )
       result.success?.should == true
     end

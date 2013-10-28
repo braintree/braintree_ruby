@@ -1,5 +1,6 @@
 module Braintree
-  class Gateway # :nodoc:
+  # See http://www.braintreepayments.com/docs/ruby
+  class Gateway
     attr_reader :config
 
     def initialize(config)

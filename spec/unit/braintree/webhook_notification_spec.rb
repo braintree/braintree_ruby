@@ -15,19 +15,46 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
-    it "builds a sample notification for a partner user created webhook" do
+    it "builds a sample notification for a partner merchant connected webhook" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::PartnerUserCreated,
+        Braintree::WebhookNotification::Kind::PartnerMerchantConnected,
         "my_id"
       )
 
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
-      notification.kind.should == Braintree::WebhookNotification::Kind::PartnerUserCreated
-      notification.partner_credentials.merchant_public_id.should == "public_id"
-      notification.partner_credentials.public_key.should == "public_key"
-      notification.partner_credentials.private_key.should == "private_key"
-      notification.partner_credentials.partner_user_id.should == "abc123"
+      notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantConnected
+      notification.partner_merchant.merchant_public_id.should == "public_id"
+      notification.partner_merchant.public_key.should == "public_key"
+      notification.partner_merchant.private_key.should == "private_key"
+      notification.partner_merchant.partner_merchant_id.should == "abc123"
+      notification.partner_merchant.client_side_encryption_key.should == "cse_key"
+      notification.timestamp.should be_close(Time.now.utc, 10)
+    end
+
+    it "builds a sample notification for a partner merchant disconnected webhook" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(signature, payload)
+
+      notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected
+      notification.partner_merchant.partner_merchant_id.should == "abc123"
+      notification.timestamp.should be_close(Time.now.utc, 10)
+    end
+
+    it "builds a sample notification for a partner merchant declined webhook" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::PartnerMerchantDeclined,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(signature, payload)
+
+      notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantDeclined
+      notification.partner_merchant.partner_merchant_id.should == "abc123"
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
