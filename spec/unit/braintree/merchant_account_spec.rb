@@ -36,6 +36,7 @@ describe Braintree::MerchantAccount do
           :email => "john.doe@example.com",
           :date_of_birth => "1970-01-01",
           :phone => "3125551234",
+          :ssn_last_4 => "6789",
           :address => {
             :street_address => "123 Fake St",
             :locality => "Chicago",
@@ -48,7 +49,7 @@ describe Braintree::MerchantAccount do
           :tax_id => "123456789",
         },
         :funding => {
-          :account_number => "43759348798",
+          :account_number_last_4 => "8798",
           :routing_number => "071000013",
         }
       }
@@ -64,13 +65,14 @@ describe Braintree::MerchantAccount do
       merchant_account.individual_details.email.should == "john.doe@example.com"
       merchant_account.individual_details.date_of_birth.should == "1970-01-01"
       merchant_account.individual_details.phone.should == "3125551234"
+      merchant_account.individual_details.ssn_last_4.should == "6789"
       merchant_account.individual_details.address_details.street_address.should == "123 Fake St"
       merchant_account.individual_details.address_details.locality.should == "Chicago"
       merchant_account.individual_details.address_details.region.should == "IL"
       merchant_account.individual_details.address_details.postal_code.should == "60622"
       merchant_account.business_details.dba_name.should == "James's Bloggs"
       merchant_account.business_details.tax_id.should == "123456789"
-      merchant_account.funding_details.account_number.should == "43759348798"
+      merchant_account.funding_details.account_number_last_4.should == "8798"
       merchant_account.funding_details.routing_number.should == "071000013"
     end
   end

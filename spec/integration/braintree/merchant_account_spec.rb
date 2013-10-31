@@ -84,7 +84,7 @@ describe Braintree::MerchantAccount do
         :master_merchant_account_id => "sandbox_master_merchant_account"
       )
       result.should_not be_success
-      result.errors.for(:merchant_account).for(:applicant_details).on(:first_name).first.code.should == Braintree::ErrorCodes::MerchantAccount::ApplicantDetails::FirstNameIsRequired
+      result.errors.for(:merchant_account).on(:tos_accepted).first.code.should == Braintree::ErrorCodes::MerchantAccount::TosAcceptedIsRequired
     end
 
     it "accepts tax_id and business_name fields" do
