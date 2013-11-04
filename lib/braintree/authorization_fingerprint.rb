@@ -7,7 +7,7 @@ module Braintree
         :created_at => Time.now
       }
 
-      Configuration.signature_service.sign(optional_data.merge(data))
+      Configuration.sha256_signature_service.sign(optional_data.merge(data))
     end
   end
 end

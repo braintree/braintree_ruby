@@ -52,6 +52,10 @@ module Braintree
       instantiate.signature_service
     end
 
+    def self.sha256_signature_service
+      instantiate.sha256_signature_service
+    end
+
     def initialize(options = {})
       [:endpoint, :environment, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
         instance_variable_set "@#{attr}", options[attr]
@@ -140,6 +144,10 @@ module Braintree
 
     def signature_service
       @signature_service ||= SignatureService.new(@private_key)
+    end
+
+    def sha256_signature_service
+      @sha256_signature_service ||= SignatureService.new(@private_key, SHA256Digest)
     end
   end
 end
