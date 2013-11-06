@@ -243,6 +243,15 @@ module Braintree
       MasterMerchantAccountIdIsInvalid = "82607"
       MasterMerchantAccountMustBeActive = "82608"
       TosAcceptedIsRequired = "82610"
+      IdCannotBeUpdated = "82675"
+      MasterMerchantAccountIdCannotBeUpdated = "82676"
+      CannotBeUpdated = "82674"
+      DeclinedOFAC = "82621"
+      DeclinedMasterCardMatch = "82622"
+      DeclinedFailedKYC = "82623"
+      DeclinedSsnInvalid = "82624"
+      DeclinedSsnMatchesDeceased = "82625"
+      Declined = "82626"
 
       module ApplicantDetails
         FirstNameIsRequired = "82609"
@@ -259,13 +268,17 @@ module Braintree
         CompanyNameIsRequiredWithTaxId = "82633"
         TaxIdIsRequiredWithCompanyName = "82634"
         RoutingNumberIsInvalid = "82635"
-        DeclinedOFAC = "82621"
-        DeclinedMasterCardMatch = "82622"
-        DeclinedFailedKYC = "82623"
-        DeclinedSsnInvalid = "82624"
-        DeclinedSsnMatchesDeceased = "82625"
-        Declined = "82626"
+        DeclinedOFAC = "82621"               # Keep for backwards compatibility
+        DeclinedMasterCardMatch = "82622"    # Keep for backwards compatibility
+        DeclinedFailedKYC = "82623"          # Keep for backwards compatibility
+        DeclinedSsnInvalid = "82624"         # Keep for backwards compatibility
+        DeclinedSsnMatchesDeceased = "82625" # Keep for backwards compatibility
+        Declined = "82626"                   # Keep for backwards compatibility
         PhoneIsInvalid = "82636"
+        DateOfBirthIsInvalid = "82663"
+        AccountNumberIsInvalid = "82670"
+        EmailAddressIsRequired = "82665"
+        TaxIdMustBeBlank = "82673"
 
         module Address
           StreetAddressIsRequired = "82617"
@@ -274,6 +287,7 @@ module Braintree
           RegionIsRequired = "82620"
           StreetAddressIsInvalid = "82629"
           PostalCodeIsInvalid = "82630"
+          RegionIsInvalid = "82664"
         end
       end
 
@@ -286,6 +300,8 @@ module Braintree
         FirstNameIsInvalid = "82644"
         LastNameIsInvalid = "82645"
         PhoneIsInvalid = "82656"
+        DateOfBirthIsInvalid = "82666"
+        EmailAddressIsRequired = "82667"
 
         module Address
           StreetAddressIsRequired = "82657"
@@ -294,20 +310,23 @@ module Braintree
           RegionIsRequired = "82660"
           StreetAddressIsInvalid = "82661"
           PostalCodeIsInvalid = "82662"
+          RegionIsInvalid = "82668"
         end
       end
 
       module Business
         NameIsInvalid = "82646"
         TaxIdIsInvalid = "82647"
-        NameIsRequiredWithTaxId = "82647"
         TaxIdIsRequiredWithName = "82648"
+        NameIsRequiredWithTaxId = "82669"
+        TaxIdMustBeBlank = "82672"
       end
 
       module Funding
         RoutingNumberIsRequired = "82640"
         AccountNumberIsRequired = "82641"
         RoutingNumberIsInvalid = "82649"
+        AccountNumberIsInvalid = "82671"
       end
     end
 

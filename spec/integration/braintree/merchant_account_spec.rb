@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-VALID_APPLICATION_PARAMS = {
+DEPRECATED_APPLICATION_PARAMS = {
   :applicant_details => {
     :first_name => "Joe",
     :last_name => "Bloggs",
@@ -21,7 +21,7 @@ VALID_APPLICATION_PARAMS = {
   :master_merchant_account_id => "sandbox_master_merchant_account"
 }
 
-VALID_MERCHANT_ACCOUNT_PARAMS = {
+VALID_APPLICATION_PARAMS = {
   :individual => {
     :first_name => "Joe",
     :last_name => "Bloggs",
@@ -44,12 +44,20 @@ VALID_MERCHANT_ACCOUNT_PARAMS = {
     :routing_number => "011103093",
     :account_number => "43759348798"
   },
-  :id => "sandbox_sub_merchant_account",
+  :tos_accepted => true,
   :master_merchant_account_id => "sandbox_master_merchant_account"
 }
 
 describe Braintree::MerchantAccount do
   describe "create" do
+    it "accepts the deprecated parameters" do
+      result = Braintree::MerchantAccount.create(DEPRECATED_APPLICATION_PARAMS)
+
+      result.should be_success
+      result.merchant_account.status.should == Braintree::MerchantAccount::Status::Pending
+      result.merchant_account.master_merchant_account.id.should == "sandbox_master_merchant_account"
+    end
+
     it "doesn't require an id" do
       result = Braintree::MerchantAccount.create(VALID_APPLICATION_PARAMS)
 
@@ -87,10 +95,19 @@ describe Braintree::MerchantAccount do
       result.errors.for(:merchant_account).on(:tos_accepted).first.code.should == Braintree::ErrorCodes::MerchantAccount::TosAcceptedIsRequired
     end
 
-    it "accepts tax_id and business_name fields" do
-      params = VALID_APPLICATION_PARAMS.clone
+    it "DEPRECATED accepts tax_id and business_name fields" do
+      params = DEPRECATED_APPLICATION_PARAMS.clone
       params[:applicant_details][:company_name] = "Test Company"
       params[:applicant_details][:tax_id] = "123456789"
+      result = Braintree::MerchantAccount.create(params)
+      result.should be_success
+      result.merchant_account.status.should == Braintree::MerchantAccount::Status::Pending
+    end
+
+    it "accepts tax_id and business_name fields" do
+      params = VALID_APPLICATION_PARAMS.clone
+      params[:business][:dba_name] = "Test Company"
+      params[:business][:tax_id] = "123456789"
       result = Braintree::MerchantAccount.create(params)
       result.should be_success
       result.merchant_account.status.should == Braintree::MerchantAccount::Status::Pending

@@ -6,7 +6,8 @@ module Braintree
     end
 
     def create(attributes)
-      Util.verify_keys(MerchantAccountGateway._create_signature, attributes)
+      signature = MerchantAccountGateway._detect_signature(attributes)
+      Util.verify_keys(signature, attributes)
       _do_create "/merchant_accounts/create_via_api", :merchant_account => attributes
     end
 
@@ -33,13 +34,34 @@ module Braintree
       end
     end
 
-    def self._create_signature # :nodoc:
+    def self._detect_signature(attributes)
+      if attributes.has_key?(:applicant_details)
+        warn "[DEPRECATED] Passing :applicant_details to create is deprecated. Please use :individual, :business, and :funding."
+        MerchantAccountGateway._deprecated_create_signature
+      else
+        MerchantAccountGateway._create_signature
+      end
+    end
+
+    def self._deprecated_create_signature # :nodoc:
       [
         {:applicant_details => [
           :first_name, :last_name, :email, :date_of_birth, :ssn, :routing_number,
           :account_number, :tax_id, :company_name, :phone,
           {:address => [:street_address, :postal_code, :locality, :region]}]
         },
+        :tos_accepted, :master_merchant_account_id, :id
+      ]
+    end
+
+    def self._create_signature # :nodoc:
+      [
+        {:individual => [
+          :first_name, :last_name, :email, :date_of_birth, :ssn, :phone,
+          {:address => [:street_address, :postal_code, :locality, :region]}]
+        },
+        {:business => [:dba_name, :tax_id]},
+        {:funding => [:routing_number, :account_number]},
         :tos_accepted, :master_merchant_account_id, :id
       ]
     end
