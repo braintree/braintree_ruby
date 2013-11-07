@@ -12,7 +12,7 @@ module Braintree
         if value.is_a?(Hash)
           hash_to_query_string(value, full_key)
         else
-          url_encode(full_key) + "=" + url_encode(value)
+          "#{full_key}=#{value}"
         end
       end.sort * '&'
     end

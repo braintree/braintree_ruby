@@ -8,8 +8,8 @@ module Braintree
     end
 
     def sign(data)
-      url_encoded_data = Util.hash_to_query_string(data)
-      "#{hash(url_encoded_data)}|#{url_encoded_data}"
+      query_string = Util.hash_to_query_string(data)
+      "#{hash(query_string)}|#{query_string}"
     end
 
     def hash(data)

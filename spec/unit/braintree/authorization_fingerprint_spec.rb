@@ -35,5 +35,20 @@ describe Braintree::AuthorizationFingerprint do
       encoded_data.should include("public_key=#{Braintree::Configuration.public_key}")
       encoded_data.should =~ /created_at=\d+/
     end
+
+    it "can include credit_card options" do
+      fingerprint = Braintree::AuthorizationFingerprint.generate(
+        :verify_card => true,
+        :fail_on_duplicate_payment_method => true,
+        :make_default => true
+      )
+
+      signature, encoded_data = fingerprint.split("|")
+
+      signature.length.should > 1
+      encoded_data.should include("credit_card[options][make_default]=true")
+      encoded_data.should include("credit_card[options][fail_on_duplicate_payment_method]=true")
+      encoded_data.should include("credit_card[options][verify_card]=true")
+    end
   end
 end
