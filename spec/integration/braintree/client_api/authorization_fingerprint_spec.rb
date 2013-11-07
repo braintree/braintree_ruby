@@ -6,11 +6,7 @@ describe Braintree::AuthorizationFingerprint do
   describe "self.generate" do
     it "generates a fingerprint that the gateway accepts" do
       config = Braintree::Configuration.instantiate
-      fingerprint = Braintree::AuthorizationFingerprint.generate({
-        :merchant_id => config.merchant_id,
-        :public_key => config.public_key,
-        :created_at => Time.now
-      })
+      fingerprint = Braintree::AuthorizationFingerprint.generate
       http = ClientApiHttp.new(
         config,
         :authorization_fingerprint => fingerprint,
