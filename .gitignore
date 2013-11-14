@@ -4,3 +4,4 @@ rdoc
 tags
 .rvmrc
 Gemfile.lock
+.idea
