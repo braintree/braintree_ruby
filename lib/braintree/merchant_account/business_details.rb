@@ -3,7 +3,7 @@ module Braintree
     class BusinessDetails
       include BaseModule
 
-      attr_reader :dba_name, :tax_id
+      attr_reader :dba_name, :legal_name, :tax_id
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

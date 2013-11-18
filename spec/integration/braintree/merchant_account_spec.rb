@@ -152,9 +152,13 @@ describe Braintree::MerchantAccount do
       params[:individual][:address][:region] = "IL"
       params[:individual][:address][:postal_code] = "60622"
       params[:business][:dba_name] = "James's Bloggs"
+      params[:business][:legal_name] = "James's Bloggs Inc"
       params[:business][:tax_id] = "123456789"
       params[:funding][:account_number] = "43759348798"
       params[:funding][:routing_number] = "071000013"
+      params[:funding][:email] = "check@this.com"
+      params[:funding][:mobile_phone] = "1234567890"
+      params[:funding][:destination] = Braintree::MerchantAccount::FundingDestinations::MobilePhone
       result = Braintree::MerchantAccount.update("sandbox_sub_merchant_account", params)
       result.should be_success
       result.merchant_account.status.should == "active"
@@ -170,15 +174,61 @@ describe Braintree::MerchantAccount do
       result.merchant_account.individual_details.address_details.region.should == "IL"
       result.merchant_account.individual_details.address_details.postal_code.should == "60622"
       result.merchant_account.business_details.dba_name.should == "James's Bloggs"
+      result.merchant_account.business_details.legal_name.should == "James's Bloggs Inc"
+      result.merchant_account.business_details.tax_id.should == "123456789"
+      result.merchant_account.funding_details.account_number_last_4.should == "8798"
+      result.merchant_account.funding_details.routing_number.should == "071000013"
+      result.merchant_account.funding_details.email.should == "check@this.com"
+      result.merchant_account.funding_details.mobile_phone.should == "1234567890"
+      result.merchant_account.funding_details.destination.should == Braintree::MerchantAccount::FundingDestinations::MobilePhone
     end
+
     it "does not require all fields" do
       result = Braintree::MerchantAccount.update("sandbox_sub_merchant_account", { :individual => { :first_name => "Jose" } })
       result.should be_success
     end
+
     it "handles unsuccessful results" do
-      result = Braintree::MerchantAccount.update("sandbox_sub_merchant_account", { :individual => { :first_name => "" } })
+      result = Braintree::MerchantAccount.update(
+        "sandbox_sub_merchant_account", {
+          :individual => {
+            :first_name => "",
+            :last_name => "",
+            :email => "",
+            :phone => "",
+            :address => {
+              :street_address => "",
+              :postal_code => "",
+              :locality => "",
+              :region => "",
+            },
+            :date_of_birth => "",
+            :ssn => "",
+          },
+          :business => {
+            :legal_name => "",
+            :dba_name => "",
+            :tax_id => ""
+          },
+          :funding => {
+            :destination => "",
+            :routing_number => "",
+            :account_number => ""
+          },
+        }
+      )
+
       result.should_not be_success
-      result.errors.for(:merchant_account).for(:individual).on(:first_name).first.code.should == Braintree::ErrorCodes::MerchantAccount::Individual::FirstNameIsRequired
+      result.errors.for(:merchant_account).for(:individual).on(:first_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::FirstNameIsRequired)
+      result.errors.for(:merchant_account).for(:individual).on(:last_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::LastNameIsRequired)
+      result.errors.for(:merchant_account).for(:individual).on(:date_of_birth).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::DateOfBirthIsRequired)
+      result.errors.for(:merchant_account).for(:individual).on(:email).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::EmailIsRequired)
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:street_address).map(&:code).should  include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::StreetAddressIsRequired)
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:postal_code).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::PostalCodeIsRequired)
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:locality).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::LocalityIsRequired)
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:region).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::RegionIsRequired)
+      result.errors.for(:merchant_account).for(:funding).on(:destination).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Funding::DestinationIsRequired)
+      result.errors.for(:merchant_account).on(:base).should be_empty
     end
   end
 end

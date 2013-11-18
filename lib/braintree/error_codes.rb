@@ -296,12 +296,12 @@ module Braintree
         LastNameIsRequired = "82638"
         DateOfBirthIsRequired = "82639"
         SsnIsInvalid = "82642"
-        EmailAddressIsInvalid = "82643"
+        EmailIsInvalid = "82643"
         FirstNameIsInvalid = "82644"
         LastNameIsInvalid = "82645"
         PhoneIsInvalid = "82656"
         DateOfBirthIsInvalid = "82666"
-        EmailAddressIsRequired = "82667"
+        EmailIsRequired = "82667"
 
         module Address
           StreetAddressIsRequired = "82657"

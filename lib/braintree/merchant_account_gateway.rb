@@ -26,7 +26,7 @@ module Braintree
     end
 
     def _do_update(url, params=nil) # :nodoc:
-      response = @config.http.put url, params
+      response = @config.http.put(url, params)
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       else

@@ -3,7 +3,7 @@ module Braintree
     class FundingDetails
       include BaseModule
 
-      attr_reader :account_number_last_4, :routing_number
+      attr_reader :account_number_last_4, :destination, :email, :mobile_phone, :routing_number
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
