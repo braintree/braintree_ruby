@@ -37,10 +37,11 @@ VALID_APPLICATION_PARAMS = {
     :ssn => "123-00-1234",
   },
   :business => {
-    :dba_name => "Joe's Bloggs",
+    :legal_name => "Joe's Bloggs",
     :tax_id => "123456789"
   },
   :funding => {
+    :destination => Braintree::MerchantAccount::FundingDestinations::Bank,
     :routing_number => "011103093",
     :account_number => "43759348798"
   },
@@ -95,7 +96,7 @@ describe Braintree::MerchantAccount do
       result.errors.for(:merchant_account).on(:tos_accepted).first.code.should == Braintree::ErrorCodes::MerchantAccount::TosAcceptedIsRequired
     end
 
-    it "DEPRECATED accepts tax_id and business_name fields" do
+    it "DEPRECATED accepts tax_id and company_name fields" do
       params = DEPRECATED_APPLICATION_PARAMS.clone
       params[:applicant_details][:company_name] = "Test Company"
       params[:applicant_details][:tax_id] = "123456789"
@@ -104,13 +105,35 @@ describe Braintree::MerchantAccount do
       result.merchant_account.status.should == Braintree::MerchantAccount::Status::Pending
     end
 
-    it "accepts tax_id and business_name fields" do
+    it "accepts tax_id and legal_name fields" do
       params = VALID_APPLICATION_PARAMS.clone
-      params[:business][:dba_name] = "Test Company"
+      params[:business][:legal_name] = "Test Company"
       params[:business][:tax_id] = "123456789"
       result = Braintree::MerchantAccount.create(params)
       result.should be_success
       result.merchant_account.status.should == Braintree::MerchantAccount::Status::Pending
+    end
+
+    context "funding destination" do
+      it "accepts a bank" do
+        params = VALID_APPLICATION_PARAMS.dup
+        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::Bank
+        result = Braintree::MerchantAccount.create(params)
+      end
+
+      it "accepts an email" do
+        params = VALID_APPLICATION_PARAMS.dup
+        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::Email
+        params[:funding][:email] = "joebloggs@compuserve.com"
+        result = Braintree::MerchantAccount.create(params)
+      end
+
+      it "accepts a mobile_phone" do
+        params = VALID_APPLICATION_PARAMS.dup
+        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::MobilePhone
+        params[:funding][:mobile_phone] = "3125882300"
+        result = Braintree::MerchantAccount.create(params)
+      end
     end
   end
 
@@ -118,6 +141,7 @@ describe Braintree::MerchantAccount do
     it "updates the Merchant Account info" do
       params = VALID_APPLICATION_PARAMS.clone
       params.delete(:tos_accepted)
+      params.delete(:master_merchant_account_id)
       params[:individual][:first_name] = "John"
       params[:individual][:last_name] = "Doe"
       params[:individual][:email] = "john.doe@example.com"

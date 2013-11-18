@@ -54,28 +54,23 @@ module Braintree
       ]
     end
 
-    def self._create_signature # :nodoc:
-      [
-        {:individual => [
-          :first_name, :last_name, :email, :date_of_birth, :ssn, :phone,
-          {:address => [:street_address, :postal_code, :locality, :region]}]
-        },
-        {:business => [:dba_name, :tax_id]},
-        {:funding => [:routing_number, :account_number]},
-        :tos_accepted, :master_merchant_account_id, :id
-      ]
-    end
-
-    def self._update_signature # :nodoc:
+    def self._signature # :nodoc:
       [
         {:individual => [
           :first_name, :last_name, :email, :date_of_birth, :ssn, :phone,
           {:address => [:street_address, :locality, :region, :postal_code]}]
         },
-        {:business => [:dba_name, :tax_id]},
-        {:funding => [:routing_number, :account_number]},
-        :master_merchant_account_id, :id
+        {:business => [:dba_name, :legal_name, :tax_id]},
+        {:funding => [:destination, :email, :mobile_phone, :routing_number, :account_number]}
       ]
+    end
+
+    def self._create_signature # :nodoc:
+      _signature + [:tos_accepted, :master_merchant_account_id, :id]
+    end
+
+    def self._update_signature # :nodoc:
+      _signature
     end
   end
 end
