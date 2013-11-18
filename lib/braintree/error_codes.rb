@@ -315,18 +315,25 @@ module Braintree
       end
 
       module Business
-        NameIsInvalid = "82646"
+        DbaNameIsInvalid = "82646"
+        LegalNameIsInvalid = "82677"
+        LegalNameIsRequiredWithTaxId = "82669"
         TaxIdIsInvalid = "82647"
-        TaxIdIsRequiredWithName = "82648"
-        NameIsRequiredWithTaxId = "82669"
+        TaxIdIsRequiredWithLegalName = "82648"
         TaxIdMustBeBlank = "82672"
       end
 
       module Funding
-        RoutingNumberIsRequired = "82640"
-        AccountNumberIsRequired = "82641"
-        RoutingNumberIsInvalid = "82649"
         AccountNumberIsInvalid = "82671"
+        AccountNumberIsRequired = "82641"
+        DestinationIsInvalid = "82679"
+        DestinationIsRequired = "82678"
+        EmailIsInvalid = "82681"
+        EmailIsRequired = "82680"
+        MobilePhoneIsInvalid = "82683"
+        MobilePhoneIsRequired = "82682"
+        RoutingNumberIsInvalid = "82649"
+        RoutingNumberIsRequired = "82640"
       end
     end
 
