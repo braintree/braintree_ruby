@@ -110,6 +110,8 @@ describe Braintree::MerchantAccount do
         params = VALID_APPLICATION_PARAMS.dup
         params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::Bank
         result = Braintree::MerchantAccount.create(params)
+
+        result.should be_success
       end
 
       it "accepts an email" do
@@ -117,6 +119,8 @@ describe Braintree::MerchantAccount do
         params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::Email
         params[:funding][:email] = "joebloggs@compuserve.com"
         result = Braintree::MerchantAccount.create(params)
+
+        result.should be_success
       end
 
       it "accepts a mobile_phone" do
@@ -124,6 +128,8 @@ describe Braintree::MerchantAccount do
         params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::MobilePhone
         params[:funding][:mobile_phone] = "3125882300"
         result = Braintree::MerchantAccount.create(params)
+
+        result.should be_success
       end
     end
   end
