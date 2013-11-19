@@ -321,6 +321,11 @@ module Braintree
         TaxIdIsInvalid = "82647"
         TaxIdIsRequiredWithLegalName = "82648"
         TaxIdMustBeBlank = "82672"
+        module Address
+          StreetAddressIsInvalid = "82685"
+          PostalCodeIsInvalid = "82686"
+          RegionIsInvalid = "82684"
+        end
       end
 
       module Funding

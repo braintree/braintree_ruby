@@ -60,7 +60,10 @@ module Braintree
           :first_name, :last_name, :email, :date_of_birth, :ssn, :phone,
           {:address => [:street_address, :locality, :region, :postal_code]}]
         },
-        {:business => [:dba_name, :legal_name, :tax_id]},
+        {:business => [
+          :dba_name, :legal_name, :tax_id,
+          {:address => [:street_address, :locality, :region, :postal_code]}]
+        },
         {:funding => [:destination, :email, :mobile_phone, :routing_number, :account_number]}
       ]
     end

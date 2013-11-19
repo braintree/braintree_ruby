@@ -8,17 +8,7 @@ module Braintree
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
-        @address_details = AddressDetails.new(@address)
-      end
-
-      class AddressDetails
-        include BaseModule
-
-        attr_reader :street_address, :locality, :region, :postal_code
-
-        def initialize(attributes)
-          set_instance_variables_from_hash attributes unless attributes.nil?
-        end
+        @address_details = MerchantAccount::AddressDetails.new(@address)
       end
     end
   end
