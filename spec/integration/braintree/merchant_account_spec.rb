@@ -224,15 +224,15 @@ describe Braintree::MerchantAccount do
       )
 
       result.should_not be_success
-      result.errors.for(:merchant_account).for(:individual).on(:first_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::FirstNameIsRequired)
-      result.errors.for(:merchant_account).for(:individual).on(:last_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::LastNameIsRequired)
-      result.errors.for(:merchant_account).for(:individual).on(:date_of_birth).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::DateOfBirthIsRequired)
-      result.errors.for(:merchant_account).for(:individual).on(:email).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::EmailIsRequired)
-      result.errors.for(:merchant_account).for(:individual).for(:address).on(:street_address).map(&:code).should  include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::StreetAddressIsRequired)
-      result.errors.for(:merchant_account).for(:individual).for(:address).on(:postal_code).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::PostalCodeIsRequired)
-      result.errors.for(:merchant_account).for(:individual).for(:address).on(:locality).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::LocalityIsRequired)
-      result.errors.for(:merchant_account).for(:individual).for(:address).on(:region).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::RegionIsRequired)
-      result.errors.for(:merchant_account).for(:funding).on(:destination).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Funding::DestinationIsRequired)
+      result.errors.for(:merchant_account).for(:individual).on(:first_name).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::FirstNameIsRequired]
+      result.errors.for(:merchant_account).for(:individual).on(:last_name).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::LastNameIsRequired]
+      result.errors.for(:merchant_account).for(:individual).on(:date_of_birth).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::DateOfBirthIsRequired]
+      result.errors.for(:merchant_account).for(:individual).on(:email).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::EmailIsRequired]
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:street_address).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::Address::StreetAddressIsRequired]
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:postal_code).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::Address::PostalCodeIsRequired]
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:locality).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::Address::LocalityIsRequired]
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:region).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::Address::RegionIsRequired]
+      result.errors.for(:merchant_account).for(:funding).on(:destination).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::DestinationIsRequired]
       result.errors.for(:merchant_account).on(:base).should be_empty
     end
 
@@ -265,33 +265,104 @@ describe Braintree::MerchantAccount do
           :funding => {
             :destination => "MY WALLET",
             :routing_number => "LEATHER",
-            :account_number => "BACK POCKET"
+            :account_number => "BACK POCKET",
+            :email => "BILLFOLD",
+            :mobile_phone => "TRIFOLD"
           },
         }
       )
 
       result.should_not be_success
-      result.errors.for(:merchant_account).for(:individual).on(:first_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::FirstNameIsInvalid)
-      result.errors.for(:merchant_account).for(:individual).on(:last_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::LastNameIsInvalid)
-      result.errors.for(:merchant_account).for(:individual).on(:email).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::EmailIsInvalid)
-      result.errors.for(:merchant_account).for(:individual).on(:phone).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::PhoneIsInvalid)
-      result.errors.for(:merchant_account).for(:individual).for(:address).on(:street_address).map(&:code).should  include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::StreetAddressIsInvalid)
-      result.errors.for(:merchant_account).for(:individual).for(:address).on(:postal_code).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::PostalCodeIsInvalid)
-      result.errors.for(:merchant_account).for(:individual).for(:address).on(:region).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::Address::RegionIsInvalid)
-      result.errors.for(:merchant_account).for(:individual).on(:ssn).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Individual::SsnIsInvalid)
+      result.errors.for(:merchant_account).for(:individual).on(:first_name).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::FirstNameIsInvalid]
+      result.errors.for(:merchant_account).for(:individual).on(:last_name).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::LastNameIsInvalid]
+      result.errors.for(:merchant_account).for(:individual).on(:email).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::EmailIsInvalid]
+      result.errors.for(:merchant_account).for(:individual).on(:phone).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::PhoneIsInvalid]
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:street_address).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::Address::StreetAddressIsInvalid]
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:postal_code).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::Address::PostalCodeIsInvalid]
+      result.errors.for(:merchant_account).for(:individual).for(:address).on(:region).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::Address::RegionIsInvalid]
+      result.errors.for(:merchant_account).for(:individual).on(:ssn).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Individual::SsnIsInvalid]
 
-      result.errors.for(:merchant_account).for(:business).on(:legal_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Business::LegalNameIsInvalid)
-      result.errors.for(:merchant_account).for(:business).on(:dba_name).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Business::DbaNameIsInvalid)
-      result.errors.for(:merchant_account).for(:business).on(:tax_id).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Business::TaxIdIsInvalid)
-      result.errors.for(:merchant_account).for(:business).for(:address).on(:street_address).map(&:code).should  include(Braintree::ErrorCodes::MerchantAccount::Business::Address::StreetAddressIsInvalid)
-      result.errors.for(:merchant_account).for(:business).for(:address).on(:postal_code).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Business::Address::PostalCodeIsInvalid)
-      result.errors.for(:merchant_account).for(:business).for(:address).on(:region).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Business::Address::RegionIsInvalid)
+      result.errors.for(:merchant_account).for(:business).on(:legal_name).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::LegalNameIsInvalid]
+      result.errors.for(:merchant_account).for(:business).on(:dba_name).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::DbaNameIsInvalid]
+      result.errors.for(:merchant_account).for(:business).on(:tax_id).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::TaxIdIsInvalid]
+      result.errors.for(:merchant_account).for(:business).for(:address).on(:street_address).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::Address::StreetAddressIsInvalid]
+      result.errors.for(:merchant_account).for(:business).for(:address).on(:postal_code).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::Address::PostalCodeIsInvalid]
+      result.errors.for(:merchant_account).for(:business).for(:address).on(:region).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::Address::RegionIsInvalid]
 
-      result.errors.for(:merchant_account).for(:funding).on(:destination).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Funding::DestinationIsInvalid)
-      result.errors.for(:merchant_account).for(:funding).on(:routing_number).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Funding::RoutingNumberIsInvalid)
-      result.errors.for(:merchant_account).for(:funding).on(:account_number).map(&:code).should include(Braintree::ErrorCodes::MerchantAccount::Funding::AccountNumberIsInvalid)
+      result.errors.for(:merchant_account).for(:funding).on(:destination).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::DestinationIsInvalid]
+      result.errors.for(:merchant_account).for(:funding).on(:routing_number).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::RoutingNumberIsInvalid]
+      result.errors.for(:merchant_account).for(:funding).on(:account_number).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::AccountNumberIsInvalid]
+      result.errors.for(:merchant_account).for(:funding).on(:email).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::EmailIsInvalid]
+      result.errors.for(:merchant_account).for(:funding).on(:mobile_phone).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::MobilePhoneIsInvalid]
 
       result.errors.for(:merchant_account).on(:base).should be_empty
+    end
+
+    it "handles validation errors for business fields" do
+      result = Braintree::MerchantAccount.update(
+        "sandbox_sub_merchant_account", {
+          :business => {
+            :legal_name => "",
+            :tax_id => "111223333",
+          },
+        }
+      )
+
+      result.should_not be_success
+      result.errors.for(:merchant_account).for(:business).on(:legal_name).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::LegalNameIsRequiredWithTaxId]
+      result.errors.for(:merchant_account).for(:business).on(:tax_id).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::TaxIdMustBeBlank]
+
+      result = Braintree::MerchantAccount.update(
+        "sandbox_sub_merchant_account", {
+          :business => {
+            :legal_name => "legal_name",
+            :tax_id => "",
+          },
+        }
+      )
+
+      result.should_not be_success
+      result.errors.for(:merchant_account).for(:business).on(:tax_id).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Business::TaxIdIsRequiredWithLegalName]
+    end
+
+    it "handles validation errors for funding fields" do
+      result = Braintree::MerchantAccount.update(
+        "sandbox_sub_merchant_account", {
+          :funding => {
+            :destination => Braintree::MerchantAccount::FundingDestinations::Bank,
+            :routing_number => "",
+            :account_number => ""
+          },
+        }
+      )
+
+      result.should_not be_success
+      result.errors.for(:merchant_account).for(:funding).on(:routing_number).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::RoutingNumberIsRequired]
+      result.errors.for(:merchant_account).for(:funding).on(:account_number).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::AccountNumberIsRequired]
+
+      result = Braintree::MerchantAccount.update(
+        "sandbox_sub_merchant_account", {
+          :funding => {
+            :destination => Braintree::MerchantAccount::FundingDestinations::Email,
+            :email => ""
+          },
+        }
+      )
+
+      result.should_not be_success
+      result.errors.for(:merchant_account).for(:funding).on(:email).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::EmailIsRequired]
+
+      result = Braintree::MerchantAccount.update(
+        "sandbox_sub_merchant_account", {
+          :funding => {
+            :destination => Braintree::MerchantAccount::FundingDestinations::MobilePhone,
+            :mobile_phone => ""
+          },
+        }
+      )
+
+      result.should_not be_success
+      result.errors.for(:merchant_account).for(:funding).on(:mobile_phone).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::MobilePhoneIsRequired]
     end
   end
 end
