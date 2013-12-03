@@ -69,7 +69,7 @@ describe Braintree::AuthorizationFingerprint do
         }
       )
 
-      response.code.should == "200"
+      response.code.should == "201"
 
       response = http.add_card(
         :credit_card => {
@@ -79,7 +79,7 @@ describe Braintree::AuthorizationFingerprint do
         }
       )
 
-      response.code.should == "200"
+      response.code.should == "201"
 
       customer = Braintree::Customer.find(customer_id)
       customer.credit_cards.select { |c| c.bin == "400551" }[0].should be_default
@@ -108,7 +108,7 @@ describe Braintree::AuthorizationFingerprint do
         }
       )
 
-      response.code.should == "200"
+      response.code.should == "201"
 
       fingerprint = Braintree::AuthorizationFingerprint.generate(
         :customer_id => customer_id,
