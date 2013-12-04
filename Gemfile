@@ -4,6 +4,7 @@ gem 'builder', '2.1.2'
 
 if RUBY_VERSION.start_with?('1.8')
   gem 'libxml-ruby', '1.1.3'
+  gem 'json'
 else
   gem 'libxml-ruby', '2.6.0'
 end

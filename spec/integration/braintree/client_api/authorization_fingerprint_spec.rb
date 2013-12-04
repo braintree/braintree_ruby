@@ -11,7 +11,7 @@ describe Braintree::AuthorizationFingerprint do
         config,
         :authorization_fingerprint => fingerprint,
         :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing",
+        :session_identifier_type => "testing"
       )
 
       response = http.get_cards
@@ -31,7 +31,7 @@ describe Braintree::AuthorizationFingerprint do
         config,
         :authorization_fingerprint => fingerprint,
         :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing",
+        :session_identifier_type => "testing"
       )
 
       response = http.add_card(
@@ -58,7 +58,7 @@ describe Braintree::AuthorizationFingerprint do
         config,
         :authorization_fingerprint => fingerprint,
         :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing",
+        :session_identifier_type => "testing"
       )
 
       response = http.add_card(
@@ -97,7 +97,7 @@ describe Braintree::AuthorizationFingerprint do
         config,
         :authorization_fingerprint => fingerprint,
         :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing",
+        :session_identifier_type => "testing"
       )
 
       response = http.add_card(
