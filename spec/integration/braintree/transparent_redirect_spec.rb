@@ -49,6 +49,30 @@ describe Braintree::TransparentRedirect do
         transaction.credit_card_details.expiration_date.should == "05/2009"
       end
 
+      it "allows specifying a service fee" do
+        params = {
+          :transaction => {
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            },
+            :service_fee_amount => "1.00"
+          }
+        }
+        tr_data_params = {
+          :transaction => {
+            :type => "sale"
+          }
+        }
+        tr_data = Braintree::TransparentRedirect.transaction_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
+        query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params)
+        result = Braintree::TransparentRedirect.confirm(query_string_response)
+        result.success?.should == true
+        result.transaction.service_fee_amount.should == BigDecimal.new("1.00")
+      end
+
       it "returns an error when there's an error" do
         params = {
           :transaction => {

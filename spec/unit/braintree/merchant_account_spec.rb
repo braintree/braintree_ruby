@@ -21,3 +21,4 @@ describe Braintree::MerchantAccount do
     end
   end
 end
+
