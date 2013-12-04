@@ -29,5 +29,13 @@ module Braintree
         :tos_accepted, :master_merchant_account_id, :id
       ]
     end
+
+    def find(id)
+      raise ArgumentError if id.nil? || id.strip.to_s == ""
+      response = @config.http.get "/merchant_account/#{id}"
+      MerchantAccount._new(@gateway, response[:merchant_account])
+    rescue NotFoundError
+      raise NotFoundError, "merchant account with id #{id.inspect} not found"
+    end
   end
 end
