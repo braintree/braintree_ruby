@@ -27,6 +27,10 @@ module Braintree
       end
     end
 
+    def self.find(id)
+      Configuration.gateway.merchant_account.find(id)
+    end
+
     def inspect
       order = [:id, :status, :master_merchant_account]
       nice_attributes = order.map do |attr|
