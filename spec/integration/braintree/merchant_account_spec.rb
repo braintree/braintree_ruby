@@ -50,7 +50,7 @@ VALID_APPLICATION_PARAMS = {
     }
   },
   :funding => {
-    :destination => Braintree::MerchantAccount::FundingDestinations::Bank,
+    :destination => Braintree::MerchantAccount::FundingDestination::Bank,
     :routing_number => "011103093",
     :account_number => "43759348798"
   },
@@ -108,7 +108,7 @@ describe Braintree::MerchantAccount do
     context "funding destination" do
       it "accepts a bank" do
         params = VALID_APPLICATION_PARAMS.dup
-        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::Bank
+        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestination::Bank
         result = Braintree::MerchantAccount.create(params)
 
         result.should be_success
@@ -116,7 +116,7 @@ describe Braintree::MerchantAccount do
 
       it "accepts an email" do
         params = VALID_APPLICATION_PARAMS.dup
-        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::Email
+        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestination::Email
         params[:funding][:email] = "joebloggs@compuserve.com"
         result = Braintree::MerchantAccount.create(params)
 
@@ -125,7 +125,7 @@ describe Braintree::MerchantAccount do
 
       it "accepts a mobile_phone" do
         params = VALID_APPLICATION_PARAMS.dup
-        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestinations::MobilePhone
+        params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestination::MobilePhone
         params[:funding][:mobile_phone] = "3125882300"
         result = Braintree::MerchantAccount.create(params)
 
@@ -159,7 +159,7 @@ describe Braintree::MerchantAccount do
       params[:funding][:routing_number] = "071000013"
       params[:funding][:email] = "check@this.com"
       params[:funding][:mobile_phone] = "1234567890"
-      params[:funding][:destination] = Braintree::MerchantAccount::FundingDestinations::MobilePhone
+      params[:funding][:destination] = Braintree::MerchantAccount::FundingDestination::MobilePhone
       result = Braintree::MerchantAccount.update("sandbox_sub_merchant_account", params)
       result.should be_success
       result.merchant_account.status.should == "active"
@@ -185,7 +185,7 @@ describe Braintree::MerchantAccount do
       result.merchant_account.funding_details.routing_number.should == "071000013"
       result.merchant_account.funding_details.email.should == "check@this.com"
       result.merchant_account.funding_details.mobile_phone.should == "1234567890"
-      result.merchant_account.funding_details.destination.should == Braintree::MerchantAccount::FundingDestinations::MobilePhone
+      result.merchant_account.funding_details.destination.should == Braintree::MerchantAccount::FundingDestination::MobilePhone
     end
 
     it "does not require all fields" do
@@ -329,7 +329,7 @@ describe Braintree::MerchantAccount do
       result = Braintree::MerchantAccount.update(
         "sandbox_sub_merchant_account", {
           :funding => {
-            :destination => Braintree::MerchantAccount::FundingDestinations::Bank,
+            :destination => Braintree::MerchantAccount::FundingDestination::Bank,
             :routing_number => "",
             :account_number => ""
           },
@@ -343,7 +343,7 @@ describe Braintree::MerchantAccount do
       result = Braintree::MerchantAccount.update(
         "sandbox_sub_merchant_account", {
           :funding => {
-            :destination => Braintree::MerchantAccount::FundingDestinations::Email,
+            :destination => Braintree::MerchantAccount::FundingDestination::Email,
             :email => ""
           },
         }
@@ -355,7 +355,7 @@ describe Braintree::MerchantAccount do
       result = Braintree::MerchantAccount.update(
         "sandbox_sub_merchant_account", {
           :funding => {
-            :destination => Braintree::MerchantAccount::FundingDestinations::MobilePhone,
+            :destination => Braintree::MerchantAccount::FundingDestination::MobilePhone,
             :mobile_phone => ""
           },
         }

@@ -8,10 +8,14 @@ module Braintree
       Suspended = "suspended"
     end
 
-    module FundingDestinations
+    module FundingDestination
       Bank = "bank"
       MobilePhone = "mobile_phone"
       Email = "email"
+    end
+
+    module FundingDestinations
+      include Braintree::MerchantAccount::FundingDestination
     end
 
     attr_reader :status, :id, :master_merchant_account,
