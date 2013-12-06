@@ -137,10 +137,17 @@ module Braintree
     end
 
     def _fetch_transactions(search, ids) # :nodoc:
-      search.ids.in ids
-      response = @config.http.post "/transactions/advanced_search", {:search => search.to_hash}
-      attributes = response[:credit_card_transactions]
-      Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| Transaction._new(@gateway, attrs) }
+      records = []
+      
+      until ids.empty?
+        search.ids.in ids
+        response = @config.http.post "/transactions/advanced_search", {:search => search.to_hash, :accept_incomplete_results => true}
+        attributes = response[:credit_card_transactions]
+        page_of_records = Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| Transaction._new(@gateway, attrs) }
+        ids -= page_of_records.map(&:id)
+      end
+      
+      records
     end
   end
 end
