@@ -1,5 +1,22 @@
 require 'json'
 
+def nonce_for_new_credit_card(options)
+  client = ClientApiHttp.new(Braintree::Configuration.instantiate,
+    :authorization_fingerprint => Braintree::AuthorizationFingerprint.generate,
+    :session_identifier => "fake_identifier",
+    :session_identifier_type => "testing"
+  )
+
+  response = client.add_card(options)
+  body = JSON.parse(response.body)
+
+  if body["errors"] != nil
+    raise body["errors"].inspect
+  end
+
+  body["nonce"]
+end
+
 class ClientApiHttp
   attr_reader :config, :options
 

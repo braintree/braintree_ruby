@@ -1,5 +1,6 @@
 # encoding: utf-8
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Customer do
   describe "self.all" do
@@ -377,6 +378,29 @@ describe Braintree::Customer do
         )
         result.success?.should == true
         result.customer.credit_cards.first.venmo_sdk?.should == true
+      end
+    end
+
+    context "client API" do
+      it "can create a customer with a payment method nonce" do
+        nonce = nonce_for_new_credit_card(
+          :credit_card => {
+            :number => "4111111111111111",
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          },
+          :share => true
+        )
+
+        result = Braintree::Customer.create(
+          :credit_card => {
+            :payment_method_nonce => nonce
+          }
+        )
+
+        result.success?.should == true
+        result.customer.credit_cards.first.bin.should == "411111"
+        result.customer.credit_cards.first.last_4.should == "1111"
       end
     end
   end

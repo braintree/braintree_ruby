@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Transaction do
   describe "self.clone_transaction" do
@@ -1051,6 +1052,27 @@ describe Braintree::Transaction do
         )
         result.success?.should == true
         result.transaction.credit_card_details.venmo_sdk?.should == true
+      end
+    end
+
+    context "client API" do
+      it "can create a transaction with a nonce" do
+        nonce = nonce_for_new_credit_card(
+          :credit_card => {
+            :number => "4111111111111111",
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          },
+          :share => true
+        )
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+
+        result.success?.should == true
       end
     end
   end
