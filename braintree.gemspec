@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
   s.summary = "Braintree Gateway Ruby Client Library"
   s.description = "Ruby library for integrating with the Braintree Gateway"
   s.version = Braintree::Version::String
+  s.license = "MIT"
   s.author = "Braintree"
   s.email = "code@getbraintree.com"
   s.homepage = "http://www.braintreepayments.com/"
