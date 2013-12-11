@@ -25,6 +25,10 @@ module Braintree
       Configuration.gateway.merchant_account.create(attributes)
     end
 
+    def self.find(attributes)
+      Configuration.gateway.merchant_account.find(attributes)
+    end
+
     def self.update(id, attributes)
       Configuration.gateway.merchant_account.update(id, attributes)
     end
