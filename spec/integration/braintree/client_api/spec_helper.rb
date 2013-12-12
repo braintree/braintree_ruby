@@ -59,7 +59,7 @@ class ClientApiHttp
 
   def get_cards
     encoded_fingerprint = Braintree::Util.url_encode(@options[:authorization_fingerprint])
-    url = "/client_api/credit_cards.json?"
+    url = "/merchants/#{@config.merchant_id}/client_api/credit_cards.json?"
     url += "authorizationFingerprint=#{encoded_fingerprint}"
     url += "&sessionIdentifier=#{@options[:session_identifier]}"
     url += "&sessionIdentifierType=#{@options[:session_identifier_type]}"
@@ -73,6 +73,6 @@ class ClientApiHttp
     params[:sessionIdentifier] = @options[:session_identifier]
     params[:sessionIdentifierType] = @options[:session_identifier_type]
 
-    post("/client_api/credit_cards.json", params)
+    post("/merchants/#{@config.merchant_id}/client_api/credit_cards.json", params)
   end
 end
