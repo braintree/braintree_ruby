@@ -4,7 +4,8 @@ module Braintree
       data = {
         :merchant_id => Configuration.merchant_id,
         :public_key => Configuration.public_key,
-        :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
+        :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%S%z'),
+        :base_url => Configuration.instantiate.base_merchant_url
       }
 
       data[:customer_id] = optional_data[:customer_id] if optional_data[:customer_id]

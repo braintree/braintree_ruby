@@ -3,13 +3,14 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::AuthorizationFingerprint do
   describe "self.generate" do
-    it "returns a fingerprint with the merchant_id, public_key, and created at timestamp" do
+    it "returns a fingerprint with the merchant_id, public_key, base_url, and created at timestamp" do
       fingerprint = Braintree::AuthorizationFingerprint.generate
       signature, encoded_data = fingerprint.split("|")
 
       signature.length.should > 1
       encoded_data.should include("merchant_id=#{Braintree::Configuration.merchant_id}")
       encoded_data.should include("public_key=#{Braintree::Configuration.public_key}")
+      encoded_data.should include("base_url=http://localhost:3000/merchants/#{Braintree::Configuration.merchant_id}")
       encoded_data.should =~ /created_at=\d+/
     end
 
@@ -63,6 +64,5 @@ describe Braintree::AuthorizationFingerprint do
         end
       end
     end
-
   end
 end
