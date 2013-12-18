@@ -10,7 +10,9 @@ describe Braintree::AuthorizationFingerprint do
       signature.length.should > 1
       encoded_data.should include("merchant_id=#{Braintree::Configuration.merchant_id}")
       encoded_data.should include("public_key=#{Braintree::Configuration.public_key}")
-      encoded_data.should include("base_url=http://localhost:3000/merchants/#{Braintree::Configuration.merchant_id}")
+
+      base_url = "http://localhost:#{ENV['GATEWAY_PORT'] || 3000}/merchants/#{Braintree::Configuration.merchant_id}"
+      encoded_data.should include("base_url=#{base_url}")
       encoded_data.should =~ /created_at=\d+/
     end
 
