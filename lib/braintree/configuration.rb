@@ -118,6 +118,19 @@ module Braintree
       end
     end
 
+    def auth_url
+      case @environment
+      when :development
+        "http://auth.venmo.dev"
+      when :production
+        "https://auth.venmo.com"
+      when :qa
+        "https://auth.qa.venmo.com"
+      when :sandbox
+        "https://auth.sandbox.venmo.com"
+      end
+    end
+
     def ssl? # :nodoc:
       case @environment
       when :development

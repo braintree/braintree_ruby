@@ -235,6 +235,28 @@ describe Braintree::Configuration do
     end
   end
 
+  describe "auth_url" do
+    it "is http://auth.venmo.dev for development" do
+      Braintree::Configuration.environment = :development
+      Braintree::Configuration.instantiate.auth_url.should == "http://auth.venmo.dev"
+    end
+
+    it "is https://auth.venmo.com for production" do
+      Braintree::Configuration.environment = :production
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.com"
+    end
+
+    it "is https://auth.sandbox.venmo.com for sandbox" do
+      Braintree::Configuration.environment = :sandbox
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.sandbox.venmo.com"
+    end
+
+    it "is https://auth.qa.venmo.com for qa" do
+      Braintree::Configuration.environment = :qa
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.qa.venmo.com"
+    end
+  end
+
   describe "ssl?" do
     it "returns false for development" do
       Braintree::Configuration.environment = :development
