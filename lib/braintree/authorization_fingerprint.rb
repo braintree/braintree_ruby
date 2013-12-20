@@ -5,7 +5,7 @@ module Braintree
         :merchant_id => Configuration.merchant_id,
         :public_key => Configuration.public_key,
         :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%S%z'),
-        :client_api_url => Configuration.instantiate.base_merchant_url,
+        :client_api_url => Configuration.instantiate.base_merchant_url + "/client_api",
         :auth_url => Configuration.instantiate.auth_url
       }
 

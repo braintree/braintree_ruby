@@ -11,7 +11,7 @@ describe Braintree::AuthorizationFingerprint do
       encoded_data.should include("merchant_id=#{Braintree::Configuration.merchant_id}")
       encoded_data.should include("public_key=#{Braintree::Configuration.public_key}")
 
-      client_api_url = "http://localhost:#{ENV['GATEWAY_PORT'] || 3000}/merchants/#{Braintree::Configuration.merchant_id}"
+      client_api_url = "http://localhost:#{ENV['GATEWAY_PORT'] || 3000}/merchants/#{Braintree::Configuration.merchant_id}/client_api"
       encoded_data.should include("client_api_url=#{client_api_url}")
       encoded_data.should include("auth_url=http://auth.venmo.dev")
       encoded_data.should =~ /created_at=\d+/
