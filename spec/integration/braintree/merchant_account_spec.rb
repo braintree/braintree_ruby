@@ -134,6 +134,27 @@ describe Braintree::MerchantAccount do
     end
   end
 
+  describe "find" do
+    it "finds the merchant account with the given token" do
+      result = Braintree::MerchantAccount.create(VALID_APPLICATION_PARAMS)
+      result.should be_success
+      result.merchant_account.status.should == Braintree::MerchantAccount::Status::Pending
+
+      id = result.merchant_account.id
+      merchant_account = Braintree::MerchantAccount.find(id)
+
+      merchant_account.status.should == Braintree::MerchantAccount::Status::Active
+      merchant_account.individual_details.first_name.should == VALID_APPLICATION_PARAMS[:individual][:first_name]
+      merchant_account.individual_details.last_name.should == VALID_APPLICATION_PARAMS[:individual][:last_name]
+    end
+
+    it "raises a NotFoundError exception if merchant account cannot be found" do
+      expect do
+        Braintree::MerchantAccount.find("non-existant")
+      end.to raise_error(Braintree::NotFoundError, 'Merchant account with id non-existant not found')
+    end
+  end
+
   describe "update" do
     it "updates the Merchant Account info" do
       params = VALID_APPLICATION_PARAMS.clone
