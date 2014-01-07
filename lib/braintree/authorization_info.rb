@@ -1,12 +1,12 @@
+require 'json'
+
 module Braintree
-  module AuthorizationFingerprint
+  module AuthorizationInfo
     def self.generate(optional_data={})
       data = {
         :merchant_id => Configuration.merchant_id,
         :public_key => Configuration.public_key,
-        :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%S%z'),
-        :client_api_url => Configuration.instantiate.base_merchant_url + "/client_api",
-        :auth_url => Configuration.instantiate.auth_url
+        :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
       }
 
       data[:customer_id] = optional_data[:customer_id] if optional_data[:customer_id]
@@ -18,7 +18,13 @@ module Braintree
         end
       end
 
-      Configuration.sha256_signature_service.sign(data)
+      signed_data = Configuration.sha256_signature_service.sign(data)
+
+      {
+        :fingerprint => signed_data,
+        :client_api_url => Configuration.instantiate.base_merchant_url + "/client_api",
+        :auth_url => Configuration.instantiate.auth_url
+      }.to_json
     end
   end
 end

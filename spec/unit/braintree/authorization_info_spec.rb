@@ -1,24 +1,29 @@
 
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
-describe Braintree::AuthorizationFingerprint do
+describe Braintree::AuthorizationInfo do
   describe "self.generate" do
-    it "returns a fingerprint with the merchant_id, public_key, client_api_url, auth_url, and created at timestamp" do
-      fingerprint = Braintree::AuthorizationFingerprint.generate
+    it "returns a fingerprint with the public_key, and created at timestamp" do
+      auth_info = Braintree::AuthorizationInfo.generate
+      fingerprint = JSON.parse(auth_info)["fingerprint"]
       signature, encoded_data = fingerprint.split("|")
 
       signature.length.should > 1
-      encoded_data.should include("merchant_id=#{Braintree::Configuration.merchant_id}")
       encoded_data.should include("public_key=#{Braintree::Configuration.public_key}")
-
-      client_api_url = "http://localhost:#{ENV['GATEWAY_PORT'] || 3000}/merchants/#{Braintree::Configuration.merchant_id}/client_api"
-      encoded_data.should include("client_api_url=#{client_api_url}")
-      encoded_data.should include("auth_url=http://auth.venmo.dev")
       encoded_data.should =~ /created_at=\d+/
     end
 
+    it "returns client_api_url and auth_url" do
+      auth_info = JSON.parse(Braintree::AuthorizationInfo.generate)
+
+      client_api_url = "http://localhost:#{ENV['GATEWAY_PORT'] || 3000}/merchants/#{Braintree::Configuration.merchant_id}/client_api"
+      auth_info["client_api_url"].should == client_api_url
+      auth_info["auth_url"].should == "http://auth.venmo.dev"
+    end
+
     it "can optionally take a customer id" do
-      fingerprint = Braintree::AuthorizationFingerprint.generate(:customer_id => 1)
+      auth_info = Braintree::AuthorizationInfo.generate(:customer_id => 1)
+      fingerprint = JSON.parse(auth_info)["fingerprint"]
       signature, encoded_data = fingerprint.split("|")
 
       signature.length.should > 1
@@ -26,11 +31,12 @@ describe Braintree::AuthorizationFingerprint do
     end
 
     it "can't overwrite merchant_id, public_key, or created_at" do
-      fingerprint = Braintree::AuthorizationFingerprint.generate(
+      auth_info = Braintree::AuthorizationInfo.generate(
         :merchant_id => "bad_id",
         :public_key => "bad_key",
         :created_at => "bad_time"
       )
+      fingerprint = JSON.parse(auth_info)["fingerprint"]
 
       signature, encoded_data = fingerprint.split("|")
 
@@ -41,12 +47,13 @@ describe Braintree::AuthorizationFingerprint do
     end
 
     it "can include credit_card options" do
-      fingerprint = Braintree::AuthorizationFingerprint.generate(
+      auth_info = Braintree::AuthorizationInfo.generate(
         :customer_id => 1,
         :verify_card => true,
         :fail_on_duplicate_payment_method => true,
         :make_default => true
       )
+      fingerprint = JSON.parse(auth_info)["fingerprint"]
 
       signature, encoded_data = fingerprint.split("|")
 
@@ -60,7 +67,7 @@ describe Braintree::AuthorizationFingerprint do
       %w(verify_card fail_on_duplicate_payment_method make_default).each do |option_name|
         it "raises an ArgumentError if #{option_name} is present" do
           expect do
-            Braintree::AuthorizationFingerprint.generate(
+            Braintree::AuthorizationInfo.generate(
               option_name.to_sym => true
             )
           end.to raise_error(ArgumentError, /#{option_name}/)
