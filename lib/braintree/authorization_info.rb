@@ -4,7 +4,6 @@ module Braintree
   module AuthorizationInfo
     def self.generate(optional_data={})
       data = {
-        :merchant_id => Configuration.merchant_id,
         :public_key => Configuration.public_key,
         :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
       }
