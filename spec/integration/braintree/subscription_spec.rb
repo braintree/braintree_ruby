@@ -362,12 +362,14 @@ describe Braintree::Subscription do
         add_ons.first.quantity.should == 1
         add_ons.first.number_of_billing_cycles.should be_nil
         add_ons.first.never_expires?.should be_true
+        add_ons.first.current_billing_cycle.should == 0
 
         add_ons.last.id.should == "increase_20"
         add_ons.last.amount.should == BigDecimal.new("20.00")
         add_ons.last.quantity.should == 1
         add_ons.last.number_of_billing_cycles.should be_nil
         add_ons.last.never_expires?.should be_true
+        add_ons.last.current_billing_cycle.should == 0
 
         subscription.discounts.size.should == 2
         discounts = subscription.discounts.sort_by { |discount| discount.id }
@@ -377,12 +379,14 @@ describe Braintree::Subscription do
         discounts.first.quantity.should == 1
         discounts.first.number_of_billing_cycles.should be_nil
         discounts.first.never_expires?.should be_true
+        discounts.first.current_billing_cycle.should == 0
 
         discounts.last.id.should == "discount_7"
         discounts.last.amount.should == BigDecimal.new("7.00")
         discounts.last.quantity.should == 1
         discounts.last.number_of_billing_cycles.should be_nil
         discounts.last.never_expires?.should be_true
+        discounts.last.current_billing_cycle.should == 0
       end
 
       it "allows overriding of inherited add_ons and discounts" do
@@ -422,10 +426,12 @@ describe Braintree::Subscription do
         add_ons.first.quantity.should == 2
         add_ons.first.number_of_billing_cycles.should == 5
         add_ons.first.never_expires?.should be_false
+        add_ons.first.current_billing_cycle.should == 0
 
         add_ons.last.id.should == "increase_20"
         add_ons.last.amount.should == BigDecimal.new("20.00")
         add_ons.last.quantity.should == 1
+        add_ons.last.current_billing_cycle.should == 0
 
         subscription.discounts.size.should == 2
         discounts = subscription.discounts.sort_by { |discount| discount.id }
@@ -433,12 +439,14 @@ describe Braintree::Subscription do
         discounts.first.id.should == "discount_11"
         discounts.first.amount.should == BigDecimal.new("11.00")
         discounts.first.quantity.should == 1
+        discounts.first.current_billing_cycle.should == 0
 
         discounts.last.id.should == "discount_7"
         discounts.last.amount.should == BigDecimal.new("15.00")
         discounts.last.quantity.should == 3
         discounts.last.number_of_billing_cycles.should be_nil
         discounts.last.never_expires?.should be_true
+        discounts.last.current_billing_cycle.should == 0
       end
 
       it "allows deleting of inherited add_ons and discounts" do
@@ -460,11 +468,13 @@ describe Braintree::Subscription do
         subscription.add_ons.first.id.should == "increase_20"
         subscription.add_ons.first.amount.should == BigDecimal.new("20.00")
         subscription.add_ons.first.quantity.should == 1
+        subscription.add_ons.first.current_billing_cycle.should == 0
 
         subscription.discounts.size.should == 1
         subscription.discounts.last.id.should == "discount_11"
         subscription.discounts.last.amount.should == BigDecimal.new("11.00")
         subscription.discounts.last.quantity.should == 1
+        subscription.discounts.last.current_billing_cycle.should == 0
       end
 
       it "allows adding new add_ons and discounts" do

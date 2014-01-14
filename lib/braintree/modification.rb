@@ -4,6 +4,7 @@ module Braintree
 
     attr_reader :amount
     attr_reader :created_at
+    attr_reader :current_billing_cycle
     attr_reader :description
     attr_reader :id
     attr_reader :kind
