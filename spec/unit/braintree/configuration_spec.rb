@@ -238,7 +238,7 @@ describe Braintree::Configuration do
   describe "auth_url" do
     it "is http://auth.venmo.dev for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.instantiate.auth_url.should == "http://auth.venmo.dev"
+      Braintree::Configuration.instantiate.auth_url.should == "http://auth.venmo.dev:8000"
     end
 
     it "is https://auth.venmo.com for production" do

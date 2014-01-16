@@ -18,7 +18,7 @@ describe Braintree::AuthorizationInfo do
 
       client_api_url = "http://localhost:#{ENV['GATEWAY_PORT'] || 3000}/merchants/#{Braintree::Configuration.merchant_id}/client_api"
       auth_info["client_api_url"].should == client_api_url
-      auth_info["auth_url"].should == "http://auth.venmo.dev"
+      auth_info["auth_url"].should == "http://auth.venmo.dev:8000"
     end
 
     it "can optionally take a customer id" do
