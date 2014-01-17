@@ -30,6 +30,16 @@ describe Braintree::AuthorizationInfo do
       encoded_data.should include("customer_id=1")
     end
 
+    it "can optionally take a proxy_merchant_id" do
+      auth_info = Braintree::AuthorizationInfo.generate(:proxy_merchant_id => 1)
+      fingerprint = JSON.parse(auth_info)["fingerprint"]
+      signature, encoded_data = fingerprint.split("|")
+
+      signature.length.should > 1
+      encoded_data.should include("proxy_merchant_id=1")
+    end
+
+
     it "can't overwrite public_key, or created_at" do
       auth_info = Braintree::AuthorizationInfo.generate(
         :public_key => "bad_key",

@@ -8,7 +8,9 @@ module Braintree
         :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
       }
 
-      data[:customer_id] = optional_data[:customer_id] if optional_data[:customer_id]
+      [:customer_id, :proxy_merchant_id].each do |optional_param|
+        data[optional_param] = optional_data[optional_param] if optional_data[optional_param]
+      end
 
       [:make_default, :fail_on_duplicate_payment_method, :verify_card].each do |credit_card_option|
         if optional_data[credit_card_option]
