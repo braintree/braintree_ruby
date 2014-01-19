@@ -121,13 +121,13 @@ module Braintree
     def auth_url
       case @environment
       when :development
-        "http://auth.venmo.dev:8000"
+        "http://auth.venmo.dev:9292"
       when :production
         "https://auth.venmo.com"
       when :qa
-        "https://auth.qa.venmo.com"
+        "https://auth.venmo.qa2.braintreegateway.com"
       when :sandbox
-        "https://auth.sandbox.venmo.com"
+        "https://auth.venmo.sandbox.braintreegateway.com"
       end
     end
 
