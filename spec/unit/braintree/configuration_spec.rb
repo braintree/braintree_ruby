@@ -238,7 +238,7 @@ describe Braintree::Configuration do
   describe "auth_url" do
     it "is http://auth.venmo.dev for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.instantiate.auth_url.should == "http://auth.venmo.dev:8000"
+      Braintree::Configuration.instantiate.auth_url.should == "http://auth.venmo.dev:9292"
     end
 
     it "is https://auth.venmo.com for production" do
@@ -248,12 +248,12 @@ describe Braintree::Configuration do
 
     it "is https://auth.sandbox.venmo.com for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.auth_url.should == "https://auth.sandbox.venmo.com"
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.sandbox.braintreegateway.com"
     end
 
     it "is https://auth.qa.venmo.com for qa" do
       Braintree::Configuration.environment = :qa
-      Braintree::Configuration.instantiate.auth_url.should == "https://auth.qa.venmo.com"
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.qa2.braintreegateway.com"
     end
   end
 
