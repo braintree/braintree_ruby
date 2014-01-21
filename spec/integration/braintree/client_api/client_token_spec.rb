@@ -1,15 +1,15 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/spec_helper")
 
-describe Braintree::AuthorizationInfo do
+describe Braintree::ClientToken do
 
   describe "self.generate" do
     it "generates a fingerprint that the gateway accepts" do
       config = Braintree::Configuration.instantiate
-      auth_info = Braintree::AuthorizationInfo.generate
+      client_token = Braintree::ClientToken.generate
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(auth_info)["fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
         :session_identifier => "fake_identifier",
         :session_identifier_type => "testing"
       )
@@ -22,14 +22,14 @@ describe Braintree::AuthorizationInfo do
     it "can pass verify_card" do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
-      auth_info = Braintree::AuthorizationInfo.generate(
+      client_token = Braintree::ClientToken.generate(
         :customer_id => result.customer.id,
         :verify_card => true
       )
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(auth_info)["fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
         :session_identifier => "fake_identifier",
         :session_identifier_type => "testing"
       )
@@ -49,14 +49,14 @@ describe Braintree::AuthorizationInfo do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
       customer_id = result.customer.id
-      auth_info = Braintree::AuthorizationInfo.generate(
+      client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id,
         :make_default => true
       )
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(auth_info)["fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
         :session_identifier => "fake_identifier",
         :session_identifier_type => "testing"
       )
@@ -89,13 +89,13 @@ describe Braintree::AuthorizationInfo do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
       customer_id = result.customer.id
-      auth_info = Braintree::AuthorizationInfo.generate(
+      client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id
       )
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(auth_info)["fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
         :session_identifier => "fake_identifier",
         :session_identifier_type => "testing"
       )
@@ -110,12 +110,12 @@ describe Braintree::AuthorizationInfo do
 
       response.code.should == "201"
 
-      auth_info = Braintree::AuthorizationInfo.generate(
+      client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id,
         :fail_on_duplicate_payment_method => true
       )
 
-      http.fingerprint = JSON.parse(auth_info)["fingerprint"]
+      http.fingerprint = JSON.parse(client_token)["authorization_fingerprint"]
 
       response = http.add_card(
         :credit_card => {

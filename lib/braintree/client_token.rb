@@ -1,7 +1,7 @@
 require 'json'
 
 module Braintree
-  module AuthorizationInfo
+  module ClientToken
     def self.generate(optional_data={})
       data = {
         :public_key => Configuration.public_key,
@@ -22,7 +22,7 @@ module Braintree
       signed_data = Configuration.sha256_signature_service.sign(data)
 
       {
-        :fingerprint => signed_data,
+        :authorization_fingerprint => signed_data,
         :client_api_url => Configuration.instantiate.base_merchant_url + "/client_api",
         :auth_url => Configuration.instantiate.auth_url
       }.to_json

@@ -71,7 +71,7 @@ describe Braintree::Subscription do
           :expiration_month => "11",
           :expiration_year => "2099",
         },
-        :fingerprint_options => {
+        :client_token_options => {
           :customer_id => @credit_card.customer_id
         }
       )
@@ -696,7 +696,7 @@ describe Braintree::Subscription do
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "05/2010"
         },
-        :fingerprint_options => {
+        :client_token_options => {
           :customer_id => @credit_card.customer_id,
         }
       )

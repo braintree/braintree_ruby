@@ -1,10 +1,10 @@
 require 'json'
 
 def nonce_for_new_credit_card(options)
-  fingerprint_options = options.delete(:fingerprint_options) || {}
-  auth_info = Braintree::AuthorizationInfo.generate(fingerprint_options)
+  client_token_options = options.delete(:client_token_options) || {}
+  client_token = Braintree::ClientToken.generate(client_token_options)
   client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-    :authorization_fingerprint => JSON.parse(auth_info)["fingerprint"],
+    :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
     :session_identifier => "fake_identifier",
     :session_identifier_type => "testing"
   )
