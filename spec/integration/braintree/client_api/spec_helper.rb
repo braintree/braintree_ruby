@@ -5,8 +5,8 @@ def nonce_for_new_credit_card(options)
   client_token = Braintree::ClientToken.generate(client_token_options)
   client = ClientApiHttp.new(Braintree::Configuration.instantiate,
     :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
-    :session_identifier => "fake_identifier",
-    :session_identifier_type => "testing"
+    :shared_customer_identifier => "fake_identifier",
+    :shared_customer_identifier_type => "testing"
   )
 
   response = client.add_card(options)
@@ -63,8 +63,8 @@ class ClientApiHttp
     encoded_fingerprint = Braintree::Util.url_encode(@options[:authorization_fingerprint])
     url = "/merchants/#{@config.merchant_id}/client_api/credit_cards.json?"
     url += "authorizationFingerprint=#{encoded_fingerprint}"
-    url += "&sessionIdentifier=#{@options[:session_identifier]}"
-    url += "&sessionIdentifierType=#{@options[:session_identifier_type]}"
+    url += "&sharedCustomerIdentifier=#{@options[:shared_customer_identifier]}"
+    url += "&sharedCustomerIdentifierType=#{@options[:shared_customer_identifier_type]}"
 
     get(url)
   end
@@ -72,8 +72,8 @@ class ClientApiHttp
   def add_card(params)
     fingerprint = @options[:authorization_fingerprint]
     params[:authorizationFingerprint] = fingerprint
-    params[:sessionIdentifier] = @options[:session_identifier]
-    params[:sessionIdentifierType] = @options[:session_identifier_type]
+    params[:sharedCustomerIdentifier] = @options[:shared_customer_identifier]
+    params[:sharedCustomerIdentifierType] = @options[:shared_customer_identifier_type]
 
     post("/merchants/#{@config.merchant_id}/client_api/credit_cards.json", params)
   end

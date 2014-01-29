@@ -10,8 +10,8 @@ describe Braintree::ClientToken do
       http = ClientApiHttp.new(
         config,
         :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
-        :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing"
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
       )
 
       response = http.get_cards
@@ -30,8 +30,8 @@ describe Braintree::ClientToken do
       http = ClientApiHttp.new(
         config,
         :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
-        :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing"
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
       )
 
       response = http.add_card(
@@ -57,8 +57,8 @@ describe Braintree::ClientToken do
       http = ClientApiHttp.new(
         config,
         :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
-        :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing"
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
       )
 
       response = http.add_card(
@@ -96,8 +96,8 @@ describe Braintree::ClientToken do
       http = ClientApiHttp.new(
         config,
         :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
-        :session_identifier => "fake_identifier",
-        :session_identifier_type => "testing"
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
       )
 
       response = http.add_card(
