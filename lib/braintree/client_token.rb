@@ -22,9 +22,9 @@ module Braintree
       signed_data = Configuration.sha256_signature_service.sign(data)
 
       {
-        :authorization_fingerprint => signed_data,
-        :client_api_url => Configuration.instantiate.base_merchant_url + "/client_api",
-        :auth_url => Configuration.instantiate.auth_url
+        :authorizationFingerprint => signed_data,
+        :clientApiUrl => Configuration.instantiate.base_merchant_url + "/client_api",
+        :authUrl => Configuration.instantiate.auth_url
       }.to_json
     end
   end

@@ -4,7 +4,7 @@ def nonce_for_new_credit_card(options)
   client_token_options = options.delete(:client_token_options) || {}
   client_token = Braintree::ClientToken.generate(client_token_options)
   client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-    :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
+    :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
     :shared_customer_identifier => "fake_identifier",
     :shared_customer_identifier_type => "testing"
   )

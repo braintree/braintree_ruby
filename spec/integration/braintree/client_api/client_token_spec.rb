@@ -9,7 +9,7 @@ describe Braintree::ClientToken do
       client_token = Braintree::ClientToken.generate
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
@@ -29,7 +29,7 @@ describe Braintree::ClientToken do
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
@@ -56,7 +56,7 @@ describe Braintree::ClientToken do
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
@@ -95,7 +95,7 @@ describe Braintree::ClientToken do
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorization_fingerprint"],
+        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
@@ -115,7 +115,7 @@ describe Braintree::ClientToken do
         :fail_on_duplicate_payment_method => true
       )
 
-      http.fingerprint = JSON.parse(client_token)["authorization_fingerprint"]
+      http.fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
 
       response = http.add_card(
         :credit_card => {

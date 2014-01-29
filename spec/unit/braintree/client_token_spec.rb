@@ -5,7 +5,7 @@ describe Braintree::ClientToken do
   describe "self.generate" do
     it "returns a fingerprint with the public_key, and created at timestamp" do
       client_token = Braintree::ClientToken.generate
-      fingerprint = JSON.parse(client_token)["authorization_fingerprint"]
+      fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
       signature, encoded_data = fingerprint.split("|")
 
       signature.length.should > 1
@@ -13,17 +13,17 @@ describe Braintree::ClientToken do
       encoded_data.should =~ /created_at=\d+/
     end
 
-    it "returns client_api_url and auth_url" do
+    it "returns clientApiUrl and authUrl" do
       client_token = JSON.parse(Braintree::ClientToken.generate)
 
       client_api_url = "http://localhost:#{ENV['GATEWAY_PORT'] || 3000}/merchants/#{Braintree::Configuration.merchant_id}/client_api"
-      client_token["client_api_url"].should == client_api_url
-      client_token["auth_url"].should == "http://auth.venmo.dev:9292"
+      client_token["clientApiUrl"].should == client_api_url
+      client_token["authUrl"].should == "http://auth.venmo.dev:9292"
     end
 
     it "can optionally take a customer id" do
       client_token = Braintree::ClientToken.generate(:customer_id => 1)
-      fingerprint = JSON.parse(client_token)["authorization_fingerprint"]
+      fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
       signature, encoded_data = fingerprint.split("|")
 
       signature.length.should > 1
@@ -32,7 +32,7 @@ describe Braintree::ClientToken do
 
     it "can optionally take a proxy_merchant_id" do
       client_token = Braintree::ClientToken.generate(:proxy_merchant_id => 1)
-      fingerprint = JSON.parse(client_token)["authorization_fingerprint"]
+      fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
       signature, encoded_data = fingerprint.split("|")
 
       signature.length.should > 1
@@ -45,7 +45,7 @@ describe Braintree::ClientToken do
         :public_key => "bad_key",
         :created_at => "bad_time"
       )
-      fingerprint = JSON.parse(client_token)["authorization_fingerprint"]
+      fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
 
       signature, encoded_data = fingerprint.split("|")
 
@@ -61,7 +61,7 @@ describe Braintree::ClientToken do
         :fail_on_duplicate_payment_method => true,
         :make_default => true
       )
-      fingerprint = JSON.parse(client_token)["authorization_fingerprint"]
+      fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
 
       signature, encoded_data = fingerprint.split("|")
 
