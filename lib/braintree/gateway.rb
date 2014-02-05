@@ -21,6 +21,10 @@ module Braintree
       AddressGateway.new(self)
     end
 
+    def client_token
+      ClientTokenGateway.new(self)
+    end
+
     def credit_card
       CreditCardGateway.new(self)
     end
