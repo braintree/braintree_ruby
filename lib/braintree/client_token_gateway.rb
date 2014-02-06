@@ -6,13 +6,7 @@ module Braintree
     end
 
     def generate(options)
-      path = "/client_token"
-
-      if options.any?
-        path += "?#{URI.encode_www_form(options)}"
-      end
-
-      @config.http.get(path)[:client_token][:value]
+      @config.http.get("/client_token", options)[:client_token][:value]
     end
   end
 end

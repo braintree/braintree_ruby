@@ -39,4 +39,22 @@ END
       Braintree::Http.new(:config)._format_and_sanitize_body_for_log(input_xml).should == expected_xml
     end
   end
+
+  describe "_build_query_string" do
+    it "returns an empty string for empty query params" do
+      Braintree::Http.new(:config)._build_query_string({}).should == ""
+    end
+
+    it "returns a proper query string for non-nested hashes" do
+      query_params = {:one => 1, :two => 2}
+      Braintree::Http.new(:config)._build_query_string(query_params).should == "?one=1&two=2"
+    end
+
+    it "raises ArgumentError for nested hashes" do
+      query_params = {:one => 1, :two => {:a => 2.1, :b => 2.2}}
+      expect {
+        Braintree::Http.new(:config)._build_query_string(query_params)
+      }.to raise_error(ArgumentError, /nested hash/i)
+    end
+  end
 end
