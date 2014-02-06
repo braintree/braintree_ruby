@@ -14,9 +14,7 @@ describe Braintree::Plan do
         :name => "ruby_test plan",
         :number_of_billing_cycles => 1,
         :price => "1.00",
-        :trial_duration => 3,
-        :trial_duration_unit => "day",
-        :trial_period => true,
+        :trial_period => false,
       }
       create_plan_for_tests(attributes)
 
@@ -36,8 +34,6 @@ describe Braintree::Plan do
       plan.name.should == attributes[:name]
       plan.number_of_billing_cycles.should == attributes[:number_of_billing_cycles]
       plan.price.should == Braintree::Util.to_big_decimal("1.00")
-      plan.trial_duration.should == attributes[:trial_duration]
-      plan.trial_duration_unit.should == attributes[:trial_duration_unit]
       plan.trial_period.should == attributes[:trial_period]
       plan.created_at.should_not be_nil
       plan.updated_at.should_not be_nil
