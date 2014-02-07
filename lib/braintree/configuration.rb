@@ -20,6 +20,15 @@ module Braintree
     end
     expectant_reader :environment, :merchant_id, :public_key, :private_key
 
+    def self.optional_reader(*attributes) # :nodoc:
+      attributes.each do |attribute|
+        (class << self; self; end).send(:define_method, attribute) do
+          instance_variable_get("@#{attribute}")
+        end
+      end
+    end
+    optional_reader :client_side_encryption_key
+
     # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
       unless [:development, :qa, :sandbox, :production].include?(env)
