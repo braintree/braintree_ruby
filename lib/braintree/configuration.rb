@@ -5,9 +5,9 @@ module Braintree
     DEFAULT_ENDPOINT = "api" # :nodoc:
 
     class << self
-      attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id, :public_key, :private_key
+      attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id, :public_key, :private_key, :client_side_encryption_key
     end
-    attr_reader :merchant_id, :public_key, :private_key
+    attr_reader :merchant_id, :public_key, :private_key, :client_side_encryption_key
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
