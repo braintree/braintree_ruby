@@ -19,12 +19,20 @@ describe Braintree::ClientToken do
       response.code.should == "200"
     end
 
+    it "raises ArgumentError on invalid parameters (422)" do
+      expect do
+        Braintree::ClientToken.generate(:options => {:make_default => true})
+      end.to raise_error(ArgumentError)
+    end
+
     it "can pass verify_card" do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
       client_token = Braintree::ClientToken.generate(
         :customer_id => result.customer.id,
-        :verify_card => true
+        :options => {
+          :verify_card => true
+        }
       )
 
       http = ClientApiHttp.new(
@@ -51,7 +59,9 @@ describe Braintree::ClientToken do
       customer_id = result.customer.id
       client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id,
-        :make_default => true
+        :options => {
+          :make_default => true
+        }
       )
 
       http = ClientApiHttp.new(
@@ -112,7 +122,9 @@ describe Braintree::ClientToken do
 
       client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id,
-        :fail_on_duplicate_payment_method => true
+        :options => {
+          :fail_on_duplicate_payment_method => true
+        }
       )
 
       http.fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
