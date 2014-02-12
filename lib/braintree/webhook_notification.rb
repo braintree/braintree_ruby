@@ -5,6 +5,7 @@ module Braintree
     include BaseModule
 
     module Kind
+      TransferException = "transfer_exception"
       SubscriptionCanceled = "subscription_canceled"
       SubscriptionChargedSuccessfully = "subscription_charged_successfully"
       SubscriptionChargedUnsuccessfully = "subscription_charged_unsuccessfully"
@@ -21,7 +22,7 @@ module Braintree
       PartnerMerchantDeclined = "partner_merchant_declined"
     end
 
-    attr_reader :subscription, :kind, :timestamp, :transaction, :partner_merchant
+    attr_reader :subscription, :kind, :timestamp, :transaction, :partner_merchant, :transfer
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -39,6 +40,7 @@ module Braintree
       @partner_merchant = OpenStruct.new(@subject[:partner_merchant]) if @subject.has_key?(:partner_merchant)
       @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
       @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
+      @transfer = Transfer._new(gateway, @subject[:transfer]) if @subject.has_key?(:transfer)
     end
 
     def merchant_account
