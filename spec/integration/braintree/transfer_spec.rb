@@ -8,7 +8,7 @@ describe Braintree::Transfer do
         :id => "123456",
         :message => "invalid_account_number",
         :amount => "100.00",
-        :disbursement_date => "2014-02-10",
+        :disbursement_date => Date.new(2013, 4, 10),
         :follow_up_action => "update"
       }
 
@@ -18,7 +18,7 @@ describe Braintree::Transfer do
   end
 
   describe "transactions" do
-    it "finds the merchant account with the id passed in the attributes" do
+    it "finds the transactions associated with the transfer" do
       attributes = {
         :merchant_account_id => "sandbox_sub_merchant_account",
         :id => "123456",

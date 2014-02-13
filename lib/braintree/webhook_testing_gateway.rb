@@ -151,7 +151,7 @@ module Braintree
 
       <<-XML
         <transfer>
-          <merchant-account-unique-identifier>abcdef</merchant-account-unique-identifier>
+          <merchant-account-id>abcdef</merchant-account-id>
           <id>#{id}</id>
           <message>invalid_account_number</message>
           <amount>100.00</amount>
