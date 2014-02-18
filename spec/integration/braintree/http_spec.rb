@@ -7,7 +7,7 @@ describe Braintree::Http do
         original_key = Braintree::Configuration.public_key
         Braintree::Configuration.public_key = "invalid_public_key"
         expect do
-          Braintree::Configuration.instantiate.http.get "/home"
+          Braintree::Configuration.instantiate.http.get "/customers"
         end.to raise_error(Braintree::AuthenticationError)
       ensure
         Braintree::Configuration.public_key = original_key
