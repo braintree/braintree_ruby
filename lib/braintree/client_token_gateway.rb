@@ -6,7 +6,11 @@ module Braintree
     end
 
     def generate(options={})
-      params = options.any? ? {:client_token => options} : nil
+      params = nil
+      if options
+        Util.verify_keys(ClientTokenGateway._generate_signature, options)
+        params = {:client_token => options}
+      end
       result = @config.http.post("/client_token", params)
 
       if result[:client_token]
@@ -14,6 +18,13 @@ module Braintree
       else
         raise ArgumentError, result[:api_error_response][:message]
       end
+    end
+
+    def self._generate_signature # :nodoc:
+      [
+        :customer_id, :proxy_merchant_id,
+        {:options => [:make_default, :verify_card, :fail_on_duplicate_payment_method]}
+      ]
     end
   end
 end

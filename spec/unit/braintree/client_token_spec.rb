@@ -11,6 +11,15 @@ module Braintree
         ClientTokenGateway.stub(:new).and_return(client_token_gateway)
         ClientToken.generate(options)
       end
+
+      it "can't overwrite public_key, or created_at" do
+        expect {
+          client_token = Braintree::ClientToken.generate(
+            :public_key => "bad_key",
+            :created_at => "bad_time"
+          )
+        }.to raise_error(ArgumentError, /created_at, public_key/)
+      end
     end
 
     context "adding credit_card options with no customer ID" do
