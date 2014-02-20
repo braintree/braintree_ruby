@@ -72,20 +72,20 @@ describe Braintree::WebhookNotification do
       notification.transaction.disbursement_details.disbursement_date.should == Time.utc(2013, 7, 9, 18, 23, 29)
     end
 
-    it "builds a sample notification for a transfer exception webhook" do
+    it "builds a sample notification for a disbursement_exception webhook" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::TransferException,
+        Braintree::WebhookNotification::Kind::DisbursementException,
         "my_id"
       )
 
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
-      notification.kind.should == Braintree::WebhookNotification::Kind::TransferException
-      notification.transfer.id.should == "my_id"
-      notification.transfer.message.should == "invalid_account_number"
-      notification.transfer.disbursement_date.should == "2014-02-10"
-      notification.transfer.follow_up_action.should == "update"
-      notification.transfer.merchant_account_id.should == "abcdef"
+      notification.kind.should == Braintree::WebhookNotification::Kind::DisbursementException
+      notification.disbursement_exception.id.should == "my_id"
+      notification.disbursement_exception.message.should == "invalid_account_number"
+      notification.disbursement_exception.disbursement_date.should == "2014-02-10"
+      notification.disbursement_exception.follow_up_action.should == "update"
+      notification.disbursement_exception.merchant_account_id.should == "abcdef"
     end
 
     context "merchant account" do

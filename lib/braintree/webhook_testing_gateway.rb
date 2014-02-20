@@ -38,8 +38,8 @@ module Braintree
         _merchant_account_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionDisbursed
         _transaction_disbursed_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::TransferException
-        _transfer_exception_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisbursementException
+        _disbursement_exception_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -147,17 +147,17 @@ module Braintree
       XML
     end
 
-    def _transfer_exception_sample_xml(id)
+    def _disbursement_exception_sample_xml(id)
 
       <<-XML
-        <transfer>
+        <disbursement-exception>
           <merchant-account-id>abcdef</merchant-account-id>
           <id>#{id}</id>
           <message>invalid_account_number</message>
           <amount>100.00</amount>
           <disbursement-date>2014-02-10</disbursement-date>
           <follow-up-action>update</follow-up-action>
-        </transfer>
+        </disbursement-exception>
       XML
     end
   end

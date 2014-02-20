@@ -1,5 +1,5 @@
 module Braintree
-  class Transfer
+  class DisbursementException
     include BaseModule
 
     attr_reader :amount, :id, :message, :disbursement_date, :follow_up_action, :merchant_account_id
