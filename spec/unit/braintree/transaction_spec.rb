@@ -93,7 +93,8 @@ describe Braintree::Transaction do
           :settlement_amount => "120.00",
           :settlement_currency_iso_code => "USD",
           :settlement_currency_exchange_rate => "1",
-          :funds_held => false
+          :funds_held => false,
+          :success => true
         }
       )
       disbursement = transaction.disbursement_details
@@ -101,7 +102,8 @@ describe Braintree::Transaction do
       disbursement.settlement_amount.should == "120.00"
       disbursement.settlement_currency_iso_code.should == "USD"
       disbursement.settlement_currency_exchange_rate.should == "1"
-      disbursement.funds_held?.should == false
+      disbursement.funds_held?.should be_false
+      disbursement.success?.should be_true
     end
 
     it "sets up credit card attributes in credit_card_details" do
