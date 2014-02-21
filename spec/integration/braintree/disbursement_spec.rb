@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe Braintree::DisbursementException do
+describe Braintree::Disbursement do
   describe "merchant_account" do
     it "finds the merchant account with the id passed in the attributes" do
       attributes = {
@@ -12,13 +12,13 @@ describe Braintree::DisbursementException do
         :follow_up_action => "update"
       }
 
-      disbursement_exception = Braintree::DisbursementException._new(Braintree::Configuration.gateway, attributes)
-      disbursement_exception.merchant_account.id.should == "sandbox_sub_merchant_account"
+      disbursement = Braintree::Disbursement._new(Braintree::Configuration.gateway, attributes)
+      disbursement.merchant_account.id.should == "sandbox_sub_merchant_account"
     end
   end
 
   describe "transactions" do
-    it "finds the transactions associated with the disbursement_exception" do
+    it "finds the transactions associated with the disbursement" do
       attributes = {
         :merchant_account_id => "sandbox_sub_merchant_account",
         :id => "123456",
@@ -28,9 +28,9 @@ describe Braintree::DisbursementException do
         :follow_up_action => "update"
       }
 
-      disbursement_exception = Braintree::DisbursementException._new(Braintree::Configuration.gateway, attributes)
-      disbursement_exception.transactions.maximum_size.should == 1
-      transaction = disbursement_exception.transactions.first
+      disbursement = Braintree::Disbursement._new(Braintree::Configuration.gateway, attributes)
+      disbursement.transactions.maximum_size.should == 1
+      transaction = disbursement.transactions.first
       transaction.id.should == "sub_merchant_transaction"
     end
   end

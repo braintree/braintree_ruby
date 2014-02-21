@@ -81,11 +81,11 @@ describe Braintree::WebhookNotification do
       notification = Braintree::WebhookNotification.parse(signature, payload)
 
       notification.kind.should == Braintree::WebhookNotification::Kind::DisbursementException
-      notification.disbursement_exception.id.should == "my_id"
-      notification.disbursement_exception.message.should == "invalid_account_number"
-      notification.disbursement_exception.disbursement_date.should == "2014-02-10"
-      notification.disbursement_exception.follow_up_action.should == "update"
-      notification.disbursement_exception.merchant_account_id.should == "abcdef"
+      notification.disbursement.id.should == "my_id"
+      notification.disbursement.message.should == "invalid_account_number"
+      notification.disbursement.disbursement_date.should == "2014-02-10"
+      notification.disbursement.follow_up_action.should == "update"
+      notification.disbursement.merchant_account_id.should == "abcdef"
     end
 
     context "merchant account" do
