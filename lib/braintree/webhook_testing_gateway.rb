@@ -153,9 +153,23 @@ module Braintree
         <disbursement>
           <merchant-account-id>abcdef</merchant-account-id>
           <id>#{id}</id>
-          <message>invalid_account_number</message>
+          <transaction-ids type="array">
+            <transaction-public-id>afv56j</transaction-public-id>
+            <transaction-public-id>kj8hjk</transaction-public-id>
+          </transaction-ids>
+          <success type="boolean">false</success>
+          <retry type="boolean">false</retry>
+          <merchant-account>
+            <id>abcdef</id>
+            <status>suspended</status>
+            <master-merchant-account>
+              <id>master_ma_for_#{id}</id>
+              <status>suspended</status>
+            </master-merchant-account>
+          </merchant-account>
           <amount>100.00</amount>
           <disbursement-date>2014-02-10</disbursement-date>
+          <exception-message>Account information is wrong</exception-message>
           <follow-up-action>update</follow-up-action>
         </disbursement>
       XML

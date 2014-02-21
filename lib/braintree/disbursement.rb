@@ -2,22 +2,18 @@ module Braintree
   class Disbursement
     include BaseModule
 
-    attr_reader :amount, :id, :message, :disbursement_date, :follow_up_action, :merchant_account_id
+    attr_reader :id, :amount, :exception_message, :disbursement_date, :follow_up_action, :merchant_account, :transaction_ids, :retry, :success
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @amount = Util.to_big_decimal(amount)
-    end
-
-    def merchant_account
-      @merchant_account ||= @gateway.merchant_account.find(merchant_account_id)
+      @merchant_account = MerchantAccount._new(gateway, @merchant_account)
     end
 
     def transactions
-      @gateway.transaction.search do |search|
-        search.merchant_account_id.is merchant_account_id
-        search.disbursement_date.is disbursement_date
+      transactions = @gateway.transaction.search do |search|
+        search.ids.in transaction_ids
       end
     end
 
@@ -42,7 +38,7 @@ module Braintree
     end
 
     def self._attributes # :nodoc:
-      [:id, :amount, :message, :disbursement_date, :follow_up_action]
+      [:id, :amount, :exception_message, :disbursement_date, :follow_up_action, :merchant_account, :transaction_ids, :retry, :success]
     end
   end
 end

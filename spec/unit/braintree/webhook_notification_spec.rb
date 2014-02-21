@@ -82,10 +82,13 @@ describe Braintree::WebhookNotification do
 
       notification.kind.should == Braintree::WebhookNotification::Kind::DisbursementException
       notification.disbursement.id.should == "my_id"
-      notification.disbursement.message.should == "invalid_account_number"
+      notification.disbursement.transaction_ids.should == %W{ afv56j kj8hjk }
+      notification.disbursement.retry.should be_false
+      notification.disbursement.success.should be_false
+      notification.disbursement.exception_message.should == "Account information is wrong"
       notification.disbursement.disbursement_date.should == "2014-02-10"
       notification.disbursement.follow_up_action.should == "update"
-      notification.disbursement.merchant_account_id.should == "abcdef"
+      notification.disbursement.merchant_account.id.should == "abcdef"
     end
 
     context "merchant account" do
