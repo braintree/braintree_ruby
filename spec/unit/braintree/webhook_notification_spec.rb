@@ -58,37 +58,58 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
-    it "builds a sample notification for a transaction disbursed webhook" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::TransactionDisbursed,
-        "my_id"
-      )
+    context "disbursement" do
+      it "builds a sample notification for a transaction disbursed webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::TransactionDisbursed,
+          "my_id"
+        )
 
-      notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(signature, payload)
 
-      notification.kind.should == Braintree::WebhookNotification::Kind::TransactionDisbursed
-      notification.transaction.id.should == "my_id"
-      notification.transaction.amount.should == 1_00
-      notification.transaction.disbursement_details.disbursement_date.should == Time.utc(2013, 7, 9, 18, 23, 29)
-    end
+        notification.kind.should == Braintree::WebhookNotification::Kind::TransactionDisbursed
+        notification.transaction.id.should == "my_id"
+        notification.transaction.amount.should == 1_00
+        notification.transaction.disbursement_details.disbursement_date.should == Time.utc(2013, 7, 9, 18, 23, 29)
+      end
 
-    it "builds a sample notification for a disbursement_exception webhook" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::DisbursementException,
-        "my_id"
-      )
+      it "builds a sample notification for a disbursement_exception webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::DisbursementException,
+          "my_id"
+        )
 
-      notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(signature, payload)
 
-      notification.kind.should == Braintree::WebhookNotification::Kind::DisbursementException
-      notification.disbursement.id.should == "my_id"
-      notification.disbursement.transaction_ids.should == %W{ afv56j kj8hjk }
-      notification.disbursement.retry.should be_false
-      notification.disbursement.success.should be_false
-      notification.disbursement.exception_message.should == "Account information is wrong"
-      notification.disbursement.disbursement_date.should == "2014-02-10"
-      notification.disbursement.follow_up_action.should == "update"
-      notification.disbursement.merchant_account.id.should == "abcdef"
+        notification.kind.should == Braintree::WebhookNotification::Kind::DisbursementException
+        notification.disbursement.id.should == "my_id"
+        notification.disbursement.transaction_ids.should == %W{ afv56j kj8hjk }
+        notification.disbursement.retry.should be_false
+        notification.disbursement.success.should be_false
+        notification.disbursement.exception_message.should == "bank_rejected"
+        notification.disbursement.disbursement_date.should == "2014-02-10"
+        notification.disbursement.follow_up_action.should == "update_funding_information"
+        notification.disbursement.merchant_account.id.should == "merchant_account_token"
+      end
+
+      it "builds a sample notification for a disbursement webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::Disbursement,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::Disbursement
+        notification.disbursement.id.should == "my_id"
+        notification.disbursement.transaction_ids.should == %W{ afv56j kj8hjk }
+        notification.disbursement.retry.should be_false
+        notification.disbursement.success.should be_true
+        notification.disbursement.exception_message.should be_nil
+        notification.disbursement.disbursement_date.should == "2014-02-10"
+        notification.disbursement.follow_up_action.should be_nil
+        notification.disbursement.merchant_account.id.should == "merchant_account_token"
+      end
     end
 
     context "merchant account" do

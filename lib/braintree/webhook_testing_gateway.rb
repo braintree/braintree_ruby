@@ -40,6 +40,8 @@ module Braintree
         _transaction_disbursed_sample_xml(id)
       when Braintree::WebhookNotification::Kind::DisbursementException
         _disbursement_exception_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::Disbursement
+        _disbursement_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -151,26 +153,48 @@ module Braintree
 
       <<-XML
         <disbursement>
-          <merchant-account-id>abcdef</merchant-account-id>
           <id>#{id}</id>
           <transaction-ids type="array">
-            <transaction-public-id>afv56j</transaction-public-id>
-            <transaction-public-id>kj8hjk</transaction-public-id>
+            <item>afv56j</item>
+            <item>kj8hjk</item>
           </transaction-ids>
           <success type="boolean">false</success>
           <retry type="boolean">false</retry>
           <merchant-account>
-            <id>abcdef</id>
-            <status>suspended</status>
-            <master-merchant-account>
-              <id>master_ma_for_#{id}</id>
-              <status>suspended</status>
-            </master-merchant-account>
+            <id>merchant_account_token</id>
+            <currency-iso-code>USD</currency-iso-code>
+            <sub-merchant-account type="boolean">false</sub-merchant-account>
+            <status>active</status>
           </merchant-account>
           <amount>100.00</amount>
           <disbursement-date>2014-02-10</disbursement-date>
-          <exception-message>Account information is wrong</exception-message>
-          <follow-up-action>update</follow-up-action>
+          <exception-message>bank_rejected</exception-message>
+          <follow-up-action>update_funding_information</follow-up-action>
+        </disbursement>
+      XML
+    end
+
+    def _disbursement_sample_xml(id)
+
+      <<-XML
+        <disbursement>
+          <id>#{id}</id>
+          <transaction-ids type="array">
+            <item>afv56j</item>
+            <item>kj8hjk</item>
+          </transaction-ids>
+          <success type="boolean">true</success>
+          <retry type="boolean">false</retry>
+          <merchant-account>
+            <id>merchant_account_token</id>
+            <currency-iso-code>USD</currency-iso-code>
+            <sub-merchant-account type="boolean">false</sub-merchant-account>
+            <status>active</status>
+          </merchant-account>
+          <amount>100.00</amount>
+          <disbursement-date>2014-02-10</disbursement-date>
+          <exception-message nil="true"/>
+          <follow-up-action nil="true"/>
         </disbursement>
       XML
     end

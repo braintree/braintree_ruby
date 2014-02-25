@@ -5,6 +5,7 @@ module Braintree
     include BaseModule
 
     module Kind
+      Disbursement = "disbursement"
       DisbursementException = "disbursement_exception"
       SubscriptionCanceled = "subscription_canceled"
       SubscriptionChargedSuccessfully = "subscription_charged_successfully"
