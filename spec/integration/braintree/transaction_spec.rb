@@ -422,6 +422,34 @@ describe Braintree::Transaction do
         result.success?.should == false
         result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
       end
+
+      it "exposes the three_d_secure gateway reject reason" do
+        with_3ds_enabled_merchant do
+          three_d_secure_token = new_3ds_token
+          SpecHelper.create_test_3ds(
+            'euro_ladders_instant',
+            :public_id => three_d_secure_token ,
+            :status => "authenticate_failed",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "05",
+            :expiration_year => "2017",
+            :amount => 20
+          )
+
+          result = Braintree::Transaction.sale(
+            :amount => 20,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2017",
+              :cvv => "333"
+            },
+            :three_d_secure_token => three_d_secure_token
+          )
+
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ThreeDSecure
+        end
+      end
     end
 
     it "accepts credit card expiration month and expiration year" do

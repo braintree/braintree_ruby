@@ -24,4 +24,35 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     config = Braintree::Configuration.gateway.config
     config.http.post "/modifications/create_modification_for_tests", :modification => attributes
   end
+
+  def new_3ds_token
+    "valid_three_d_secure_token-#{Time.now.to_i}-#{rand}"
+  end
+
+  def with_3ds_enabled_merchant(&block)
+    with_other_merchant(
+      "cardinal_integration_merchant_id",
+      "cardinal_integration_public_key",
+      "cardinal_integration_private_key",
+      &block
+    )
+  end
+
+  def with_other_merchant(merchant_id, public_key, private_key, &block)
+    old_merchant_id = Braintree::Configuration.merchant_id
+    old_public_key = Braintree::Configuration.public_key
+    old_private_key = Braintree::Configuration.private_key
+
+    Braintree::Configuration.merchant_id = merchant_id
+    Braintree::Configuration.public_key = public_key
+    Braintree::Configuration.private_key = private_key
+
+    begin
+      yield
+    ensure
+      Braintree::Configuration.merchant_id = old_merchant_id
+      Braintree::Configuration.public_key = old_public_key
+      Braintree::Configuration.private_key = old_private_key
+    end
+  end
 end
