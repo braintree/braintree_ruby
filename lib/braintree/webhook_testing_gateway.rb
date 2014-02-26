@@ -143,7 +143,7 @@ module Braintree
           <id>#{id}</id>
           <amount>100</amount>
           <disbursement-details>
-            <disbursement-date type="datetime">2013-07-09T18:23:29Z</disbursement-date>
+            <disbursement-date type="date">2013-07-09</disbursement-date>
           </disbursement-details>
         </transaction>
       XML
@@ -167,7 +167,7 @@ module Braintree
             <status>active</status>
           </merchant-account>
           <amount>100.00</amount>
-          <disbursement-date>2014-02-10</disbursement-date>
+          <disbursement-date type="date">2014-02-10</disbursement-date>
           <exception-message>bank_rejected</exception-message>
           <follow-up-action>update_funding_information</follow-up-action>
         </disbursement>
@@ -192,7 +192,7 @@ module Braintree
             <status>active</status>
           </merchant-account>
           <amount>100.00</amount>
-          <disbursement-date>2014-02-10</disbursement-date>
+          <disbursement-date type="date">2014-02-10</disbursement-date>
           <exception-message nil="true"/>
           <follow-up-action nil="true"/>
         </disbursement>

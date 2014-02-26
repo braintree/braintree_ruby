@@ -24,14 +24,22 @@ describe Braintree::Disbursement do
         },
         :transaction_ids => ["sub_merchant_transaction"],
         :amount => "100.00",
-        :disbursement_date => Date.new(2013, 4, 10),
+        :disbursement_date => "2013-04-10",
         :exception_message => "invalid_account_number",
         :follow_up_action => "update",
         :retry => false,
         :success => false
       )
 
-      disbursement.inspect.should == '#<Braintree::Disbursement id: "123456", amount: "100.0", exception_message: "invalid_account_number", disbursement_date: 2013-04-10, follow_up_action: "update", merchant_account: #<Braintree::MerchantAccount: id: "sandbox_sub_merchant_account", status: "active", master_merchant_account: #<Braintree::MerchantAccount: id: "sandbox_master_merchant_account", status: "active", master_merchant_account: nil>>, transaction_ids: ["sub_merchant_transaction"], retry: false, success: false>'
+      disbursement.inspect.should include('id: "123456"')
+      disbursement.inspect.should include('amount: "100.0"')
+      disbursement.inspect.should include('exception_message: "invalid_account_number"')
+      disbursement.inspect.should include('disbursement_date: 2013-04-10')
+      disbursement.inspect.should include('follow_up_action: "update"')
+      disbursement.inspect.should include('merchant_account: #<Braintree::MerchantAccount: ')
+      disbursement.inspect.should include('transaction_ids: ["sub_merchant_transaction"]')
+      disbursement.inspect.should include('retry: false')
+      disbursement.inspect.should include('success: false')
     end
   end
 end

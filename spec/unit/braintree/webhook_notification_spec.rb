@@ -70,7 +70,7 @@ describe Braintree::WebhookNotification do
         notification.kind.should == Braintree::WebhookNotification::Kind::TransactionDisbursed
         notification.transaction.id.should == "my_id"
         notification.transaction.amount.should == 1_00
-        notification.transaction.disbursement_details.disbursement_date.should == Time.utc(2013, 7, 9, 18, 23, 29)
+        notification.transaction.disbursement_details.disbursement_date.should == "2013-07-09"
       end
 
       it "builds a sample notification for a disbursement_exception webhook" do
@@ -87,7 +87,7 @@ describe Braintree::WebhookNotification do
         notification.disbursement.retry.should be_false
         notification.disbursement.success.should be_false
         notification.disbursement.exception_message.should == "bank_rejected"
-        notification.disbursement.disbursement_date.should == "2014-02-10"
+        notification.disbursement.disbursement_date.should == Date.parse("2014-02-10")
         notification.disbursement.follow_up_action.should == "update_funding_information"
         notification.disbursement.merchant_account.id.should == "merchant_account_token"
       end
@@ -106,7 +106,7 @@ describe Braintree::WebhookNotification do
         notification.disbursement.retry.should be_false
         notification.disbursement.success.should be_true
         notification.disbursement.exception_message.should be_nil
-        notification.disbursement.disbursement_date.should == "2014-02-10"
+        notification.disbursement.disbursement_date.should == Date.parse("2014-02-10")
         notification.disbursement.follow_up_action.should be_nil
         notification.disbursement.merchant_account.id.should == "merchant_account_token"
       end

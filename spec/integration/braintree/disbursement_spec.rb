@@ -15,7 +15,7 @@ describe Braintree::Disbursement do
         },
         :transaction_ids => ["sub_merchant_transaction"],
         :amount => "100.00",
-        :disbursement_date => Date.new(2013, 4, 10),
+        :disbursement_date => "2013-04-10",
         :exception_message => "invalid_account_number",
         :follow_up_action => "update",
         :retry => false,
