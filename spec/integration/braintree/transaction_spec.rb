@@ -2056,6 +2056,7 @@ describe Braintree::Transaction do
         disbursement.settlement_currency_iso_code.should == "USD"
         disbursement.settlement_currency_exchange_rate.should == "1"
         disbursement.funds_held?.should == false
+        disbursement.success?.should be_true
       end
 
       it "is not disbursed" do
