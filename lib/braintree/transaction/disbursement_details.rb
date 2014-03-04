@@ -3,7 +3,7 @@ module Braintree
     class DisbursementDetails # :nodoc:
       include BaseModule
 
-      attr_reader :disbursement_date, :settlement_amount, :settlement_currency_iso_code, :settlement_currency_exchange_rate
+      attr_reader :disbursement_date, :settlement_amount, :settlement_currency_iso_code, :settlement_currency_exchange_rate, :success
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
@@ -11,6 +11,10 @@ module Braintree
 
       def funds_held?
         @funds_held
+      end
+
+      def success?
+        @success
       end
 
       def valid?

@@ -1,3 +1,7 @@
+== 2.29.0
+* Disbursement Webhooks
+* Use OpenSSL::Digest instead of OpenSSL::Digest::Digest (Thanks Scott Rocher, scottrocher@gmail.com)
+
 == 2.28.0
 * Merchant account find API
 

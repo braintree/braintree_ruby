@@ -171,6 +171,27 @@ describe Braintree::Transaction do
       result.success?.should == true
     end
 
+    it "accepts billing_address_id in place of billing_address" do
+      result = Braintree::Customer.create()
+      address_result = Braintree::Address.create(
+        :customer_id => result.customer.id,
+        :country_code_alpha2 => "US"
+      )
+
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :customer_id => result.customer.id,
+        :billing_address_id => address_result.address.id,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result.success?.should == true
+    end
+
     it "returns processor response code and text if declined" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -2035,6 +2056,7 @@ describe Braintree::Transaction do
         disbursement.settlement_currency_iso_code.should == "USD"
         disbursement.settlement_currency_exchange_rate.should == "1"
         disbursement.funds_held?.should == false
+        disbursement.success?.should be_true
       end
 
       it "is not disbursed" do
