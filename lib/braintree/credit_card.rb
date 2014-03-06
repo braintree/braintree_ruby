@@ -94,6 +94,10 @@ module Braintree
       Configuration.gateway.credit_card.find(token)
     end
 
+    def self.from_nonce(nonce)
+      Configuration.gateway.credit_card.from_nonce(nonce)
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.sale(token, transaction_attributes)
       Configuration.gateway.transaction.sale(transaction_attributes.merge(:payment_method_token => token))

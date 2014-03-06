@@ -1163,6 +1163,63 @@ describe Braintree::CreditCard do
     end
   end
 
+  describe "self.from_nonce" do
+    it "finds the payment method with the given nonce" do
+      customer = Braintree::Customer.create!
+      nonce = nonce_for_new_credit_card(
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        },
+        :client_token_options => {:customer_id => customer.id}
+      )
+
+      credit_card = Braintree::CreditCard.from_nonce(nonce)
+      customer = Braintree::Customer.find(customer.id)
+      credit_card.should == customer.credit_cards.first
+    end
+
+    it "does not find a payment method for an unlocked nonce that points to a shared credit card" do
+      nonce = nonce_for_new_credit_card(
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        }
+      )
+      expect do
+        Braintree::CreditCard.from_nonce(nonce)
+      end.to raise_error(Braintree::NotFoundError)
+    end
+
+    it "does not find the payment method for a locked nonce" do
+      client_token = Braintree::ClientToken.generate
+      client = ClientApiHttp.new(Braintree::Configuration.instantiate,
+        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
+      )
+
+      client.add_card(
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        },
+        :share => true
+      )
+
+      response = client.get_cards
+      body = JSON.parse(response.body)
+      nonce = body["creditCards"].first["nonce"]
+
+      expect do
+        Braintree::CreditCard.from_nonce(nonce)
+      end.to raise_error(Braintree::NotFoundError, /locked/)
+    end
+  end
+
   describe "self.sale" do
     it "creates a sale transaction using the credit card, returning a result object" do
       customer = Braintree::Customer.create!(

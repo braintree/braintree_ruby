@@ -48,6 +48,14 @@ module Braintree
       raise NotFoundError, "payment method with token #{token.inspect} not found"
     end
 
+    def from_nonce(nonce)
+      raise ArgumentError if nonce.nil? || nonce.to_s.strip == ""
+      response = @config.http.get "/payment_methods/from_nonce/#{nonce}"
+      CreditCard._new(@gateway, response[:credit_card])
+    rescue NotFoundError
+      raise NotFoundError, "nonce #{nonce.inspect} locked, consumed, or not found"
+    end
+
     def update(token, attributes)
       Util.verify_keys(CreditCardGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/#{token}", :credit_card => attributes)
