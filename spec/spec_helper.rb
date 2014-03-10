@@ -94,7 +94,7 @@ unless defined?(SPEC_HELPER_LOADED)
     end
 
     def self.create_test_3ds(merchant_account_id, params)
-      Braintree::Configuration.instantiate.http.post("/create_test_3ds/#{merchant_account_id}", :cardinal_verification => params)
+      Braintree::Configuration.instantiate.http.post("/three_d_secure/create_test_3ds/#{merchant_account_id}", :cardinal_verification => params)
     end
 
     def self.stub_time_dot_now(desired_time)
