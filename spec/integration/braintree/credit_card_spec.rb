@@ -1218,6 +1218,23 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.from_nonce(nonce)
       end.to raise_error(Braintree::NotFoundError, /locked/)
     end
+
+    it "does not find the payment method for a consumednonce" do
+      customer = Braintree::Customer.create!
+      nonce = nonce_for_new_credit_card(
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        },
+        :client_token_options => {:customer_id => customer.id}
+      )
+
+      Braintree::CreditCard.from_nonce(nonce)
+      expect do
+        Braintree::CreditCard.from_nonce(nonce)
+      end.to raise_error(Braintree::NotFoundError, /consumed/)
+    end
   end
 
   describe "self.sale" do
