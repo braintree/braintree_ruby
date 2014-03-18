@@ -432,8 +432,7 @@ describe Braintree::Transaction do
             :status => "authenticate_failed",
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "05",
-            :expiration_year => "2017",
-            :amount => 20
+            :expiration_year => "2017"
           )
 
           result = Braintree::Transaction.sale(
@@ -1108,7 +1107,6 @@ describe Braintree::Transaction do
         with_3ds_enabled_merchant do
           cardinal_verification = SpecHelper.create_test_3ds(
             SpecHelper::ThreeDSecureMerchantAccountId,
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
             :expiration_year => "2012"

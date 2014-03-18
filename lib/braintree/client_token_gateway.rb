@@ -22,7 +22,7 @@ module Braintree
 
     def self._generate_signature # :nodoc:
       [
-        :customer_id, :proxy_merchant_id,
+        :customer_id, :proxy_merchant_id, :merchant_account_id,
         {:options => [:make_default, :verify_card, :fail_on_duplicate_payment_method]}
       ]
     end
