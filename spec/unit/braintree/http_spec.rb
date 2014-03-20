@@ -47,7 +47,8 @@ END
 
     it "returns a proper query string for non-nested hashes" do
       query_params = {:one => 1, :two => 2}
-      Braintree::Http.new(:config)._build_query_string(query_params).should == "?one=1&two=2"
+
+      Braintree::Http.new(:config)._build_query_string(query_params).should =~ /^\?(one=1&two=2|two=2&one=1)$/
     end
 
     it "raises ArgumentError for nested hashes" do
