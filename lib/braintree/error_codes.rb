@@ -225,6 +225,7 @@ module Braintree
       TaxAmountFormatIsInvalid = "81535"
       TaxAmountIsTooLarge = "81536"
       ThreeDSecureTokenIsInvalid = "91568"
+      ThreeDSecureTransactionDataDoesntMatchVerify = "91570"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
       UnsupportedVoiceAuthorization = "91539"

@@ -1154,6 +1154,29 @@ describe Braintree::Transaction do
           result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid
         end
       end
+
+      it "returns an error if 3ds lookup data does not match txn data" do
+        with_3ds_enabled_merchant do
+          cardinal_verification = SpecHelper.create_test_3ds(
+            SpecHelper::ThreeDSecureMerchantAccountId,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "12",
+            :expiration_year => "2012",
+            :status => "authenticate_successful"
+          )
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :expiration_date => "12/12",
+            },
+            :three_d_secure_token => cardinal_verification[:cardinal_verification][:public_id]
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
+        end
+      end
     end
   end
 
