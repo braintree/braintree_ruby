@@ -9,6 +9,7 @@ module Braintree
     attr_reader :currency_iso_code
 
     module Status
+      Open = "open"
       Lost = "lost"
       Won = "won"
     end
