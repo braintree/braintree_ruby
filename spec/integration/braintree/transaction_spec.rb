@@ -2083,6 +2083,7 @@ describe Braintree::Transaction do
 
         dispute = found_transaction.disputes.first
         dispute.received_date.should == Date.new(2014, 3, 1)
+        dispute.reply_by_date.should == Date.new(2014, 3, 21)
         dispute.amount.should == Braintree::Util.to_big_decimal("250.00")
         dispute.currency_iso_code.should == "USD"
         dispute.reason.should == Braintree::Dispute::Reason::Fraud

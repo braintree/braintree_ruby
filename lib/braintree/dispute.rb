@@ -4,6 +4,7 @@ module Braintree
 
     attr_reader :amount
     attr_reader :received_date
+    attr_reader :reply_by_date
     attr_reader :status
     attr_reader :reason
     attr_reader :currency_iso_code
@@ -37,6 +38,7 @@ module Braintree
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
       @received_date = Date.parse(received_date)
+      @reply_by_date = Date.parse(reply_by_date) unless reply_by_date.nil?
       @amount = Util.to_big_decimal(amount)
     end
   end
