@@ -25,15 +25,6 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     config.http.post "/modifications/create_modification_for_tests", :modification => attributes
   end
 
-  def with_3ds_enabled_merchant(&block)
-    with_other_merchant(
-      "cardinal_integration_merchant_id",
-      "cardinal_integration_public_key",
-      "cardinal_integration_private_key",
-      &block
-    )
-  end
-
   def with_other_merchant(merchant_id, public_key, private_key, &block)
     old_merchant_id = Braintree::Configuration.merchant_id
     old_public_key = Braintree::Configuration.public_key

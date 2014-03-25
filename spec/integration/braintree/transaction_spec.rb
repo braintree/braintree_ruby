@@ -1077,78 +1077,74 @@ describe Braintree::Transaction do
 
     context "three_d_secure" do
       it "can create a transaction with a three_d_secure token" do
-        with_3ds_enabled_merchant do
-          three_d_secure_token = SpecHelper.create_3ds_verification(
-            SpecHelper::ThreeDSecureMerchantAccountId,
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_month => "12",
-            :expiration_year => "2012"
-          )
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "12/12",
-            },
-            :three_d_secure_token => three_d_secure_token
-          )
+        three_d_secure_token = SpecHelper.create_3ds_verification(
+          SpecHelper::ThreeDSecureMerchantAccountId,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2012"
+        )
 
-          result.success?.should == true
-        end
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => three_d_secure_token
+        )
+
+        result.success?.should == true
       end
 
       it "can create a transaction without a three_d_secure token" do
-        with_3ds_enabled_merchant do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "12/12",
-            }
-          )
-          result.success?.should == true
-        end
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          }
+        )
+        result.success?.should == true
       end
 
       it "returns an error if sent a nil three_d_secure token" do
-        with_3ds_enabled_merchant do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "12/12",
-            },
-            :three_d_secure_token => nil
-          )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid
-        end
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => nil
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid
       end
 
       it "returns an error if 3ds lookup data does not match txn data" do
-        with_3ds_enabled_merchant do
-          three_d_secure_token = SpecHelper.create_3ds_verification(
-            SpecHelper::ThreeDSecureMerchantAccountId,
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_month => "12",
-            :expiration_year => "2012",
-            :status => "authenticate_successful"
-          )
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::MasterCard,
-              :expiration_date => "12/12",
-            },
-            :three_d_secure_token => three_d_secure_token
-          )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
-        end
+        three_d_secure_token = SpecHelper.create_3ds_verification(
+          SpecHelper::ThreeDSecureMerchantAccountId,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2012",
+          :status => "authenticate_successful"
+        )
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => three_d_secure_token
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
       end
     end
   end
