@@ -93,8 +93,9 @@ unless defined?(SPEC_HELPER_LOADED)
       Braintree::Configuration.instantiate.http.put("/transactions/#{transaction_id}/settle")
     end
 
-    def self.create_test_3ds(merchant_account_id, params)
-      Braintree::Configuration.instantiate.http.post("/three_d_secure/create_test_3ds/#{merchant_account_id}", :cardinal_verification => params)
+    def self.create_3ds_verification(merchant_account_id, params)
+      response = Braintree::Configuration.instantiate.http.post("/three_d_secure/create_test_3ds/#{merchant_account_id}", :cardinal_verification => params)
+      response[:cardinal_verification][:public_id]
     end
 
     def self.stub_time_dot_now(desired_time)

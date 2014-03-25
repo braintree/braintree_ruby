@@ -425,8 +425,7 @@ describe Braintree::Transaction do
 
       it "exposes the three_d_secure gateway reject reason" do
         with_3ds_enabled_merchant do
-          three_d_secure_token = new_3ds_token
-          SpecHelper.create_test_3ds(
+          three_d_secure_token = SpecHelper.create_3ds_verification(
             'euro_ladders_instant',
             :public_id => three_d_secure_token ,
             :status => "authenticate_failed",
@@ -1105,7 +1104,7 @@ describe Braintree::Transaction do
     context "three_d_secure" do
       it "can create a transaction with a three_d_secure token" do
         with_3ds_enabled_merchant do
-          cardinal_verification = SpecHelper.create_test_3ds(
+          three_d_secure_token = SpecHelper.create_3ds_verification(
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
@@ -1118,7 +1117,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :three_d_secure_token => cardinal_verification[:cardinal_verification][:public_id]
+            :three_d_secure_token => three_d_secure_token
           )
 
           result.success?.should == true
@@ -1157,7 +1156,7 @@ describe Braintree::Transaction do
 
       it "returns an error if 3ds lookup data does not match txn data" do
         with_3ds_enabled_merchant do
-          cardinal_verification = SpecHelper.create_test_3ds(
+          three_d_secure_token = SpecHelper.create_3ds_verification(
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
@@ -1171,7 +1170,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::MasterCard,
               :expiration_date => "12/12",
             },
-            :three_d_secure_token => cardinal_verification[:cardinal_verification][:public_id]
+            :three_d_secure_token => three_d_secure_token
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify

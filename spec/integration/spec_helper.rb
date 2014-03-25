@@ -25,10 +25,6 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     config.http.post "/modifications/create_modification_for_tests", :modification => attributes
   end
 
-  def new_3ds_token
-    "valid_three_d_secure_token-#{Time.now.to_i}-#{rand}"
-  end
-
   def with_3ds_enabled_merchant(&block)
     with_other_merchant(
       "cardinal_integration_merchant_id",
