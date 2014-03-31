@@ -2074,6 +2074,37 @@ describe Braintree::Transaction do
         created_transaction.disbursed?.should == false
       end
     end
+
+    context "disputes" do
+      it "includes disputes on found transactions" do
+        found_transaction = Braintree::Transaction.find("disputedtransaction")
+
+        found_transaction.disputes.count.should == 2
+
+        dispute = found_transaction.disputes.first
+        dispute.received_date.should == Date.new(2014, 3, 1)
+        dispute.reply_by_date.should == Date.new(2014, 3, 21)
+        dispute.amount.should == Braintree::Util.to_big_decimal("250.00")
+        dispute.currency_iso_code.should == "USD"
+        dispute.reason.should == Braintree::Dispute::Reason::Fraud
+        dispute.status.should == Braintree::Dispute::Status::Won
+      end
+
+      it "is not disputed" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        )
+        result.success?.should == true
+        created_transaction = result.transaction
+
+        created_transaction.disputes.should == []
+      end
+    end
   end
 
   describe "self.hold_in_escrow" do
