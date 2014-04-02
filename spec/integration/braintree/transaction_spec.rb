@@ -2584,4 +2584,52 @@ describe Braintree::Transaction do
       end
     end
   end
+
+  context "paypal" do
+    it "can create a transaction for a paypal account" do
+      gateway = Braintree::Gateway.new(
+        :environment => :development,
+        :merchant_id => "altpay_merchant",
+        :public_key => "altpay_merchant_public_key",
+        :private_key => "altpay_merchant_private_key"
+      )
+      result = Braintree::TransactionGateway.new(gateway).sale(
+        :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+        :amount => "10.00",
+        :paypal_account => {
+          :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
+          :email => "customer@example.com"
+        }
+      )
+      result.success?.should == true
+      result.transaction.paypal_account_details.email.should == "customer@example.com"
+    end
+
+    it "can vault a paypal account on a transaction" do
+      gateway = Braintree::Gateway.new(
+        :environment => :development,
+        :merchant_id => "altpay_merchant",
+        :public_key => "altpay_merchant_public_key",
+        :private_key => "altpay_merchant_private_key"
+      )
+
+      payment_method_token = "paypal-account-#{Time.now.to_i}"
+      result = Braintree::TransactionGateway.new(gateway).sale(
+        :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+        :amount => "10.00",
+        :paypal_account => {
+          :token => payment_method_token,
+          :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
+          :email => "customer@example.com"
+        },
+        :options => {
+          :store_in_vault => true
+        }
+      )
+
+      result.success?.should == true
+      result.transaction.paypal_account_details.token.should == payment_method_token
+      result.transaction.paypal_account_details.email.should == "customer@example.com"
+    end
+  end
 end

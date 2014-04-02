@@ -70,6 +70,7 @@ module Braintree
     attr_reader :order_id
     attr_reader :channel
     attr_reader :billing_details, :shipping_details
+    attr_reader :paypal_account_details
     attr_reader :plan_id
     # The authorization code from the processor.
     attr_reader :processor_authorization_code
@@ -223,6 +224,8 @@ module Braintree
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @tax_amount = Util.to_big_decimal(tax_amount)
       @descriptor = Descriptor.new(@descriptor)
+      @paypal_account_details = PayPalAccountDetails.new(@paypal_account)
+      disputes.map! { |attrs| Dispute._new(attrs) } if disputes
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
