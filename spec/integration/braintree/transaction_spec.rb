@@ -2631,5 +2631,31 @@ describe Braintree::Transaction do
       result.transaction.paypal_account_details.token.should == payment_method_token
       result.transaction.paypal_account_details.email.should == "customer@example.com"
     end
+
+    it "can create a transaction from a vaulted paypal account" do
+      with_altpay_merchant do
+        customer = Braintree::Customer.create!
+        payment_method_token = "paypal-account-#{Time.now.to_i}"
+        payment_result = Braintree::PayPalAccount.create(
+          :customer_id => customer.id,
+          :token => payment_method_token,
+          :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
+          :email => "customer@example.com",
+        )
+
+        payment_result.should be_success
+
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+          :customer_id => customer.id,
+          :payment_method_token => payment_method_token
+        )
+
+        result.should be_success
+        result.transaction.paypal_account_details.token.should == payment_method_token
+        result.transaction.paypal_account_details.email.should == "customer@example.com"
+      end
+    end
   end
 end
