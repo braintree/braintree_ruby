@@ -2613,7 +2613,7 @@ describe Braintree::Transaction do
         :private_key => "altpay_merchant_private_key"
       )
 
-      payment_method_token = "paypal-account-#{Time.now.to_i}"
+      payment_method_token = "paypal-account-#{Time.now.to_i}-#{rand(0..10000)}"
       result = Braintree::TransactionGateway.new(gateway).sale(
         :merchant_account_id => "altpay_merchant_paypal_merchant_account",
         :amount => "10.00",
@@ -2635,7 +2635,7 @@ describe Braintree::Transaction do
     it "can create a transaction from a vaulted paypal account" do
       with_altpay_merchant do
         customer = Braintree::Customer.create!
-        payment_method_token = "paypal-account-#{Time.now.to_i}"
+        payment_method_token = "paypal-account-#{Time.now.to_i}-#{rand(0..10000)}"
         payment_result = Braintree::PayPalAccount.create(
           :customer_id => customer.id,
           :token => payment_method_token,
@@ -2655,6 +2655,22 @@ describe Braintree::Transaction do
         result.should be_success
         result.transaction.paypal_account_details.token.should == payment_method_token
         result.transaction.paypal_account_details.email.should == "customer@example.com"
+      end
+    end
+
+    context "validation failure" do
+      it "returns a validation error if consent code is omitted" do
+        with_altpay_merchant do
+          result = Braintree::Transaction.sale(
+            :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+            :amount => "10.00",
+            :paypal_account => {
+              :email => "customer@example.com"
+            }
+          )
+          result.should_not be_success
+          result.errors.for(:transaction).for(:paypal_account).on(:consent_code).first.code.should == Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired
+        end
       end
     end
   end

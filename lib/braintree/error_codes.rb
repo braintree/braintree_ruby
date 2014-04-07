@@ -72,6 +72,12 @@ module Braintree
       end
     end
 
+    # See http://www.braintreepayments.com/docs/ruby/credit_cards/validations
+    module PayPalAccount
+      ConsentCodeIsRequired = "82901"
+      EmailIsRequired = "82902"
+    end
+
     # See http://www.braintreepayments.com/docs/ruby/customers/validations
     module Customer
       CustomFieldIsInvalid = "91602"

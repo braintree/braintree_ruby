@@ -19,5 +19,22 @@ describe Braintree::PayPalAccount do
         paypal_account.email.should == "customer@example.com"
       end
     end
+
+    context "validation errors" do
+      it "returns an error code when no consent code is given" do
+        with_altpay_merchant do
+          customer = Braintree::Customer.create!
+          payment_method_token = "paypal-account-#{Time.now.to_i}"
+          result = Braintree::PayPalAccount.create(
+            :customer_id => customer.id,
+            :token => payment_method_token,
+            :email => "customer@example.com",
+          )
+
+          result.should_not be_success
+          result.errors.for(:paypal_account).on(:consent_code).map(&:code).should include(Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired)
+        end
+      end
+    end
   end
 end
