@@ -2081,7 +2081,7 @@ describe Braintree::Transaction do
 
         found_transaction.disputes.count.should == 2
 
-        dispute = found_transaction.disputes.first
+        dispute = found_transaction.disputes.sort! { |a, b| a.received_date <=> b.received_date }.first
         dispute.received_date.should == Date.new(2014, 3, 1)
         dispute.reply_by_date.should == Date.new(2014, 3, 21)
         dispute.amount.should == Braintree::Util.to_big_decimal("250.00")
