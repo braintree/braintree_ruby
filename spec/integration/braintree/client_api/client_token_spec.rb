@@ -139,5 +139,30 @@ describe Braintree::ClientToken do
 
       response.code.should == "422"
     end
+
+    context "paypal" do
+      it "includes the paypal options for a paypal merchant" do
+        with_altpay_merchant do
+          client_token = Braintree::ClientToken.generate
+
+          parsed_client_token = JSON.parse(client_token)
+          parsed_client_token["displayName"].should == "merchant who has paypal and sepa enabled"
+          parsed_client_token["paypalPrivacyUrl"].should == "http://www.example.com/privacy_policy"
+          parsed_client_token["paypalUserAgreementUrl"].should == "http://www.example.com/user_agreement"
+          parsed_client_token["paypalBaseUrl"].should == "127.0.0.1:9292"
+        end
+      end
+
+      it "does not include the paypal options for a non-paypal merchant" do
+        config = Braintree::Configuration.instantiate
+        client_token = Braintree::ClientToken.generate
+
+        parsed_client_token = JSON.parse(client_token)
+        parsed_client_token.has_key?("displayName").should be_false
+        parsed_client_token.has_key?("paypalPrivacyUrl").should be_false
+        parsed_client_token.has_key?("paypalUserAgreementUrl").should be_false
+        parsed_client_token.has_key?("paypalBaseUrl").should be_false
+      end
+    end
   end
 end

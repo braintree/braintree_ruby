@@ -2669,7 +2669,7 @@ describe Braintree::Transaction do
             }
           )
           result.should_not be_success
-          result.errors.for(:transaction).for(:paypal_account).on(:consent_code).first.code.should == Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired
+          result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired
         end
       end
     end

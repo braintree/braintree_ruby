@@ -32,7 +32,7 @@ describe Braintree::PayPalAccount do
           )
 
           result.should_not be_success
-          result.errors.for(:paypal_account).on(:consent_code).map(&:code).should include(Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired)
+          result.errors.for(:paypal_account).map(&:code).should include(Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired)
         end
       end
     end
