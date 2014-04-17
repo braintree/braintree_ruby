@@ -150,7 +150,7 @@ describe Braintree::ClientToken do
           parsed_client_token["paypalClientId"].should == "QWVUeVBCQlRGWUZrX25wT2kxMWIzRlJUS2pJdS15eTRtWUFVNUhpczBBZEpPeWpYTkU2a2FNajFZdVRrOg=="
           parsed_client_token["paypalPrivacyUrl"].should == "http://www.example.com/privacy_policy"
           parsed_client_token["paypalUserAgreementUrl"].should == "http://www.example.com/user_agreement"
-          parsed_client_token["paypalBaseUrl"].should == "127.0.0.1:9292"
+          parsed_client_token["paypalBaseUrl"].should_not be_nil
         end
       end
 
