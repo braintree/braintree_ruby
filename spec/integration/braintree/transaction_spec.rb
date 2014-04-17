@@ -1131,8 +1131,8 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_month => "12",
           :expiration_year => "2012",
-          :status => "authenticate_successful"
         )
+
         result = Braintree::Transaction.create(
           :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
           :type => "sale",

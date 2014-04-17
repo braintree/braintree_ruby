@@ -85,8 +85,8 @@ unless defined?(SPEC_HELPER_LOADED)
 
     def self.make_past_due(subscription, number_of_days_past_due = 1)
       Braintree::Configuration.instantiate.http.put(
-                                                    "/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"
-                                                    )
+        "/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"
+      )
     end
 
     def self.settle_transaction(transaction_id)
@@ -94,8 +94,8 @@ unless defined?(SPEC_HELPER_LOADED)
     end
 
     def self.create_3ds_verification(merchant_account_id, params)
-      response = Braintree::Configuration.instantiate.http.post("/three_d_secure/create_test_3ds/#{merchant_account_id}", :cardinal_verification => params)
-      response[:cardinal_verification][:public_id]
+      response = Braintree::Configuration.instantiate.http.post("/three_d_secure/create_verification/#{merchant_account_id}", :three_d_secure_verification => params)
+      response[:three_d_secure_verification][:three_d_secure_token]
     end
 
     def self.stub_time_dot_now(desired_time)
