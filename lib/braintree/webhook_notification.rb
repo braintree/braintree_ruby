@@ -7,6 +7,11 @@ module Braintree
     module Kind
       Disbursement = "disbursement"
       DisbursementException = "disbursement_exception"
+
+      DisputeOpened = "dispute_opened"
+      DisputeLost = "dispute_lost"
+      DisputeWon = "dispute_won"
+
       SubscriptionCanceled = "subscription_canceled"
       SubscriptionChargedSuccessfully = "subscription_charged_successfully"
       SubscriptionChargedUnsuccessfully = "subscription_charged_unsuccessfully"

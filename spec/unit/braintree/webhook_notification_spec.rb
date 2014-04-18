@@ -58,6 +58,56 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
+    context "disputes" do
+      it "builds a sample notification for a dispute opened webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::DisputeOpened,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeOpened
+        notification.transaction.id.should == "my_id"
+
+        notification.transaction.disputes.count.should == 1
+        dispute = notification.transaction.disputes.first
+        dispute.status.should == Braintree::Dispute::Status::Open
+      end
+
+      it "builds a sample notification for a dispute lost webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::DisputeLost,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeLost
+        notification.transaction.id.should == "my_id"
+
+        notification.transaction.disputes.count.should == 1
+        dispute = notification.transaction.disputes.first
+        dispute.status.should == Braintree::Dispute::Status::Lost
+      end
+
+      it "builds a sample notification for a dispute won webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::DisputeWon,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeWon
+        notification.transaction.id.should == "my_id"
+
+        notification.transaction.disputes.count.should == 1
+        dispute = notification.transaction.disputes.first
+        dispute.status.should == Braintree::Dispute::Status::Won
+      end
+    end
+
     context "disbursement" do
       it "builds a sample notification for a transaction disbursed webhook" do
         signature, payload = Braintree::WebhookTesting.sample_notification(
