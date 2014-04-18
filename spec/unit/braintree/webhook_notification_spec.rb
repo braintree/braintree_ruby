@@ -169,15 +169,33 @@ describe Braintree::WebhookNotification do
       end.to raise_error(Braintree::InvalidSignature)
     end
 
-    it "raises InvalidSignature error the payload has been changed" do
+    it "raises InvalidSignature error with message when the public key is not found" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
+        "my_id"
+      )
+
+      config = Braintree::Configuration.new(
+        :merchant_id => 'merchant_id',
+        :public_key => 'wrong_public_key',
+        :private_key => 'wrong_private_key'
+      )
+      gateway = Braintree::Gateway.new(config)
+
+      expect do
+        notification = gateway.webhook_notification.parse(signature, payload)
+      end.to raise_error(Braintree::InvalidSignature, /no matching public key/)
+    end
+
+    it "raises InvalidSignature error if the payload has been changed" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
 
       expect do
-        notification = Braintree::WebhookNotification.parse(signature, payload + "bad stuff")
-      end.to raise_error(Braintree::InvalidSignature)
+        notification = Braintree::WebhookNotification.parse(signature, "badstuff" + payload)
+      end.to raise_error(Braintree::InvalidSignature, /signature does not match payload - one has been modified/)
     end
   end
 

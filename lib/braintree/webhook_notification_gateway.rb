@@ -29,8 +29,9 @@ module Braintree
       public_key, signature = _matching_signature_pair(signature)
       payload_signature = Braintree::Digest.hexdigest(@config.private_key, payload)
 
-      raise InvalidSignature if public_key.nil?
-      raise InvalidSignature unless Braintree::Digest.secure_compare(signature, payload_signature)
+      raise InvalidSignature, 'no matching public key' if public_key.nil?
+      signature_matches = Braintree::Digest.secure_compare(signature, payload_signature)
+      raise InvalidSignature, 'signature does not match payload - one has been modified' unless signature_matches
     end
   end
 end
