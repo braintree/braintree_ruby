@@ -158,7 +158,7 @@ describe Braintree::WebhookNotification do
   end
 
   describe "parse" do
-    it "raises InvalidSignature error the signature is completely invalid" do
+    it "raises InvalidSignature error when the signature is completely invalid" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
@@ -169,7 +169,7 @@ describe Braintree::WebhookNotification do
       end.to raise_error(Braintree::InvalidSignature)
     end
 
-    it "raises InvalidSignature error with message when the public key is not found" do
+    it "raises InvalidSignature error with a message when the public key is not found" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
@@ -196,6 +196,30 @@ describe Braintree::WebhookNotification do
       expect do
         notification = Braintree::WebhookNotification.parse(signature, "badstuff" + payload)
       end.to raise_error(Braintree::InvalidSignature, /signature does not match payload - one has been modified/)
+    end
+
+    it "raises InvalidSignature error with a message complaining about invalid characters" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
+        "my_id"
+      )
+
+      expect do
+        notification = Braintree::WebhookNotification.parse(signature, "^& bad ,* chars @!" + payload)
+      end.to raise_error(Braintree::InvalidSignature, /payload contains illegal characters/)
+    end
+
+    it "retries a payload with a newline" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(signature, payload.rstrip)
+
+      notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionWentPastDue
+      notification.subscription.id.should == "my_id"
+      notification.timestamp.should be_close(Time.now.utc, 10)
     end
   end
 
