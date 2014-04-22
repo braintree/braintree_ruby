@@ -209,6 +209,18 @@ describe Braintree::WebhookNotification do
       end.to raise_error(Braintree::InvalidSignature, /payload contains illegal characters/)
     end
 
+    it "allows all valid characters" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
+        "my_id"
+      )
+
+      payload = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+=/\n"
+      expect do
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+      end.to_not raise_error(Braintree::InvalidSignature, /payload contains illegal characters/)
+    end
+
     it "retries a payload with a newline" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
