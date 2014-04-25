@@ -2110,6 +2110,8 @@ describe Braintree::Transaction do
         dispute.currency_iso_code.should == "USD"
         dispute.reason.should == Braintree::Dispute::Reason::Fraud
         dispute.status.should == Braintree::Dispute::Status::Won
+        dispute.transaction_details.amount.should == Braintree::Util.to_big_decimal("1000.00")
+        dispute.transaction_details.id.should == "disputedtransaction"
       end
 
       it "is not disputed" do

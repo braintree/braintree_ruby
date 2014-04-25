@@ -8,6 +8,8 @@ module Braintree
     attr_reader :status
     attr_reader :reason
     attr_reader :currency_iso_code
+    attr_reader :id
+    attr_reader :transaction_details
 
     module Status
       Open = "open"
@@ -40,6 +42,7 @@ module Braintree
       @received_date = Date.parse(received_date)
       @reply_by_date = Date.parse(reply_by_date) unless reply_by_date.nil?
       @amount = Util.to_big_decimal(amount)
+      @transaction_details = TransactionDetails.new(@transaction)
     end
   end
 end
