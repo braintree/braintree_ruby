@@ -158,60 +158,57 @@ module Braintree
     def _dispute_opened_sample_xml(id)
 
       <<-XML
-        <transaction>
-          <id>#{id}</id>
+        <dispute>
           <amount>250.00</amount>
-          <disputes type="array">
-            <dispute>
-              <amount>250.00</amount>
-              <currency-iso-code>USD</currency-iso-code>
-              <received-date type="date">2014-03-01</received-date>
-              <reply-by-date type="date">2014-03-21</reply-by-date>
-              <status>open</status>
-              <reason>fraud</reason>
-            </dispute>
-          </disputes>
-        </transaction>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <status>open</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>250.00</amount>
+          </transaction>
+        </dispute>
       XML
     end
 
     def _dispute_lost_sample_xml(id)
 
       <<-XML
-        <transaction>
-          <id>#{id}</id>
+        <dispute>
           <amount>250.00</amount>
-          <disputes type="array">
-            <dispute>
-              <amount>250.00</amount>
-              <currency-iso-code>USD</currency-iso-code>
-              <received-date type="date">2014-03-01</received-date>
-              <reply-by-date type="date">2014-03-21</reply-by-date>
-              <status>lost</status>
-              <reason>fraud</reason>
-            </dispute>
-          </disputes>
-        </transaction>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <status>lost</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>250.00</amount>
+          </transaction>
+        </dispute>
       XML
     end
 
     def _dispute_won_sample_xml(id)
 
       <<-XML
-        <transaction>
-          <id>#{id}</id>
+        <dispute>
           <amount>250.00</amount>
-          <disputes type="array">
-            <dispute>
-              <amount>250.00</amount>
-              <currency-iso-code>USD</currency-iso-code>
-              <received-date type="date">2014-03-01</received-date>
-              <reply-by-date type="date">2014-03-21</reply-by-date>
-              <status>won</status>
-              <reason>fraud</reason>
-            </dispute>
-          </disputes>
-        </transaction>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <status>won</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>250.00</amount>
+          </transaction>
+        </dispute>
       XML
     end
 

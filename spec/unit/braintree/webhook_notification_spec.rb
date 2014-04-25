@@ -68,11 +68,10 @@ describe Braintree::WebhookNotification do
         notification = Braintree::WebhookNotification.parse(signature, payload)
 
         notification.kind.should == Braintree::WebhookNotification::Kind::DisputeOpened
-        notification.transaction.id.should == "my_id"
 
-        notification.transaction.disputes.count.should == 1
-        dispute = notification.transaction.disputes.first
+        dispute = notification.dispute
         dispute.status.should == Braintree::Dispute::Status::Open
+        dispute.id.should == "my_id"
       end
 
       it "builds a sample notification for a dispute lost webhook" do
@@ -84,11 +83,10 @@ describe Braintree::WebhookNotification do
         notification = Braintree::WebhookNotification.parse(signature, payload)
 
         notification.kind.should == Braintree::WebhookNotification::Kind::DisputeLost
-        notification.transaction.id.should == "my_id"
 
-        notification.transaction.disputes.count.should == 1
-        dispute = notification.transaction.disputes.first
+        dispute = notification.dispute
         dispute.status.should == Braintree::Dispute::Status::Lost
+        dispute.id.should == "my_id"
       end
 
       it "builds a sample notification for a dispute won webhook" do
@@ -100,11 +98,10 @@ describe Braintree::WebhookNotification do
         notification = Braintree::WebhookNotification.parse(signature, payload)
 
         notification.kind.should == Braintree::WebhookNotification::Kind::DisputeWon
-        notification.transaction.id.should == "my_id"
 
-        notification.transaction.disputes.count.should == 1
-        dispute = notification.transaction.disputes.first
+        dispute = notification.dispute
         dispute.status.should == Braintree::Dispute::Status::Won
+        dispute.id.should == "my_id"
       end
     end
 
