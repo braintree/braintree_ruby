@@ -1229,7 +1229,7 @@ describe Braintree::Transaction do
         :customer => {
           :first_name => "Dan",
           :last_name => "Smith",
-          :company => "Braintree Payment Solutions",
+          :company => "Braintree",
           :email => "dan@example.com",
           :phone => "419-555-1234",
           :fax => "419-555-1235",
@@ -1281,7 +1281,7 @@ describe Braintree::Transaction do
       transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
-      transaction.customer_details.company.should == "Braintree Payment Solutions"
+      transaction.customer_details.company.should == "Braintree"
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
@@ -1939,7 +1939,7 @@ describe Braintree::Transaction do
           :customer => {
             :first_name => "Dan",
             :last_name => "Smith",
-            :company => "Braintree Payment Solutions",
+            :company => "Braintree",
             :email => "dan@example.com",
             :phone => "419-555-1234",
             :fax => "419-555-1235",
@@ -1994,7 +1994,7 @@ describe Braintree::Transaction do
       transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
-      transaction.customer_details.company.should == "Braintree Payment Solutions"
+      transaction.customer_details.company.should == "Braintree"
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
