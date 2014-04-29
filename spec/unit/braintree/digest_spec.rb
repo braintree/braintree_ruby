@@ -25,7 +25,7 @@ describe Braintree::Digest do
       Braintree::Digest.secure_compare("A_string", "A_string").should be_true
     end
 
-    it "returns false if two strings are equal" do
+    it "returns false if two strings are different and the same length" do
       Braintree::Digest.secure_compare("A_string", "A_strong").should be_false
     end
 
