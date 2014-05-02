@@ -37,4 +37,34 @@ describe Braintree::PayPalAccount do
       end
     end
   end
+
+  describe "self.find" do
+    it "returns a PayPalAccount" do
+      with_altpay_merchant do
+        customer = Braintree::Customer.create!
+        payment_method_token = "paypal-account-#{Time.now.to_i}"
+        result = Braintree::PayPalAccount.create(
+          :customer_id => customer.id,
+          :token => payment_method_token,
+          :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
+          :email => "customer@example.com",
+        )
+
+        result.should be_success
+
+        paypal_account = Braintree::PayPalAccount.find(payment_method_token)
+        paypal_account.should be_a(Braintree::PayPalAccount)
+        paypal_account.token.should == payment_method_token
+        paypal_account.email.should == "customer@example.com"
+      end
+    end
+
+    it "raises if the payment method token is not found" do
+      with_altpay_merchant do
+        expect do
+          Braintree::PayPalAccount.find("nonexistant-paypal-account")
+        end.to raise_error(Braintree::NotFoundError)
+      end
+    end
+  end
 end

@@ -1,5 +1,5 @@
 module Braintree
-  class PayPalAccount
+  class PaymentMethod
     include BaseModule
 
     attr_reader :email, :consent_code, :token
@@ -10,15 +10,11 @@ module Braintree
     end
 
     def self.create(attributes)
-      Configuration.gateway.paypal_account.create(attributes)
+      Configuration.gateway.payment_method.create(attributes)
     end
 
     def self._new(*args)
       self.new(*args)
-    end
-
-    def self.find(token)
-      Configuration.gateway.paypal_account.find(token)
     end
   end
 end

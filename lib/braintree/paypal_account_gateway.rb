@@ -19,5 +19,14 @@ module Braintree
         raise UnexpectedError, "expected :paypal_account or :api_error_response"
       end
     end
+
+    def find(token)
+      raise ArgumentError if token.nil? || token.to_s.strip == ""
+      response = @config.http.get "/payment_methods/#{token}"
+      PayPalAccount._new(@gateway, response[:paypal_account])
+    rescue NotFoundError
+      raise NotFoundError, "payment method with token #{token.inspect} not found"
+    end
+
   end
 end

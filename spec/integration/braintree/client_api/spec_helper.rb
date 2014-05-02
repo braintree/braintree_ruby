@@ -59,6 +59,16 @@ class ClientApiHttp
     raise Braintree::SSLCertificateError
   end
 
+  def get_nonce(params)
+    params.merge!(
+      :authorization_fingerprint => @options[:authorization_fingerprint],
+      :shared_customer_identifier => "fake_identifier",
+      :shared_customer_identifier_type => "testing"
+    )
+
+    post("/merchants/#{config.merchant_id}/client_api/nonces", params)
+  end
+
   def get_cards
     encoded_fingerprint = Braintree::Util.url_encode(@options[:authorization_fingerprint])
     url = "/merchants/#{@config.merchant_id}/client_api/nonces.json?"
