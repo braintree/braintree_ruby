@@ -146,10 +146,10 @@ describe Braintree::ClientToken do
           client_token = Braintree::ClientToken.generate
 
           parsed_client_token = JSON.parse(client_token)
-          parsed_client_token["displayName"].should == "merchant who has paypal and sepa enabled"
-          parsed_client_token["paypalClientId"].should == "QWVUeVBCQlRGWUZrX25wT2kxMWIzRlJUS2pJdS15eTRtWUFVNUhpczBBZEpPeWpYTkU2a2FNajFZdVRrOg=="
-          parsed_client_token["paypalPrivacyUrl"].should == "http://www.example.com/privacy_policy"
-          parsed_client_token["paypalUserAgreementUrl"].should == "http://www.example.com/user_agreement"
+          parsed_client_token["paypalDisplayName"].should == "merchant who has paypal and sepa enabled"
+          parsed_client_token["paypalClientId"].should == "AZEbbxDSOh20JwFy_r3L_Z9tOlZCjV3ny3gttb9VCpOE894jEjeJ17LCA636"
+          parsed_client_token["paypalPrivacyUrl"].should == "http://www.example.com/privacy_policy#email=bt_seller_us@paypal.com&password=11111111"
+          parsed_client_token["paypalUserAgreementUrl"].should == "http://www.example.com/user_agreement#email=bt_seller_us@paypal.com&password=11111111"
           parsed_client_token["paypalBaseUrl"].should_not be_nil
         end
       end
