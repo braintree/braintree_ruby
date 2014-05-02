@@ -87,4 +87,26 @@ class ClientApiHttp
 
     post("/merchants/#{@config.merchant_id}/client_api/nonces.json", params)
   end
+
+  def create_credit_card(params)
+    params = {:credit_card => params}
+    params.merge!(
+      :authorization_fingerprint => @options[:authorization_fingerprint],
+      :shared_customer_identifier => "fake_identifier",
+      :shared_customer_identifier_type => "testing"
+    )
+
+    post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/credit_cards", params)
+  end
+
+  def create_paypal_account(params)
+    params = {:paypal_account => params}
+    params.merge!(
+      :authorization_fingerprint => @options[:authorization_fingerprint],
+      :shared_customer_identifier => "fake_identifier",
+      :shared_customer_identifier_type => "testing"
+    )
+
+    post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/paypal_accounts", params)
+  end
 end
