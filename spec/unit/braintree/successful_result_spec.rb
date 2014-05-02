@@ -2,14 +2,14 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::SuccessfulResult do
   describe "initialize" do
-    it "creates attr readers the values in the hash" do
+    it "sets instance variables from the values in the hash" do
       result = Braintree::SuccessfulResult.new(
-        :foo => "foo_value",
-        :bar => "bar_value"
+        :transaction => "transaction_value",
+        :credit_card => "credit_card_value"
       )
       result.success?.should == true
-      result.foo.should == "foo_value"
-      result.bar.should == "bar_value"
+      result.transaction.should == "transaction_value"
+      result.credit_card.should == "credit_card_value"
     end
 
     it "can be initialized without any values" do
@@ -20,8 +20,8 @@ describe Braintree::SuccessfulResult do
 
   describe "inspect" do
     it "is pretty" do
-      result = Braintree::SuccessfulResult.new(:foo => "foo_value")
-      result.inspect.should == "#<Braintree::SuccessfulResult foo:\"foo_value\">"
+      result = Braintree::SuccessfulResult.new(:transaction => "transaction_value")
+      result.inspect.should == "#<Braintree::SuccessfulResult transaction:\"transaction_value\">"
     end
   end
 end
