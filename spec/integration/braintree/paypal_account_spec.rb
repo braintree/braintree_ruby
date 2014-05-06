@@ -10,7 +10,7 @@ describe Braintree::PayPalAccount do
           :customer_id => customer.id,
           :token => payment_method_token,
           :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
-          :email => "customer@example.com",
+          :email => "customer@example.com"
         )
         result.success?.should == true
         paypal_account = result.paypal_account
@@ -28,7 +28,7 @@ describe Braintree::PayPalAccount do
           result = Braintree::PayPalAccount.create(
             :customer_id => customer.id,
             :token => payment_method_token,
-            :email => "customer@example.com",
+            :email => "customer@example.com"
           )
 
           result.should_not be_success
@@ -47,7 +47,7 @@ describe Braintree::PayPalAccount do
           :customer_id => customer.id,
           :token => payment_method_token,
           :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
-          :email => "customer@example.com",
+          :email => "customer@example.com"
         )
 
         result.should be_success

@@ -2553,8 +2553,8 @@ describe Braintree::Transaction do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009"
       },
-        :service_fee_amount => '1.00',
-        :options => { :hold_in_escrow => true }
+      :service_fee_amount => '1.00',
+      :options => { :hold_in_escrow => true }
     )
 
     response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
@@ -2670,7 +2670,7 @@ describe Braintree::Transaction do
           :customer_id => customer.id,
           :token => payment_method_token,
           :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
-          :email => "customer@example.com",
+          :email => "customer@example.com"
         )
 
         payment_result.should be_success
@@ -2699,8 +2699,8 @@ describe Braintree::Transaction do
           :merchant_account_id => "altpay_merchant_paypal_merchant_account",
           :amount => "10.00",
           :paypal_account => {
-            :paypal_data => bundled_params,
-          },
+            :paypal_data => bundled_params
+          }
         )
         result.success?.should == true
         result.transaction.paypal_account_details.email.should == "customer@example.com"

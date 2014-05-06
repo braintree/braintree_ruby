@@ -18,14 +18,14 @@ describe Braintree::PaymentMethod do
       response = http.create_credit_card(
         :number => 4111111111111111,
         :expirationMonth => 12,
-        :expirationYear => 2020,
+        :expirationYear => 2020
       )
       response.code.should == "201"
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id,
+        :customer_id => customer.id
       )
 
       result.should be_success
@@ -52,14 +52,14 @@ describe Braintree::PaymentMethod do
         :number => "4111111111111111",
         :expirationMonth => "12",
         :expirationYear => "2020",
-        :options => {:validate => false},
+        :options => {:validate => false}
       )
       response.code.should == "202"
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id,
+        :customer_id => customer.id
       )
 
       result.should be_success
@@ -85,14 +85,14 @@ describe Braintree::PaymentMethod do
 
         response = http.create_paypal_account(
           :consent_code => "consent-code",
-          :options => {:validate => false},
+          :options => {:validate => false}
         )
         response.code.should == "202"
 
         nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id,
+          :customer_id => customer.id
         )
 
         result.should be_success
@@ -125,7 +125,7 @@ describe Braintree::PaymentMethod do
         nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id,
+          :customer_id => customer.id
         )
 
         result.should be_success
