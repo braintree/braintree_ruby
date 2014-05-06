@@ -63,6 +63,7 @@ module Braintree
     attr_reader :custom_fields
     attr_reader :cvv_response_code
     attr_reader :disbursement_details
+    attr_reader :disputes
     attr_reader :descriptor
     attr_reader :escrow_status
     attr_reader :gateway_rejection_reason
@@ -225,6 +226,7 @@ module Braintree
       @tax_amount = Util.to_big_decimal(tax_amount)
       @descriptor = Descriptor.new(@descriptor)
       @paypal_account_details = PayPalAccountDetails.new(@paypal_account)
+      disputes.map! { |attrs| Dispute._new(attrs) } if disputes
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
