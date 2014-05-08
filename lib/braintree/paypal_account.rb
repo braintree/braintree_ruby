@@ -9,10 +9,6 @@ module Braintree
       set_instance_variables_from_hash(attributes)
     end
 
-    def self.create(attributes)
-      Configuration.gateway.paypal_account.create(attributes)
-    end
-
     def self._new(*args)
       self.new(*args)
     end

@@ -103,8 +103,6 @@ class ClientApiHttp
     params = {:paypal_account => params}
     params.merge!(
       :authorization_fingerprint => @options[:authorization_fingerprint],
-      :shared_customer_identifier => "fake_identifier",
-      :shared_customer_identifier_type => "testing"
     )
 
     post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/paypal_accounts", params)

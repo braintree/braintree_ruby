@@ -146,11 +146,11 @@ describe Braintree::ClientToken do
           client_token = Braintree::ClientToken.generate
 
           parsed_client_token = JSON.parse(client_token)
-          parsed_client_token["paypalDisplayName"].should == "merchant who has paypal and sepa enabled"
-          parsed_client_token["paypalClientId"].should == "Afb4shBfqSOmmaWZ6_DF1J4AW2NRs5ueaCMJiIADYO8zj9toWY9WkO8z71xz"
-          parsed_client_token["paypalPrivacyUrl"].should == "http://www.example.com/privacy_policy#email=bt_seller_us@paypal.com&password=11111111"
-          parsed_client_token["paypalUserAgreementUrl"].should == "http://www.example.com/user_agreement#email=bt_seller_us@paypal.com&password=11111111"
-          parsed_client_token["paypalBaseUrl"].should_not be_nil
+          parsed_client_token["paypal"]["displayName"].should == "merchant who has paypal and sepa enabled"
+          parsed_client_token["paypal"]["clientId"].should == "Afb4shBfqSOmmaWZ6_DF1J4AW2NRs5ueaCMJiIADYO8zj9toWY9WkO8z71xz"
+          parsed_client_token["paypal"]["privacyUrl"].should == "http://www.example.com/privacy_policy#email=bt_seller_us@paypal.com&password=11111111"
+          parsed_client_token["paypal"]["userAgreementUrl"].should == "http://www.example.com/user_agreement#email=bt_seller_us@paypal.com&password=11111111"
+          parsed_client_token["paypal"]["baseUrl"].should_not be_nil
         end
       end
 

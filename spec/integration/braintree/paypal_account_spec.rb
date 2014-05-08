@@ -1,61 +1,38 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::PayPalAccount do
-  describe "self.create" do
-    it "adds paypal account to an existing customer" do
-      with_altpay_merchant do
-        customer = Braintree::Customer.create!
-        payment_method_token = "paypal-account-#{Time.now.to_i}"
-        result = Braintree::PayPalAccount.create(
-          :customer_id => customer.id,
-          :token => payment_method_token,
-          :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
-          :email => "customer@example.com"
-        )
-        result.success?.should == true
-        paypal_account = result.paypal_account
-        paypal_account.token.should == payment_method_token
-        paypal_account.consent_code.should == Braintree::Test::PayPalAccount::SuccessfulConsentCode
-        paypal_account.email.should == "customer@example.com"
-      end
-    end
-
-    context "validation errors" do
-      it "returns an error code when no consent code is given" do
-        with_altpay_merchant do
-          customer = Braintree::Customer.create!
-          payment_method_token = "paypal-account-#{Time.now.to_i}"
-          result = Braintree::PayPalAccount.create(
-            :customer_id => customer.id,
-            :token => payment_method_token,
-            :email => "customer@example.com"
-          )
-
-          result.should_not be_success
-          result.errors.for(:paypal_account).map(&:code).should include(Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired)
-        end
-      end
-    end
-  end
-
   describe "self.find" do
     it "returns a PayPalAccount" do
       with_altpay_merchant do
+        config = Braintree::Configuration.instantiate
         customer = Braintree::Customer.create!
         payment_method_token = "paypal-account-#{Time.now.to_i}"
-        result = Braintree::PayPalAccount.create(
-          :customer_id => customer.id,
-          :token => payment_method_token,
-          :consent_code => Braintree::Test::PayPalAccount::SuccessfulConsentCode,
-          :email => "customer@example.com"
+        client_token = Braintree::ClientToken.generate
+        authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+        http = ClientApiHttp.new(
+          config,
+          :authorization_fingerprint => authorization_fingerprint,
         )
 
+        response = http.create_paypal_account(
+          :consent_code => "consent-code",
+          :token => payment_method_token,
+        )
+        response.code.should == "202"
+
+        nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
+
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
         result.should be_success
 
         paypal_account = Braintree::PayPalAccount.find(payment_method_token)
         paypal_account.should be_a(Braintree::PayPalAccount)
         paypal_account.token.should == payment_method_token
-        paypal_account.email.should == "customer@example.com"
+        paypal_account.email.should == "jane.doe@example.com"
       end
     end
 
