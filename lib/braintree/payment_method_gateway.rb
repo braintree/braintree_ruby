@@ -23,6 +23,18 @@ module Braintree
       end
     end
 
+    def find(token)
+      raise ArgumentError if token.nil? || token.to_s.strip == ""
+      response = @config.http.get "/payment_methods/#{token}"
+      if response.has_key?(:credit_card)
+        CreditCard._new(@gateway, response[:credit_card])
+      elsif response.has_key?(:paypal_account)
+        PayPalAccount._new(@gateway, response[:paypal_account])
+      end
+    rescue NotFoundError
+      raise NotFoundError, "payment method with token #{token.inspect} not found"
+    end
+
     def self._create_signature # :nodoc:
       [:customer_id, :payment_method_nonce]
     end

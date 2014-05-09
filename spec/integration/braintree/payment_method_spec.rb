@@ -160,4 +160,86 @@ describe Braintree::PaymentMethod do
       end
     end
   end
+
+  describe "self.find" do
+    context "credit cards" do
+      it "finds the payment method with the given token" do
+        customer = Braintree::Customer.create.customer
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        )
+        result.success?.should == true
+
+        credit_card = Braintree::PaymentMethod.find(result.credit_card.token)
+        credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
+        credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
+        credit_card.token.should == result.credit_card.token
+        credit_card.expiration_date.should == "05/2012"
+      end
+
+      it "returns associated subscriptions with the credit card" do
+        customer = Braintree::Customer.create.customer
+        credit_card = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        ).credit_card
+
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => credit_card.token,
+          :plan_id => "integration_trialless_plan",
+          :price => "1.00"
+        ).subscription
+
+        found_card = Braintree::PaymentMethod.find(credit_card.token)
+        found_card.subscriptions.first.id.should == subscription.id
+        found_card.subscriptions.first.plan_id.should == "integration_trialless_plan"
+        found_card.subscriptions.first.payment_method_token.should == credit_card.token
+        found_card.subscriptions.first.price.should == BigDecimal.new("1.00")
+      end
+    end
+
+    context "paypal accounts" do
+      it "finds the payment method with the given token" do
+        with_altpay_merchant do
+          config = Braintree::Configuration.instantiate
+          customer = Braintree::Customer.create!
+          payment_method_token = "paypal-account-#{Time.now.to_i}"
+          client_token = Braintree::ClientToken.generate
+          authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+          http = ClientApiHttp.new(
+            config,
+            :authorization_fingerprint => authorization_fingerprint,
+          )
+
+          response = http.create_paypal_account(
+            :consent_code => "consent-code",
+            :token => payment_method_token,
+          )
+          response.code.should == "202"
+
+          nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
+
+          result = Braintree::PaymentMethod.create(
+            :payment_method_nonce => nonce,
+            :customer_id => customer.id
+          )
+          result.should be_success
+
+          paypal_account = Braintree::PaymentMethod.find(payment_method_token)
+          paypal_account.should be_a(Braintree::PayPalAccount)
+          paypal_account.token.should == payment_method_token
+          paypal_account.email.should == "jane.doe@example.com"
+        end
+      end
+    end
+
+    it "raises a NotFoundError exception if payment method cannot be found" do
+      expect do
+        Braintree::PaymentMethod.find("invalid-token")
+      end.to raise_error(Braintree::NotFoundError, 'payment method with token "invalid-token" not found')
+    end
+  end
 end

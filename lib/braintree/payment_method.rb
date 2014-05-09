@@ -13,6 +13,10 @@ module Braintree
       Configuration.gateway.payment_method.create(attributes)
     end
 
+    def self.find(token)
+      Configuration.gateway.payment_method.find(token)
+    end
+
     def self._new(*args)
       self.new(*args)
     end
