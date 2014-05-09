@@ -1056,7 +1056,7 @@ describe Braintree::Transaction do
     end
 
     context "client API" do
-      it "can create a transaction with a nonce" do
+      it "can create a credit card transaction with a nonce" do
         nonce = nonce_for_new_credit_card(
           :credit_card => {
             :number => "4111111111111111",
@@ -1073,6 +1073,150 @@ describe Braintree::Transaction do
         )
 
         result.success?.should == true
+      end
+    end
+
+    context "paypal" do
+      context "using a vaulted paypal account payment_method_token" do
+        it "can create a transaction" do
+          with_altpay_merchant do
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_token => "PAYPAL_ACCOUNT",
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+            )
+
+            result.should be_success
+          end
+        end
+      end
+
+      context "future" do
+        it "can create a paypal transaction with a nonce without vaulting" do
+          with_altpay_merchant do
+            payment_method_token = rand(36**3).to_s(36)
+            nonce = nonce_for_paypal_account(
+              :consent_code => "PAYPAL_CONSENT_CODE",
+              :token => payment_method_token
+            )
+
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => nonce,
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+            )
+
+            result.should be_success
+
+            expect do
+              Braintree::PaymentMethod.find(payment_method_token)
+            end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{payment_method_token}\" not found")
+          end
+        end
+
+        it "can create a paypal transaction and vault a paypal account" do
+          with_altpay_merchant do
+            payment_method_token = rand(36**3).to_s(36)
+            nonce = nonce_for_paypal_account(
+              :consent_code => "PAYPAL_CONSENT_CODE",
+              :token => payment_method_token,
+            )
+
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => nonce,
+              :options => {:store_in_vault => true},
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+            )
+
+            result.success?.should == true
+
+            found_paypal_account = Braintree::PaymentMethod.find(payment_method_token)
+            found_paypal_account.should be_a(Braintree::PayPalAccount)
+            found_paypal_account.token.should == payment_method_token
+          end
+        end
+      end
+
+      context "onetime" do
+        it "can create a paypal transaction with a nonce" do
+          with_altpay_merchant do
+            nonce = nonce_for_paypal_account(
+              :access_token => "PAYPAL_ACCESS_TOKEN",
+            )
+
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => nonce,
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+            )
+
+            result.should be_success
+          end
+        end
+
+        it "can create a paypal transaction and does not vault even if asked to" do
+          with_altpay_merchant do
+            payment_method_token = rand(36**3).to_s(36)
+            nonce = nonce_for_paypal_account(
+              :access_token => "PAYPAL_ACCESS_TOKEN",
+              :token => payment_method_token,
+            )
+
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => nonce,
+              :options => {:store_in_vault => true},
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+            )
+
+            result.success?.should == true
+
+            expect do
+              Braintree::PaymentMethod.find(payment_method_token)
+            end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{payment_method_token}\" not found")
+          end
+        end
+      end
+
+      context "handling errors" do
+        it "handles bad unvalidated nonces" do
+          with_altpay_merchant do
+            nonce = nonce_for_paypal_account(
+              :access_token => "PAYPAL_ACCESS_TOKEN",
+              :consent_code => "PAYPAL_CONSENT_CODE"
+            )
+
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => nonce,
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+            )
+
+            result.should_not be_success
+            result.errors.for(:transaction).for(:paypal_account).first.code.should == "82903"
+          end
+        end
+
+        it "handles non-existent nonces" do
+          with_altpay_merchant do
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => "NON_EXISTENT_NONCE",
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+            )
+
+            result.should_not be_success
+            result.errors.for(:transaction).first.code.should == "91565"
+          end
+        end
       end
     end
   end

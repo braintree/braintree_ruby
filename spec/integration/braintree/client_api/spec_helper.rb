@@ -19,6 +19,22 @@ def nonce_for_new_credit_card(options)
   body["nonce"]
 end
 
+def nonce_for_paypal_account(paypal_account_details)
+  client_token = Braintree::ClientToken.generate
+  client = ClientApiHttp.new(Braintree::Configuration.instantiate,
+    :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+  )
+
+  response = client.create_paypal_account(paypal_account_details)
+  body = JSON.parse(response.body)
+
+  if body["errors"] != nil
+    raise body["errors"].inspect
+  end
+
+  body["paypalAccounts"][0]["nonce"]
+end
+
 class ClientApiHttp
   attr_reader :config, :options
 
