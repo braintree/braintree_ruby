@@ -1184,6 +1184,157 @@ describe Braintree::Transaction do
         end
       end
 
+      context "submit" do
+        it "submits for settlement if instructed to do so" do
+          with_altpay_merchant do
+            nonce = nonce_for_paypal_account(
+              :access_token => "PAYPAL_ACCESS_TOKEN"
+            )
+
+            result = Braintree::Transaction.sale(
+              :amount => "100",
+              :payment_method_nonce => nonce,
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+              :options => {
+                :submit_for_settlement => true
+              }
+            )
+            result.success?.should == true
+            result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          end
+        end
+      end
+
+      context "void" do
+        it "successfully voids a paypal transaction that's been authorized" do
+          with_altpay_merchant do
+            nonce = nonce_for_paypal_account(
+              :consent_code => "PAYPAL_CONSENT_CODE"
+            )
+
+            sale_transaction = Braintree::Transaction.sale!(
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => nonce,
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+              :options => {
+                :submit_for_settlement => true
+              }
+            )
+
+            void_transaction = Braintree::Transaction.void!(sale_transaction.id)
+            void_transaction.should == sale_transaction
+            void_transaction.status.should == Braintree::Transaction::Status::Voided
+          end
+        end
+
+        it "fails to void a paypal transaction that's been declined" do
+          with_altpay_merchant do
+            nonce = nonce_for_paypal_account(
+              :consent_code => "PAYPAL_CONSENT_CODE"
+            )
+
+            sale_transaction = Braintree::Transaction.sale(
+              :amount => Braintree::Test::TransactionAmounts::Decline,
+              :payment_method_nonce => nonce,
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+              :options => {
+                :submit_for_settlement => true
+              }
+            ).transaction
+
+            expect do
+              Braintree::Transaction.void!(sale_transaction.id)
+            end.to raise_error(Braintree::ValidationsFailed)
+          end
+        end
+      end
+
+      describe "refund" do
+        context "partial refunds" do
+          it "allows partial refunds" do
+            with_altpay_merchant do
+              transaction = create_paypal_transaction_for_refund
+
+              result = Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
+              result.should be_success
+              result.transaction.type.should == "credit"
+            end
+          end
+
+          it "allows multiple partial refunds" do
+            with_altpay_merchant do
+              transaction = create_paypal_transaction_for_refund
+
+              transaction_1 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
+              transaction_2 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
+
+              transaction = Braintree::Transaction.find(transaction.id)
+              transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+            end
+          end
+        end
+
+        it "returns a successful result if successful" do
+          with_altpay_merchant do
+            transaction = create_paypal_transaction_for_refund
+
+            result = Braintree::Transaction.refund(transaction.id)
+            result.success?.should == true
+            result.transaction.type.should == "credit"
+          end
+        end
+
+        it "assigns the refund_id on the original transaction" do
+          with_altpay_merchant do
+            transaction = create_paypal_transaction_for_refund
+            refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+            transaction = Braintree::Transaction.find(transaction.id)
+
+            transaction.refund_id.should == refund_transaction.id
+          end
+        end
+
+        it "assigns the refunded_transaction_id to the original transaction" do
+          with_altpay_merchant do
+            transaction = create_paypal_transaction_for_refund
+            refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+
+            refund_transaction.refunded_transaction_id.should == transaction.id
+          end
+        end
+
+        it "returns an error if already refunded" do
+          with_altpay_merchant do
+            transaction = create_paypal_transaction_for_refund
+            result = Braintree::Transaction.refund(transaction.id)
+            result.success?.should == true
+            result = Braintree::Transaction.refund(transaction.id)
+            result.success?.should == false
+            result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+          end
+        end
+
+        it "returns an error result if unsettled" do
+          with_altpay_merchant do
+            nonce = nonce_for_paypal_account(
+              :consent_code => "PAYPAL_CONSENT_CODE"
+            )
+
+            transaction = Braintree::Transaction.sale!(
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :payment_method_nonce => nonce,
+              :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+              :options => {
+                :submit_for_settlement => true
+              }
+            )
+            result = Braintree::Transaction.refund(transaction.id)
+            result.success?.should == false
+            result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled
+          end
+        end
+      end
+
       context "handling errors" do
         it "handles bad unvalidated nonces" do
           with_altpay_merchant do
@@ -2686,6 +2837,24 @@ describe Braintree::Transaction do
     )
 
     response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
+    Braintree::Transaction.find(transaction.id)
+  end
+
+  def create_paypal_transaction_for_refund
+    nonce = nonce_for_paypal_account(
+      :consent_code => "PAYPAL_CONSENT_CODE"
+    )
+
+    transaction = Braintree::Transaction.sale!(
+      :amount => Braintree::Test::TransactionAmounts::Authorize,
+      :payment_method_nonce => nonce,
+      :merchant_account_id => "altpay_merchant_paypal_merchant_account",
+      :options => {
+        :submit_for_settlement => true
+      }
+    )
+
+    Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
     Braintree::Transaction.find(transaction.id)
   end
 
