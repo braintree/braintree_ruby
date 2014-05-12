@@ -11,7 +11,7 @@ describe Braintree::SignatureService do
     it "signs the data with its key" do
       service = Braintree::SignatureService.new("my_key", FakeDigest)
 
-      service.sign(:foo => "foo bar").should == "foo=foo bar_signed_with_my_key|foo=foo bar"
+      service.sign(:foo => "foo bar").should == "foo=foo+bar_signed_with_my_key|foo=foo+bar"
     end
   end
 
