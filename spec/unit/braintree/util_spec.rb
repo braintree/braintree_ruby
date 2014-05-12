@@ -178,12 +178,12 @@ describe Braintree::Util do
   describe "self.hash_to_query_string" do
     it "generates a query string from the hash" do
       hash = {:foo => {:key_one => "value_one", :key_two => "value_two"}}
-      Braintree::Util.hash_to_query_string(hash).should == "foo[key_one]=value_one&foo[key_two]=value_two"
+      Braintree::Util.hash_to_query_string(hash).should == "foo%5Bkey_one%5D=value_one&foo%5Bkey_two%5D=value_two"
     end
 
     it "works for nesting 2 levels deep" do
       hash = {:foo => {:nested => {:key_one => "value_one", :key_two => "value_two"}}}
-      Braintree::Util.hash_to_query_string(hash).should == "foo[nested][key_one]=value_one&foo[nested][key_two]=value_two"
+      Braintree::Util.hash_to_query_string(hash).should == "foo%5Bnested%5D%5Bkey_one%5D=value_one&foo%5Bnested%5D%5Bkey_two%5D=value_two"
     end
   end
 
