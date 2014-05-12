@@ -1,6 +1,5 @@
 ## Braintree Pay with PayPal express checkout
 
-
 This document will walk through creating a simple app that adds a 
 Pay with PayPal button ![Pay with PayPal](https://www.paypalobjects.com/webstatic/en_US/btn/btn_pponly_142x27.png)
 to your checkout page.  The button launches a lightbox which will take the user through their
@@ -19,6 +18,10 @@ You can use this PayPal account for testing from the UI layer.
 email: bt_buyer_us@paypal.com
 password: 11111111
 ```
+
+When you checkout, you'll need to use the `merchant_account_id` of a merchant account that is 
+enabled to use PayPal.  This was included with the email including the beta source of the Braintree 
+gem.
 
 ### Update your gemfile to point to the BT Pay with PayPal beta gem.
 
@@ -87,8 +90,7 @@ route accepts the post from the form defined above.
 ```ruby
 post "/create-transaction" do
   result = Braintree::Transaction.sale(
-     # we need to specify a merchant account with paypal enabled
-    :merchant_account_id => 'altpay_merchant_paypal_merchant_account',
+    :merchant_account_id => 'your_paypal_enabled_merchant_accound_id',
     :amount => "10.00",
     :payment_method_nonce => params[:payment_method_nonce],
   )
