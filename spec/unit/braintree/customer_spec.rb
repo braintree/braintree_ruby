@@ -82,6 +82,7 @@ describe Braintree::Customer do
         :phone,
         :website,
         :device_data,
+        :payment_method_nonce,
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,
@@ -129,6 +130,7 @@ describe Braintree::Customer do
         :phone,
         :website,
         :device_data,
+        :payment_method_nonce,
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,
@@ -207,13 +209,28 @@ describe Braintree::Customer do
       customer = Braintree::Customer._new(
         :gateway,
         :credit_cards => [
-          {:token => "pm1"},
-          {:token => "pm2"}
+          {:token => "credit_card_1"},
+          {:token => "credit_card_2"}
+        ],
+        :paypal_accounts => [
+          {:token => "paypal_1"},
+          {:token => "paypal_2"}
         ]
       )
+
       customer.credit_cards.size.should == 2
-      customer.credit_cards[0].token.should == "pm1"
-      customer.credit_cards[1].token.should == "pm2"
+      customer.credit_cards[0].token.should == "credit_card_1"
+      customer.credit_cards[1].token.should == "credit_card_2"
+
+      customer.paypal_accounts.size.should == 2
+      customer.paypal_accounts[0].token.should == "paypal_1"
+      customer.paypal_accounts[1].token.should == "paypal_2"
+
+      customer.payment_methods.count.should == 4
+      customer.payment_methods.map(&:token).should include("credit_card_1")
+      customer.payment_methods.map(&:token).should include("credit_card_2")
+      customer.payment_methods.map(&:token).should include("paypal_1")
+      customer.payment_methods.map(&:token).should include("paypal_2")
     end
   end
 

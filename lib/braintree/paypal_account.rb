@@ -20,5 +20,10 @@ module Braintree
     def self.find(token)
       Configuration.gateway.paypal_account.find(token)
     end
+
+    # Returns true if this paypal account is the customer's default payment method.
+    def default?
+      @default
+    end
   end
 end
