@@ -127,6 +127,27 @@ describe Braintree::Transaction, "search" do
       collection.first.id.should == transaction.id
     end
 
+    it "searches on paypal transactions" do
+      with_altpay_merchant do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_token => "PAYPAL_ACCOUNT",
+          :merchant_account_id => "altpay_merchant_paypal_merchant_account"
+        )
+
+        paypal_details = transaction.paypal_details
+
+        collection = Braintree::Transaction.search do |search|
+          search.paypal_payment_id.is paypal_details.payment_id
+          search.paypal_sale_id.is paypal_details.sale_id
+          search.paypal_payer_email.is paypal_details.payer_email
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == transaction.id
+      end
+    end
+
     context "multiple value fields" do
       it "searches on created_using" do
         transaction = Braintree::Transaction.sale!(
