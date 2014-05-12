@@ -9,27 +9,22 @@ the checkout with Braintree.
 
 ### Credentials
 
-For testing, please use these credentials to get a merchant who is set up to process with PayPal:
+Make sure you are pointed at the Braintree `sandbox` environment.
 ```ruby
 Braintree::Configuration.environment = :qa
-Braintree::Configuration.merchant_id = "altpay_merchant"
-Braintree::Configuration.public_key = "altpay_merchant_public_key"
-Braintree::Configuration.private_key = "altpay_merchant_private_key"
 ```
 
-This PayPal account is available for testing
+You can use this PayPal account for testing from the UI layer.
 ```
 email: bt_buyer_us@paypal.com
 password: 11111111
 ```
 
-### Update your gemfile to point to the (currently not-merged) branch of the BT gem 
+### Update your gemfile to point to the BT Pay with PayPal beta gem.
 
 in your Gemfile
 ```ruby
-gem 'braintree', 
-  :git => 'git@github.braintreeps.com:braintree/braintree-ruby.git', 
-  :branch => 'paypal_client_api'
+gem 'braintree', :git => 'git@github.com:braintree/braintree_ruby_paypal_beta.git'
 ```
 
 And `bundle install` to install the Braintree gem.
@@ -37,7 +32,8 @@ And `bundle install` to install the Braintree gem.
 ### Render your checkout page
 
 Before rendering your checkout page, you will need to insert a call to the Braintree API to retreive a `ClientToken`;
-you'll need to include the `ClientToken` when you instantiate the `Braintree.PayPal` client on your checkout page.
+The `ClientToken` is generated on your server, and then used for authentication from the browser to Braintree. 
+You'll need to include it when you instantiate the `Braintree.PayPal` client on your checkout page.
 
 Here's what generating the `ClientToken` might look like in a Sinatra app:  
 ```ruby
@@ -125,12 +121,12 @@ Braintree.PayPal.create({
   container: "paypal-container",
   input: "payment-method-nonce",
   onSuccess: function () {
-    alert("thanks for entering your PayPal information! Click 'Submit' to checkout");
+    alert("Thanks for entering your PayPal information! Click 'Submit' to checkout");
   }
 });
 ```  
 
-An `onUnsupported` function can be used to handle older browsers and non HTTPS protocols (sandbox and production only).
+An `onUnsupported` function can be used to handle older browsers and non HTTPS protocols.
 
 ```javascript
 Braintree.PayPal.create({
