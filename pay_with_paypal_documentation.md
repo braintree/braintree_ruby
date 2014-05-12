@@ -13,21 +13,14 @@ Make sure you are pointed at the Braintree `sandbox` environment.
 Braintree::Configuration.environment = :sandbox
 ```
 
-You can use this PayPal account for testing from the UI layer.
-```
-email: bt_buyer_us@paypal.com
-password: 11111111
-```
-
-When you checkout, you'll need to use the `merchant_account_id` of a merchant account that is 
-enabled to use PayPal.  This was included with the email including the beta source of the Braintree 
-gem.
+At the UI layer, when you are testing you may pass any username and password combination
+to proceed with a Sandbox PayPal transaction.
 
 ### Update your gemfile to point to the BT Pay with PayPal beta gem.
 
 in your Gemfile
 ```ruby
-gem 'braintree', :git => 'git@github.com:braintree/braintree_ruby_paypal_beta.git'
+gem 'braintree', :path => 'path/to/bt/beta/gem'
 ```
 
 And `bundle install` to install the Braintree gem.
@@ -90,7 +83,6 @@ route accepts the post from the form defined above.
 ```ruby
 post "/create-transaction" do
   result = Braintree::Transaction.sale(
-    :merchant_account_id => 'your_paypal_enabled_merchant_accound_id',
     :amount => "10.00",
     :payment_method_nonce => params[:payment_method_nonce],
   )
