@@ -11,7 +11,7 @@ the checkout with Braintree.
 
 Make sure you are pointed at the Braintree `sandbox` environment.
 ```ruby
-Braintree::Configuration.environment = :qa
+Braintree::Configuration.environment = :sandbox
 ```
 
 You can use this PayPal account for testing from the UI layer.
