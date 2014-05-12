@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Transaction, "search" do
   context "advanced" do
@@ -167,6 +168,30 @@ describe Braintree::Transaction, "search" do
 
       collection.maximum_size.should == 1
       collection.first.company.should == customer.company
+    end
+  end
+
+  it "can search by paypal_account_email" do
+    with_altpay_merchant do
+      paypal_token = rand(36**3).to_s(36)
+      nonce = nonce_for_paypal_account(
+        :consent_code => "PAYPAL_CONSENT_CODE",
+        :token => paypal_token
+      )
+
+      customer_id = "UNIQUE_CUSTOMER_ID_" + rand(36**3).to_s(36)
+      customer = Braintree::Customer.create!(
+        :payment_method_nonce => nonce,
+        :id => customer_id
+      )
+
+      collection = Braintree::Customer.search do |search|
+        search.paypal_account_email.is "jane.doe@example.com"
+        search.id.is customer_id
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.should == customer
     end
   end
 end
