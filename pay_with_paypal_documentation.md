@@ -34,8 +34,24 @@ their PayPal account information.
 
 The one time flow includes the same login form as described in the previous step, but
 the user is not prompted to allow future payments.  Instead the lightbox closes immediately
-after a successful login, and writes the paypal authentication data 
+after a successful login, and writes the payment method token
 to the input that you provided, which can then be used in your Transaction.Sale call.
+
+### Logout Button
+
+In either flow, after a successful authentication the Pay with PayPal button will be replaced
+with a button indicating the account the user has selected, along with a logout button.
+Clicking the logout button resets the checkout form to it's initial state by removes the 
+payment method nonce from the input field, and replacing the logout button with the
+Pay with PayPal button.
+
+![Logged in PayPal button](https://s3.amazonaws.com/bt-pwpp-beta-docs/bt-pwpp-logout.png) 
+
+### Use of Email
+
+Once the transaction is created via Braintree, the user's PayPal account will be identified with 
+an email.  Per the PayPal API terms of use, ***You may not use this 
+email for any purpose other than identifying the user's PayPal account***.
 
 ## Implementation
 
