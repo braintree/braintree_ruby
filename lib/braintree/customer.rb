@@ -202,5 +202,9 @@ module Braintree
         :created_at, :updated_at
       ]
     end
+
+    def self._now_timestamp # :nodoc:
+      Time.now.to_i
+    end
   end
 end

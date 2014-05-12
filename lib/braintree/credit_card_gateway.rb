@@ -48,6 +48,14 @@ module Braintree
       raise NotFoundError, "payment method with token #{token.inspect} not found"
     end
 
+    def from_nonce(nonce)
+      raise ArgumentError if nonce.nil? || nonce.to_s.strip == ""
+      response = @config.http.get "/payment_methods/from_nonce/#{nonce}"
+      CreditCard._new(@gateway, response[:credit_card])
+    rescue NotFoundError
+      raise NotFoundError, "nonce #{nonce.inspect} locked, consumed, or not found"
+    end
+
     def update(token, attributes)
       Util.verify_keys(CreditCardGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/#{token}", :credit_card => attributes)
@@ -80,7 +88,7 @@ module Braintree
       signature = [
         :billing_address_id, :cardholder_name, :cvv, :device_session_id, :expiration_date,
         :expiration_month, :expiration_year, :number, :token, :venmo_sdk_payment_method_code,
-        :device_data, :fraud_merchant_id,
+        :device_data, :fraud_merchant_id, :payment_method_nonce,
         {:options => options},
         {:billing_address => billing_address_params}
       ]

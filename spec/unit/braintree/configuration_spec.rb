@@ -235,6 +235,28 @@ describe Braintree::Configuration do
     end
   end
 
+  describe "auth_url" do
+    it "is http://auth.venmo.dev for development" do
+      Braintree::Configuration.environment = :development
+      Braintree::Configuration.instantiate.auth_url.should == "http://auth.venmo.dev:9292"
+    end
+
+    it "is https://auth.venmo.com for production" do
+      Braintree::Configuration.environment = :production
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.com"
+    end
+
+    it "is https://auth.sandbox.venmo.com for sandbox" do
+      Braintree::Configuration.environment = :sandbox
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.sandbox.braintreegateway.com"
+    end
+
+    it "is https://auth.qa.venmo.com for qa" do
+      Braintree::Configuration.environment = :qa
+      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.qa2.braintreegateway.com"
+    end
+  end
+
   describe "ssl?" do
     it "returns false for development" do
       Braintree::Configuration.environment = :development
@@ -273,6 +295,14 @@ describe Braintree::Configuration do
       config = Braintree::Configuration.new(:private_key => "secret_key")
       config.inspect.should include('@private_key="[FILTERED]"')
       config.inspect.should_not include('secret_key')
+    end
+  end
+
+  describe "signature_service" do
+    it "has a signature service initialized with the private key" do
+      config = Braintree::Configuration.new(:private_key => "secret_key")
+
+      config.signature_service.key.should == "secret_key"
     end
   end
 end

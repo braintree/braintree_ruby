@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Transaction do
   describe "self.clone_transaction" do
@@ -1053,6 +1054,27 @@ describe Braintree::Transaction do
         result.transaction.credit_card_details.venmo_sdk?.should == true
       end
     end
+
+    context "client API" do
+      it "can create a transaction with a nonce" do
+        nonce = nonce_for_new_credit_card(
+          :credit_card => {
+            :number => "4111111111111111",
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          },
+          :share => true
+        )
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+
+        result.success?.should == true
+      end
+    end
   end
 
   describe "self.create!" do
@@ -1207,7 +1229,7 @@ describe Braintree::Transaction do
         :customer => {
           :first_name => "Dan",
           :last_name => "Smith",
-          :company => "Braintree Payment Solutions",
+          :company => "Braintree",
           :email => "dan@example.com",
           :phone => "419-555-1234",
           :fax => "419-555-1235",
@@ -1259,7 +1281,7 @@ describe Braintree::Transaction do
       transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
-      transaction.customer_details.company.should == "Braintree Payment Solutions"
+      transaction.customer_details.company.should == "Braintree"
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
@@ -1917,7 +1939,7 @@ describe Braintree::Transaction do
           :customer => {
             :first_name => "Dan",
             :last_name => "Smith",
-            :company => "Braintree Payment Solutions",
+            :company => "Braintree",
             :email => "dan@example.com",
             :phone => "419-555-1234",
             :fax => "419-555-1235",
@@ -1972,7 +1994,7 @@ describe Braintree::Transaction do
       transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
-      transaction.customer_details.company.should == "Braintree Payment Solutions"
+      transaction.customer_details.company.should == "Braintree"
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
@@ -2079,7 +2101,7 @@ describe Braintree::Transaction do
       it "includes disputes on found transactions" do
         found_transaction = Braintree::Transaction.find("disputedtransaction")
 
-        found_transaction.disputes.count.should == 2
+        found_transaction.disputes.count.should == 1
 
         dispute = found_transaction.disputes.first
         dispute.received_date.should == Date.new(2014, 3, 1)

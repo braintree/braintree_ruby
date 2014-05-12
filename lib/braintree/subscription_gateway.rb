@@ -60,6 +60,7 @@ module Braintree
         :never_expires,
         :number_of_billing_cycles,
         :payment_method_token,
+        :payment_method_nonce,
         :plan_id,
         :price,
         :trial_duration,
@@ -77,6 +78,7 @@ module Braintree
         :never_expires,
         :number_of_billing_cycles,
         :payment_method_token,
+        :payment_method_nonce,
         :plan_id,
         :price,
         {:options => [

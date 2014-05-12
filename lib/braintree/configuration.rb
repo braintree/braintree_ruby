@@ -48,6 +48,14 @@ module Braintree
       @logger ||= _default_logger
     end
 
+    def self.signature_service
+      instantiate.signature_service
+    end
+
+    def self.sha256_signature_service
+      instantiate.sha256_signature_service
+    end
+
     def initialize(options = {})
       [:endpoint, :environment, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
         instance_variable_set "@#{attr}", options[attr]
@@ -110,6 +118,19 @@ module Braintree
       end
     end
 
+    def auth_url
+      case @environment
+      when :development
+        "http://auth.venmo.dev:9292"
+      when :production
+        "https://auth.venmo.com"
+      when :qa
+        "https://auth.venmo.qa2.braintreegateway.com"
+      when :sandbox
+        "https://auth.venmo.sandbox.braintreegateway.com"
+      end
+    end
+
     def ssl? # :nodoc:
       case @environment
       when :development
@@ -132,6 +153,14 @@ module Braintree
 
     def inspect
       super.gsub(/@private_key=\".*\"/, '@private_key="[FILTERED]"')
+    end
+
+    def signature_service
+      @signature_service ||= SignatureService.new(@private_key)
+    end
+
+    def sha256_signature_service
+      @sha256_signature_service ||= SignatureService.new(@private_key, SHA256Digest)
     end
   end
 end

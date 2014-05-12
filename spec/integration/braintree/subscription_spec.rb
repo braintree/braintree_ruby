@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Subscription do
 
@@ -61,6 +62,28 @@ describe Braintree::Subscription do
       date_format = /^\d{4}\D\d{1,2}\D\d{1,2}$/
       result.success?.should == true
       result.subscription.id.should == new_id
+    end
+
+    it "creates a subscription when given a payment_method_nonce" do
+      nonce = nonce_for_new_credit_card(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        },
+        :client_token_options => {
+          :customer_id => @credit_card.customer_id
+        }
+      )
+      result = Braintree::Subscription.create(
+        :payment_method_nonce => nonce,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      )
+
+      result.success?.should == true
+      transaction = result.subscription.transactions[0]
+      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
+      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4, 4]
     end
 
     context "billing_day_of_month" do
@@ -653,7 +676,7 @@ describe Braintree::Subscription do
       result.subscription.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
     end
 
-    it "allows changing the payment_method_token" do
+    it "allows changing the payment method by payment_method_token" do
       new_credit_card = Braintree::CreditCard.create!(
         :customer_id => @credit_card.customer_id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
@@ -665,6 +688,22 @@ describe Braintree::Subscription do
       )
 
       result.subscription.payment_method_token.should == new_credit_card.token
+    end
+
+    it "allows changing the payment_method by payment_method_nonce" do
+      nonce = nonce_for_new_credit_card(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010"
+        },
+        :client_token_options => {
+          :customer_id => @credit_card.customer_id,
+        }
+      )
+
+      result = Braintree::Subscription.update(@subscription.id, :payment_method_nonce => nonce)
+      result.subscription.transactions[0].credit_card_details.token.should == @credit_card.token
+      result.subscription.payment_method_token.should_not == @credit_card.token
     end
 
     it "allows chaning the descriptors" do

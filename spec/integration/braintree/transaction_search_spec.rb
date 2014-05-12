@@ -696,7 +696,7 @@ describe Braintree::Transaction, "search" do
       context "dispute_date" do
         it "searches on dispute_date in UTC" do
           disputed_time = Time.parse("2014-03-01 00:00:00 UTC")
-          transaction_id = "disputedtransaction"
+          transaction_id = "2disputetransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id
@@ -746,7 +746,7 @@ describe Braintree::Transaction, "search" do
 
         it "searches on dispute_date in local time" do
           now = Time.parse("2014-03-01 18:00:00 CST")
-          transaction_id = "disputedtransaction"
+          transaction_id = "2disputetransaction"
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction_id

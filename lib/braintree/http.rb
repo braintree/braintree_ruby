@@ -14,7 +14,8 @@ module Braintree
       end
     end
 
-    def get(path)
+    def get(_path, query_params={})
+      path = _path + _build_query_string(query_params)
       response = _http_do Net::HTTP::Get, path
       if response.code.to_i == 200 || response.code.to_i == 422
         Xml.hash_from_xml(_body(response))
@@ -44,6 +45,17 @@ module Braintree
     def _build_xml(params)
       return "" if params.nil?
       Braintree::Xml.hash_to_xml params
+    end
+
+    def _build_query_string(params)
+      if params.empty?
+        ""
+      else
+        "?" + params.map do |x, y|
+          raise(ArgumentError, "Nested hashes aren't supported in query parameters") if y.respond_to?(:to_hash)
+          "#{x}=#{y}"
+        end.join("&")
+      end
     end
 
     def _http_do(http_verb, path, body = nil)

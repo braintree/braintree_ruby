@@ -19,5 +19,19 @@ describe Braintree::Digest do
       expect { Braintree::Digest.hexdigest("key", nil) }.to_not raise_error
     end
   end
+
+  describe "self.secure_compare" do
+    it "returns true if two strings are equal" do
+      Braintree::Digest.secure_compare("A_string", "A_string").should be_true
+    end
+
+    it "returns false if two strings are different and the same length" do
+      Braintree::Digest.secure_compare("A_string", "A_strong").should be_false
+    end
+
+    it "returns false if one is a prefix of the other" do
+      Braintree::Digest.secure_compare("A_string", "A_string_that_is_longer").should be_false
+    end
+  end
 end
 

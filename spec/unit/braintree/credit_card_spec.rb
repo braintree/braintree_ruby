@@ -24,6 +24,7 @@ describe Braintree::CreditCard do
         :venmo_sdk_payment_method_code,
         :device_data,
         :fraud_merchant_id,
+        :payment_method_nonce,
         {:options => [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session, :fail_on_duplicate_payment_method]},
         {:billing_address => [
           :company,
@@ -59,6 +60,7 @@ describe Braintree::CreditCard do
         :venmo_sdk_payment_method_code,
         :device_data,
         :fraud_merchant_id,
+        :payment_method_nonce,
         {:options => [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session]},
         {:billing_address => [
           :company,
