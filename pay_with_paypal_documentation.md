@@ -5,8 +5,8 @@
 This document will walk through creating a simple app that adds a 
 Pay with PayPal button ![Pay with PayPal](https://www.paypalobjects.com/webstatic/en_US/btn/btn_pponly_142x27.png)
 to your checkout page.  The button launches a lightbox which will take the user through their
-PayPal login, and then write a token to an input you provide that you may use to complete 
-the checkout with Braintree.  
+PayPal login, and then write a payment method nonce to an input you provide. You can then use this nonce to complete 
+the transaction with Braintree.  
 
 ### Checkout Flow for Pay with PayPal
 
@@ -14,18 +14,18 @@ the checkout with Braintree.
 
 ### Future Payments UI Flow  
 
-This is the default Pay with PayPal flow, and the flow which gives you the ability to vault and re-use 
+This is the default Pay with PayPal flow, giving you the ability to vault and re-use 
 a users' PayPal account info.  
 
 After clicking the Pay with PayPal button on your checkout form, a user is presented with a modal lightbox  
 
 ![Pay with PayPal lightbox](https://s3.amazonaws.com/bt-pwpp-beta-docs/bt-pwpp-login.png).  
 
-On successful authentication, they are then asked to consent to allow future payments.
+On successful authentication, they are then asked to provide consent to allow future payments.
 ![Pay with PayPal Terms of Service](https://s3.amazonaws.com/bt-pwpp-beta-docs/bt-pwpp-agree.png).  
 
-When the user clicks agree, the modal closes and writes the paypal authentication data 
-to an input that you provided, which can then be used in your Transaction.Sale call.
+When the user clicks "agree", the modal closes and writes the paypal authentication data 
+to an input that you provided, which can then be used in your Transaction.Sale call to Braintree.
 
 ### One Time Payments Flow
 
@@ -49,9 +49,9 @@ Braintree::Configuration.environment = :sandbox
 At the UI layer, when you are testing you may pass any username and password combination
 to proceed with a Sandbox PayPal transaction.
 
-### Update your gemfile to point to the BT Pay with PayPal beta gem.
+### Update your gemfile 
 
-in your Gemfile
+Change your gemfile to point to the BT Pay with PayPal beta gem.
 ```ruby
 gem 'braintree', :path => 'path/to/bt/beta/gem'
 ```
