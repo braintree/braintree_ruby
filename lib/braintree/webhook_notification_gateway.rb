@@ -6,6 +6,9 @@ module Braintree
     end
 
     def parse(signature_string, payload)
+      if payload =~ /[^A-Za-z0-9+=\/\n]/
+        raise InvalidSignature, "payload contains illegal characters"
+      end
       _verify_signature(signature_string, payload)
       attributes = Xml.hash_from_xml(Base64.decode64(payload))
       WebhookNotification._new(@gateway, attributes[:notification])
@@ -25,12 +28,15 @@ module Braintree
       end
     end
 
-    def _verify_signature(signature, payload)
-      public_key, signature = _matching_signature_pair(signature)
-      payload_signature = Braintree::Digest.hexdigest(@config.private_key, payload)
+    def _verify_signature(signature_string, payload)
+      public_key, signature = _matching_signature_pair(signature_string)
+      raise InvalidSignature, 'no matching public key' if public_key.nil?
 
-      raise InvalidSignature if public_key.nil?
-      raise InvalidSignature unless Braintree::Digest.secure_compare(signature, payload_signature)
+      signature_matches = [payload, payload + "\n"].any? do |payload|
+        payload_signature = Braintree::Digest.hexdigest(@config.private_key, payload)
+        Braintree::Digest.secure_compare(signature, payload_signature)
+      end
+      raise InvalidSignature, 'signature does not match payload - one has been modified' unless signature_matches
     end
   end
 end

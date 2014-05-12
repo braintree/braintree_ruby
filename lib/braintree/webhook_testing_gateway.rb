@@ -65,31 +65,31 @@ module Braintree
     def _partner_merchant_connected_sample_xml(data)
 
       <<-XML
-        <partner_merchant>
-          <merchant_public_id>public_id</merchant_public_id>
-          <public_key>public_key</public_key>
-          <private_key>private_key</private_key>
-          <partner_merchant_id>abc123</partner_merchant_id>
-          <client_side_encryption_key>cse_key</client_side_encryption_key>
-        </partner_merchant>
+        <partner-merchant>
+          <merchant-public-id>public_id</merchant-public-id>
+          <public-key>public_key</public-key>
+          <private-key>private_key</private-key>
+          <partner-merchant-id>abc123</partner-merchant-id>
+          <client-side-encryption-key>cse_key</client-side-encryption-key>
+        </partner-merchant>
       XML
     end
 
     def _partner_merchant_disconnected_sample_xml(data)
 
       <<-XML
-        <partner_merchant>
-          <partner_merchant_id>abc123</partner_merchant_id>
-        </partner_merchant>
+        <partner-merchant>
+          <partner-merchant-id>abc123</partner-merchant-id>
+        </partner-merchant>
       XML
     end
 
     def _partner_merchant_declined_sample_xml(data)
 
       <<-XML
-        <partner_merchant>
-          <partner_merchant_id>abc123</partner_merchant_id>
-        </partner_merchant>
+        <partner-merchant>
+          <partner-merchant-id>abc123</partner-merchant-id>
+        </partner-merchant>
       XML
     end
 
