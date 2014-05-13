@@ -40,7 +40,7 @@ module Braintree
     end
 
     def update(token, attributes)
-      # Util.verify_keys(PaymentMethodGateway._update_signature, attributes)
+      Util.verify_keys(PaymentMethodGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/any/#{token}", attributes)
     end
 
@@ -59,6 +59,13 @@ module Braintree
 
     def self._create_signature # :nodoc:
       [:customer_id, :payment_method_nonce]
+    end
+
+    def self._update_signature
+      {
+        :credit_card => CreditCardGateway._update_signature,
+        :paypal_account => PayPalAccountGateway._update_signature
+      }
     end
   end
 end

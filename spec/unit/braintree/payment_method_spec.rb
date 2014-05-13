@@ -1,6 +1,35 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::PaymentMethod do
+  describe "update_signature" do
+    it "raises an exception if credit_card attributes contain an invalid key" do
+      expect do
+        Braintree::PaymentMethod.update(
+          "some_token",
+          :credit_card => {:invalid_key => 'val'}
+        )
+      end.to raise_error(ArgumentError, "invalid keys: credit_card[invalid_key]")
+    end
+
+    it "raises an exception if paypal_account attributes contain an invalid key" do
+      expect do
+        Braintree::PaymentMethod.update(
+          "some_token",
+          :paypal_account => {:invalid_key => 'val'}
+        )
+      end.to raise_error(ArgumentError, "invalid keys: paypal_account[invalid_key]")
+    end
+
+    it "raises an exception if attributes don't have either credit_card or paypal_account as top-level param" do
+      expect do
+        Braintree::PaymentMethod.update(
+          "some_token",
+          :unknown_type => {:invalid_key => 'val'}
+        )
+      end.to raise_error(ArgumentError, "invalid keys: unknown_type[invalid_key]")
+    end
+  end
+
   describe "find" do
     it "handles an unknown payment method type" do
       unknown_payment_method_type_response = {

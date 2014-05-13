@@ -14,7 +14,7 @@ module Braintree
     end
 
     def update(token, attributes)
-      # Util.verify_keys(PayPalAccountGateway._update_signature, attributes)
+      Util.verify_keys(PayPalAccountGateway._update_signature, attributes[:paypal_account])
       _do_update(:put, "/payment_methods/paypal_account/#{token}", attributes)
     end
 
@@ -31,6 +31,10 @@ module Braintree
       else
         raise UnexpectedError, "expected :paypal_account or :api_error_response"
       end
+    end
+
+    def self._update_signature # :nodoc:
+      [:token]
     end
   end
 end
