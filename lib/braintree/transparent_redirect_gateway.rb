@@ -93,11 +93,11 @@ module Braintree
     def _data(params) # :nodoc:
       raise ArgumentError, "expected params to contain :redirect_url" unless params[:redirect_url]
 
-      Braintree::Util.url_encode(@config.signature_service.sign(params.merge(
+      @config.signature_service.sign(params.merge(
         :api_version => @config.api_version,
         :time => Time.now.utc.strftime("%Y%m%d%H%M%S"),
         :public_key => @config.public_key
-      )))
+      ))
     end
   end
 end
