@@ -24,12 +24,12 @@ module Braintree
     end
 
     def delete(token)
-      @config.http.delete("/payment_methods/#{token}")
+      @config.http.delete("/payment_methods/any/#{token}")
     end
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
-      response = @config.http.get "/payment_methods/#{token}"
+      response = @config.http.get "/payment_methods/any/#{token}"
       if response.has_key?(:credit_card)
         CreditCard._new(@gateway, response[:credit_card])
       elsif response.has_key?(:paypal_account)
@@ -41,7 +41,7 @@ module Braintree
 
     def update(token, attributes)
       # Util.verify_keys(PaymentMethodGateway._update_signature, attributes)
-      _do_update(:put, "/payment_methods/#{token}", attributes)
+      _do_update(:put, "/payment_methods/any/#{token}", attributes)
     end
 
     def _do_update(http_verb, url, params) # :nodoc:

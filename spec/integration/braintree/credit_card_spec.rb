@@ -1050,24 +1050,6 @@ describe Braintree::CreditCard do
     end
   end
 
-  describe "delete" do
-    it "deletes the credit card" do
-      customer = Braintree::Customer.create.customer
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-
-      result.success?.should == true
-      credit_card = result.credit_card
-      credit_card.delete.should == true
-      expect do
-        Braintree::CreditCard.find(credit_card.token)
-      end.to raise_error(Braintree::NotFoundError)
-    end
-  end
-
   describe "self.expired" do
     it "can iterate over all items, and make sure they are all expired" do
       customer = Braintree::Customer.all.first
