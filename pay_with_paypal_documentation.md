@@ -17,7 +17,7 @@ the transaction with Braintree.
 This is the default Pay with PayPal flow, giving you the ability to vault and re-use 
 a users' PayPal account info.  
 
-After clicking the Pay with PayPal button on your checkout form, a user is presented with a modal lightbox  
+After clicking the Pay with PayPal button on your checkout form, a user is presented with a lightbox  
 
 ![Pay with PayPal lightbox](https://s3.amazonaws.com/bt-pwpp-beta-docs/bt-pwpp-login.png).  
 
@@ -29,29 +29,30 @@ to an input that you provided, which can then be used in your Transaction.Sale c
 
 ### One Time Payments Flow
 
-In the one time payment flow, the user does not give you the extended permissions to store and re-use
+In the one time payment flow the user does not give you the extended permissions to store and re-use
 their PayPal account information.
 
 The one time flow includes the same login form as described in the previous step, but
 the user is not prompted to allow future payments.  Instead the lightbox closes immediately
-after a successful login, and writes the payment method token
+after a successful login, and writes the payment method nonce
 to the input that you provided, which can then be used in your Transaction.Sale call.
 
 ### Logout Button
 
 In either flow, after a successful authentication the Pay with PayPal button will be replaced
-with a button indicating the account the user has selected, along with a logout button.
-Clicking the logout button resets the checkout form to it's initial state by removes the 
-payment method nonce from the input field, and replacing the logout button with the
-Pay with PayPal button.
+with a button indicating the PayPal account the user has logged in to, followed by an 'X' logout button.
 
 ![Logged in PayPal button](https://s3.amazonaws.com/bt-pwpp-beta-docs/bt-pwpp-logout.png) 
 
+Clicking the logout button resets the checkout form to it's initial state by removing the 
+payment method nonce from the input field, and replacing the logout button with the
+Pay with PayPal button.
+
 ### Use of Email
 
-Once the transaction is created via Braintree, the user's PayPal account will be identified with 
-an email.  Per the PayPal API terms of use, ***You may not use this 
-email for any purpose other than identifying the user's PayPal account***.
+Once the PayPal transaction is created via Braintree, the user's PayPal account will be identified with 
+their email. Per the [PayPal Privacy Policy](https://www.paypal.com/us/webapps/mpp/ua/privacy-full) you may not use this 
+email for any purpose other than identifying the user's PayPal account and associated transactions.
 
 ## Implementation
 
@@ -120,13 +121,13 @@ the `Braintree.PayPal` client using the `@client_token` variable we created in t
 The call to `Braintree.PayPal.create` will place the Pay with PayPal button inside the div you provided, 
 (`#paypal-container`, in this case), and open a lightbox when the user clicks Pay with PayPal.  
 
-Once the user has completed the authentication with PayPal inside the lightbox, a token is written to 
-the input you provided, (`#payment-method-nonce`, in this case).  You can use this token with your server side call
+Once the user has completed the authentication with PayPal inside the lightbox, a nonce is written to 
+the input you provided, (`#payment-method-nonce`, in this case).  You can use this nonce with your server side call
 to `Braintree::Transaction.sale` in order to complete the checkout.  
 
 ### Checkout  
 
-Here's the final server side code to complete the checkout; in our Sinatra app, this 
+Here's the final server side code to complete the transaction; in our Sinatra app, this 
 route accepts the post from the form defined above.
 
 ```ruby
@@ -146,14 +147,16 @@ end
 ### Other `Braintree.PayPal.create` Options
 
 #### singleUse  
-By default, the PwPP lightbox will take a user through the future payments flow, which grants you
+By default, the Pay with PayPal lightbox will take a user through the future payments flow, which grants you
 permission to vault their account, just like you would a credit card, and use it again without the 
 user having to re-authenticate.  
 
 Pass `singleUse: true` to trigger the one time use flow instead, which will not prompt the user
 to permit future charges on their account.  Naturally, this option will not allow you to vault
 their information, and if they wish to Pay with PayPal on your site again they would need to 
-authenticate again.  
+authenticate again. 
+
+***Should we tell them what will happen if they do try and vault a singleUse nonce?***
 
 #### callbacks
 You can register a success callback if you wish to perform any UI treatments once the user has completed authenticating 
