@@ -9,6 +9,10 @@ module Braintree
       set_instance_variables_from_hash(attributes)
     end
 
+    def self._new(*args)
+      self.new(*args)
+    end
+
     def self.create(attributes)
       Configuration.gateway.payment_method.create(attributes)
     end
@@ -17,8 +21,8 @@ module Braintree
       Configuration.gateway.payment_method.find(token)
     end
 
-    def self._new(*args)
-      self.new(*args)
+    def self.update(token, attributes)
+      Configuration.gateway.payment_method.update(token, attributes)
     end
   end
 end

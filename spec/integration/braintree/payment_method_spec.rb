@@ -242,4 +242,49 @@ describe Braintree::PaymentMethod do
       end.to raise_error(Braintree::NotFoundError, 'payment method with token "invalid-token" not found')
     end
   end
+
+  describe "self.update" do
+    context "paypal" do
+      it "updates a payment_method's token" do
+        with_altpay_merchant do
+          config = Braintree::Configuration.instantiate
+          customer = Braintree::Customer.create!
+          original_token = "paypal-account-#{Time.now.to_i}"
+          client_token = Braintree::ClientToken.generate
+          authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+          http = ClientApiHttp.new(
+            config,
+            :authorization_fingerprint => authorization_fingerprint,
+          )
+
+          response = http.create_paypal_account(
+            :consent_code => "consent-code",
+            :token => original_token,
+          )
+          response.code.should == "202"
+
+          nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
+
+          original_result = Braintree::PaymentMethod.create(
+            :payment_method_nonce => nonce,
+            :customer_id => customer.id
+          )
+
+          updated_token = "UPDATED_TOKEN-" + rand(36**3).to_s(36)
+          updated_result = Braintree::PaymentMethod.update(
+            original_token,
+            {:paypal_account => {:token => updated_token}}
+          )
+
+          updated_paypal_account = Braintree::PaymentMethod.find(updated_token)
+          updated_paypal_account.should be_a(Braintree::PayPalAccount)
+          updated_paypal_account.email.should == original_result.payment_method.email
+
+          expect do
+            Braintree::PaymentMethod.find(original_token)
+          end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{original_token}\" not found")
+        end
+      end
+    end
+  end
 end
