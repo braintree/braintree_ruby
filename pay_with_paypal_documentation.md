@@ -1,4 +1,4 @@
-# Braintree Pay with PayPal express checkout
+# Braintree Pay with PayPal
 
 ## Overview
 
