@@ -18,6 +18,10 @@ module Braintree
       _do_update(:put, "/payment_methods/paypal_account/#{token}", attributes)
     end
 
+    def delete(token)
+      @config.http.delete("/payment_methods/paypal_account/#{token}")
+    end
+
     def _do_update(http_verb, url, params) # :nodoc:
       response = @config.http.send http_verb, url, params
       if response[:paypal_account]

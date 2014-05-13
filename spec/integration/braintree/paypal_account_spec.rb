@@ -144,4 +144,39 @@ describe Braintree::PayPalAccount do
       end
     end
   end
+
+  context "delete" do
+    it "deletes a PayPal account" do
+      with_altpay_merchant do
+        config = Braintree::Configuration.instantiate
+        customer = Braintree::Customer.create!
+        token = "paypal-account-#{Time.now.to_i}"
+        client_token = Braintree::ClientToken.generate
+        authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+        http = ClientApiHttp.new(
+          config,
+          :authorization_fingerprint => authorization_fingerprint,
+        )
+
+        response = http.create_paypal_account(
+          :consent_code => "consent-code",
+          :token => token,
+        )
+        response.code.should == "202"
+
+        nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
+
+        Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
+
+        result = Braintree::PayPalAccount.delete(token)
+
+        expect do
+          Braintree::PayPalAccount.find(token)
+        end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{token}\" not found")
+      end
+    end
+  end
 end

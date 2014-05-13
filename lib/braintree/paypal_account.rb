@@ -25,6 +25,10 @@ module Braintree
       Configuration.gateway.paypal_account.update(token, attributes)
     end
 
+    def self.delete(token)
+      Configuration.gateway.paypal_account.delete(token)
+    end
+
     # Returns true if this paypal account is the customer's default payment method.
     def default?
       @default
