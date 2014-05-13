@@ -156,7 +156,8 @@ to permit future charges on their account.  Naturally, this option will not allo
 their information, and if they wish to Pay with PayPal on your site again they would need to 
 authenticate again. 
 
-***Should we tell them what will happen if they do try and vault a singleUse nonce?***
+Attempting to vault a payment method nonce that was created with `singleUse: true` will result in a
+validation error from the Braintree Gateway. 
 
 #### callbacks
 You can register a success callback if you wish to perform any UI treatments once the user has completed authenticating 
