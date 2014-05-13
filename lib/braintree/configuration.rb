@@ -1,7 +1,7 @@
 module Braintree
   # See http://www.braintreepayments.com/docs/ruby
   class Configuration
-    API_VERSION = "3" # :nodoc:
+    API_VERSION = "4" # :nodoc:
     DEFAULT_ENDPOINT = "api" # :nodoc:
 
     class << self
