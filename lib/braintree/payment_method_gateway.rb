@@ -62,10 +62,10 @@ module Braintree
     end
 
     def self._update_signature
-      {
-        :credit_card => CreditCardGateway._update_signature,
-        :paypal_account => PayPalAccountGateway._update_signature
-      }
+      [
+        {:credit_card => CreditCardGateway._update_signature},
+        {:paypal_account => PayPalAccountGateway._update_signature}
+      ]
     end
   end
 end
