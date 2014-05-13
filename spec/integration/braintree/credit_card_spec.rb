@@ -1161,6 +1161,26 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.find("invalid-token")
       end.to raise_error(Braintree::NotFoundError, 'payment method with token "invalid-token" not found')
     end
+
+    it "raises a NotFoundError exception if searching for a PayPalAccount token" do
+      with_altpay_merchant do
+        customer = Braintree::Customer.create!
+        paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+        paypal_nonce = nonce_for_paypal_account({
+            :consent_code => "PAYPAL_CONSENT_CODE",
+            :token => paypal_account_token
+        })
+
+        Braintree::PaymentMethod.create({
+          :payment_method_nonce => paypal_nonce,
+          :customer_id => customer.id
+        })
+
+        expect do
+          Braintree::CreditCard.find(paypal_account_token)
+        end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{paypal_account_token}\" not found")
+      end
+    end
   end
 
   describe "self.from_nonce" do

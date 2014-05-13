@@ -43,5 +43,20 @@ describe Braintree::PayPalAccount do
         end.to raise_error(Braintree::NotFoundError)
       end
     end
+
+    it "does not return a different payment method type" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009",
+        :cvv => "100",
+        :token => "CREDIT_CARD_TOKEN"
+      )
+
+      expect do
+        Braintree::PayPalAccount.find("CREDIT_CARD_TOKEN")
+      end.to raise_error(Braintree::NotFoundError)
+    end
   end
 end
