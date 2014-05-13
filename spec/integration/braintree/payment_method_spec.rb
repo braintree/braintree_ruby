@@ -244,6 +244,35 @@ describe Braintree::PaymentMethod do
   end
 
   describe "self.update" do
+    context "with a credit card" do
+      it "updates its information" do
+        token = "CREDIT_CARD_#{rand(36**3).to_s(36)}"
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_credit_card({
+          :credit_card => {
+          :number => "4111111111111111",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+          :token => token
+        },
+          :client_token_options => {:customer_id => customer.id}
+        })
+
+        Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
+
+        Braintree::PaymentMethod.update(
+          token,
+          {:credit_card => {:number => "4242424242424242"}}
+        )
+
+        credit_card = Braintree::PaymentMethod.find(token)
+        credit_card.bin.should == "424242"
+      end
+    end
+
     context "paypal" do
       it "updates a payment_method's token" do
         with_altpay_merchant do
@@ -286,6 +315,49 @@ describe Braintree::PaymentMethod do
         end
       end
     end
+
+    it "handles errors" do
+      with_altpay_merchant do
+        config = Braintree::Configuration.instantiate
+        customer = Braintree::Customer.create!
+        first_token = "paypal-account-#{rand(36**3).to_s(36)}"
+        second_token = "paypal-account-#{rand(36**3).to_s(36)}"
+        client_token = Braintree::ClientToken.generate
+        authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+        http = ClientApiHttp.new(
+          config,
+          :authorization_fingerprint => authorization_fingerprint,
+        )
+
+        first_response = http.create_paypal_account(
+          :consent_code => "consent-code",
+          :token => first_token,
+        )
+        first_nonce = JSON.parse(first_response.body)["paypalAccounts"].first["nonce"]
+        first_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => first_nonce,
+          :customer_id => customer.id
+        )
+
+        second_response = http.create_paypal_account(
+          :consent_code => "consent-code",
+          :token => second_token,
+        )
+        second_nonce = JSON.parse(second_response.body)["paypalAccounts"].first["nonce"]
+        second_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => second_nonce,
+          :customer_id => customer.id
+        )
+
+        updated_result = Braintree::PaymentMethod.update(
+          first_token,
+          {:paypal_account => {:token => second_token}}
+        )
+
+        updated_result.should_not be_success
+        updated_result.errors.first.code.should == "92906"
+      end
+    end
   end
 
   describe "self.delete" do
@@ -311,6 +383,31 @@ describe Braintree::PaymentMethod do
           Braintree::PaymentMethod.find(paypal_account_token)
         end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{paypal_account_token}\" not found")
       end
+    end
+
+    it "deletes a credit card" do
+      token = "CREDIT_CARD_#{rand(36**3).to_s(36)}"
+      customer = Braintree::Customer.create!
+      nonce = nonce_for_new_credit_card({
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+          :token => token
+        },
+        :client_token_options => {:customer_id => customer.id}
+      })
+
+      Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id
+      )
+
+      Braintree::PaymentMethod.delete(token)
+
+      expect do
+        Braintree::PaymentMethod.find(token)
+      end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{token}\" not found")
     end
   end
 end

@@ -46,12 +46,12 @@ module Braintree
 
     def _do_update(http_verb, url, params) # :nodoc:
       response = @config.http.send http_verb, url, params
-      # if response[:credit_card]
-      #   SuccessfulResult.new(:credit_card => CreditCard._new(@gateway, response[:credit_card]))
-      if response[:paypal_account]
+      if response[:credit_card]
+        SuccessfulResult.new(:credit_card => CreditCard._new(@gateway, response[:credit_card]))
+      elsif response[:paypal_account]
         SuccessfulResult.new(:paypal_account => PayPalAccount._new(@gateway, response[:paypal_account]))
-      # elsif response[:api_error_response]
-      #   ErrorResult.new(@gateway, response[:api_error_response])
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
         raise UnexpectedError, "expected :credit_card, :paypal_account, or :api_error_response"
       end
