@@ -287,4 +287,30 @@ describe Braintree::PaymentMethod do
       end
     end
   end
+
+  describe "self.delete" do
+    it "deletes a paypal account" do
+      with_altpay_merchant do
+        customer = Braintree::Customer.create!
+        paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+        nonce = nonce_for_paypal_account(
+          :consent_code => "PAYPAL_CONSENT_CODE",
+          :token => paypal_account_token
+        )
+        Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
+
+        paypal_account = Braintree::PaymentMethod.find(paypal_account_token)
+        paypal_account.should be_a(Braintree::PayPalAccount)
+
+        result = Braintree::PaymentMethod.delete(paypal_account_token)
+
+        expect do
+          Braintree::PaymentMethod.find(paypal_account_token)
+        end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{paypal_account_token}\" not found")
+      end
+    end
+  end
 end

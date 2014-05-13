@@ -23,6 +23,10 @@ module Braintree
       end
     end
 
+    def delete(token)
+      @config.http.delete("/payment_methods/#{token}")
+    end
+
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
       response = @config.http.get "/payment_methods/#{token}"
