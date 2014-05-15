@@ -89,7 +89,7 @@ describe Braintree::PayPalAccount do
         updated_token = "UPDATED_TOKEN-" + rand(36**3).to_s(36)
         updated_result = Braintree::PayPalAccount.update(
           original_token,
-          {:paypal_account => {:token => updated_token}}
+          :token => updated_token
         )
 
         updated_paypal_account = Braintree::PayPalAccount.find(updated_token)
@@ -136,7 +136,7 @@ describe Braintree::PayPalAccount do
 
         updated_result = Braintree::PayPalAccount.update(
           first_token,
-          {:paypal_account => {:token => second_token}}
+          :token => second_token
         )
 
         updated_result.should_not be_success

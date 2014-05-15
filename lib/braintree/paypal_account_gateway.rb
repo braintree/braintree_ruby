@@ -14,8 +14,8 @@ module Braintree
     end
 
     def update(token, attributes)
-      Util.verify_keys(PayPalAccountGateway._update_signature, attributes[:paypal_account])
-      _do_update(:put, "/payment_methods/paypal_account/#{token}", attributes)
+      Util.verify_keys(PayPalAccountGateway._update_signature, attributes)
+      _do_update(:put, "/payment_methods/paypal_account/#{token}", :paypal_account => attributes)
     end
 
     def delete(token)
