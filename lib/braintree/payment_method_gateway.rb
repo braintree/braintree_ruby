@@ -34,6 +34,8 @@ module Braintree
         CreditCard._new(@gateway, response[:credit_card])
       elsif response.has_key?(:paypal_account)
         PayPalAccount._new(@gateway, response[:paypal_account])
+      else
+        UnknownPaymentMethod.new(response)
       end
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
