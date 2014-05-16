@@ -139,7 +139,7 @@ describe Braintree::Transaction, "search" do
 
         collection = Braintree::Transaction.search do |search|
           search.paypal_payment_id.is paypal_details.payment_id
-          search.paypal_sale_id.is paypal_details.sale_id
+          search.paypal_authorization_id.is paypal_details.authorization_id
           search.paypal_payer_email.is paypal_details.payer_email
         end
 

@@ -125,7 +125,6 @@ describe Braintree::PaymentMethod do
           )
 
           result.should_not be_success
-          result.errors.first.message.should == "Consent code is required for vaulting."
           result.errors.first.code.should == "82902"
         end
       end

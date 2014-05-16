@@ -2957,11 +2957,10 @@ describe Braintree::Transaction do
         )
         result.success?.should == true
         result.transaction.paypal_details.payer_email.should == "payer@example.com"
-        result.transaction.paypal_details.payer_id.should == "PAYER_ID"
         result.transaction.paypal_details.payer_first_name.should == "John"
         result.transaction.paypal_details.payer_last_name.should == "Doe"
         result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-        result.transaction.paypal_details.sale_id.should match(/SALE-\w+/)
+        result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
       end
     end
 
@@ -2995,11 +2994,10 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.paypal_details.token.should_not be_nil
         result.transaction.paypal_details.payer_email.should == "payer@example.com"
-        result.transaction.paypal_details.payer_id.should == "PAYER_ID"
         result.transaction.paypal_details.payer_first_name.should == "John"
         result.transaction.paypal_details.payer_last_name.should == "Doe"
         result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-        result.transaction.paypal_details.sale_id.should match(/SALE-\w+/)
+        result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
       end
     end
 
@@ -3041,11 +3039,10 @@ describe Braintree::Transaction do
         result.should be_success
         result.transaction.paypal_details.token.should == payment_method_token
         result.transaction.paypal_details.payer_email.should == "payer@example.com"
-        result.transaction.paypal_details.payer_id.should == "PAYER_ID"
         result.transaction.paypal_details.payer_first_name.should == "John"
         result.transaction.paypal_details.payer_last_name.should == "Doe"
         result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-        result.transaction.paypal_details.sale_id.should match(/SALE-\w+/)
+        result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
       end
     end
 
@@ -3054,15 +3051,14 @@ describe Braintree::Transaction do
         with_altpay_merchant do
           config = Braintree::Configuration.instantiate
           customer = Braintree::Customer.create!
-          client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
+          client_token = Braintree::ClientToken.generate
           authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
           http = ClientApiHttp.new(
             config,
-            :authorization_fingerprint => authorization_fingerprint,
-            :shared_customer_identifier => "fake_identifier",
-            :shared_customer_identifier_type => "testing"
+            :authorization_fingerprint => authorization_fingerprint
           )
           response = http.create_paypal_account(
+            :token => "TOKEN",
             :options => {:validate => false}
           )
           response.code.should == "202"

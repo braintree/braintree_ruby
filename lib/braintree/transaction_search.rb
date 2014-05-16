@@ -24,7 +24,7 @@ module Braintree
       :order_id,
       :payment_method_token,
       :paypal_payment_id,
-      :paypal_sale_id,
+      :paypal_authorization_id,
       :paypal_payer_email,
       :processor_authorization_code,
       :settlement_batch_id,

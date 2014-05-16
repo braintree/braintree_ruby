@@ -153,18 +153,6 @@ describe Braintree::ClientToken do
           parsed_client_token["paypal"]["baseUrl"].should_not be_nil
         end
       end
-
-      it "does not include the paypal options for a non-paypal merchant" do
-        config = Braintree::Configuration.instantiate
-        client_token = Braintree::ClientToken.generate
-
-        parsed_client_token = JSON.parse(client_token)
-        parsed_client_token.has_key?("displayName").should be_false
-        parsed_client_token.has_key?("paypalClientId").should be_false
-        parsed_client_token.has_key?("paypalPrivacyUrl").should be_false
-        parsed_client_token.has_key?("paypalUserAgreementUrl").should be_false
-        parsed_client_token.has_key?("paypalBaseUrl").should be_false
-      end
     end
   end
 end
