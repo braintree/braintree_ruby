@@ -64,50 +64,71 @@ describe Braintree::Subscription do
       result.subscription.id.should == new_id
     end
 
-    it "creates a subscription when given a credit card payment_method_nonce" do
-      nonce = nonce_for_new_credit_card(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_month => "11",
-          :expiration_year => "2099",
-        },
-        :client_token_options => {
-          :customer_id => @credit_card.customer_id
-        }
-      )
-      result = Braintree::Subscription.create(
-        :payment_method_nonce => nonce,
-        :plan_id => SpecHelper::TriallessPlan[:id]
-      )
-
-      result.success?.should == true
-      transaction = result.subscription.transactions[0]
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4, 4]
-    end
-
-    it "creates a subscription when given a paypal account payment_method_nonce" do
-      with_altpay_merchant do
-        customer = Braintree::Customer.create!
-        payment_method_token = "PAYPAL_ACCOUNT_TOKEN-" + rand(36**3).to_s(36)
-        nonce = nonce_for_paypal_account(
-          :consent_code => "PAYPAL_CONSENT_CODE",
-          :token => payment_method_token
+    context "with payment_method_nonces" do
+      it "creates a subscription when given a credit card payment_method_nonce" do
+        nonce = nonce_for_new_credit_card(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          },
+          :client_token_options => {
+            :customer_id => @credit_card.customer_id
+          }
         )
-
-        paypal_account = Braintree::PaymentMethod.create(
-          :payment_method_nonce => nonce,
-          :customer_id => customer.id
-        )
-
         result = Braintree::Subscription.create(
-          :payment_method_token => payment_method_token,
+          :payment_method_nonce => nonce,
           :plan_id => SpecHelper::TriallessPlan[:id]
         )
 
-        result.should be_success
+        result.success?.should == true
         transaction = result.subscription.transactions[0]
-        transaction.paypal_details.payer_email.should == "payer@example.com"
+        transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
+        transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4, 4]
+      end
+
+      it "creates a subscription when given a paypal account payment_method_nonce" do
+        with_altpay_merchant do
+          customer = Braintree::Customer.create!
+          payment_method_token = "PAYPAL_ACCOUNT_TOKEN-" + rand(36**3).to_s(36)
+          nonce = nonce_for_paypal_account(
+            :consent_code => "PAYPAL_CONSENT_CODE",
+            :token => payment_method_token
+          )
+
+          paypal_account = Braintree::PaymentMethod.create(
+            :payment_method_nonce => nonce,
+            :customer_id => customer.id
+          )
+
+          result = Braintree::Subscription.create(
+            :payment_method_token => payment_method_token,
+            :plan_id => SpecHelper::TriallessPlan[:id]
+          )
+
+          result.should be_success
+          transaction = result.subscription.transactions[0]
+          transaction.paypal_details.payer_email.should == "payer@example.com"
+        end
+      end
+
+      it "returns an error if the payment_method_nonce hasn't been vaulted" do
+        with_altpay_merchant do
+          customer = Braintree::Customer.create!
+          payment_method_token = "PAYPAL_ACCOUNT_TOKEN-" + rand(36**3).to_s(36)
+          nonce = nonce_for_paypal_account(
+            :consent_code => "PAYPAL_CONSENT_CODE",
+            :token => payment_method_token
+          )
+
+          result = Braintree::Subscription.create(
+            :payment_method_nonce => nonce,
+            :plan_id => SpecHelper::TriallessPlan[:id]
+          )
+
+          result.should_not be_success
+          result.errors.for(:subscription).on(:payment_method_nonce).first.code.should == '91925'
+        end
       end
     end
 
