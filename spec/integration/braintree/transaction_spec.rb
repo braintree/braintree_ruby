@@ -2957,8 +2957,6 @@ describe Braintree::Transaction do
         )
         result.success?.should == true
         result.transaction.paypal_details.payer_email.should == "payer@example.com"
-        result.transaction.paypal_details.payer_first_name.should == "John"
-        result.transaction.paypal_details.payer_last_name.should == "Doe"
         result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
         result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
       end
@@ -2994,8 +2992,6 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.paypal_details.token.should_not be_nil
         result.transaction.paypal_details.payer_email.should == "payer@example.com"
-        result.transaction.paypal_details.payer_first_name.should == "John"
-        result.transaction.paypal_details.payer_last_name.should == "Doe"
         result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
         result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
       end
@@ -3039,8 +3035,6 @@ describe Braintree::Transaction do
         result.should be_success
         result.transaction.paypal_details.token.should == payment_method_token
         result.transaction.paypal_details.payer_email.should == "payer@example.com"
-        result.transaction.paypal_details.payer_first_name.should == "John"
-        result.transaction.paypal_details.payer_last_name.should == "Doe"
         result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
         result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
       end
