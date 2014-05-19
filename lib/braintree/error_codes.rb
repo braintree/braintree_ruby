@@ -80,7 +80,7 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/paypal_account/validations
     module PayPalAccount
-      ConsentCodeOrAccessTokenIsRequired = "82901"
+      IncompletePayPalAccount = "82901"
       CannotVaultOneTimeUsePayPalAccount = "82902"
       CannotHaveBothAccessTokenAndConsentCode = "82903"
       PayPalAccountsAreNotAccepted = "82904"

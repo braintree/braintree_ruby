@@ -3070,7 +3070,7 @@ describe Braintree::Transaction do
             :payment_method_nonce => nonce
           )
           result.should_not be_success
-          result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::ConsentCodeIsRequired
+          result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount
         end
       end
     end
