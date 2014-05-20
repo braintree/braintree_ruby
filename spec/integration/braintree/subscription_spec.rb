@@ -90,19 +90,13 @@ describe Braintree::Subscription do
       it "creates a subscription when given a paypal account payment_method_nonce" do
         with_altpay_merchant do
           customer = Braintree::Customer.create!
-          payment_method_token = "PAYPAL_ACCOUNT_TOKEN-" + rand(36**3).to_s(36)
-          nonce = nonce_for_paypal_account(
-            :consent_code => "PAYPAL_CONSENT_CODE",
-            :token => payment_method_token
-          )
-
-          paypal_account = Braintree::PaymentMethod.create(
-            :payment_method_nonce => nonce,
+          payment_method_result = Braintree::PaymentMethod.create(
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
             :customer_id => customer.id
           )
 
           result = Braintree::Subscription.create(
-            :payment_method_token => payment_method_token,
+            :payment_method_token => payment_method_result.payment_method.token,
             :plan_id => SpecHelper::TriallessPlan[:id]
           )
 
@@ -115,14 +109,8 @@ describe Braintree::Subscription do
       it "returns an error if the payment_method_nonce hasn't been vaulted" do
         with_altpay_merchant do
           customer = Braintree::Customer.create!
-          payment_method_token = "PAYPAL_ACCOUNT_TOKEN-" + rand(36**3).to_s(36)
-          nonce = nonce_for_paypal_account(
-            :consent_code => "PAYPAL_CONSENT_CODE",
-            :token => payment_method_token
-          )
-
           result = Braintree::Subscription.create(
-            :payment_method_nonce => nonce,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
             :plan_id => SpecHelper::TriallessPlan[:id]
           )
 

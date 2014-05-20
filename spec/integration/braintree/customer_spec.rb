@@ -1140,12 +1140,8 @@ describe Braintree::Customer do
     context "future" do
       it "creates a customer with a future paypal account" do
         with_altpay_merchant do
-          nonce = nonce_for_paypal_account(
-            :consent_code => "PAYPAL_CONSENT_CODE"
-          )
-
           result = Braintree::Customer.create(
-            :payment_method_nonce => nonce
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
           )
 
           result.should be_success
@@ -1187,12 +1183,8 @@ describe Braintree::Customer do
     context "onetime" do
       it "does not create a customer with a onetime paypal account" do
         with_altpay_merchant do
-          nonce = nonce_for_paypal_account(
-            :access_token => "PAYPAL_ACCESS_TOKEN"
-          )
-
           result = Braintree::Customer.create(
-            :payment_method_nonce => nonce
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
           )
 
           result.should_not be_success

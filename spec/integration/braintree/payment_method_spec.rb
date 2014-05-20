@@ -73,21 +73,8 @@ describe Braintree::PaymentMethod do
     context "paypal" do
       it "creates a payment method from an unvalidated future paypal account nonce" do
         with_altpay_merchant do
-          config = Braintree::Configuration.instantiate
+          nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
           customer = Braintree::Customer.create.customer
-          client_token = Braintree::ClientToken.generate
-          authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
-          http = ClientApiHttp.new(
-            config,
-            :authorization_fingerprint => authorization_fingerprint,
-          )
-
-          response = http.create_paypal_account(
-            :consent_code => "PAYPAL_CONSENT_CODE"
-          )
-          response.code.should == "202"
-
-          nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
           result = Braintree::PaymentMethod.create(
             :payment_method_nonce => nonce,
             :customer_id => customer.id
@@ -104,21 +91,8 @@ describe Braintree::PaymentMethod do
 
       it "does not create a payment method from an unvalidated onetime paypal account nonce" do
         with_altpay_merchant do
-          config = Braintree::Configuration.instantiate
           customer = Braintree::Customer.create.customer
-          client_token = Braintree::ClientToken.generate
-          authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
-          http = ClientApiHttp.new(
-            config,
-            :authorization_fingerprint => authorization_fingerprint,
-          )
-
-          response = http.create_paypal_account(
-            :access_token => "PAYPAL_ACCESS_TOKEN",
-          )
-          response.code.should == "202"
-
-          nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
+          nonce = nonce_for_paypal_account(:access_token => "PAYPAL_ACCESS_TOKEN")
           result = Braintree::PaymentMethod.create(
             :payment_method_nonce => nonce,
             :customer_id => customer.id
@@ -131,21 +105,8 @@ describe Braintree::PaymentMethod do
 
       it "returns appropriate validation errors" do
         with_altpay_merchant do
-          config = Braintree::Configuration.instantiate
           customer = Braintree::Customer.create.customer
-          client_token = Braintree::ClientToken.generate
-          authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
-          http = ClientApiHttp.new(
-            config,
-            :authorization_fingerprint => authorization_fingerprint,
-          )
-
-          response = http.create_paypal_account(
-            :token => "PAYPAL_TOKEN",
-          )
-          response.code.should == "202"
-
-          nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
+          nonce = nonce_for_paypal_account(:token => "PAYPAL_TOKEN")
           result = Braintree::PaymentMethod.create(
             :payment_method_nonce => nonce,
             :customer_id => customer.id
@@ -203,24 +164,12 @@ describe Braintree::PaymentMethod do
     context "paypal accounts" do
       it "finds the payment method with the given token" do
         with_altpay_merchant do
-          config = Braintree::Configuration.instantiate
           customer = Braintree::Customer.create!
-          payment_method_token = "paypal-account-#{Time.now.to_i}"
-          client_token = Braintree::ClientToken.generate
-          authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
-          http = ClientApiHttp.new(
-            config,
-            :authorization_fingerprint => authorization_fingerprint,
-          )
-
-          response = http.create_paypal_account(
+          payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+          nonce = nonce_for_paypal_account(
             :consent_code => "consent-code",
             :token => payment_method_token,
           )
-          response.code.should == "202"
-
-          nonce = JSON.parse(response.body)["paypalAccounts"].first["nonce"]
-
           result = Braintree::PaymentMethod.create(
             :payment_method_nonce => nonce,
             :customer_id => customer.id
