@@ -113,6 +113,33 @@ describe Braintree::PaymentMethod do
         errors.should include("82902")
       end
     end
+
+    context "SEPA" do
+      it "returns the SEPA bank account behind the nonce" do
+        config = Braintree::Configuration.instantiate
+        customer = Braintree::Customer.create.customer
+        client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => "b2b")
+        authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+        http = ClientApiHttp.new(
+          config,
+          :authorization_fingerprint => authorization_fingerprint,
+        )
+
+        nonce = http.create_sepa_bank_account_nonce({accountHolderName: "Bob Holder",
+                                              iban: "DE89370400440532013000",
+                                              bic:  "DEUTDEFF",
+                                              billingAddress: {region: "Hesse"}}
+                                             )
+        nonce.should_not == nil
+        # result = Braintree::PaymentMethod.create(
+        #   :payment_method_nonce => nonce,
+        #   :customer_id => customer.id
+        # )
+
+        # result.should be_success
+
+      end
+    end
   end
 
   describe "self.find" do

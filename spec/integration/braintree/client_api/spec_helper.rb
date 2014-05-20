@@ -51,6 +51,10 @@ class ClientApiHttp
     _http_do(Net::HTTP::Post, path, params.to_json)
   end
 
+  def put(path, params)
+    _http_do(Net::HTTP::Put, path, params.to_json)
+  end
+
   def fingerprint=(fingerprint)
     @options[:authorization_fingerprint] = fingerprint
   end
@@ -122,5 +126,21 @@ class ClientApiHttp
     )
 
     post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/paypal_accounts", params)
+  end
+
+  def create_sepa_bank_account_nonce(params)
+    foo = {
+      :authorization_fingerprint => @options[:authorization_fingerprint],
+      :shared_customer_identifier => "fake_identifier",
+      :shared_customer_identifier_type => "testing",
+
+      :sepa_mandate => params
+    }
+
+    response = post("/merchants/#{config.merchant_id}/client_api/v1/sepa_mandates", foo)
+
+    mrn = JSON.parse(response.body)['mandateReferenceNumber']
+    accept_response = put("/merchants/#{config.merchant_id}/client_api/v1/sepa_mandates/#{mrn}/accept",foo)
+    JSON.parse(accept_response.body)['nonce']
   end
 end
