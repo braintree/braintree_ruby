@@ -1139,89 +1139,81 @@ describe Braintree::Customer do
   describe "paypal" do
     context "future" do
       it "creates a customer with a future paypal account" do
-        with_altpay_merchant do
-          result = Braintree::Customer.create(
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
-          )
+        result = Braintree::Customer.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        )
 
-          result.should be_success
-        end
+        result.should be_success
       end
 
       it "updates a customer with a future paypal account" do
-        with_altpay_merchant do
-          customer = Braintree::Customer.create!(
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "12/2015",
-              :options => {
-                :make_default => true
-              }
-            }
-          )
-
-          paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
-          nonce = nonce_for_paypal_account(
-            :consent_code => "PAYPAL_CONSENT_CODE",
-            :token => paypal_account_token,
+        customer = Braintree::Customer.create!(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2015",
             :options => {
               :make_default => true
             }
-          )
+          }
+        )
 
-          result = Braintree::Customer.update(
-            customer.id,
-            :payment_method_nonce => nonce
-          )
+        paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+        nonce = nonce_for_paypal_account(
+          :consent_code => "PAYPAL_CONSENT_CODE",
+          :token => paypal_account_token,
+          :options => {
+            :make_default => true
+          }
+        )
 
-          result.should be_success
-          result.customer.default_payment_method.token.should == paypal_account_token
-        end
+        result = Braintree::Customer.update(
+          customer.id,
+          :payment_method_nonce => nonce
+        )
+
+        result.should be_success
+        result.customer.default_payment_method.token.should == paypal_account_token
       end
     end
 
     context "onetime" do
       it "does not create a customer with a onetime paypal account" do
-        with_altpay_merchant do
-          result = Braintree::Customer.create(
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
-          )
+        result = Braintree::Customer.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+        )
 
-          result.should_not be_success
-        end
+        result.should_not be_success
       end
 
       it "does not update a customer with a onetime paypal account" do
-        with_altpay_merchant do
-          credit_card_token = rand(36**3).to_s(36)
-          customer = Braintree::Customer.create!(
-            :credit_card => {
-              :token => credit_card_token,
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "12/2015",
-              :options => {
-                :make_default => true
-              }
-            }
-          )
-
-          paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
-          nonce = nonce_for_paypal_account(
-            :access_token => "PAYPAL_ACCESS_TOKEN",
-            :token => paypal_account_token,
+        credit_card_token = rand(36**3).to_s(36)
+        customer = Braintree::Customer.create!(
+          :credit_card => {
+            :token => credit_card_token,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2015",
             :options => {
               :make_default => true
             }
-          )
+          }
+        )
 
-          result = Braintree::Customer.update(
-            customer.id,
-            :payment_method_nonce => nonce
-          )
+        paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+        nonce = nonce_for_paypal_account(
+          :access_token => "PAYPAL_ACCESS_TOKEN",
+          :token => paypal_account_token,
+          :options => {
+            :make_default => true
+          }
+        )
 
-          result.should_not be_success
-          customer.default_payment_method.token.should == credit_card_token
-        end
+        result = Braintree::Customer.update(
+          customer.id,
+          :payment_method_nonce => nonce
+        )
+
+        result.should_not be_success
+        customer.default_payment_method.token.should == credit_card_token
       end
     end
   end

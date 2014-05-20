@@ -72,51 +72,45 @@ describe Braintree::PaymentMethod do
 
     context "paypal" do
       it "creates a payment method from an unvalidated future paypal account nonce" do
-        with_altpay_merchant do
-          nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
-          customer = Braintree::Customer.create.customer
-          result = Braintree::PaymentMethod.create(
-            :payment_method_nonce => nonce,
-            :customer_id => customer.id
-          )
+        nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
+        customer = Braintree::Customer.create.customer
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
 
-          result.should be_success
-          result.payment_method.should be_a(Braintree::PayPalAccount)
-          token = result.payment_method.token
+        result.should be_success
+        result.payment_method.should be_a(Braintree::PayPalAccount)
+        token = result.payment_method.token
 
-          found_paypal_account = Braintree::PayPalAccount.find(token)
-          found_paypal_account.should_not be_nil
-        end
+        found_paypal_account = Braintree::PayPalAccount.find(token)
+        found_paypal_account.should_not be_nil
       end
 
       it "does not create a payment method from an unvalidated onetime paypal account nonce" do
-        with_altpay_merchant do
-          customer = Braintree::Customer.create.customer
-          nonce = nonce_for_paypal_account(:access_token => "PAYPAL_ACCESS_TOKEN")
-          result = Braintree::PaymentMethod.create(
-            :payment_method_nonce => nonce,
-            :customer_id => customer.id
-          )
+        customer = Braintree::Customer.create.customer
+        nonce = nonce_for_paypal_account(:access_token => "PAYPAL_ACCESS_TOKEN")
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
 
-          result.should_not be_success
-          result.errors.first.code.should == "82902"
-        end
+        result.should_not be_success
+        result.errors.first.code.should == "82902"
       end
 
       it "returns appropriate validation errors" do
-        with_altpay_merchant do
-          customer = Braintree::Customer.create.customer
-          nonce = nonce_for_paypal_account(:token => "PAYPAL_TOKEN")
-          result = Braintree::PaymentMethod.create(
-            :payment_method_nonce => nonce,
-            :customer_id => customer.id
-          )
+        customer = Braintree::Customer.create.customer
+        nonce = nonce_for_paypal_account(:token => "PAYPAL_TOKEN")
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
 
-          result.should_not be_success
-          errors = result.errors.map(&:code)
-          errors.should include("82901")
-          errors.should include("82902")
-        end
+        result.should_not be_success
+        errors = result.errors.map(&:code)
+        errors.should include("82901")
+        errors.should include("82902")
       end
     end
   end
@@ -163,24 +157,22 @@ describe Braintree::PaymentMethod do
 
     context "paypal accounts" do
       it "finds the payment method with the given token" do
-        with_altpay_merchant do
-          customer = Braintree::Customer.create!
-          payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
-          nonce = nonce_for_paypal_account(
-            :consent_code => "consent-code",
-            :token => payment_method_token,
-          )
-          result = Braintree::PaymentMethod.create(
-            :payment_method_nonce => nonce,
-            :customer_id => customer.id
-          )
-          result.should be_success
+        customer = Braintree::Customer.create!
+        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        nonce = nonce_for_paypal_account(
+          :consent_code => "consent-code",
+          :token => payment_method_token,
+        )
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
+        result.should be_success
 
-          paypal_account = Braintree::PaymentMethod.find(payment_method_token)
-          paypal_account.should be_a(Braintree::PayPalAccount)
-          paypal_account.token.should == payment_method_token
-          paypal_account.email.should == "jane.doe@example.com"
-        end
+        paypal_account = Braintree::PaymentMethod.find(payment_method_token)
+        paypal_account.should be_a(Braintree::PayPalAccount)
+        paypal_account.token.should == payment_method_token
+        paypal_account.email.should == "jane.doe@example.com"
       end
     end
 
@@ -193,27 +185,25 @@ describe Braintree::PaymentMethod do
 
   describe "self.delete" do
     it "deletes a paypal account" do
-      with_altpay_merchant do
-        customer = Braintree::Customer.create!
-        paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
-        nonce = nonce_for_paypal_account(
-          :consent_code => "PAYPAL_CONSENT_CODE",
-          :token => paypal_account_token
-        )
-        Braintree::PaymentMethod.create(
-          :payment_method_nonce => nonce,
-          :customer_id => customer.id
-        )
+      customer = Braintree::Customer.create!
+      paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+      nonce = nonce_for_paypal_account(
+        :consent_code => "PAYPAL_CONSENT_CODE",
+        :token => paypal_account_token
+      )
+      Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id
+      )
 
-        paypal_account = Braintree::PaymentMethod.find(paypal_account_token)
-        paypal_account.should be_a(Braintree::PayPalAccount)
+      paypal_account = Braintree::PaymentMethod.find(paypal_account_token)
+      paypal_account.should be_a(Braintree::PayPalAccount)
 
-        result = Braintree::PaymentMethod.delete(paypal_account_token)
+      result = Braintree::PaymentMethod.delete(paypal_account_token)
 
-        expect do
-          Braintree::PaymentMethod.find(paypal_account_token)
-        end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{paypal_account_token}\" not found")
-      end
+      expect do
+        Braintree::PaymentMethod.find(paypal_account_token)
+      end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{paypal_account_token}\" not found")
     end
 
     it "deletes a credit card" do

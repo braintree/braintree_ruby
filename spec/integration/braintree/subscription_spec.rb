@@ -88,35 +88,31 @@ describe Braintree::Subscription do
       end
 
       it "creates a subscription when given a paypal account payment_method_nonce" do
-        with_altpay_merchant do
-          customer = Braintree::Customer.create!
-          payment_method_result = Braintree::PaymentMethod.create(
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
-            :customer_id => customer.id
-          )
+        customer = Braintree::Customer.create!
+        payment_method_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :customer_id => customer.id
+        )
 
-          result = Braintree::Subscription.create(
-            :payment_method_token => payment_method_result.payment_method.token,
-            :plan_id => SpecHelper::TriallessPlan[:id]
-          )
+        result = Braintree::Subscription.create(
+          :payment_method_token => payment_method_result.payment_method.token,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        )
 
-          result.should be_success
-          transaction = result.subscription.transactions[0]
-          transaction.paypal_details.payer_email.should == "payer@example.com"
-        end
+        result.should be_success
+        transaction = result.subscription.transactions[0]
+        transaction.paypal_details.payer_email.should == "payer@example.com"
       end
 
       it "returns an error if the payment_method_nonce hasn't been vaulted" do
-        with_altpay_merchant do
-          customer = Braintree::Customer.create!
-          result = Braintree::Subscription.create(
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
-            :plan_id => SpecHelper::TriallessPlan[:id]
-          )
+        customer = Braintree::Customer.create!
+        result = Braintree::Subscription.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        )
 
-          result.should_not be_success
-          result.errors.for(:subscription).on(:payment_method_nonce).first.code.should == '91925'
-        end
+        result.should_not be_success
+        result.errors.for(:subscription).on(:payment_method_nonce).first.code.should == '91925'
       end
     end
 
