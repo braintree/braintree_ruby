@@ -131,12 +131,21 @@ describe Braintree::PaymentMethod do
                                               billingAddress: {region: "Hesse"}}
                                              )
         nonce.should_not == nil
-        # result = Braintree::PaymentMethod.create(
-        #   :payment_method_nonce => nonce,
-        #   :customer_id => customer.id
-        # )
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
 
-        # result.should be_success
+        result.should be_success
+        result.payment_method.token.should_not == nil
+
+        fire_two = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
+        fire_two.should be_success
+        fire_two.payment_method.token.should == result.payment_method.token
+
 
       end
     end

@@ -16,6 +16,8 @@ module Braintree
         SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:paypal_account]
         SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
+      elsif response[:sepa_bank_account]
+        SuccessfulResult.new(:payment_method => SEPABankAccount._new(@gateway, response[:sepa_bank_account]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       else
@@ -34,6 +36,8 @@ module Braintree
         CreditCard._new(@gateway, response[:credit_card])
       elsif response.has_key?(:paypal_account)
         PayPalAccount._new(@gateway, response[:paypal_account])
+      elsif response.has_key?(:sepa_bank_account)
+        SEPABankAccount._new(@gateway, response[:sepa_bank_account])
       else
         UnknownPaymentMethod.new(response)
       end
