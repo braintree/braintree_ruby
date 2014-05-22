@@ -125,11 +125,13 @@ describe Braintree::PaymentMethod do
           :authorization_fingerprint => authorization_fingerprint,
         )
 
-        nonce = http.create_sepa_bank_account_nonce({accountHolderName: "Bob Holder",
-                                              iban: "DE89370400440532013000",
-                                              bic:  "DEUTDEFF",
-                                              billingAddress: {region: "Hesse"}}
-                                             )
+        nonce = http.create_sepa_bank_account_nonce(
+          :accountHolderName => "Bob Holder",
+          :iban => "DE89370400440532013000",
+          :bic => "DEUTDEFF",
+          :locale => "en-US",
+          :billingAddress =>  {:region => "Hesse"}
+        )
         nonce.should_not == nil
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
@@ -145,8 +147,6 @@ describe Braintree::PaymentMethod do
         )
         fire_two.should be_success
         fire_two.payment_method.token.should == result.payment_method.token
-
-
       end
     end
   end
