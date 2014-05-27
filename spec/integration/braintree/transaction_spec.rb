@@ -1130,7 +1130,7 @@ describe Braintree::Transaction do
           SpecHelper::ThreeDSecureMerchantAccountId,
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_month => "12",
-          :expiration_year => "2012",
+          :expiration_year => "2012"
         )
 
         result = Braintree::Transaction.create(
