@@ -147,7 +147,7 @@ describe Braintree::ClientToken do
 
           parsed_client_token = JSON.parse(client_token)
           parsed_client_token["paypal"]["displayName"].should == "merchant who has paypal and sepa enabled"
-          parsed_client_token["paypal"]["clientId"].should == "Afb4shBfqSOmmaWZ6_DF1J4AW2NRs5ueaCMJiIADYO8zj9toWY9WkO8z71xz"
+          parsed_client_token["paypal"]["clientId"].should match(/.+/)
           parsed_client_token["paypal"]["privacyUrl"].should match("http://www.example.com/privacy_policy")
           parsed_client_token["paypal"]["userAgreementUrl"].should match("http://www.example.com/user_agreement")
           parsed_client_token["paypal"]["baseUrl"].should_not be_nil
