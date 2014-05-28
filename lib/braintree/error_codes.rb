@@ -37,6 +37,7 @@ module Braintree
     module CreditCard
       BillingAddressConflict = "91701"
       BillingAddressIdIsInvalid = "91702"
+      CannotUpdateCardUsingPaymentMethodNonce = "91735"
       CustomerIdIsRequired = "91704"
       CustomerIdIsInvalid = "91705"
       ExpirationDateConflict = "91708"
@@ -62,6 +63,10 @@ module Braintree
       NumberLengthIsInvalid = "81716"
       NumberMustBeTestNumber = "81717"
       PaymentMethodConflict = "81725"
+      PaymentMethodNonceCardTypeIsNotAccepted = "91734"
+      PaymentMethodNonceConsumed = "91731"
+      PaymentMethodNonceLocked = "91733"
+      PaymentMethodNonceUnknown = "91732"
       VenmoSDKPaymentMethodCodeCardTypeIsNotAccepted = "91726"
       VerificationNotSupportedOnThisMerchantAccount = "91730"
 
@@ -99,6 +104,19 @@ module Braintree
       DynamicDescriptorsDisabled = "92203"
       InternationalNameFormatIsInvalid = "92204"
       InternationalPhoneFormatIsInvalid = "92205"
+    end
+
+    module PayPalAccount
+      CannotVaultOneTimeUsePayPalAccount = "82902"
+      CannotHaveBothAccessTokenAndConsentCode = "82903"
+      ConsentCodeOrAccessTokenIsRequired = "82901"
+      CustomerIdIsRequiredForVaulting = "82905"
+      PaymentMethodNonceConsumed = "92907"
+      PaymentMethodNonceLocked = "92909"
+      PaymentMethodNonceUnknown = "92908"
+      PayPalAccountsAreNotAccepted = "82904"
+      PayPalCommunicationError = "92910"
+      TokenIsInUse = "92906"
     end
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/validations
