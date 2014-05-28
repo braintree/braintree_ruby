@@ -154,5 +154,23 @@ describe Braintree::ClientToken do
         end
       end
     end
+
+    context "SEPA" do
+      it "includes the SEPA options for a SEPA merchant" do
+        with_altpay_merchant do
+          result = Braintree::Customer.create
+          customer_id = result.customer.id
+
+          client_token = Braintree::ClientToken.generate(
+            :customer_id => customer_id,
+            :sepa_mandate_acceptance_location => "Hamburg, Germany",
+            :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business
+          )
+
+          parsed_client_token = JSON.parse(client_token)
+          parsed_client_token["authorizationFingerprint"].should include("sepa_mandate_type=business")
+        end
+      end
+    end
   end
 end

@@ -22,7 +22,7 @@ module Braintree
 
     def self._generate_signature # :nodoc:
       [
-        :customer_id, :proxy_merchant_id, :address_id, :sepa_mandate_type,
+        :address_id, :customer_id, :proxy_merchant_id, :sepa_mandate_acceptance_location, :sepa_mandate_type,
         {:options => [:make_default, :verify_card, :fail_on_duplicate_payment_method]}
       ]
     end
