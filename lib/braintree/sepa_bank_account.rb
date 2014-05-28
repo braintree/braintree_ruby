@@ -2,6 +2,11 @@ module Braintree
   class SEPABankAccount
     include BaseModule
 
+    module MandateType
+      Business = 'business'
+      Consumer = 'consumer'
+    end
+
     attr_reader :token
 
     def initialize(gateway, attributes) # :nodoc:
