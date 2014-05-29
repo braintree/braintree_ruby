@@ -25,6 +25,12 @@ describe Braintree::ClientToken do
       end.to raise_error(ArgumentError)
     end
 
+    it "allows a client token version to be specified" do
+      config = Braintree::Configuration.instantiate
+      client_token = Braintree::ClientToken.generate(:version => 1)
+      client_token.should =~ /"version":1/
+    end
+
     it "can pass verify_card" do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
