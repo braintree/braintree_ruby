@@ -94,26 +94,28 @@ the `Braintree.PayPal` client using the `@client_token` variable we created in t
 
 ```html
 <!DOCTYPE html
-<html>        
+<html>
   <head>
-    <script type="text/javascript" src="https://assets.stq.braintreepayments.com/pwpp/beta/braintree-paypal.js"></script>
+    <script type="text/javascript" src="https://js.braintreegateway.com/pwpp/beta/braintree-paypal.js"></script>
   </head>
   <body>
-    
+
     <form id="merchant-form" action="/create-transaction" method="post">
       <input type="text" name="payment_method_nonce" id="payment-method-nonce" />
       <div id="paypal-container"></div>
       <input type="submit" value="Submit" />
     </form>
-    
+
     <script type="text/javascript">
-      Braintree.PayPal.create({
-        clientToken: <%= @client_token %>,
-        container: "paypal-container",  // to specify DOM elements, use an ID, a DOM node, or a jQuery element
-        paymentMethodNonceInputField: "payment-method-nonce"
-      });
+      braintree.paypal.create(
+        <%= @client_token %>,
+        {
+          container: "paypal-container",  // to specify DOM elements, use an ID, a DOM node, or a jQuery element
+          paymentMethodNonceInputField: "payment-method-nonce"
+        }
+      );
     </script>
-    
+
   </body>
 </html>
 ```
