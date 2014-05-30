@@ -42,6 +42,8 @@ module Braintree
         _disbursement_exception_sample_xml(id)
       when Braintree::WebhookNotification::Kind::Disbursement
         _disbursement_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::SubscriptionChargedSuccessfully
+        _subscription_charged_successfully_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -53,6 +55,25 @@ module Braintree
         <subscription>
           <id>#{id}</id>
           <transactions type="array">
+          </transactions>
+          <add_ons type="array">
+          </add_ons>
+          <discounts type="array">
+          </discounts>
+        </subscription>
+      XML
+    end
+
+    def _subscription_charged_successfully_sample_xml(id)
+
+      <<-XML
+        <subscription>
+          <id>#{id}</id>
+          <transactions type="array">
+            <transaction>
+              <status>submitted_for_settlement</status>
+              <amount>39.99</amount>
+            </transaction>
           </transactions>
           <add_ons type="array">
           </add_ons>

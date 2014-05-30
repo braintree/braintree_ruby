@@ -15,6 +15,22 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
+    it "builds a sample notification for a subscription charged successfully webhook" do
+      signature, payload = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::SubscriptionChargedSuccessfully,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(signature, payload)
+      
+      notification.subscription.transactions.first.status
+      notification.subscription.should_not be_nil
+      notification.subscription.transactions.count.should be(1)
+      notification.subscription.transactions.first.should be_instance_of(Braintree::Transaction)
+      notification.subscription.transactions.first.status.should eql(Braintree::Transaction::Status::SubmittedForSettlement)
+      notification.subscription.transactions.first.amount.should eql(39.99)
+    end
+
     it "builds a sample notification for a partner merchant connected webhook" do
       signature, payload = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::PartnerMerchantConnected,
