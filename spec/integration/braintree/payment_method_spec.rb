@@ -122,7 +122,7 @@ describe Braintree::PaymentMethod do
         authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
         http = ClientApiHttp.new(
           config,
-          :authorization_fingerprint => authorization_fingerprint,
+          :authorization_fingerprint => authorization_fingerprint
         )
 
         nonce = http.create_sepa_bank_account_nonce(
@@ -197,7 +197,7 @@ describe Braintree::PaymentMethod do
         payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
         nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
-          :token => payment_method_token,
+          :token => payment_method_token
         )
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,

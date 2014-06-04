@@ -1086,7 +1086,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_token => payment_method_result.payment_method.token,
+            :payment_method_token => payment_method_result.payment_method.token
           )
 
           result.should be_success
@@ -1104,7 +1104,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => nonce,
+            :payment_method_nonce => nonce
           )
 
           result.should be_success
@@ -1118,14 +1118,14 @@ describe Braintree::Transaction do
           payment_method_token = rand(36**3).to_s(36)
           nonce = nonce_for_paypal_account(
             :consent_code => "PAYPAL_CONSENT_CODE",
-            :token => payment_method_token,
+            :token => payment_method_token
           )
 
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => nonce,
-            :options => {:store_in_vault => true},
+            :options => {:store_in_vault => true}
           )
 
           result.success?.should == true
@@ -1141,7 +1141,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           )
 
           result.should be_success
@@ -1151,14 +1151,14 @@ describe Braintree::Transaction do
           payment_method_token = rand(36**3).to_s(36)
           nonce = nonce_for_paypal_account(
             :access_token => "PAYPAL_ACCESS_TOKEN",
-            :token => payment_method_token,
+            :token => payment_method_token
           )
 
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => nonce,
-            :options => {:store_in_vault => true},
+            :options => {:store_in_vault => true}
           )
 
           result.success?.should == true
@@ -1290,7 +1290,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => nonce,
+            :payment_method_nonce => nonce
           )
 
           result.should_not be_success
@@ -1301,7 +1301,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => "NON_EXISTENT_NONCE",
+            :payment_method_nonce => "NON_EXISTENT_NONCE"
           )
 
           result.should_not be_success
@@ -2868,7 +2868,7 @@ describe Braintree::Transaction do
     it "can create a transaction for a paypal account" do
       result = Braintree::Transaction.sale(
         :amount => "10.00",
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
       )
       result.success?.should == true
       result.transaction.paypal_details.payer_email.should == "payer@example.com"
@@ -2920,7 +2920,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_paypal_account(:token => "TOKEN")
         result = Braintree::Transaction.sale(
           :amount => "10.00",
-          :payment_method_nonce => nonce,
+          :payment_method_nonce => nonce
         )
         result.should_not be_success
         result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount

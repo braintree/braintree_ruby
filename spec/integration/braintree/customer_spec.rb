@@ -1140,7 +1140,7 @@ describe Braintree::Customer do
     context "future" do
       it "creates a customer with a future paypal account" do
         result = Braintree::Customer.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
         )
 
         result.should be_success
@@ -1179,7 +1179,7 @@ describe Braintree::Customer do
     context "onetime" do
       it "does not create a customer with a onetime paypal account" do
         result = Braintree::Customer.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
         )
 
         result.should_not be_success

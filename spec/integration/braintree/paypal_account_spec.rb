@@ -9,7 +9,7 @@ describe Braintree::PayPalAccount do
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => payment_method_token,
+        :token => payment_method_token
       )
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
@@ -51,7 +51,7 @@ describe Braintree::PayPalAccount do
       original_token = "paypal-account-#{Time.now.to_i}"
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => original_token,
+        :token => original_token
       )
       original_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
@@ -104,7 +104,7 @@ describe Braintree::PayPalAccount do
 
       first_nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => first_token,
+        :token => first_token
       )
       first_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => first_nonce,
@@ -113,7 +113,7 @@ describe Braintree::PayPalAccount do
 
       second_nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => second_token,
+        :token => second_token
       )
       second_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => second_nonce,
@@ -137,7 +137,7 @@ describe Braintree::PayPalAccount do
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => token,
+        :token => token
       )
       Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,

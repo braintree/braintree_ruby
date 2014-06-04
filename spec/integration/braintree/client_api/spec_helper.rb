@@ -22,7 +22,7 @@ end
 def nonce_for_paypal_account(paypal_account_details)
   client_token = Braintree::ClientToken.generate
   client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-    :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+    :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"]
   )
 
   response = client.create_paypal_account(paypal_account_details)
@@ -122,7 +122,7 @@ class ClientApiHttp
   def create_paypal_account(params)
     params = {:paypal_account => params}
     params.merge!(
-      :authorization_fingerprint => @options[:authorization_fingerprint],
+      :authorization_fingerprint => @options[:authorization_fingerprint]
     )
 
     post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/paypal_accounts", params)
