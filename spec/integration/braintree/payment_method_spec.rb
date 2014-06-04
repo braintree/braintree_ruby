@@ -130,7 +130,10 @@ describe Braintree::PaymentMethod do
           :iban => "DE89370400440532013000",
           :bic => "DEUTDEFF",
           :locale => "en-US",
-          :billingAddress =>  {:region => "Hesse"}
+          :billingAddress =>  {
+            :region => "Hesse",
+            :country_name => "Germany"
+          }
         )
         nonce.should_not == nil
         result = Braintree::PaymentMethod.create(
