@@ -72,6 +72,31 @@ describe Braintree::PayPalAccount do
       end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{original_token}\" not found")
     end
 
+    it "can make a paypal account the default payment method" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009",
+        :options => {:make_default => true}
+      )
+      result.should be_success
+
+      nonce = nonce_for_paypal_account(:consent_code => "consent-code")
+      original_token = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id
+      ).payment_method.token
+
+      updated_result = Braintree::PayPalAccount.update(
+        original_token,
+        :options => {:make_default => true}
+      )
+
+      updated_paypal_account = Braintree::PayPalAccount.find(original_token)
+      updated_paypal_account.should be_default
+    end
+
     it "returns an error if a token for account is used to attempt an update" do
       customer = Braintree::Customer.create!
       first_token = "paypal-account-#{rand(36**3).to_s(36)}"

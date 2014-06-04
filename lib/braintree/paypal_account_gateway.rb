@@ -34,7 +34,8 @@ module Braintree
     end
 
     def self._update_signature # :nodoc:
-      [:token]
+      options = [:make_default]
+      [:token, {:options => options}]
     end
   end
 end
