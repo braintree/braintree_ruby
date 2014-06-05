@@ -46,7 +46,12 @@ module Braintree
     end
 
     def self._create_signature # :nodoc:
-      [:customer_id, :payment_method_nonce]
+      options = [:make_default]
+      [
+        :customer_id,
+        :payment_method_nonce,
+        :options => options
+      ]
     end
   end
 end

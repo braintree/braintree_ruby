@@ -70,6 +70,30 @@ describe Braintree::PaymentMethod do
       found_credit_card.should_not be_nil
     end
 
+    it "allows passing the make_default option alongside the nonce" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009",
+        :cvv => "100"
+      )
+      result.success?.should == true
+      original_payment_method = result.credit_card
+      original_payment_method.should be_default
+
+      nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id,
+        :options => {:make_default => true}
+      )
+
+      result.should be_success
+      new_payment_method = result.payment_method
+      new_payment_method.should be_default
+    end
+
     context "paypal" do
       it "creates a payment method from an unvalidated future paypal account nonce" do
         nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
