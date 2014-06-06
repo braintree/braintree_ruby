@@ -94,6 +94,26 @@ describe Braintree::PaymentMethod do
       new_payment_method.should be_default
     end
 
+    it "overrides the token in the nonce" do
+      customer = Braintree::Customer.create!
+
+      first_token = "FIRST_TOKEN_#{rand(36**3).to_s(36)}"
+      second_token = "SECOND_TOKEN_#{rand(36**3).to_s(36)}"
+      nonce = nonce_for_paypal_account(
+        :consent_code => "PAYPAL_CONSENT_CODE",
+        :token => first_token
+      )
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id,
+        :token => second_token
+      )
+
+      result.should be_success
+      payment_method = result.payment_method
+      payment_method.token.should ==  second_token
+    end
+
     context "paypal" do
       it "creates a payment method from an unvalidated future paypal account nonce" do
         nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
