@@ -25,6 +25,12 @@ describe Braintree::ClientToken do
       end.to raise_error(ArgumentError)
     end
 
+    it "allows a client token version to be specified" do
+      config = Braintree::Configuration.instantiate
+      client_token = Braintree::ClientToken.generate(:version => 1)
+      client_token.should =~ /"version":1/
+    end
+
     it "can pass verify_card" do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
@@ -138,6 +144,15 @@ describe Braintree::ClientToken do
       )
 
       response.code.should == "422"
+    end
+
+    it "can pass merchant_account_id" do
+      client_token = Braintree::ClientToken.generate(
+        :merchant_account_id => "my_merchant_account"
+      )
+
+      parsed_client_token = JSON.parse(client_token)
+      parsed_client_token["merchantAccountId"].should == "my_merchant_account"
     end
 
     context "paypal" do

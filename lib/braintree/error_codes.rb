@@ -78,20 +78,6 @@ module Braintree
       end
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/paypal_account/validations
-    module PayPalAccount
-      IncompletePayPalAccount = "82901"
-      CannotVaultOneTimeUsePayPalAccount = "82902"
-      CannotHaveBothAccessTokenAndConsentCode = "82903"
-      PayPalAccountsAreNotAccepted = "82904"
-      CustomerIdIsRequiredForVaulting = "82905"
-      TokenIsInUse = "92906"
-      PaymentMethodNonceConsumed = "92907"
-      PaymentMethodNonceUnknown = "92908"
-      PaymentMethodNonceLocked = "92909"
-      PayPalCommunicationError = "92910"
-    end
-
     # See http://www.braintreepayments.com/docs/ruby/customers/validations
     module Customer
       CustomFieldIsInvalid = "91602"
@@ -119,6 +105,20 @@ module Braintree
       DynamicDescriptorsDisabled = "92203"
       InternationalNameFormatIsInvalid = "92204"
       InternationalPhoneFormatIsInvalid = "92205"
+    end
+
+    module PayPalAccount
+      CannotVaultOneTimeUsePayPalAccount = "82902"
+      CannotHaveBothAccessTokenAndConsentCode = "82903"
+      ConsentCodeOrAccessTokenIsRequired = "82901"
+      CustomerIdIsRequiredForVaulting = "82905"
+      IncompletePayPalAccount = "82901"
+      PaymentMethodNonceConsumed = "92907"
+      PaymentMethodNonceLocked = "92909"
+      PaymentMethodNonceUnknown = "92908"
+      PayPalAccountsAreNotAccepted = "82904"
+      PayPalCommunicationError = "92910"
+      TokenIsInUse = "92906"
     end
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/validations

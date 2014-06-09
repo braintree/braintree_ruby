@@ -1071,8 +1071,80 @@ describe Braintree::Transaction do
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => nonce
         )
+        result.success?.should == true
+      end
+    end
+
+    context "three_d_secure" do
+      it "can create a transaction with a three_d_secure token" do
+        three_d_secure_token = SpecHelper.create_3ds_verification(
+          SpecHelper::ThreeDSecureMerchantAccountId,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2012"
+        )
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => three_d_secure_token
+        )
 
         result.success?.should == true
+      end
+
+      it "can create a transaction without a three_d_secure token" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          }
+        )
+        result.success?.should == true
+      end
+
+      it "returns an error if sent a nil three_d_secure token" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => nil
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid
+      end
+
+      it "returns an error if 3ds lookup data does not match txn data" do
+        three_d_secure_token = SpecHelper.create_3ds_verification(
+          SpecHelper::ThreeDSecureMerchantAccountId,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2012"
+        )
+
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => three_d_secure_token
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
       end
     end
 
@@ -1700,7 +1772,7 @@ describe Braintree::Transaction do
 
     it "can specify the customer id and payment method token" do
       customer_id = "customer_#{rand(10**10)}"
-      payment_mehtod_token = "credit_card_#{rand(10**10)}"
+      payment_method_token = "credit_card_#{rand(10**10)}"
       result = Braintree::Transaction.sale(
         :amount => "100",
         :customer => {
@@ -1709,7 +1781,7 @@ describe Braintree::Transaction do
           :last_name => "Williams"
         },
         :credit_card => {
-          :token => payment_mehtod_token,
+          :token => payment_method_token,
           :number => "5105105105105100",
           :expiration_date => "05/2012"
         },
@@ -1721,8 +1793,8 @@ describe Braintree::Transaction do
       transaction = result.transaction
       transaction.customer_details.id.should == customer_id
       transaction.vault_customer.id.should == customer_id
-      transaction.credit_card_details.token.should == payment_mehtod_token
-      transaction.vault_credit_card.token.should == payment_mehtod_token
+      transaction.credit_card_details.token.should == payment_method_token
+      transaction.vault_credit_card.token.should == payment_method_token
     end
 
     it "can specify existing shipping address" do
