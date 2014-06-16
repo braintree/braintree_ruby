@@ -147,7 +147,7 @@ module Braintree
 
     def inspect # :nodoc:
       first = [:id]
-      last = [:addresses, :credit_cards]
+      last = [:addresses, :credit_cards, :paypal_accounts]
       order = first + (self.class._attributes - first - last) + last
       nice_attributes = order.map do |attr|
         "#{attr}: #{send(attr).inspect}"

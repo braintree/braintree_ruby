@@ -28,6 +28,9 @@ describe Braintree::Customer do
       output.should include(%q(last_name: "Smith"))
       output.should include(%q(phone: "802-483-5932"))
       output.should include(%q(website: "patrick.smith.com"))
+      output.should include(%q(addresses: []))
+      output.should include(%q(credit_cards: []))
+      output.should include(%q(paypal_accounts: []))
       output.should include(%Q(created_at: #{customer.created_at.inspect}))
       output.should include(%Q(updated_at: #{customer.updated_at.inspect}))
     end
