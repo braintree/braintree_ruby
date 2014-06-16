@@ -130,7 +130,7 @@ describe Braintree::PayPalAccount do
     end
   end
 
-  context "delete" do
+  context "self.delete" do
     it "deletes a PayPal account" do
       customer = Braintree::Customer.create!
       token = "paypal-account-#{Time.now.to_i}"
@@ -149,6 +149,37 @@ describe Braintree::PayPalAccount do
       expect do
         Braintree::PayPalAccount.find(token)
       end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{token}\" not found")
+    end
+  end
+
+  context "self.sale" do
+    it "creates a transaction using a paypal account and returns a result object" do
+      customer = Braintree::Customer.create!(
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+      )
+
+      result = Braintree::PayPalAccount.sale(customer.paypal_accounts[0].token, :amount => "100.00")
+
+      result.success?.should == true
+      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.type.should == "sale"
+      result.transaction.customer_details.id.should == customer.id
+      result.transaction.paypal_details.token.should == customer.paypal_accounts[0].token
+    end
+  end
+
+  context "self.sale!" do
+    it "creates a transaction using a paypal account and returns a transaction" do
+      customer = Braintree::Customer.create!(
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+      )
+
+      transaction = Braintree::PayPalAccount.sale!(customer.paypal_accounts[0].token, :amount => "100.00")
+
+      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.type.should == "sale"
+      transaction.customer_details.id.should == customer.id
+      transaction.paypal_details.token.should == customer.paypal_accounts[0].token
     end
   end
 end
