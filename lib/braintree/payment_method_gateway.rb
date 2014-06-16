@@ -51,7 +51,7 @@ module Braintree
         :customer_id,
         :payment_method_nonce,
         :token,
-        :options => options
+        {:options => options}
       ]
     end
   end
