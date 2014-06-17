@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Transaction, "search" do
   context "advanced" do
@@ -143,6 +144,46 @@ describe Braintree::Transaction, "search" do
 
       collection.maximum_size.should == 1
       collection.first.id.should == transaction.id
+    end
+
+    context "SEPA bank account transactions" do
+      it "does" do
+        with_altpay_merchant do
+          config = Braintree::Configuration.instantiate
+          customer = Braintree::Customer.create.customer
+          client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business)
+          authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+          http = ClientApiHttp.new(
+            config,
+            :authorization_fingerprint => authorization_fingerprint
+          )
+
+          nonce = http.create_sepa_bank_account_nonce(
+            :accountHolderName => "Bob Holder",
+            :iban => "DE89370400440532013000",
+            :bic => "DEUTDEFF",
+            :locale => "en-US",
+            :billingAddress =>  {
+            :region => "Hesse",
+            :country_name => "Germany"
+          }
+          )
+          nonce.should_not == nil
+
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => nonce,
+            :merchant_account_id => "sepa_ma"
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.sepa_bank_account_iban.is  "DE89370400440532013000"
+          end
+
+          collection.maximum_size.should >= 1
+          collection.map(&:id).should include(transaction.id)
+        end
+      end
     end
 
     context "multiple value fields" do
