@@ -213,6 +213,18 @@ module Braintree
       return_object_or_raise(:transaction) { void(transaction_id) }
     end
 
+    def self.settle(transaction_id)
+      Configuration.gateway.transaction.settle(transaction_id)
+    end
+
+    def self.settlement_confirm(transaction_id)
+      Configuration.gateway.transaction.settlement_confirm(transaction_id)
+    end
+
+    def self.settlement_decline(transaction_id)
+      Configuration.gateway.transaction.settlement_decline(transaction_id)
+    end
+
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
