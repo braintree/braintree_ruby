@@ -188,6 +188,7 @@ describe Braintree::PaymentMethod do
 
         result.should be_success
         result.payment_method.token.should_not == nil
+        result.payment_method.image_url.should_not be_nil
 
         fire_two = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,

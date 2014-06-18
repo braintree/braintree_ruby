@@ -2,7 +2,7 @@ module Braintree
   class UnknownPaymentMethod
     include BaseModule
 
-    attr_reader :token
+    attr_reader :token, :image_url
 
     def initialize(attributes)
       nested_attributes = attributes[attributes.keys.first]
