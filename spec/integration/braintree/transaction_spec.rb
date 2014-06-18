@@ -2946,6 +2946,7 @@ describe Braintree::Transaction do
       result.transaction.paypal_details.payer_email.should == "payer@example.com"
       result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
       result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
+      result.transaction.paypal_details.image_url.should_not be_nil
     end
 
     it "can vault a paypal account on a transaction" do
