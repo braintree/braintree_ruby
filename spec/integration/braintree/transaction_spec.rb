@@ -3049,5 +3049,17 @@ describe Braintree::Transaction do
       settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementDeclined
       settle_result.success?.should == true
     end
+
+    it "returns a validation error when invalid transition is specified" do
+      sale_result = Braintree::Transaction.sale(
+        :amount => "100",
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+      )
+      sale_result.success?.should == true
+
+      settle_result = Braintree::Transaction.settlement_decline(sale_result.transaction.id)
+      settle_result.success?.should be_false
+      settle_result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotSimulateTransactionSettlement
+    end
   end
 end
