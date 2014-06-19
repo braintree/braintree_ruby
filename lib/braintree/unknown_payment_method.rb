@@ -2,7 +2,7 @@ module Braintree
   class UnknownPaymentMethod
     include BaseModule
 
-    attr_reader :token, :image_url
+    attr_reader :token
 
     def initialize(attributes)
       nested_attributes = attributes[attributes.keys.first]
@@ -11,6 +11,10 @@ module Braintree
 
     def default?
       @default
+    end
+
+    def image_url
+      "https://assets.braintreegateway.com/payment_method_logo/unknown.png"
     end
   end
 end

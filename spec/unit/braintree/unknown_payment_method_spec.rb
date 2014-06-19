@@ -10,8 +10,8 @@ describe Braintree::PayPalAccount do
 
   describe "image_url" do
     it "has a image_url" do
-      params = {:unknown_payment_method => {:image_url => "www.example.com", :default => true}}
-      Braintree::UnknownPaymentMethod.new(params).image_url.should == "www.example.com"
+      params = {:unknown_payment_method => {:token => 1234, :default => true}}
+      Braintree::UnknownPaymentMethod.new(params).image_url.should == "https://assets.braintreegateway.com/payment_method_logo/unknown.png"
     end
   end
 
