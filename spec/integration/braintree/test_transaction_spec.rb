@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
-describe Braintree::Transaction do
+describe Braintree::TestTransaction do
   context "testing" do
     it "changes transaction status to settled" do
       sale_result = Braintree::Transaction.sale(
@@ -63,4 +63,42 @@ describe Braintree::Transaction do
       settle_result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotSimulateTransactionSettlement
     end
   end
+
+  context "mistakenly testing in production" do
+    def in_prod
+      old_environment = Braintree::Configuration.environment
+      Braintree::Configuration.environment = :production
+      begin
+        yield
+      ensure
+        Braintree::Configuration.environment = old_environment
+      end
+    end
+
+
+    it "raises an exception if settle is called in a production environment" do
+      expect do
+        in_prod do
+          Braintree::TestTransaction.settle(nil)
+        end
+      end.to raise_error(Braintree::TestOperationPerformedInProduction)
+    end
+
+    it "raises an exception if settlement_decline is called in a production environment" do
+      expect do
+        in_prod do
+          Braintree::TestTransaction.settlement_decline(nil)
+        end
+      end.to raise_error(Braintree::TestOperationPerformedInProduction)
+    end
+
+    it "raises an exception if settlement_confirm is called in a production environment" do
+      expect do
+        in_prod do
+          Braintree::TestTransaction.settlement_confirm(nil)
+        end
+      end.to raise_error(Braintree::TestOperationPerformedInProduction)
+    end
+  end
+
 end
