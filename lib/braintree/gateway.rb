@@ -73,6 +73,10 @@ module Braintree
       TransactionGateway.new(self)
     end
 
+    def testing
+      TestingGateway.new(self)
+    end
+
     def verification
       CreditCardVerificationGateway.new(self)
     end

@@ -108,20 +108,6 @@ module Braintree
       _handle_transaction_response(response)
     end
 
-    def settle(transaction_id)
-      response = @config.http.put "/transactions/#{transaction_id}/settle"
-      _handle_transaction_response(response)
-    end
-
-    def settlement_confirm(transaction_id)
-      response = @config.http.put "/transactions/#{transaction_id}/settlement_confirm"
-      _handle_transaction_response(response)
-    end
-
-    def settlement_decline(transaction_id)
-      response = @config.http.put "/transactions/#{transaction_id}/settlement_decline"
-      _handle_transaction_response(response)
-    end
 
     def self._clone_signature # :nodoc:
       [:amount, :channel, {:options => [:submit_for_settlement]}]
