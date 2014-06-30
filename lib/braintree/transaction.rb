@@ -102,6 +102,7 @@ module Braintree
     attr_reader :type
     attr_reader :updated_at
     attr_reader :add_ons, :discounts
+    attr_reader :payment_instrument_type
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
     def self.create(attributes)
@@ -238,6 +239,7 @@ module Braintree
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
+      @payment_instrument_type = attributes[:payment_instrument_type]
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.

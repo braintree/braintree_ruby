@@ -133,6 +133,7 @@ describe Braintree::Transaction do
           }
         )
         result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::CreditCard
       end
     end
 
@@ -1205,6 +1206,7 @@ describe Braintree::Transaction do
           )
 
           result.should be_success
+          result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::PayPalAccount
         end
       end
 
