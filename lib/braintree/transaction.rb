@@ -52,6 +52,12 @@ module Braintree
       Unrecognized = "unrecognized"
     end
 
+    module IndustryType
+      Lodging = "lodging"
+
+      All = constants.map { |c| const_get(c) }
+    end
+
     module Type # :nodoc:
       Credit = "credit" # :nodoc:
       Sale = "sale" # :nodoc:
