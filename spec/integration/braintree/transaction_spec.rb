@@ -1129,7 +1129,7 @@ describe Braintree::Transaction do
           },
           :client_token_options => {
             :customer_id => customer.id,
-          },
+          }
         )
         nonce.should_not be_nil
 
@@ -1149,7 +1149,7 @@ describe Braintree::Transaction do
           },
           :client_token_options => {
             :customer_id => customer.id,
-          },
+          }
         )
         nonce.should_not be_nil
 
@@ -1166,7 +1166,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          },
+          }
         )
         nonce.should_not be_nil
 
