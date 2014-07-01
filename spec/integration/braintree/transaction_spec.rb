@@ -1099,8 +1099,8 @@ describe Braintree::Transaction do
     end
 
     context "client API" do
-      it "can create a transaction with a nonce" do
-        nonce = nonce_for_new_credit_card(
+      it "can create a transaction with a shared card nonce" do
+        nonce = nonce_for_new_payment_method(
           :credit_card => {
             :number => "4111111111111111",
             :expiration_month => "11",
@@ -1108,6 +1108,66 @@ describe Braintree::Transaction do
           },
           :share => true
         )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+        result.success?.should == true
+      end
+
+      it "can create a transaction with a vaulted card nonce" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => "4111111111111111",
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          },
+          :client_token_options => {
+            :customer_id => customer.id,
+          },
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+        result.success?.should == true
+      end
+
+      it "can create a transaction with a vaulted PayPal account" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          },
+          :client_token_options => {
+            :customer_id => customer.id,
+          },
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+        result.success?.should == true
+      end
+
+      it "can create a transaction with a params nonce with PayPal account params" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          },
+        )
+        nonce.should_not be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",

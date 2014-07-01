@@ -65,7 +65,7 @@ describe Braintree::Subscription do
     end
 
     it "creates a subscription when given a payment_method_nonce" do
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_month => "11",
@@ -691,7 +691,7 @@ describe Braintree::Subscription do
     end
 
     it "allows changing the payment_method by payment_method_nonce" do
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "05/2010"

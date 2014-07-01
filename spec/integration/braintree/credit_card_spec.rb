@@ -456,7 +456,7 @@ describe Braintree::CreditCard do
 
     context "client API" do
       it "adds credit card to an existing customer using a payment method nonce" do
-        nonce = nonce_for_new_credit_card(
+        nonce = nonce_for_new_payment_method(
           :credit_card => {
             :number => "4111111111111111",
             :expiration_month => "11",
@@ -1166,7 +1166,7 @@ describe Braintree::CreditCard do
   describe "self.from_nonce" do
     it "finds the payment method with the given nonce" do
       customer = Braintree::Customer.create!
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -1181,7 +1181,7 @@ describe Braintree::CreditCard do
     end
 
     it "does not find a payment method for an unlocked nonce that points to a shared credit card" do
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -1201,7 +1201,7 @@ describe Braintree::CreditCard do
         :shared_customer_identifier_type => "testing"
       )
 
-      client.add_card(
+      client.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -1210,9 +1210,9 @@ describe Braintree::CreditCard do
         :share => true
       )
 
-      response = client.get_cards
+      response = client.get_payment_methods
       body = JSON.parse(response.body)
-      nonce = body["creditCards"].first["nonce"]
+      nonce = body["paymentMethods"].first["nonce"]
 
       expect do
         Braintree::CreditCard.from_nonce(nonce)
@@ -1221,7 +1221,7 @@ describe Braintree::CreditCard do
 
     it "does not find the payment method for a consumednonce" do
       customer = Braintree::Customer.create!
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
