@@ -15,7 +15,7 @@ describe Braintree::ClientToken do
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.get_cards
+      response = http.get_payment_methods
 
       response.code.should == "200"
     end
@@ -60,7 +60,7 @@ describe Braintree::ClientToken do
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4000111111111115",
           :expiration_month => "11",
@@ -90,7 +90,7 @@ describe Braintree::ClientToken do
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -100,7 +100,7 @@ describe Braintree::ClientToken do
 
       response.code.should == "201"
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4005519200000004",
           :expiration_month => "11",
@@ -130,7 +130,7 @@ describe Braintree::ClientToken do
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -150,7 +150,7 @@ describe Braintree::ClientToken do
 
       http.fingerprint = second_client_token["authorizationFingerprint"]
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",

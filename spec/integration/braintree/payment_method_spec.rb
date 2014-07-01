@@ -290,7 +290,7 @@ describe Braintree::PaymentMethod do
     it "deletes a credit card" do
       token = "CREDIT_CARD_#{rand(36**3).to_s(36)}"
       customer = Braintree::Customer.create!
-      nonce = nonce_for_new_credit_card({
+      nonce = nonce_for_new_payment_method({
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",

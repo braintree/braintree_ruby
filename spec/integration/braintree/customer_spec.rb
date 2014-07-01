@@ -383,7 +383,7 @@ describe Braintree::Customer do
 
     context "client API" do
       it "can create a customer with a payment method nonce" do
-        nonce = nonce_for_new_credit_card(
+        nonce = nonce_for_new_payment_method(
           :credit_card => {
             :number => "4111111111111111",
             :expiration_month => "11",
