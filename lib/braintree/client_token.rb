@@ -2,10 +2,12 @@ require 'json'
 
 module Braintree
   module ClientToken
+    DEFAULT_VERSION = 2
+
     def self.generate(options={})
       _validate_options(options)
 
-      options[:version] ||= 2
+      options[:version] ||= DEFAULT_VERSION
 
       Configuration.gateway.client_token.generate(options)
     end
