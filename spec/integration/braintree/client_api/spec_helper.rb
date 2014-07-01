@@ -1,10 +1,16 @@
 require 'json'
 
+def decode_client_token(raw_client_token)
+  decoded_client_token_string = Base64.decode64(raw_client_token)
+  JSON.parse(decoded_client_token_string)
+end
+
 def nonce_for_new_credit_card(options)
   client_token_options = options.delete(:client_token_options) || {}
-  client_token = Braintree::ClientToken.generate(client_token_options)
+  raw_client_token = Braintree::ClientToken.generate(client_token_options)
+  client_token = decode_client_token(raw_client_token)
   client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-    :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+    :authorization_fingerprint => client_token["authorizationFingerprint"],
     :shared_customer_identifier => "fake_identifier",
     :shared_customer_identifier_type => "testing"
   )
@@ -20,9 +26,10 @@ def nonce_for_new_credit_card(options)
 end
 
 def nonce_for_paypal_account(paypal_account_details)
-  client_token = Braintree::ClientToken.generate
+  raw_client_token = Braintree::ClientToken.generate
+  client_token = decode_client_token(raw_client_token)
   client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-    :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"]
+    :authorization_fingerprint => client_token["authorizationFingerprint"]
   )
 
   response = client.create_paypal_account(paypal_account_details)

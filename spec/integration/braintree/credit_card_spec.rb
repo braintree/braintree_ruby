@@ -1194,9 +1194,10 @@ describe Braintree::CreditCard do
     end
 
     it "does not find the payment method for a locked nonce" do
-      client_token = Braintree::ClientToken.generate
+      raw_client_token = Braintree::ClientToken.generate
+      client_token = decode_client_token(raw_client_token)
       client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+        :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )

@@ -4,6 +4,9 @@ module Braintree
   module ClientToken
     def self.generate(options={})
       _validate_options(options)
+
+      options[:version] ||= 2
+
       Configuration.gateway.client_token.generate(options)
     end
 

@@ -6,8 +6,9 @@ describe Braintree::PaymentMethod do
     it "creates a payment method from a vaulted credit card nonce" do
       config = Braintree::Configuration.instantiate
       customer = Braintree::Customer.create.customer
-      client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
-      authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+      raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
+      client_token = decode_client_token(raw_client_token)
+      authorization_fingerprint = client_token["authorizationFingerprint"]
       http = ClientApiHttp.new(
         config,
         :authorization_fingerprint => authorization_fingerprint,
@@ -39,8 +40,9 @@ describe Braintree::PaymentMethod do
     it "creates a payment method from an unvalidated credit card nonce" do
       config = Braintree::Configuration.instantiate
       customer = Braintree::Customer.create.customer
-      client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
-      authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+      raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
+      client_token = decode_client_token(raw_client_token)
+      authorization_fingerprint = client_token["authorizationFingerprint"]
       http = ClientApiHttp.new(
         config,
         :authorization_fingerprint => authorization_fingerprint,
@@ -163,8 +165,9 @@ describe Braintree::PaymentMethod do
       it "returns the SEPA bank account behind the nonce" do
         config = Braintree::Configuration.instantiate
         customer = Braintree::Customer.create.customer
-        client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business)
-        authorization_fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+        raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business)
+        client_token = decode_client_token(raw_client_token)
+        authorization_fingerprint = client_token["authorizationFingerprint"]
         http = ClientApiHttp.new(
           config,
           :authorization_fingerprint => authorization_fingerprint
