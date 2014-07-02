@@ -165,16 +165,16 @@ describe Braintree::Transaction, "search" do
             :bic => "DEUTDEFF",
             :locale => "en-US",
             :billingAddress =>  {
-            :region => "Hesse",
-            :country_name => "Germany"
-          }
+              :region => "Hesse",
+              :country_name => "Germany"
+            }
           )
           nonce.should_not == nil
 
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => nonce,
-            :merchant_account_id => "sepa_ma"
+            :merchant_account_id => "fake_sepa_ma"
           )
 
           collection = Braintree::Transaction.search do |search|
