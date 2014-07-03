@@ -18,4 +18,14 @@ describe Braintree::PayPalAccount do
       Braintree::PayPalAccount._new(:gateway, :default => false).default?.should == false
     end
   end
+
+  describe "timestamps" do
+    it "exposes created_at and updated_at" do
+      now = Time.now
+      paypal_account = Braintree::PayPalAccount._new(:gateway, :updated_at => now, :created_at => now)
+
+      paypal_account.created_at.should == now
+      paypal_account.updated_at.should == now
+    end
+  end
 end
