@@ -22,6 +22,8 @@ describe Braintree::PayPalAccount do
       paypal_account.token.should == payment_method_token
       paypal_account.email.should == "jane.doe@example.com"
       paypal_account.image_url.should_not be_nil
+      paypal_account.created_at.should_not be_nil
+      paypal_account.updated_at.should_not be_nil
     end
 
     it "raises if the payment method token is not found" do
