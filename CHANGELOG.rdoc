@@ -1,3 +1,6 @@
+== 2.31.0
+* Add support for lodging industry data
+
 == 2.30.2
 * Ensure that TR Data is encoded correctly
 
