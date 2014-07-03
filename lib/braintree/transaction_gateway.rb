@@ -130,7 +130,7 @@ module Braintree
         {:options => [:hold_in_escrow, :store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone]},
-        {:paypal_account => [:consent_code, :email, :token, :paypal_data]},
+        {:paypal_account => [:email, :token, :paypal_data]},
         {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date]}]}
       ]
     end

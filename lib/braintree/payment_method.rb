@@ -2,7 +2,7 @@ module Braintree
   class PaymentMethod
     include BaseModule
 
-    attr_reader :email, :consent_code, :token
+    attr_reader :email, :token
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
