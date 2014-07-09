@@ -45,6 +45,8 @@ module Braintree
       CustomerIdIsRequired = "91704"
       CvvIsInvalid = "81707"
       CvvIsRequired = "81706"
+      CvvVerificationFailed = "81736"
+      PostalCodeVerificationFailed = "81737"
       DuplicateCardExists = "81724"
       ExpirationDateConflict = "91708"
       ExpirationDateIsInvalid = "81710"
@@ -207,6 +209,7 @@ module Braintree
       CannotRefundCredit = "91505"
       CannotRefundUnlessSettled = "91506"
       CannotRefundWithPendingMerchantAccount = "91559"
+      CannotRefundSettlingTransaction = "91574"
       CannotRefundWithSuspendedMerchantAccount = "91538"
       CannotReleaseFromEscrow = "91561"
       CannotSimulateTransactionSettlement = "91575"
@@ -234,6 +237,8 @@ module Braintree
       PaymentMethodNonceUnknown = "91565"
       PaymentMethodTokenCardTypeIsNotAccepted = "91517"
       PaymentMethodTokenIsInvalid = "91518"
+      PaymentInstrumentNotSupportedByMerchantAccount = "91577"
+      PayPalNotEnabled = "91576"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
       ProcessorDoesNotSupportCredits = "91546"
@@ -388,6 +393,7 @@ module Braintree
       MakeDefaultRequiresCustomerId = "92801"
       ProxyMerchantDoesNotExist = "92805"
       VerifyCardRequiresCustomerId = "92802"
+      UnsupportedVersion = "92806"
     end
 
     module PaymentMethod
@@ -396,6 +402,7 @@ module Braintree
       NonceIsInvalid = "93102"
       NonceIsRequired = "93103"
       PaymentMethodParamsAreRequired = "93101"
+      CannotForwardPaymentMethodType = "93107"
     end
 
     module AuthorizationFingerprint
