@@ -8,5 +8,5 @@ else
   rvm use $1 --create --install
   gem install bundler
   bundle install
-  bundle exec rake _0.8.7_ --trace
+  bundle exec rake --trace
 fi

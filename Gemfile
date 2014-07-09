@@ -9,6 +9,6 @@ else
   gem 'libxml-ruby', '2.6.0'
 end
 
-gem 'rake_commit', '0.11.0'
-gem 'rake', '0.8.7'
+gem 'rake_commit', '1.0.1'
+gem 'rake', '10.3.2'
 gem 'rspec', '1.2.9'

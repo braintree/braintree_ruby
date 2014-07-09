@@ -1,20 +1,21 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/spec_helper")
 
-describe Braintree::ClientToken do
 
+describe Braintree::ClientToken do
   describe "self.generate" do
     it "generates a fingerprint that the gateway accepts" do
       config = Braintree::Configuration.instantiate
-      client_token = Braintree::ClientToken.generate
+      raw_client_token = Braintree::ClientToken.generate
+      client_token = decode_client_token(raw_client_token)
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+        :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.get_cards
+      response = http.get_payment_methods
 
       response.code.should == "200"
     end
@@ -25,24 +26,41 @@ describe Braintree::ClientToken do
       end.to raise_error(ArgumentError)
     end
 
+    describe "version" do
+      it "allows a client token version to be specified" do
+        config = Braintree::Configuration.instantiate
+        client_token_string = Braintree::ClientToken.generate(:version => 1)
+        client_token = JSON.parse(client_token_string)
+        client_token["version"].should == 1
+      end
+
+      it "defaults to 2" do
+        config = Braintree::Configuration.instantiate
+        client_token_string = Braintree::ClientToken.generate
+        client_token = decode_client_token(client_token_string)
+        client_token["version"].should == "2"
+      end
+    end
+
     it "can pass verify_card" do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
-      client_token = Braintree::ClientToken.generate(
+      raw_client_token = Braintree::ClientToken.generate(
         :customer_id => result.customer.id,
         :options => {
           :verify_card => true
         }
       )
+      client_token = decode_client_token(raw_client_token)
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+        :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4000111111111115",
           :expiration_month => "11",
@@ -57,21 +75,22 @@ describe Braintree::ClientToken do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
       customer_id = result.customer.id
-      client_token = Braintree::ClientToken.generate(
+      raw_client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id,
         :options => {
           :make_default => true
         }
       )
+      client_token = decode_client_token(raw_client_token)
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+        :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -81,7 +100,7 @@ describe Braintree::ClientToken do
 
       response.code.should == "201"
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4005519200000004",
           :expiration_month => "11",
@@ -99,18 +118,19 @@ describe Braintree::ClientToken do
       config = Braintree::Configuration.instantiate
       result = Braintree::Customer.create
       customer_id = result.customer.id
-      client_token = Braintree::ClientToken.generate(
+      raw_client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id
       )
+      client_token = decode_client_token(raw_client_token)
 
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+        :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -120,16 +140,17 @@ describe Braintree::ClientToken do
 
       response.code.should == "201"
 
-      client_token = Braintree::ClientToken.generate(
+      second_raw_client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id,
         :options => {
           :fail_on_duplicate_payment_method => true
         }
       )
+      second_client_token = decode_client_token(second_raw_client_token)
 
-      http.fingerprint = JSON.parse(client_token)["authorizationFingerprint"]
+      http.fingerprint = second_client_token["authorizationFingerprint"]
 
-      response = http.add_card(
+      response = http.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -138,6 +159,48 @@ describe Braintree::ClientToken do
       )
 
       response.code.should == "422"
+    end
+
+    it "can pass merchant_account_id" do
+      raw_client_token = Braintree::ClientToken.generate(
+        :merchant_account_id => "my_merchant_account"
+      )
+      client_token = decode_client_token(raw_client_token)
+
+      client_token["merchantAccountId"].should == "my_merchant_account"
+    end
+
+    context "paypal" do
+      it "includes the paypal options for a paypal merchant" do
+        with_altpay_merchant do
+          raw_client_token = Braintree::ClientToken.generate
+          client_token = decode_client_token(raw_client_token)
+
+          client_token["paypal"]["displayName"].should == "merchant who has paypal and sepa enabled"
+          client_token["paypal"]["clientId"].should match(/.+/)
+          client_token["paypal"]["privacyUrl"].should match("http://www.example.com/privacy_policy")
+          client_token["paypal"]["userAgreementUrl"].should match("http://www.example.com/user_agreement")
+          client_token["paypal"]["baseUrl"].should_not be_nil
+        end
+      end
+    end
+
+    context "SEPA" do
+      it "includes the SEPA options for a SEPA merchant" do
+        with_altpay_merchant do
+          result = Braintree::Customer.create
+          customer_id = result.customer.id
+
+          raw_client_token = Braintree::ClientToken.generate(
+            :customer_id => customer_id,
+            :sepa_mandate_acceptance_location => "Hamburg, Germany",
+            :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business
+          )
+          client_token = decode_client_token(raw_client_token)
+
+          client_token["authorizationFingerprint"].should include("sepa_mandate_type=business")
+        end
+      end
     end
   end
 end

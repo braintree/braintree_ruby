@@ -28,6 +28,9 @@ describe Braintree::Customer do
       output.should include(%q(last_name: "Smith"))
       output.should include(%q(phone: "802-483-5932"))
       output.should include(%q(website: "patrick.smith.com"))
+      output.should include(%q(addresses: []))
+      output.should include(%q(credit_cards: []))
+      output.should include(%q(paypal_accounts: []))
       output.should include(%Q(created_at: #{customer.created_at.inspect}))
       output.should include(%Q(updated_at: #{customer.updated_at.inspect}))
     end
@@ -82,6 +85,7 @@ describe Braintree::Customer do
         :phone,
         :website,
         :device_data,
+        :payment_method_nonce,
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,
@@ -129,6 +133,7 @@ describe Braintree::Customer do
         :phone,
         :website,
         :device_data,
+        :payment_method_nonce,
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,
@@ -207,13 +212,28 @@ describe Braintree::Customer do
       customer = Braintree::Customer._new(
         :gateway,
         :credit_cards => [
-          {:token => "pm1"},
-          {:token => "pm2"}
+          {:token => "credit_card_1"},
+          {:token => "credit_card_2"}
+        ],
+        :paypal_accounts => [
+          {:token => "paypal_1"},
+          {:token => "paypal_2"}
         ]
       )
+
       customer.credit_cards.size.should == 2
-      customer.credit_cards[0].token.should == "pm1"
-      customer.credit_cards[1].token.should == "pm2"
+      customer.credit_cards[0].token.should == "credit_card_1"
+      customer.credit_cards[1].token.should == "credit_card_2"
+
+      customer.paypal_accounts.size.should == 2
+      customer.paypal_accounts[0].token.should == "paypal_1"
+      customer.paypal_accounts[1].token.should == "paypal_2"
+
+      customer.payment_methods.count.should == 4
+      customer.payment_methods.map(&:token).should include("credit_card_1")
+      customer.payment_methods.map(&:token).should include("credit_card_2")
+      customer.payment_methods.map(&:token).should include("paypal_1")
+      customer.payment_methods.map(&:token).should include("paypal_2")
     end
   end
 

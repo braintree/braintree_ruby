@@ -1,3 +1,6 @@
+== 2.32.0
+* Official support for v.zero SDKs.
+
 == 2.31.0
 * Add support for lodging industry data
 

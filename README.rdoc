@@ -45,7 +45,7 @@ Example of using non-bang method:
 
   result = Braintree::Customer.create(:first_name => "Josh")
   if result.success?
-    puts "Created customer #{result.customer.id}
+    puts "Created customer #{result.customer.id}"
   else
     puts "Validations failed"
     result.errors.for(:customer).each do |error|
@@ -57,7 +57,7 @@ Example of using bang method:
 
   begin
     customer = Braintree::Customer.create!(:first_name => "Josh")
-    puts "Created customer #{customer.id}
+    puts "Created customer #{customer.id}"
   rescue Braintree::ValidationsFailed
     puts "Validations failed"
   end
