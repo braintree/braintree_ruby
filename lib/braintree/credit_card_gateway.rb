@@ -25,7 +25,7 @@ module Braintree
     end
 
     def delete(token)
-      @config.http.delete("/payment_methods/#{token}")
+      @config.http.delete("/payment_methods/credit_card/#{token}")
     end
 
     def expired(options = {})
@@ -42,7 +42,7 @@ module Braintree
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
-      response = @config.http.get "/payment_methods/#{token}"
+      response = @config.http.get "/payment_methods/credit_card/#{token}"
       CreditCard._new(@gateway, response[:credit_card])
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
@@ -58,7 +58,7 @@ module Braintree
 
     def update(token, attributes)
       Util.verify_keys(CreditCardGateway._update_signature, attributes)
-      _do_update(:put, "/payment_methods/#{token}", :credit_card => attributes)
+      _do_update(:put, "/payment_methods/credit_card/#{token}", :credit_card => attributes)
     end
 
     # Deprecated

@@ -4,6 +4,6 @@ module Braintree
     Minor = 31
     Tiny = 0
 
-    String = "#{Major}.#{Minor}.#{Tiny}"
+    String = "#{Major}.#{Minor}.#{Tiny}.beta"
   end
 end

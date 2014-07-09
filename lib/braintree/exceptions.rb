@@ -55,5 +55,7 @@ module Braintree # :nodoc:
       inspect
     end
   end
+
+  class TestOperationPerformedInProduction < BraintreeError; end
 end
 

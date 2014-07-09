@@ -4,7 +4,7 @@ module Braintree
     include BaseModule
 
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
-      :phone, :updated_at, :website, :custom_fields
+      :phone, :updated_at, :website, :custom_fields, :paypal_accounts
 
     # See http://www.braintreepayments.com/docs/ruby/customers/search
     def self.all
@@ -107,6 +107,7 @@ module Braintree
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @credit_cards = (@credit_cards || []).map { |pm| CreditCard._new gateway, pm }
+      @paypal_accounts = (@paypal_accounts || []).map { |pm| PayPalAccount._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
     end
@@ -121,9 +122,17 @@ module Braintree
       return_object_or_raise(:transaction) { credit(transaction_attributes) }
     end
 
-    # Returns the default credit card of the customer
+    # Deprecated. Use Braintree::Customer.default_payment_method
+    #
+    # Returns the customer's default credit card.
     def default_credit_card
-       @credit_cards.find {|credit_card| credit_card.default? }
+      warn "[DEPRECATED] Customer#default_credit_card is deprecated. Please use Customer#default_payment_method"
+      @credit_cards.find { |credit_card| credit_card.default? }
+    end
+
+    # Returns the customer's default payment method.
+    def default_payment_method
+      payment_methods.find { |payment_instrument| payment_instrument.default? }
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/delete
@@ -131,9 +140,14 @@ module Braintree
       @gateway.customer.delete(id)
     end
 
+    # Returns the customer's payment methods
+    def payment_methods
+      @credit_cards.dup + @paypal_accounts.dup
+    end
+
     def inspect # :nodoc:
       first = [:id]
-      last = [:addresses, :credit_cards]
+      last = [:addresses, :credit_cards, :paypal_accounts]
       order = first + (self.class._attributes - first - last) + last
       nice_attributes = order.map do |attr|
         "#{attr}: #{send(attr).inspect}"

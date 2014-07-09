@@ -41,8 +41,20 @@ module Braintree
       PlanGateway.new(self)
     end
 
+    def payment_method
+      PaymentMethodGateway.new(self)
+    end
+
+    def paypal_account
+      PayPalAccountGateway.new(self)
+    end
+
     def merchant_account
       MerchantAccountGateway.new(self)
+    end
+
+    def sepa_bank_account
+      SEPABankAccountGateway.new(self)
     end
 
     def settlement_batch_summary
@@ -59,6 +71,10 @@ module Braintree
 
     def transaction
       TransactionGateway.new(self)
+    end
+
+    def testing
+      TestingGateway.new(self)
     end
 
     def verification
