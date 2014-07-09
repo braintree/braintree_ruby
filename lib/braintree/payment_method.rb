@@ -1,0 +1,17 @@
+module Braintree
+  class PaymentMethod
+    include BaseModule
+
+    def self.create(attributes)
+      Configuration.gateway.payment_method.create(attributes)
+    end
+
+    def self.find(token)
+      Configuration.gateway.payment_method.find(token)
+    end
+
+    def self.delete(token)
+      Configuration.gateway.payment_method.delete(token)
+    end
+  end
+end

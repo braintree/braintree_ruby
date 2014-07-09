@@ -165,7 +165,7 @@ module Braintree
       @gateway.credit_card.delete(token)
     end
 
-    # Returns true if this credit card is the customer's default.
+    # Returns true if this credit card is the customer's default payment method.
     def default?
       @default
     end

@@ -7,7 +7,7 @@ module Braintree
 
     def sample_notification(kind, id)
       payload = Base64.encode64(_sample_xml(kind, id))
-      signature_string = "#{Braintree::Configuration.public_key}|#{Braintree::Digest.hexdigest(Braintree::Configuration.private_key, payload)}"
+      signature_string = "#{@config.public_key}|#{Braintree::Digest.hexdigest(@config.private_key, payload)}"
 
       return signature_string, payload
     end

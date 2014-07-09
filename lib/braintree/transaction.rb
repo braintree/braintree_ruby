@@ -35,6 +35,8 @@ module Braintree
       Failed                 = 'failed'
       ProcessorDeclined      = 'processor_declined'
       Settled                = 'settled'
+      SettlementConfirmed    = 'settlement_confirmed'
+      SettlementDeclined     = 'settlement_declined'
       Settling               = 'settling'
       SubmittedForSettlement = 'submitted_for_settlement'
       Voided                 = 'voided'
@@ -77,6 +79,7 @@ module Braintree
     attr_reader :order_id
     attr_reader :channel
     attr_reader :billing_details, :shipping_details
+    attr_reader :paypal_details
     attr_reader :plan_id
     # The authorization code from the processor.
     attr_reader :processor_authorization_code
@@ -99,6 +102,7 @@ module Braintree
     attr_reader :type
     attr_reader :updated_at
     attr_reader :add_ons, :discounts
+    attr_reader :payment_instrument_type
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
     def self.create(attributes)
@@ -230,10 +234,12 @@ module Braintree
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @tax_amount = Util.to_big_decimal(tax_amount)
       @descriptor = Descriptor.new(@descriptor)
+      @paypal_details = PayPalDetails.new(@paypal)
       disputes.map! { |attrs| Dispute._new(attrs) } if disputes
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
+      @payment_instrument_type = attributes[:payment_instrument_type]
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.
