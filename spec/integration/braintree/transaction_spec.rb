@@ -133,6 +133,179 @@ describe Braintree::Transaction do
           }
         )
         result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::CreditCard
+      end
+    end
+
+    describe "industry data" do
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
+            }
+          }
+        )
+        result.success?.should be_true
+      end
+
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
+            }
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
+      end
+    end
+
+    describe "industry data" do
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
+            }
+          }
+        )
+        result.success?.should be_true
+      end
+
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
+            }
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
+      end
+    end
+
+    describe "industry data" do
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
+            }
+          }
+        )
+        result.success?.should be_true
+      end
+
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
+            }
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
+      end
+    end
+
+    describe "industry data" do
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
+            }
+          }
+        )
+        result.success?.should be_true
+      end
+
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
+            }
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
       end
     end
 
@@ -1056,8 +1229,8 @@ describe Braintree::Transaction do
     end
 
     context "client API" do
-      it "can create a transaction with a nonce" do
-        nonce = nonce_for_new_credit_card(
+      it "can create a transaction with a shared card nonce" do
+        nonce = nonce_for_new_payment_method(
           :credit_card => {
             :number => "4111111111111111",
             :expiration_month => "11",
@@ -1065,14 +1238,381 @@ describe Braintree::Transaction do
           },
           :share => true
         )
+        nonce.should_not be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => nonce
         )
+        result.success?.should == true
+      end
+
+      it "can create a transaction with a vaulted card nonce" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => "4111111111111111",
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          },
+          :client_token_options => {
+            :customer_id => customer.id,
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+        result.success?.should == true
+      end
+
+      it "can create a transaction with a vaulted PayPal account" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          },
+          :client_token_options => {
+            :customer_id => customer.id,
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+        result.success?.should == true
+      end
+
+      it "can create a transaction with a params nonce with PayPal account params" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce
+        )
+        result.success?.should == true
+      end
+    end
+
+    context "three_d_secure" do
+      it "can create a transaction with a three_d_secure token" do
+        three_d_secure_token = SpecHelper.create_3ds_verification(
+          SpecHelper::ThreeDSecureMerchantAccountId,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2012"
+        )
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => three_d_secure_token
+        )
 
         result.success?.should == true
+      end
+
+      it "can create a transaction without a three_d_secure token" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          }
+        )
+        result.success?.should == true
+      end
+
+      it "returns an error if sent a nil three_d_secure token" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => nil
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid
+      end
+
+      it "returns an error if 3ds lookup data does not match txn data" do
+        three_d_secure_token = SpecHelper.create_3ds_verification(
+          SpecHelper::ThreeDSecureMerchantAccountId,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2012"
+        )
+
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_token => three_d_secure_token
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
+      end
+    end
+
+    context "paypal" do
+      context "using a vaulted paypal account payment_method_token" do
+        it "can create a transaction" do
+          payment_method_result = Braintree::PaymentMethod.create(
+            :customer_id => Braintree::Customer.create.customer.id,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+          )
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_token => payment_method_result.payment_method.token
+          )
+
+          result.should be_success
+          result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::PayPalAccount
+        end
+      end
+
+      context "future" do
+        it "can create a paypal transaction with a nonce without vaulting" do
+          payment_method_token = rand(36**3).to_s(36)
+          nonce = nonce_for_paypal_account(
+            :consent_code => "PAYPAL_CONSENT_CODE",
+            :token => payment_method_token
+          )
+
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => nonce
+          )
+
+          result.should be_success
+
+          expect do
+            Braintree::PaymentMethod.find(payment_method_token)
+          end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{payment_method_token}\" not found")
+        end
+
+        it "can create a paypal transaction and vault a paypal account" do
+          payment_method_token = rand(36**3).to_s(36)
+          nonce = nonce_for_paypal_account(
+            :consent_code => "PAYPAL_CONSENT_CODE",
+            :token => payment_method_token
+          )
+
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => nonce,
+            :options => {:store_in_vault => true}
+          )
+
+          result.success?.should == true
+
+          found_paypal_account = Braintree::PaymentMethod.find(payment_method_token)
+          found_paypal_account.should be_a(Braintree::PayPalAccount)
+          found_paypal_account.token.should == payment_method_token
+        end
+      end
+
+      context "onetime" do
+        it "can create a paypal transaction with a nonce" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+          )
+
+          result.should be_success
+        end
+
+        it "can create a paypal transaction and does not vault even if asked to" do
+          payment_method_token = rand(36**3).to_s(36)
+          nonce = nonce_for_paypal_account(
+            :access_token => "PAYPAL_ACCESS_TOKEN",
+            :token => payment_method_token
+          )
+
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => nonce,
+            :options => {:store_in_vault => true}
+          )
+
+          result.success?.should == true
+
+          expect do
+            Braintree::PaymentMethod.find(payment_method_token)
+          end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{payment_method_token}\" not found")
+        end
+      end
+
+      context "submit" do
+        it "submits for settlement if instructed to do so" do
+          result = Braintree::Transaction.sale(
+            :amount => "100",
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :options => {
+              :submit_for_settlement => true
+            }
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+      end
+
+      context "void" do
+        it "successfully voids a paypal transaction that's been authorized" do
+          sale_transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :options => {
+              :submit_for_settlement => true
+            }
+          )
+
+          void_transaction = Braintree::Transaction.void!(sale_transaction.id)
+          void_transaction.should == sale_transaction
+          void_transaction.status.should == Braintree::Transaction::Status::Voided
+        end
+
+        it "fails to void a paypal transaction that's been declined" do
+          sale_transaction = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Decline,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :options => {
+              :submit_for_settlement => true
+            }
+          ).transaction
+
+          expect do
+            Braintree::Transaction.void!(sale_transaction.id)
+          end.to raise_error(Braintree::ValidationsFailed)
+        end
+      end
+
+      describe "refund" do
+        context "partial refunds" do
+          it "allows partial refunds" do
+            transaction = create_paypal_transaction_for_refund
+
+            result = Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
+            result.should be_success
+            result.transaction.type.should == "credit"
+          end
+
+          it "allows multiple partial refunds" do
+            transaction = create_paypal_transaction_for_refund
+
+            transaction_1 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
+            transaction_2 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
+
+            transaction = Braintree::Transaction.find(transaction.id)
+            transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+          end
+        end
+
+        it "returns a successful result if successful" do
+          transaction = create_paypal_transaction_for_refund
+
+          result = Braintree::Transaction.refund(transaction.id)
+          result.success?.should == true
+          result.transaction.type.should == "credit"
+        end
+
+        it "assigns the refund_id on the original transaction" do
+          transaction = create_paypal_transaction_for_refund
+          refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+          transaction = Braintree::Transaction.find(transaction.id)
+
+          transaction.refund_id.should == refund_transaction.id
+        end
+
+        it "assigns the refunded_transaction_id to the original transaction" do
+          transaction = create_paypal_transaction_for_refund
+          refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
+
+          refund_transaction.refunded_transaction_id.should == transaction.id
+        end
+
+        it "returns an error if already refunded" do
+          transaction = create_paypal_transaction_for_refund
+          result = Braintree::Transaction.refund(transaction.id)
+          result.success?.should == true
+          result = Braintree::Transaction.refund(transaction.id)
+          result.success?.should == false
+          result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+        end
+
+        it "returns an error result if unsettled" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :options => {
+              :submit_for_settlement => true
+            }
+          )
+          result = Braintree::Transaction.refund(transaction.id)
+          result.success?.should == false
+          result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled
+        end
+      end
+
+      context "handling errors" do
+        it "handles bad unvalidated nonces" do
+          nonce = nonce_for_paypal_account(
+            :access_token => "PAYPAL_ACCESS_TOKEN",
+            :consent_code => "PAYPAL_CONSENT_CODE"
+          )
+
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => nonce
+          )
+
+          result.should_not be_success
+          result.errors.for(:transaction).for(:paypal_account).first.code.should == "82903"
+        end
+
+        it "handles non-existent nonces" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => "NON_EXISTENT_NONCE"
+          )
+
+          result.should_not be_success
+          result.errors.for(:transaction).first.code.should == "91565"
+        end
       end
     end
   end
@@ -1229,7 +1769,7 @@ describe Braintree::Transaction do
         :customer => {
           :first_name => "Dan",
           :last_name => "Smith",
-          :company => "Braintree Payment Solutions",
+          :company => "Braintree",
           :email => "dan@example.com",
           :phone => "419-555-1234",
           :fax => "419-555-1235",
@@ -1281,7 +1821,7 @@ describe Braintree::Transaction do
       transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
-      transaction.customer_details.company.should == "Braintree Payment Solutions"
+      transaction.customer_details.company.should == "Braintree"
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
@@ -1466,7 +2006,7 @@ describe Braintree::Transaction do
 
     it "can specify the customer id and payment method token" do
       customer_id = "customer_#{rand(10**10)}"
-      payment_mehtod_token = "credit_card_#{rand(10**10)}"
+      payment_method_token = "credit_card_#{rand(10**10)}"
       result = Braintree::Transaction.sale(
         :amount => "100",
         :customer => {
@@ -1475,7 +2015,7 @@ describe Braintree::Transaction do
           :last_name => "Williams"
         },
         :credit_card => {
-          :token => payment_mehtod_token,
+          :token => payment_method_token,
           :number => "5105105105105100",
           :expiration_date => "05/2012"
         },
@@ -1487,8 +2027,8 @@ describe Braintree::Transaction do
       transaction = result.transaction
       transaction.customer_details.id.should == customer_id
       transaction.vault_customer.id.should == customer_id
-      transaction.credit_card_details.token.should == payment_mehtod_token
-      transaction.vault_credit_card.token.should == payment_mehtod_token
+      transaction.credit_card_details.token.should == payment_method_token
+      transaction.vault_credit_card.token.should == payment_method_token
     end
 
     it "can specify existing shipping address" do
@@ -1939,7 +2479,7 @@ describe Braintree::Transaction do
           :customer => {
             :first_name => "Dan",
             :last_name => "Smith",
-            :company => "Braintree Payment Solutions",
+            :company => "Braintree",
             :email => "dan@example.com",
             :phone => "419-555-1234",
             :fax => "419-555-1235",
@@ -1994,7 +2534,7 @@ describe Braintree::Transaction do
       transaction.cvv_response_code.should == "M"
       transaction.customer_details.first_name.should == "Dan"
       transaction.customer_details.last_name.should == "Smith"
-      transaction.customer_details.company.should == "Braintree Payment Solutions"
+      transaction.customer_details.company.should == "Braintree"
       transaction.customer_details.email.should == "dan@example.com"
       transaction.customer_details.phone.should == "419-555-1234"
       transaction.customer_details.fax.should == "419-555-1235"
@@ -2547,6 +3087,19 @@ describe Braintree::Transaction do
     Braintree::Transaction.find(transaction.id)
   end
 
+  def create_paypal_transaction_for_refund
+    transaction = Braintree::Transaction.sale!(
+      :amount => Braintree::Test::TransactionAmounts::Authorize,
+      :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+      :options => {
+        :submit_for_settlement => true
+      }
+    )
+
+    Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
+    Braintree::Transaction.find(transaction.id)
+  end
+
   def create_escrowed_transcation
     transaction = Braintree::Transaction.sale!(
       :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -2555,8 +3108,8 @@ describe Braintree::Transaction do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009"
       },
-        :service_fee_amount => '1.00',
-        :options => { :hold_in_escrow => true }
+      :service_fee_amount => '1.00',
+      :options => { :hold_in_escrow => true }
     )
 
     response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
@@ -2615,6 +3168,71 @@ describe Braintree::Transaction do
         )
         result.success?.should == true
         result.transaction.credit_card_details.venmo_sdk?.should == false
+      end
+    end
+  end
+
+  context "paypal" do
+    it "can create a transaction for a paypal account" do
+      result = Braintree::Transaction.sale(
+        :amount => "10.00",
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+      )
+      result.success?.should == true
+      result.transaction.paypal_details.payer_email.should == "payer@example.com"
+      result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
+      result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
+      result.transaction.paypal_details.image_url.should_not be_nil
+    end
+
+    it "can vault a paypal account on a transaction" do
+      result = Braintree::Transaction.sale(
+        :amount => "10.00",
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :options => {
+          :store_in_vault => true
+        }
+      )
+      result.success?.should == true
+      result.transaction.paypal_details.token.should_not be_nil
+      result.transaction.paypal_details.payer_email.should == "payer@example.com"
+      result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
+      result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
+    end
+
+    it "can create a transaction from a vaulted paypal account" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :customer_id => customer.id
+      )
+
+      result.should be_success
+      result.payment_method.should be_a(Braintree::PayPalAccount)
+      payment_method_token = result.payment_method.token
+
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :customer_id => customer.id,
+        :payment_method_token => payment_method_token
+      )
+
+      result.should be_success
+      result.transaction.paypal_details.token.should == payment_method_token
+      result.transaction.paypal_details.payer_email.should == "payer@example.com"
+      result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
+      result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
+    end
+
+    context "validation failure" do
+      it "returns a validation error if consent code and access token are omitted" do
+        nonce = nonce_for_paypal_account(:token => "TOKEN")
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :payment_method_nonce => nonce
+        )
+        result.should_not be_success
+        result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount
       end
     end
   end

@@ -456,7 +456,7 @@ describe Braintree::CreditCard do
 
     context "client API" do
       it "adds credit card to an existing customer using a payment method nonce" do
-        nonce = nonce_for_new_credit_card(
+        nonce = nonce_for_new_payment_method(
           :credit_card => {
             :number => "4111111111111111",
             :expiration_month => "11",
@@ -1050,24 +1050,6 @@ describe Braintree::CreditCard do
     end
   end
 
-  describe "delete" do
-    it "deletes the credit card" do
-      customer = Braintree::Customer.create.customer
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-
-      result.success?.should == true
-      credit_card = result.credit_card
-      credit_card.delete.should == true
-      expect do
-        Braintree::CreditCard.find(credit_card.token)
-      end.to raise_error(Braintree::NotFoundError)
-    end
-  end
-
   describe "self.expired" do
     it "can iterate over all items, and make sure they are all expired" do
       customer = Braintree::Customer.all.first
@@ -1161,12 +1143,30 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.find("invalid-token")
       end.to raise_error(Braintree::NotFoundError, 'payment method with token "invalid-token" not found')
     end
+
+    it "raises a NotFoundError exception if searching for a PayPalAccount token" do
+      customer = Braintree::Customer.create!
+      paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+      paypal_nonce = nonce_for_paypal_account({
+          :consent_code => "PAYPAL_CONSENT_CODE",
+          :token => paypal_account_token
+      })
+
+      Braintree::PaymentMethod.create({
+        :payment_method_nonce => paypal_nonce,
+        :customer_id => customer.id
+      })
+
+      expect do
+        Braintree::CreditCard.find(paypal_account_token)
+      end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{paypal_account_token}\" not found")
+    end
   end
 
   describe "self.from_nonce" do
     it "finds the payment method with the given nonce" do
       customer = Braintree::Customer.create!
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -1181,7 +1181,7 @@ describe Braintree::CreditCard do
     end
 
     it "does not find a payment method for an unlocked nonce that points to a shared credit card" do
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -1194,14 +1194,15 @@ describe Braintree::CreditCard do
     end
 
     it "does not find the payment method for a locked nonce" do
-      client_token = Braintree::ClientToken.generate
+      raw_client_token = Braintree::ClientToken.generate
+      client_token = decode_client_token(raw_client_token)
       client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-        :authorization_fingerprint => JSON.parse(client_token)["authorizationFingerprint"],
+        :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
         :shared_customer_identifier_type => "testing"
       )
 
-      client.add_card(
+      client.add_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",
@@ -1210,9 +1211,9 @@ describe Braintree::CreditCard do
         :share => true
       )
 
-      response = client.get_cards
+      response = client.get_payment_methods
       body = JSON.parse(response.body)
-      nonce = body["creditCards"].first["nonce"]
+      nonce = body["paymentMethods"].first["nonce"]
 
       expect do
         Braintree::CreditCard.from_nonce(nonce)
@@ -1221,7 +1222,7 @@ describe Braintree::CreditCard do
 
     it "does not find the payment method for a consumednonce" do
       customer = Braintree::Customer.create!
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => "4111111111111111",
           :expiration_month => "11",

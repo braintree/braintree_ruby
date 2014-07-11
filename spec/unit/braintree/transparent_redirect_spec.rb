@@ -206,6 +206,13 @@ describe Braintree::TransparentRedirect do
         Braintree::TransparentRedirect.create_customer_data(:redirect_url => nil)
       end.to raise_error(ArgumentError, "expected params to contain :redirect_url")
     end
+
+    it "only encodes tr data once" do
+      tr_data = Braintree::TransparentRedirect.create_customer_data(:redirect_url => "example.com")
+
+      tr_data.should include("|")
+      tr_data.should include("&")
+    end
   end
 
   def add_hash_to_query_string(query_string_without_hash)

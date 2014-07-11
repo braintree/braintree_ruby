@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Transaction, "search" do
   context "advanced" do
@@ -125,6 +126,65 @@ describe Braintree::Transaction, "search" do
 
       collection.maximum_size.should == 1
       collection.first.id.should == transaction.id
+    end
+
+    it "searches on paypal transactions" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+      )
+
+      paypal_details = transaction.paypal_details
+
+      collection = Braintree::Transaction.search do |search|
+        search.paypal_payment_id.is paypal_details.payment_id
+        search.paypal_authorization_id.is paypal_details.authorization_id
+        search.paypal_payer_email.is paypal_details.payer_email
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.id.should == transaction.id
+    end
+
+    context "SEPA bank account transactions" do
+      it "does" do
+        with_altpay_merchant do
+          config = Braintree::Configuration.instantiate
+          customer = Braintree::Customer.create.customer
+          raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business)
+          client_token = decode_client_token(raw_client_token)
+          authorization_fingerprint = client_token["authorizationFingerprint"]
+          http = ClientApiHttp.new(
+            config,
+            :authorization_fingerprint => authorization_fingerprint
+          )
+
+          nonce = http.create_sepa_bank_account_nonce(
+            :accountHolderName => "Bob Holder",
+            :iban => "DE89370400440532013000",
+            :bic => "DEUTDEFF",
+            :locale => "en-US",
+            :billingAddress =>  {
+              :region => "Hesse",
+              :country_name => "Germany"
+            }
+          )
+          nonce.should_not == nil
+
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => nonce,
+            :merchant_account_id => "fake_sepa_ma"
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.sepa_bank_account_iban.is  "DE89370400440532013000"
+          end
+
+          collection.maximum_size.should >= 1
+          collection.map(&:id).should include(transaction.id)
+        end
+      end
     end
 
     context "multiple value fields" do

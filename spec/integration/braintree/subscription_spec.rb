@@ -64,26 +64,56 @@ describe Braintree::Subscription do
       result.subscription.id.should == new_id
     end
 
-    it "creates a subscription when given a payment_method_nonce" do
-      nonce = nonce_for_new_credit_card(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_month => "11",
-          :expiration_year => "2099",
-        },
-        :client_token_options => {
-          :customer_id => @credit_card.customer_id
-        }
-      )
-      result = Braintree::Subscription.create(
-        :payment_method_nonce => nonce,
-        :plan_id => SpecHelper::TriallessPlan[:id]
-      )
+    context "with payment_method_nonces" do
+      it "creates a subscription when given a credit card payment_method_nonce" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          },
+          :client_token_options => {
+            :customer_id => @credit_card.customer_id
+          }
+        )
+        result = Braintree::Subscription.create(
+          :payment_method_nonce => nonce,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        )
 
-      result.success?.should == true
-      transaction = result.subscription.transactions[0]
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4, 4]
+        result.success?.should == true
+        transaction = result.subscription.transactions[0]
+        transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
+        transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4, 4]
+      end
+
+      it "creates a subscription when given a paypal account payment_method_nonce" do
+        customer = Braintree::Customer.create!
+        payment_method_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :customer_id => customer.id
+        )
+
+        result = Braintree::Subscription.create(
+          :payment_method_token => payment_method_result.payment_method.token,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        )
+
+        result.should be_success
+        transaction = result.subscription.transactions[0]
+        transaction.paypal_details.payer_email.should == "payer@example.com"
+      end
+
+      it "returns an error if the payment_method_nonce hasn't been vaulted" do
+        customer = Braintree::Customer.create!
+        result = Braintree::Subscription.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        )
+
+        result.should_not be_success
+        result.errors.for(:subscription).on(:payment_method_nonce).first.code.should == '91925'
+      end
     end
 
     context "billing_day_of_month" do
@@ -691,7 +721,7 @@ describe Braintree::Subscription do
     end
 
     it "allows changing the payment_method by payment_method_nonce" do
-      nonce = nonce_for_new_credit_card(
+      nonce = nonce_for_new_payment_method(
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "05/2010"

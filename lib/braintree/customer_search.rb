@@ -17,6 +17,7 @@ module Braintree
       :id,
       :last_name,
       :payment_method_token,
+      :paypal_account_email,
       :phone,
       :website
     )

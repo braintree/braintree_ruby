@@ -108,6 +108,7 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+
     def self._clone_signature # :nodoc:
       [:amount, :channel, {:options => [:submit_for_settlement]}]
     end
@@ -117,7 +118,7 @@ module Braintree
         :amount, :customer_id, :merchant_account_id, :order_id, :channel, :payment_method_token,
         :purchase_order_number, :recurring, :shipping_address_id, :type, :tax_amount, :tax_exempt,
         :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data, :fraud_merchant_id,
-        :billing_address_id, :payment_method_nonce,
+        :billing_address_id, :payment_method_nonce, :three_d_secure_token,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {
@@ -128,7 +129,9 @@ module Braintree
         },
         {:options => [:hold_in_escrow, :store_in_vault, :store_in_vault_on_success, :submit_for_settlement, :add_billing_address_to_payment_method, :store_shipping_address_in_vault, :venmo_sdk_session]},
         {:custom_fields => :_any_key_},
-        {:descriptor => [:name, :phone]}
+        {:descriptor => [:name, :phone]},
+        {:paypal_account => [:email, :token, :paypal_data]},
+        {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date]}]}
       ]
     end
 

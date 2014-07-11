@@ -3,14 +3,12 @@ module Braintree
   class SuccessfulResult
     include BaseModule
 
+    attr_reader :address, :credit_card, :customer, :merchant_account, :payment_method, :settlement_batch_summary, :subscription, :new_transaction, :transaction
+
     def initialize(attributes = {}) # :nodoc:
       @attrs = attributes.keys
-      singleton_class.class_eval do
-        attributes.each do |key, value|
-          define_method key do
-            value
-          end
-        end
+      attributes.each do |key, value|
+        instance_variable_set("@#{key}", value)
       end
     end
 
