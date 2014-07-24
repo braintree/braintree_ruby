@@ -57,6 +57,7 @@ module Braintree
         :customer_id,
         :payment_method_nonce,
         :token,
+        :billing_address_id,
         {:options => options},
         {:billing_address => billing_address_params}
       ]
