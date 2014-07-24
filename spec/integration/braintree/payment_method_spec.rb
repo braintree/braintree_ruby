@@ -168,6 +168,128 @@ describe Braintree::PaymentMethod do
       result.errors.first.code.should == "81724"
     end
 
+    it "allows passing the billing address outside of the nonce" do
+      config = Braintree::Configuration.instantiate
+      customer = Braintree::Customer.create.customer
+      raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
+      client_token = decode_client_token(raw_client_token)
+      authorization_fingerprint = client_token["authorizationFingerprint"]
+      http = ClientApiHttp.new(
+        config,
+        :authorization_fingerprint => authorization_fingerprint,
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
+      )
+
+      response = http.create_credit_card(
+        :number => "4111111111111111",
+        :expirationMonth => "12",
+        :expirationYear => "2020",
+        :options => {:validate => false}
+      )
+      response.code.should == "202"
+
+      nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id,
+        :billing_address => {
+          :street_address => "123 Abc Way"
+        }
+      )
+
+      result.should be_success
+      result.payment_method.should be_a(Braintree::CreditCard)
+      token = result.payment_method.token
+
+      found_credit_card = Braintree::CreditCard.find(token)
+      found_credit_card.should_not be_nil
+      found_credit_card.billing_address.street_address.should == "123 Abc Way"
+    end
+
+    it "overrides the billing address in the nonce" do
+      config = Braintree::Configuration.instantiate
+      customer = Braintree::Customer.create.customer
+      raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
+      client_token = decode_client_token(raw_client_token)
+      authorization_fingerprint = client_token["authorizationFingerprint"]
+      http = ClientApiHttp.new(
+        config,
+        :authorization_fingerprint => authorization_fingerprint,
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
+      )
+
+      response = http.create_credit_card(
+        :number => "4111111111111111",
+        :expirationMonth => "12",
+        :expirationYear => "2020",
+        :options => {:validate => false},
+        :billing_address => {
+          :street_address => "456 Xyz Way"
+        }
+      )
+      response.code.should == "202"
+
+      nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id,
+        :billing_address => {
+          :street_address => "123 Abc Way"
+        }
+      )
+
+      result.should be_success
+      result.payment_method.should be_a(Braintree::CreditCard)
+      token = result.payment_method.token
+
+      found_credit_card = Braintree::CreditCard.find(token)
+      found_credit_card.should_not be_nil
+      found_credit_card.billing_address.street_address.should == "123 Abc Way"
+    end
+
+    it "does not override the billing address for a vaulted credit card" do
+      config = Braintree::Configuration.instantiate
+      customer = Braintree::Customer.create.customer
+      raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
+      client_token = decode_client_token(raw_client_token)
+      authorization_fingerprint = client_token["authorizationFingerprint"]
+      http = ClientApiHttp.new(
+        config,
+        :authorization_fingerprint => authorization_fingerprint,
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
+      )
+
+      response = http.create_credit_card(
+        :number => 4111111111111111,
+        :expirationMonth => 12,
+        :expirationYear => 2020,
+        :billing_address => {
+          :street_address => "456 Xyz Way"
+        }
+      )
+      response.code.should == "201"
+
+      nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id,
+        :billing_address => {
+          :street_address => "123 Abc Way"
+        }
+      )
+
+      result.should be_success
+      result.payment_method.should be_a(Braintree::CreditCard)
+      token = result.payment_method.token
+
+      found_credit_card = Braintree::CreditCard.find(token)
+      found_credit_card.should_not be_nil
+      found_credit_card.billing_address.street_address.should == "456 Xyz Way"
+    end
+
     context "paypal" do
       it "creates a payment method from an unvalidated future paypal account nonce" do
         nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
@@ -196,6 +318,26 @@ describe Braintree::PaymentMethod do
 
         result.should_not be_success
         result.errors.first.code.should == "82902"
+      end
+
+      it "ignores passed billing address params" do
+        nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
+        customer = Braintree::Customer.create.customer
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :billing_address => {
+            :street_address => "123 Abc Way"
+          }
+        )
+
+        result.should be_success
+        result.payment_method.should be_a(Braintree::PayPalAccount)
+        result.payment_method.image_url.should_not be_nil
+        token = result.payment_method.token
+
+        found_paypal_account = Braintree::PayPalAccount.find(token)
+        found_paypal_account.should_not be_nil
       end
 
       it "returns appropriate validation errors" do
