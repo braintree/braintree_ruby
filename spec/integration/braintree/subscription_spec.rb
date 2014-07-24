@@ -13,7 +13,7 @@ describe Braintree::Subscription do
   end
 
   describe "self.create" do
-    it "is successful with a miniumum of params" do
+    it "is successful with a minimum of params" do
       result = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id]

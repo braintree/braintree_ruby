@@ -46,7 +46,13 @@ module Braintree
     end
 
     def self._create_signature # :nodoc:
-      options = [:make_default]
+      options = [
+        :make_default,
+        :verify_card,
+        :fail_on_duplicate_payment_method,
+        :verification_merchant_account_id
+      ]
+
       [
         :customer_id,
         :payment_method_nonce,

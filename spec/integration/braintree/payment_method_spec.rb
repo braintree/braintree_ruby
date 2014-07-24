@@ -159,6 +159,27 @@ describe Braintree::PaymentMethod do
         errors.should include("82901")
         errors.should include("82902")
       end
+
+      it "doesn't return an error if credit card options are present for a paypal nonce" do
+        customer = Braintree::Customer.create!
+        original_token = "paypal-account-#{Time.now.to_i}"
+        nonce = nonce_for_paypal_account(
+          :consent_code => "consent-code",
+          :token => original_token
+        )
+
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :fail_on_duplicate_payment_method => true,
+            :verification_merchant_account_id => "not_a_real_merchant_account_id"
+          }
+        )
+
+        result.should be_success
+      end
     end
 
     context "SEPA" do
