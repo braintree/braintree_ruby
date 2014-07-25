@@ -585,4 +585,317 @@ describe Braintree::PaymentMethod do
       end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{token}\" not found")
     end
   end
+
+  describe "self.update" do
+    context "credit cards" do
+      it "updates the credit card" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        )
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :cardholder_name => "New Holder",
+          :cvv => "456",
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "06/2013"
+        )
+        update_result.success?.should == true
+        update_result.payment_method.should == credit_card
+        updated_credit_card = update_result.payment_method
+        updated_credit_card.cardholder_name.should == "New Holder"
+        updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
+        updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
+        updated_credit_card.expiration_date.should == "06/2013"
+      end
+
+      context "billing address" do
+        it "creates a new billing address by default" do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :customer_id => customer.id,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+            :billing_address => {
+              :street_address => "123 Nigeria Ave"
+            }
+          )
+          update_result = Braintree::PaymentMethod.update(credit_card.token,
+            :billing_address => {
+              :region => "IL"
+            }
+          )
+          update_result.success?.should == true
+          updated_credit_card = update_result.payment_method
+          updated_credit_card.billing_address.region.should == "IL"
+          updated_credit_card.billing_address.street_address.should == nil
+          updated_credit_card.billing_address.id.should_not == credit_card.billing_address.id
+        end
+
+        it "updates the billing address if option is specified" do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :customer_id => customer.id,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+            :billing_address => {
+              :street_address => "123 Nigeria Ave"
+            }
+          )
+          update_result = Braintree::PaymentMethod.update(credit_card.token,
+            :billing_address => {
+              :region => "IL",
+              :options => {:update_existing => true}
+            }
+          )
+          update_result.success?.should == true
+          updated_credit_card = update_result.payment_method
+          updated_credit_card.billing_address.region.should == "IL"
+          updated_credit_card.billing_address.street_address.should == "123 Nigeria Ave"
+          updated_credit_card.billing_address.id.should == credit_card.billing_address.id
+        end
+
+        it "updates the country via codes" do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :customer_id => customer.id,
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+            :billing_address => {
+              :street_address => "123 Nigeria Ave"
+            }
+          )
+          update_result = Braintree::PaymentMethod.update(credit_card.token,
+            :billing_address => {
+              :country_name => "American Samoa",
+              :country_code_alpha2 => "AS",
+              :country_code_alpha3 => "ASM",
+              :country_code_numeric => "016",
+              :options => {:update_existing => true}
+            }
+          )
+          update_result.success?.should == true
+          updated_credit_card = update_result.payment_method
+          updated_credit_card.billing_address.country_name.should == "American Samoa"
+          updated_credit_card.billing_address.country_code_alpha2.should == "AS"
+          updated_credit_card.billing_address.country_code_alpha3.should == "ASM"
+          updated_credit_card.billing_address.country_code_numeric.should == "016"
+        end
+      end
+
+      it "can pass expiration_month and expiration_year" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        )
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_month => "07",
+          :expiration_year => "2011"
+        )
+        update_result.success?.should == true
+        update_result.payment_method.should == credit_card
+        update_result.payment_method.expiration_month.should == "07"
+        update_result.payment_method.expiration_year.should == "2011"
+        update_result.payment_method.expiration_date.should == "07/2011"
+      end
+
+      it "verifies the update if options[verify_card]=true" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        )
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :cardholder_name => "New Holder",
+          :cvv => "456",
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
+          :expiration_date => "06/2013",
+          :options => {:verify_card => true}
+        )
+        update_result.success?.should == false
+        update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+        update_result.credit_card_verification.gateway_rejection_reason.should be_nil
+      end
+
+      it "can update the billing address" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :billing_address => {
+            :first_name => "Old First Name",
+            :last_name => "Old Last Name",
+            :company => "Old Company",
+            :street_address => "123 Old St",
+            :extended_address => "Apt Old",
+            :locality => "Old City",
+            :region => "Old State",
+            :postal_code => "12345",
+            :country_name => "Canada"
+          }
+        )
+        result = Braintree::PaymentMethod.update(credit_card.token,
+          :options => {:verify_card => false},
+          :billing_address => {
+            :first_name => "New First Name",
+            :last_name => "New Last Name",
+            :company => "New Company",
+            :street_address => "123 New St",
+            :extended_address => "Apt New",
+            :locality => "New City",
+            :region => "New State",
+            :postal_code => "56789",
+            :country_name => "United States of America"
+          }
+        )
+        result.success?.should == true
+        address = result.payment_method.billing_address
+        address.first_name.should == "New First Name"
+        address.last_name.should == "New Last Name"
+        address.company.should == "New Company"
+        address.street_address.should == "123 New St"
+        address.extended_address.should == "Apt New"
+        address.locality.should == "New City"
+        address.region.should == "New State"
+        address.postal_code.should == "56789"
+        address.country_name.should == "United States of America"
+      end
+
+      it "returns an error response if invalid" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        )
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :cardholder_name => "New Holder",
+          :number => "invalid",
+          :expiration_date => "05/2014"
+        )
+        update_result.success?.should == false
+        update_result.errors.for(:credit_card).on(:number)[0].message.should == "Credit card number must be 12-19 digits."
+      end
+
+      it "can update the default" do
+        customer = Braintree::Customer.create!
+        card1 = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        ).credit_card
+        card2 = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        ).credit_card
+
+        card1.should be_default
+        card2.should_not be_default
+
+        Braintree::PaymentMethod.update(card2.token, :options => {:make_default => true})
+
+        Braintree::CreditCard.find(card1.token).should_not be_default
+        Braintree::CreditCard.find(card2.token).should be_default
+      end
+    end
+
+    context "paypal accounts" do
+      it "updates a paypal account's token" do
+        customer = Braintree::Customer.create!
+        original_token = "paypal-account-#{Time.now.to_i}"
+        nonce = nonce_for_paypal_account(
+          :consent_code => "consent-code",
+          :token => original_token
+        )
+        original_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        )
+
+        updated_token = "UPDATED_TOKEN-" + rand(36**3).to_s(36)
+        updated_result = Braintree::PaymentMethod.update(
+          original_token,
+          :token => updated_token
+        )
+
+        updated_paypal_account = Braintree::PayPalAccount.find(updated_token)
+        updated_paypal_account.email.should == original_result.payment_method.email
+
+        expect do
+          Braintree::PayPalAccount.find(original_token)
+        end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{original_token}\" not found")
+      end
+
+      it "can make a paypal account the default payment method" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009",
+          :options => {:make_default => true}
+        )
+        result.should be_success
+
+        nonce = nonce_for_paypal_account(:consent_code => "consent-code")
+        original_token = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        ).payment_method.token
+
+        updated_result = Braintree::PaymentMethod.update(
+          original_token,
+          :options => {:make_default => true}
+        )
+
+        updated_paypal_account = Braintree::PayPalAccount.find(original_token)
+        updated_paypal_account.should be_default
+      end
+
+      it "returns an error if a token for account is used to attempt an update" do
+        customer = Braintree::Customer.create!
+        first_token = "paypal-account-#{rand(36**3).to_s(36)}"
+        second_token = "paypal-account-#{rand(36**3).to_s(36)}"
+
+        first_nonce = nonce_for_paypal_account(
+          :consent_code => "consent-code",
+          :token => first_token
+        )
+        first_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => first_nonce,
+          :customer_id => customer.id
+        )
+
+        second_nonce = nonce_for_paypal_account(
+          :consent_code => "consent-code",
+          :token => second_token
+        )
+        second_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => second_nonce,
+          :customer_id => customer.id
+        )
+
+        updated_result = Braintree::PaymentMethod.update(
+          first_token,
+          :token => second_token
+        )
+
+        updated_result.should_not be_success
+        updated_result.errors.first.code.should == "92906"
+      end
+    end
+  end
 end
