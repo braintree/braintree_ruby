@@ -38,7 +38,7 @@ describe Braintree::ClientToken do
         config = Braintree::Configuration.instantiate
         client_token_string = Braintree::ClientToken.generate
         client_token = decode_client_token(client_token_string)
-        client_token["version"].should == "2"
+        client_token["version"].should == 2
       end
     end
 
