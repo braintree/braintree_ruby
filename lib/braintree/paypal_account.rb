@@ -2,11 +2,12 @@ module Braintree
   class PayPalAccount
     include BaseModule
 
-    attr_reader :email, :token, :image_url, :created_at, :updated_at
+    attr_reader :email, :token, :image_url, :created_at, :updated_at, :subscriptions
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
+      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
     end
 
     class << self

@@ -46,6 +46,36 @@ describe Braintree::PayPalAccount do
         Braintree::PayPalAccount.find("CREDIT_CARD_TOKEN")
       end.to raise_error(Braintree::NotFoundError)
     end
+
+    it "returns subscriptions associated with a paypal account" do
+      customer = Braintree::Customer.create!
+      payment_method_token = "paypal-account-#{Time.now.to_i}"
+
+      nonce = nonce_for_paypal_account(
+        :consent_code => "consent-code",
+        :token => payment_method_token
+      )
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id
+      )
+      result.should be_success
+
+      token = result.payment_method.token
+
+      subscription1 = Braintree::Subscription.create(
+        :payment_method_token => token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+
+      subscription2 = Braintree::Subscription.create(
+        :payment_method_token => token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+
+      paypal_account = Braintree::PayPalAccount.find(token)
+      paypal_account.subscriptions.map(&:id).sort.should == [subscription1.id, subscription2.id].sort
+    end
   end
 
   describe "self.update" do

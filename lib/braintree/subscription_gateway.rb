@@ -67,7 +67,7 @@ module Braintree
         :trial_duration_unit,
         :trial_period,
         {:options => [:do_not_inherit_add_ons_or_discounts, :start_immediately]},
-        {:descriptor => [:name, :phone]}
+        {:descriptor => [:name, :phone, :url]}
       ] + _add_on_discount_signature
     end
 
@@ -86,7 +86,7 @@ module Braintree
           :replace_all_add_ons_and_discounts,
           :revert_subscription_on_proration_failure
         ]},
-        {:descriptor => [:name, :phone]}
+        {:descriptor => [:name, :phone, :url]}
       ] + _add_on_discount_signature
     end
 

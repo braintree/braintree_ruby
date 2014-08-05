@@ -107,6 +107,7 @@ module Braintree
       DynamicDescriptorsDisabled = "92203"
       InternationalNameFormatIsInvalid = "92204"
       InternationalPhoneFormatIsInvalid = "92205"
+      UrlFormatIsInvalid = "92206"
     end
 
     module PayPalAccount

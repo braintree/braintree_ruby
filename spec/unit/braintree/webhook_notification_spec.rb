@@ -58,6 +58,53 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_close(Time.now.utc, 10)
     end
 
+    context "disputes" do
+      it "builds a sample notification for a dispute opened webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::DisputeOpened,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeOpened
+
+        dispute = notification.dispute
+        dispute.status.should == Braintree::Dispute::Status::Open
+        dispute.id.should == "my_id"
+      end
+
+      it "builds a sample notification for a dispute lost webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::DisputeLost,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeLost
+
+        dispute = notification.dispute
+        dispute.status.should == Braintree::Dispute::Status::Lost
+        dispute.id.should == "my_id"
+      end
+
+      it "builds a sample notification for a dispute won webhook" do
+        signature, payload = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::DisputeWon,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(signature, payload)
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeWon
+
+        dispute = notification.dispute
+        dispute.status.should == Braintree::Dispute::Status::Won
+        dispute.id.should == "my_id"
+      end
+    end
+
     context "disbursement" do
       it "builds a sample notification for a transaction disbursed webhook" do
         signature, payload = Braintree::WebhookTesting.sample_notification(
