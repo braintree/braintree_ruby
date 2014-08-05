@@ -901,12 +901,14 @@ describe Braintree::Transaction do
           },
           :descriptor => {
             :name => '123*123456789012345678',
-            :phone => '3334445555'
+            :phone => '3334445555',
+            :url => "ebay.com"
           }
         )
         result.success?.should == true
         result.transaction.descriptor.name.should == '123*123456789012345678'
         result.transaction.descriptor.phone.should == '3334445555'
+        result.transaction.descriptor.url.should == 'ebay.com'
       end
 
       it "has validation errors if format is invalid" do
@@ -918,12 +920,14 @@ describe Braintree::Transaction do
           },
           :descriptor => {
             :name => 'badcompanyname12*badproduct12',
-            :phone => '%bad4445555'
+            :phone => '%bad4445555',
+            :url => '12345678901234'
           }
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
         result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
+        result.errors.for(:transaction).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
       end
     end
 

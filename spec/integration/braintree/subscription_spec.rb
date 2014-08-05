@@ -625,12 +625,14 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TriallessPlan[:id],
           :descriptor => {
             :name => 'badcompanyname12*badproduct12',
-            :phone => '%bad4445555'
+            :phone => '%bad4445555',
+            :url => "12345678901234"
           }
         )
         result.success?.should == false
         result.errors.for(:subscription).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
         result.errors.for(:subscription).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
+        result.errors.for(:subscription).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
       end
     end
   end
@@ -740,13 +742,15 @@ describe Braintree::Subscription do
       result = Braintree::Subscription.update(@subscription.id,
         :descriptor => {
           :name => 'aaa*1234',
-          :phone => '3334443333'
+          :phone => '3334443333',
+          :url => "ebay.com"
         }
       )
 
       result.success?.should == true
       result.subscription.descriptor.name.should == 'aaa*1234'
       result.subscription.descriptor.phone.should == '3334443333'
+      result.subscription.descriptor.url.should == 'ebay.com'
     end
 
     context "when successful" do
