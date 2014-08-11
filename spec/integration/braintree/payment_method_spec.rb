@@ -414,7 +414,7 @@ describe Braintree::PaymentMethod do
 
       it "doesn't return an error if credit card options are present for a paypal nonce" do
         customer = Braintree::Customer.create!
-        original_token = "paypal-account-#{Time.now.to_i}"
+        original_token = random_payment_method_token
         nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
           :token => original_token
@@ -816,7 +816,7 @@ describe Braintree::PaymentMethod do
     context "paypal accounts" do
       it "updates a paypal account's token" do
         customer = Braintree::Customer.create!
-        original_token = "paypal-account-#{Time.now.to_i}"
+        original_token = random_payment_method_token
         nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
           :token => original_token
@@ -867,8 +867,8 @@ describe Braintree::PaymentMethod do
 
       it "returns an error if a token for account is used to attempt an update" do
         customer = Braintree::Customer.create!
-        first_token = "paypal-account-#{rand(36**3).to_s(36)}"
-        second_token = "paypal-account-#{rand(36**3).to_s(36)}"
+        first_token = random_payment_method_token
+        second_token = random_payment_method_token
 
         first_nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",

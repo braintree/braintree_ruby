@@ -46,4 +46,8 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   def with_altpay_merchant(&block)
     with_other_merchant("altpay_merchant", "altpay_merchant_public_key", "altpay_merchant_private_key", &block)
   end
+
+  def random_payment_method_token
+    "payment-method-token-#{SecureRandom.hex(6)}"
+  end
 end
