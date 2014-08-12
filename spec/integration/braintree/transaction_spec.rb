@@ -1497,7 +1497,7 @@ describe Braintree::Transaction do
         it "successfully voids a paypal transaction that's been authorized" do
           sale_transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           )
 
           void_transaction = Braintree::Transaction.void!(sale_transaction.id)
@@ -1508,7 +1508,7 @@ describe Braintree::Transaction do
         it "fails to void a paypal transaction that's been declined" do
           sale_transaction = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Decline,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           ).transaction
 
           expect do
