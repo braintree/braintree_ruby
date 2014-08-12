@@ -1498,9 +1498,6 @@ describe Braintree::Transaction do
           sale_transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
-            :options => {
-              :submit_for_settlement => true
-            }
           )
 
           void_transaction = Braintree::Transaction.void!(sale_transaction.id)
@@ -1512,9 +1509,6 @@ describe Braintree::Transaction do
           sale_transaction = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Decline,
             :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
-            :options => {
-              :submit_for_settlement => true
-            }
           ).transaction
 
           expect do
