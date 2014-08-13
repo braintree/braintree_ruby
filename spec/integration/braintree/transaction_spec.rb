@@ -1292,6 +1292,8 @@ describe Braintree::Transaction do
           :payment_method_nonce => nonce
         )
         result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
       end
 
       it "can create a transaction with a params nonce with PayPal account params" do
@@ -1309,6 +1311,8 @@ describe Braintree::Transaction do
           :payment_method_nonce => nonce
         )
         result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
       end
     end
 
@@ -1400,6 +1404,8 @@ describe Braintree::Transaction do
 
           result.should be_success
           result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::PayPalAccount
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
         end
       end
 
@@ -1418,6 +1424,8 @@ describe Braintree::Transaction do
           )
 
           result.should be_success
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
 
           expect do
             Braintree::PaymentMethod.find(payment_method_token)
@@ -1439,6 +1447,8 @@ describe Braintree::Transaction do
           )
 
           result.success?.should == true
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
 
           found_paypal_account = Braintree::PaymentMethod.find(payment_method_token)
           found_paypal_account.should be_a(Braintree::PayPalAccount)
@@ -1455,6 +1465,8 @@ describe Braintree::Transaction do
           )
 
           result.should be_success
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
         end
 
         it "can create a paypal transaction and does not vault even if asked to" do
@@ -1472,6 +1484,8 @@ describe Braintree::Transaction do
           )
 
           result.success?.should == true
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
 
           expect do
             Braintree::PaymentMethod.find(payment_method_token)
