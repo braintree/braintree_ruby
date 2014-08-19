@@ -1314,6 +1314,32 @@ describe Braintree::Transaction do
         result.transaction.paypal_details.should_not be_nil
         result.transaction.paypal_details.debug_id.should_not be_nil
       end
+
+      it "can create a transaction with a payee email and BN code" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce,
+          :paypal_account => {
+            :payee_email => "bt_seller_us@paypal.com",
+            :bn_code => "BN-12345"
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
+        result.transaction.paypal_details.payee_email.should == "bt_seller_us@paypal.com"
+        result.transaction.paypal_details.bn_code.should == "BN-12345"
+      end
     end
 
     context "three_d_secure" do

@@ -4,7 +4,7 @@ module Braintree
       include BaseModule
 
       attr_reader :payer_email, :payment_id, :authorization_id, :token,
-        :image_url, :debug_id
+        :image_url, :debug_id, :payee_email, :bn_code
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
