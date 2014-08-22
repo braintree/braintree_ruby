@@ -6,3 +6,4 @@ tags
 Gemfile.lock
 .idea
 .bundle
+vendor
