@@ -225,7 +225,7 @@ describe Braintree::Configuration do
 
     it "is qa.braintreegateway.com for qa" do
       Braintree::Configuration.environment = :qa
-      Braintree::Configuration.instantiate.server.should == "qa.braintreegateway.com"
+      Braintree::Configuration.instantiate.server.should == "gateway.qa.braintreepayments.com"
     end
 
     it "can by changed by configuring the production endpoint" do

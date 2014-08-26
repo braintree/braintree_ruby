@@ -20,7 +20,6 @@ describe Braintree::Subscription do
       )
 
       date_format = /^\d{4}\D\d{1,2}\D\d{1,2}$/
-      datetime_format = /^\d{4}\D\d{1,2}\D\d{1,2}\D\d{2}:\d{2}:\d{2} UTC$/
       result.success?.should == true
       result.subscription.id.should =~ /^\w{6}$/
       result.subscription.status.should == Braintree::Subscription::Status::Active
@@ -32,8 +31,8 @@ describe Braintree::Subscription do
       result.subscription.billing_period_end_date.should match(date_format)
       result.subscription.paid_through_date.should match(date_format)
 
-      result.subscription.created_at.should match(datetime_format)
-      result.subscription.updated_at.should match(datetime_format)
+      result.subscription.created_at.between?(Time.now - 60, Time.now).should == true
+      result.subscription.updated_at.between?(Time.now - 60, Time.now).should == true
 
       result.subscription.failure_count.should == 0
       result.subscription.next_bill_amount.should == "12.34"
