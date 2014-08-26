@@ -74,6 +74,8 @@ module Braintree
       @balance = Util.to_big_decimal(balance)
       @price = Util.to_big_decimal(price)
       @descriptor = Descriptor.new(@descriptor)
+      @created_at = @created_at.to_s
+      @updated_at = @updated_at.to_s
       transactions.map! { |attrs| Transaction._new(gateway, attrs) }
       add_ons.map! { |attrs| AddOn._new(attrs) }
       discounts.map! { |attrs| Discount._new(attrs) }
