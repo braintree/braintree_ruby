@@ -68,13 +68,6 @@ describe Braintree::Configuration do
   end
 
   describe "ca_file" do
-    it "qa" do
-      Braintree::Configuration.environment = :qa
-      ca_file = Braintree::Configuration.instantiate.ca_file
-      ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
-      File.exists?(ca_file).should == true
-    end
-
     it "sandbox" do
       Braintree::Configuration.environment = :sandbox
       ca_file = Braintree::Configuration.instantiate.ca_file
