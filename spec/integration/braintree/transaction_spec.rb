@@ -3271,5 +3271,35 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount
       end
     end
+
+    context "inline capture" do
+      it "includes processor_settlement_response_code and processor_settlement_response_text for settlement declined transactions" do
+        with_altpay_merchant do
+          collection = Braintree::Transaction.search do |search|
+            search.status.is Braintree::Transaction::Status::SettlementDeclined
+          end
+
+          collection.maximum_size.should == 1
+
+          settlement_declined_transaction = Braintree::Transaction.find(collection.first.id)
+          settlement_declined_transaction.processor_settlement_response_code.should == "4001"
+          settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Declined"
+        end
+      end
+
+      it "includes processor_settlement_response_code and processor_settlement_response_text for settlement pending transactions" do
+        with_altpay_merchant do
+          collection = Braintree::Transaction.search do |search|
+            search.status.is Braintree::Transaction::Status::SettlementPending
+          end
+
+          collection.maximum_size.should == 1
+
+          settlement_declined_transaction = Braintree::Transaction.find(collection.first.id)
+          settlement_declined_transaction.processor_settlement_response_code.should == "4002"
+          settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Pending"
+        end
+      end
+    end
   end
 end
