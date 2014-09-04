@@ -51,6 +51,22 @@ describe Braintree::TestTransaction do
       settle_result.success?.should == true
     end
 
+    it "changes transaction status to settlement_pending" do
+      sale_result = Braintree::Transaction.sale(
+        :amount => "100",
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+        :options => {
+          :submit_for_settlement => true
+        }
+      )
+      sale_result.success?.should == true
+      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+
+      settle_result = Braintree::TestTransaction.settlement_pending(sale_result.transaction.id)
+      settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
+      settle_result.success?.should == true
+    end
+
     it "returns a validation error when invalid transition is specified" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",

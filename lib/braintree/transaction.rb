@@ -37,6 +37,7 @@ module Braintree
       Settled                = 'settled'
       SettlementConfirmed    = 'settlement_confirmed'
       SettlementDeclined     = 'settlement_declined'
+      SettlementPending      = 'settlement_pending'
       Settling               = 'settling'
       SubmittedForSettlement = 'submitted_for_settlement'
       Voided                 = 'voided'
