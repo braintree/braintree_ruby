@@ -3274,31 +3274,33 @@ describe Braintree::Transaction do
 
     context "inline capture" do
       it "includes processor_settlement_response_code and processor_settlement_response_text for settlement declined transactions" do
-        with_altpay_merchant do
-          collection = Braintree::Transaction.search do |search|
-            search.status.is Braintree::Transaction::Status::SettlementDeclined
-          end
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :options => { :submit_for_settlement => true }
+        )
 
-          collection.maximum_size.should == 1
+        result.should be_success
+        Braintree::Configuration.gateway.testing.settlement_decline(result.transaction.id)
 
-          settlement_declined_transaction = Braintree::Transaction.find(collection.first.id)
-          settlement_declined_transaction.processor_settlement_response_code.should == "4001"
-          settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Declined"
-        end
+        settlement_declined_transaction = Braintree::Transaction.find(result.transaction.id)
+        settlement_declined_transaction.processor_settlement_response_code.should == "4001"
+        settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Declined"
       end
 
       it "includes processor_settlement_response_code and processor_settlement_response_text for settlement pending transactions" do
-        with_altpay_merchant do
-          collection = Braintree::Transaction.search do |search|
-            search.status.is Braintree::Transaction::Status::SettlementPending
-          end
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :options => { :submit_for_settlement => true }
+        )
 
-          collection.maximum_size.should == 1
+        result.should be_success
+        Braintree::Configuration.gateway.testing.settlement_pending(result.transaction.id)
 
-          settlement_declined_transaction = Braintree::Transaction.find(collection.first.id)
-          settlement_declined_transaction.processor_settlement_response_code.should == "4002"
-          settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Pending"
-        end
+        settlement_declined_transaction = Braintree::Transaction.find(result.transaction.id)
+        settlement_declined_transaction.processor_settlement_response_code.should == "4002"
+        settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Pending"
       end
     end
   end
