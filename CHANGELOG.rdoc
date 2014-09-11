@@ -1,3 +1,7 @@
+== 2.34.0                     
+* Added paypal specific fields to transaction calls               
+* Added SettlementPending, SettlementDeclined transaction statuses
+
 == 2.33.1
 * Update version number
 
