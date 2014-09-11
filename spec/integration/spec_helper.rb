@@ -1,3 +1,5 @@
+require "securerandom"
+
 unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   INTEGRATION_SPEC_HELPER_LOADED = true
   SSL_TEST_PORT = ENV['SSL_TEST_PORT'] || 8443
@@ -45,5 +47,9 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
 
   def with_altpay_merchant(&block)
     with_other_merchant("altpay_merchant", "altpay_merchant_public_key", "altpay_merchant_private_key", &block)
+  end
+
+  def random_payment_method_token
+    "payment-method-token-#{SecureRandom.hex(6)}"
   end
 end

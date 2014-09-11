@@ -31,6 +31,9 @@ describe Braintree::Subscription do
       result.subscription.billing_period_end_date.should match(date_format)
       result.subscription.paid_through_date.should match(date_format)
 
+      result.subscription.created_at.between?(Time.now - 60, Time.now).should == true
+      result.subscription.updated_at.between?(Time.now - 60, Time.now).should == true
+
       result.subscription.failure_count.should == 0
       result.subscription.next_bill_amount.should == "12.34"
       result.subscription.next_billing_period_amount.should == "12.34"

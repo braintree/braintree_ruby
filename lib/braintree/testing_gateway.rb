@@ -28,6 +28,13 @@ module Braintree
       @transaction_gateway._handle_transaction_response(response)
     end
 
+    def settlement_pending(transaction_id)
+      check_environment
+
+      response = @config.http.put "/transactions/#{transaction_id}/settlement_pending"
+      @transaction_gateway._handle_transaction_response(response)
+    end
+
     def check_environment
       raise TestOperationPerformedInProduction if Braintree::Configuration.environment == :production
     end

@@ -1292,6 +1292,8 @@ describe Braintree::Transaction do
           :payment_method_nonce => nonce
         )
         result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
       end
 
       it "can create a transaction with a params nonce with PayPal account params" do
@@ -1309,6 +1311,32 @@ describe Braintree::Transaction do
           :payment_method_nonce => nonce
         )
         result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
+      end
+
+      it "can create a transaction with a payee email" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce,
+          :paypal_account => {
+            :payee_email => "bt_seller_us@paypal.com"
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
+        result.transaction.paypal_details.payee_email.should == "bt_seller_us@paypal.com"
       end
     end
 
@@ -1400,6 +1428,8 @@ describe Braintree::Transaction do
 
           result.should be_success
           result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::PayPalAccount
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
         end
       end
 
@@ -1418,6 +1448,8 @@ describe Braintree::Transaction do
           )
 
           result.should be_success
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
 
           expect do
             Braintree::PaymentMethod.find(payment_method_token)
@@ -1439,6 +1471,8 @@ describe Braintree::Transaction do
           )
 
           result.success?.should == true
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
 
           found_paypal_account = Braintree::PaymentMethod.find(payment_method_token)
           found_paypal_account.should be_a(Braintree::PayPalAccount)
@@ -1455,6 +1489,8 @@ describe Braintree::Transaction do
           )
 
           result.should be_success
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
         end
 
         it "can create a paypal transaction and does not vault even if asked to" do
@@ -1472,6 +1508,8 @@ describe Braintree::Transaction do
           )
 
           result.success?.should == true
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
 
           expect do
             Braintree::PaymentMethod.find(payment_method_token)
@@ -1497,10 +1535,7 @@ describe Braintree::Transaction do
         it "successfully voids a paypal transaction that's been authorized" do
           sale_transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
-            :options => {
-              :submit_for_settlement => true
-            }
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           )
 
           void_transaction = Braintree::Transaction.void!(sale_transaction.id)
@@ -1511,10 +1546,7 @@ describe Braintree::Transaction do
         it "fails to void a paypal transaction that's been declined" do
           sale_transaction = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Decline,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
-            :options => {
-              :submit_for_settlement => true
-            }
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           ).transaction
 
           expect do
@@ -3237,6 +3269,38 @@ describe Braintree::Transaction do
         )
         result.should_not be_success
         result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount
+      end
+    end
+
+    context "inline capture" do
+      it "includes processor_settlement_response_code and processor_settlement_response_text for settlement declined transactions" do
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :options => { :submit_for_settlement => true }
+        )
+
+        result.should be_success
+        Braintree::Configuration.gateway.testing.settlement_decline(result.transaction.id)
+
+        settlement_declined_transaction = Braintree::Transaction.find(result.transaction.id)
+        settlement_declined_transaction.processor_settlement_response_code.should == "4001"
+        settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Declined"
+      end
+
+      it "includes processor_settlement_response_code and processor_settlement_response_text for settlement pending transactions" do
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :options => { :submit_for_settlement => true }
+        )
+
+        result.should be_success
+        Braintree::Configuration.gateway.testing.settlement_pending(result.transaction.id)
+
+        settlement_declined_transaction = Braintree::Transaction.find(result.transaction.id)
+        settlement_declined_transaction.processor_settlement_response_code.should == "4002"
+        settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Pending"
       end
     end
   end

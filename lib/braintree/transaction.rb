@@ -37,6 +37,7 @@ module Braintree
       Settled                = 'settled'
       SettlementConfirmed    = 'settlement_confirmed'
       SettlementDeclined     = 'settlement_declined'
+      SettlementPending      = 'settlement_pending'
       Settling               = 'settling'
       SubmittedForSettlement = 'submitted_for_settlement'
       Voided                 = 'voided'
@@ -87,6 +88,10 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    # The settlement response code from the processor.
+    attr_reader :processor_settlement_response_code
+    # The settlement response text from the processor.
+    attr_reader :processor_settlement_response_text
     attr_reader :voice_referral_number
     attr_reader :purchase_order_number
     attr_reader :recurring

@@ -112,7 +112,7 @@ module Braintree
       when :production
         "#{endpoint}.braintreegateway.com"
       when :qa
-        "qa.braintreegateway.com"
+        "gateway.qa.braintreepayments.com"
       when :sandbox
         "api.sandbox.braintreegateway.com"
       end

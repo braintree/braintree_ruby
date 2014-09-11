@@ -1,3 +1,7 @@
+== 2.34.0                     
+* Added paypal specific fields to transaction calls               
+* Added SettlementPending, SettlementDeclined transaction statuses
+
 == 2.33.1
 * Update version number
 
@@ -7,6 +11,7 @@
 * Add Subscriptions to paypal accounts
 * Add PaymentMethod.update
 * Add fail_on_duplicate_payment_method option to PaymentMethod.create
+* Add Descriptor#url
 
 == 2.32.0
 * Official support for v.zero SDKs.

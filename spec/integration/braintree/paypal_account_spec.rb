@@ -5,7 +5,7 @@ describe Braintree::PayPalAccount do
   describe "self.find" do
     it "returns a PayPalAccount" do
       customer = Braintree::Customer.create!
-      payment_method_token = "paypal-account-#{Time.now.to_i}"
+      payment_method_token = random_payment_method_token
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
@@ -49,7 +49,7 @@ describe Braintree::PayPalAccount do
 
     it "returns subscriptions associated with a paypal account" do
       customer = Braintree::Customer.create!
-      payment_method_token = "paypal-account-#{Time.now.to_i}"
+      payment_method_token = random_payment_method_token
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
@@ -81,7 +81,7 @@ describe Braintree::PayPalAccount do
   describe "self.update" do
     it "updates a paypal account's token" do
       customer = Braintree::Customer.create!
-      original_token = "paypal-account-#{Time.now.to_i}"
+      original_token = random_payment_method_token
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
         :token => original_token
@@ -132,8 +132,8 @@ describe Braintree::PayPalAccount do
 
     it "returns an error if a token for account is used to attempt an update" do
       customer = Braintree::Customer.create!
-      first_token = "paypal-account-#{rand(36**3).to_s(36)}"
-      second_token = "paypal-account-#{rand(36**3).to_s(36)}"
+      first_token = random_payment_method_token
+      second_token = random_payment_method_token
 
       first_nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
@@ -166,7 +166,7 @@ describe Braintree::PayPalAccount do
   context "self.delete" do
     it "deletes a PayPal account" do
       customer = Braintree::Customer.create!
-      token = "paypal-account-#{Time.now.to_i}"
+      token = random_payment_method_token
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",

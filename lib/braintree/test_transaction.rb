@@ -11,5 +11,9 @@ module Braintree
     def self.settlement_decline(transaction_id)
       Configuration.gateway.testing.settlement_decline(transaction_id)
     end
+
+    def self.settlement_pending(transaction_id)
+      Configuration.gateway.testing.settlement_pending(transaction_id)
+    end
   end
 end
