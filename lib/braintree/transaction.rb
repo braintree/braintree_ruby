@@ -89,6 +89,8 @@ module Braintree
     attr_reader :processor_response_code
     # The response text from the processor.
     attr_reader :processor_response_text
+    # The raw response from the processor.
+    attr_reader :processor_provided_response
     # The settlement response code from the processor.
     attr_reader :processor_settlement_response_code
     # The settlement response text from the processor.

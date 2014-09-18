@@ -366,7 +366,7 @@ describe Braintree::Transaction do
       result.success?.should == true
     end
 
-    it "returns processor response code and text if declined" do
+    it "returns processor response code and text as well as the processor provided response if declined" do
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => Braintree::Test::TransactionAmounts::Decline,
@@ -381,6 +381,7 @@ describe Braintree::Transaction do
       result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result.transaction.processor_response_code.should == "2000"
       result.transaction.processor_response_text.should == "Do Not Honor"
+      result.transaction.processor_provided_response.should == "2000 : Do Not Honor"
     end
 
     it "accepts all four country codes" do
