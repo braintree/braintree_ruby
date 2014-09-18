@@ -19,12 +19,13 @@ module Braintree
     end
 
     module GatewayRejectionReason
-      AVS          = "avs"
-      AVSAndCVV    = "avs_and_cvv"
-      CVV          = "cvv"
-      Duplicate    = "duplicate"
-      Fraud        = "fraud"
-      Unrecognized = "unrecognized"
+      ApplicationIncomplete = "application_incomplete"
+      AVSAndCVV             = "avs_and_cvv"
+      AVS                   = "avs"
+      CVV                   = "cvv"
+      Duplicate             = "duplicate"
+      Fraud                 = "fraud"
+      Unrecognized          = "unrecognized"
     end
 
     module Status

@@ -595,6 +595,18 @@ describe Braintree::Transaction do
         result.success?.should == false
         result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
       end
+
+      it "exposes the application_incomplete gateway rejection reason" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::ApplicationIncomplete,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        )
+        result.success?.should == false
+        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete
+      end
     end
 
     it "accepts credit card expiration month and expiration year" do
