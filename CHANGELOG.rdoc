@@ -1,3 +1,6 @@
+== 2.35.0
+* Add additional_processor_response to transaction
+
 == 2.34.1
 * Allow payee_email to be passed in options params for Transaction create
 
