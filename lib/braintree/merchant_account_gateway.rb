@@ -72,7 +72,7 @@ module Braintree
           :dba_name, :legal_name, :tax_id,
           {:address => [:street_address, :locality, :region, :postal_code]}]
         },
-        {:funding => [:destination, :email, :mobile_phone, :routing_number, :account_number]}
+        {:funding => [:destination, :email, :mobile_phone, :routing_number, :account_number, :descriptor]}
       ]
     end
 
