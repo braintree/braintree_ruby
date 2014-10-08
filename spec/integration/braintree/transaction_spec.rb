@@ -1324,6 +1324,13 @@ describe Braintree::Transaction do
           :payment_method_nonce => "fake-apple-pay-visa-nonce"
         )
         result.success?.should == true
+        result.transaction.should_not be_nil
+        apple_pay_details = result.transaction.apple_pay_details
+        apple_pay_details.should_not be_nil
+        apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
+        apple_pay_details.expiration_month.to_i.should > 0
+        apple_pay_details.expiration_year.to_i.should > 0
+        apple_pay_details.cardholder_name.should_not be_nil
       end
 
       it "can create a transaction with a payee email" do

@@ -18,6 +18,8 @@ module Braintree
         SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
       elsif response[:sepa_bank_account]
         SuccessfulResult.new(:payment_method => SEPABankAccount._new(@gateway, response[:sepa_bank_account]))
+      elsif response[:apple_pay_card]
+        SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       elsif response
