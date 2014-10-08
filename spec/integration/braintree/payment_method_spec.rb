@@ -80,7 +80,7 @@ describe Braintree::PaymentMethod do
       authorization_fingerprint = client_token["authorizationFingerprint"]
       http = ClientApiHttp.new(
         config,
-        :authorization_fingerprint => authorization_fingerprint,
+        :authorization_fingerprint => authorization_fingerprint
       )
 
       result = Braintree::PaymentMethod.create(
