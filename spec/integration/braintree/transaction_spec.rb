@@ -1316,6 +1316,16 @@ describe Braintree::Transaction do
         result.transaction.paypal_details.debug_id.should_not be_nil
       end
 
+      it "can create a transaction with a fake apple pay nonce" do
+        customer = Braintree::Customer.create!
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => "fake-apple-pay-visa-nonce"
+        )
+        result.success?.should == true
+      end
+
       it "can create a transaction with a payee email" do
         customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
