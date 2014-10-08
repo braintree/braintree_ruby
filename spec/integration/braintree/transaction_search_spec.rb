@@ -644,8 +644,8 @@ describe Braintree::Transaction, "search" do
       end
 
       context "disbursement_date" do
-        it "searches on disbursement_date in UTC" do
-          disbursement_time = Time.parse("2013-04-10 00:00:00 UTC")
+        it "searches on disbursement_date in UTC, as a date" do
+          disbursement_time = Date.parse("2013-04-10")
           transaction_id = "deposittransaction"
 
           collection = Braintree::Transaction.search do |search|
