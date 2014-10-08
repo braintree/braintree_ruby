@@ -1563,7 +1563,7 @@ describe Braintree::Transaction do
             }
           )
           result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          result.transaction.status.should == Braintree::Transaction::Status::Settling
         end
       end
 
@@ -1647,10 +1647,7 @@ describe Braintree::Transaction do
         it "returns an error result if unsettled" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
-            :options => {
-              :submit_for_settlement => true
-            }
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           )
           result = Braintree::Transaction.refund(transaction.id)
           result.success?.should == false

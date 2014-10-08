@@ -12,7 +12,7 @@ describe Braintree::TestTransaction do
       }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settle(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::Settled
@@ -28,7 +28,7 @@ describe Braintree::TestTransaction do
         }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settlement_confirm(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementConfirmed
@@ -44,7 +44,7 @@ describe Braintree::TestTransaction do
         }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settlement_decline(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementDeclined
@@ -60,7 +60,7 @@ describe Braintree::TestTransaction do
         }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settlement_pending(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
