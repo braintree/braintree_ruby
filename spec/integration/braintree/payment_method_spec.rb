@@ -73,16 +73,7 @@ describe Braintree::PaymentMethod do
     end
 
     it "creates a payment method from a fake apple pay nonce" do
-      config = Braintree::Configuration.instantiate
       customer = Braintree::Customer.create.customer
-      raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
-      client_token = decode_client_token(raw_client_token)
-      authorization_fingerprint = client_token["authorizationFingerprint"]
-      http = ClientApiHttp.new(
-        config,
-        :authorization_fingerprint => authorization_fingerprint
-      )
-
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => "fake-apple-pay-visa-nonce",
         :customer_id => customer.id
