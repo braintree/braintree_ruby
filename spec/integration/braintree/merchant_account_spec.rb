@@ -52,7 +52,8 @@ VALID_APPLICATION_PARAMS = {
   :funding => {
     :destination => Braintree::MerchantAccount::FundingDestination::Bank,
     :routing_number => "011103093",
-    :account_number => "43759348798"
+    :account_number => "43759348798",
+    :descriptor => "Joes Bloggs MI",
   },
   :tos_accepted => true,
   :master_merchant_account_id => "sandbox_master_merchant_account"
@@ -207,6 +208,7 @@ describe Braintree::MerchantAccount do
       result.merchant_account.funding_details.email.should == "check@this.com"
       result.merchant_account.funding_details.mobile_phone.should == "1234567890"
       result.merchant_account.funding_details.destination.should == Braintree::MerchantAccount::FundingDestination::MobilePhone
+      result.merchant_account.funding_details.descriptor.should == "Joes Bloggs MI"
     end
 
     it "does not require all fields" do

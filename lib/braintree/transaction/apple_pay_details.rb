@@ -1,9 +1,10 @@
 module Braintree
-  class MerchantAccount
-    class FundingDetails
+  class Transaction
+    class ApplePayDetails
       include BaseModule
 
-      attr_reader :account_number_last_4, :destination, :email, :mobile_phone, :routing_number, :descriptor
+      attr_reader :card_type, :last_4, :expiration_month, :expiration_year,
+        :cardholder_name
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

@@ -18,8 +18,12 @@ module Braintree
         SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
       elsif response[:sepa_bank_account]
         SuccessfulResult.new(:payment_method => SEPABankAccount._new(@gateway, response[:sepa_bank_account]))
+      elsif response[:apple_pay_card]
+        SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
+      elsif response
+        SuccessfulResult.new(:payment_method => UnknownPaymentMethod._new(@gateway, response))
       else
         raise UnexpectedError, "expected :payment_method or :api_error_response"
       end
@@ -39,7 +43,7 @@ module Braintree
       elsif response.has_key?(:sepa_bank_account)
         SEPABankAccount._new(@gateway, response[:sepa_bank_account])
       else
-        UnknownPaymentMethod.new(response)
+        UnknownPaymentMethod._new(@gateway, response)
       end
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
