@@ -72,6 +72,26 @@ describe Braintree::PaymentMethod do
       found_credit_card.should_not be_nil
     end
 
+    it "creates a payment method from a fake apple pay nonce" do
+      customer = Braintree::Customer.create.customer
+      token = SecureRandom.hex(16)
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
+        :customer_id => customer.id,
+        :token => token
+      )
+
+      result.should be_success
+      apple_pay_card = result.payment_method
+      apple_pay_card.should_not be_nil
+      apple_pay_card.token.should == token
+      apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
+      apple_pay_card.default.should == true
+      apple_pay_card.image_url.should =~ /apple_pay/
+      apple_pay_card.expiration_month.to_i.should > 0
+      apple_pay_card.expiration_year.to_i.should > 0
+    end
+
     it "allows passing the make_default option alongside the nonce" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(

@@ -1316,6 +1316,23 @@ describe Braintree::Transaction do
         result.transaction.paypal_details.debug_id.should_not be_nil
       end
 
+      it "can create a transaction with a fake apple pay nonce" do
+        customer = Braintree::Customer.create!
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => "fake-apple-pay-visa-nonce"
+        )
+        result.success?.should == true
+        result.transaction.should_not be_nil
+        apple_pay_details = result.transaction.apple_pay_details
+        apple_pay_details.should_not be_nil
+        apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
+        apple_pay_details.expiration_month.to_i.should > 0
+        apple_pay_details.expiration_year.to_i.should > 0
+        apple_pay_details.cardholder_name.should_not be_nil
+      end
+
       it "can create a transaction with a payee email" do
         customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
@@ -1553,7 +1570,7 @@ describe Braintree::Transaction do
             }
           )
           result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          result.transaction.status.should == Braintree::Transaction::Status::Settling
         end
       end
 
@@ -1637,10 +1654,7 @@ describe Braintree::Transaction do
         it "returns an error result if unsettled" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
-            :options => {
-              :submit_for_settlement => true
-            }
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           )
           result = Braintree::Transaction.refund(transaction.id)
           result.success?.should == false
