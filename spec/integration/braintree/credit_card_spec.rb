@@ -1193,33 +1193,6 @@ describe Braintree::CreditCard do
       end.to raise_error(Braintree::NotFoundError)
     end
 
-    it "does not find the payment method for a locked nonce" do
-      raw_client_token = Braintree::ClientToken.generate
-      client_token = decode_client_token(raw_client_token)
-      client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-        :authorization_fingerprint => client_token["authorizationFingerprint"],
-        :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
-      )
-
-      client.add_payment_method(
-        :credit_card => {
-          :number => "4111111111111111",
-          :expiration_month => "11",
-          :expiration_year => "2099",
-        },
-        :share => true
-      )
-
-      response = client.get_payment_methods
-      body = JSON.parse(response.body)
-      nonce = body["paymentMethods"].first["nonce"]
-
-      expect do
-        Braintree::CreditCard.from_nonce(nonce)
-      end.to raise_error(Braintree::NotFoundError, /locked/)
-    end
-
     it "does not find the payment method for a consumednonce" do
       customer = Braintree::Customer.create!
       nonce = nonce_for_new_payment_method(
