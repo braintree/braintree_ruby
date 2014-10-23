@@ -550,6 +550,29 @@ describe Braintree::PaymentMethod do
       end
     end
 
+    context "apple pay cards" do
+      it "finds the payment method with the given token" do
+        customer = Braintree::Customer.create!
+        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
+          :customer_id => customer.id,
+          :token => payment_method_token
+        )
+        result.should be_success
+
+        apple_pay_card = Braintree::PaymentMethod.find(payment_method_token)
+        apple_pay_card.should be_a(Braintree::ApplePayCard)
+        apple_pay_card.should_not be_nil
+        apple_pay_card.token.should == payment_method_token
+        apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
+        apple_pay_card.default.should == true
+        apple_pay_card.image_url.should =~ /apple_pay/
+        apple_pay_card.expiration_month.to_i.should > 0
+        apple_pay_card.expiration_year.to_i.should > 0
+      end
+    end
+
     it "raises a NotFoundError exception if payment method cannot be found" do
       expect do
         Braintree::PaymentMethod.find("invalid-token")

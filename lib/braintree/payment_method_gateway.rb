@@ -42,6 +42,8 @@ module Braintree
         PayPalAccount._new(@gateway, response[:paypal_account])
       elsif response.has_key?(:sepa_bank_account)
         SEPABankAccount._new(@gateway, response[:sepa_bank_account])
+      elsif response.has_key?(:apple_pay_card)
+        ApplePayCard._new(@gateway, response[:apple_pay_card])
       else
         UnknownPaymentMethod._new(@gateway, response)
       end
