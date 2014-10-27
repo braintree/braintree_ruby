@@ -730,6 +730,20 @@ describe Braintree::Customer do
       found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal.new("1.00")
     end
 
+    it "returns associated ApplePayCards" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx
+      )
+      result.success?.should == true
+
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.apple_pay_cards.should_not be_nil
+      apple_pay_card = found_customer.apple_pay_cards.first
+      apple_pay_card.should be_a Braintree::ApplePayCard
+      apple_pay_card.token.should_not be_nil
+      apple_pay_card.expiration_year.should_not be_nil
+    end
+
     it "works for a blank customer" do
       created_customer = Braintree::Customer.create!
       found_customer = Braintree::Customer.find(created_customer.id)
