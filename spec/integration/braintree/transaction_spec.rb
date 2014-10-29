@@ -138,90 +138,174 @@ describe Braintree::Transaction do
     end
 
     describe "industry data" do
-      context "for lodging" do
-        it "accepts valid industry data" do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => 1_00,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-              :expiration_date => "05/2009"
-            },
-            :industry => {
-              :industry_type => Braintree::Transaction::IndustryType::Lodging,
-              :data => {
-                :folio_number => "ABCDEFG",
-                :check_in_date => "2014-06-01",
-                :check_out_date => "2014-06-30"
-              }
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
             }
-          )
-          result.success?.should be_true
-        end
-
-        it "returns errors if validations on industry data fails" do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => 1_00,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-              :expiration_date => "05/2009"
-            },
-            :industry => {
-              :industry_type => Braintree::Transaction::IndustryType::Lodging,
-              :data => {
-                :folio_number => "foo bar",
-                :check_in_date => "2014-06-30",
-                :check_out_date => "2014-06-01"
-              }
-            }
-          )
-          result.success?.should be_false
-          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
-        end
+          }
+        )
+        result.success?.should be_true
       end
 
-      context "for travel cruise" do
-        it "accepts valid industry data" do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => 1_00,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-              :expiration_date => "05/2009"
-            },
-            :industry => {
-              :industry_type => Braintree::Transaction::IndustryType::TravelAndCruise,
-              :data => {
-                :travel_package => "flight",
-                :departure_date => "2014-07-01",
-                :lodging_check_in_date => "2014-07-07",
-                :lodging_check_out_date => "2014-07-07",
-                :lodging_name => "Royal Caribbean"
-              }
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
             }
-          )
-          result.success?.should be_true
-        end
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
+      end
+    end
 
-        it "returns errors if validations on industry data fails" do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => 1_00,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-              :expiration_date => "05/2009"
-            },
-            :industry => {
-              :industry_type => Braintree::Transaction::IndustryType::TravelAndCruise,
-              :data => {
-                :lodging_name => "Royal Caribbean"
-              }
+    describe "industry data" do
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
             }
-          )
-          result.success?.should be_false
-          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93410"]
-        end
+          }
+        )
+        result.success?.should be_true
+      end
+
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
+            }
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
+      end
+    end
+
+    describe "industry data" do
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
+            }
+          }
+        )
+        result.success?.should be_true
+      end
+
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
+            }
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
+      end
+    end
+
+    describe "industry data" do
+      it "accepts valid industry data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "ABCDEFG",
+              :check_in_date => "2014-06-01",
+              :check_out_date => "2014-06-30"
+            }
+          }
+        )
+        result.success?.should be_true
+      end
+
+      it "returns errors if validations on industry data fails" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          },
+          :industry => {
+            :industry_type => Braintree::Transaction::IndustryType::Lodging,
+            :data => {
+              :folio_number => "foo bar",
+              :check_in_date => "2014-06-30",
+              :check_out_date => "2014-06-01"
+            }
+          }
+        )
+        result.success?.should be_false
+        result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == ["93403", "93406"]
       end
     end
 
