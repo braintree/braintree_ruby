@@ -403,6 +403,20 @@ describe Braintree::Customer do
         result.customer.credit_cards.first.last_4.should == "1111"
       end
     end
+
+    it "can create a customer with an apple pay payment method" do
+      result = Braintree::Customer.create(:payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa)
+
+      result.success?.should == true
+      result.customer.payment_methods.should_not be_empty
+      result.customer.payment_methods.first.token.should_not be_nil
+    end
+
+    it "can create a customer with an unknown payment method" do
+      result = Braintree::Customer.create(:payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable)
+
+      result.success?.should == true
+    end
   end
 
   describe "self.create!" do

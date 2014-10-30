@@ -1321,7 +1321,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => "fake-apple-pay-visa-nonce"
+          :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1331,6 +1331,17 @@ describe Braintree::Transaction do
         apple_pay_details.expiration_month.to_i.should > 0
         apple_pay_details.expiration_year.to_i.should > 0
         apple_pay_details.cardholder_name.should_not be_nil
+      end
+
+      it "can create a transaction with an unknown nonce" do
+        customer = Braintree::Customer.create!
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable
+        )
+        result.success?.should == true
+        result.transaction.should_not be_nil
       end
 
       it "can create a transaction with a payee email" do

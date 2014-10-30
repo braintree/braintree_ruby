@@ -143,7 +143,7 @@ module Braintree
 
     # Returns the customer's payment methods
     def payment_methods
-      @credit_cards.dup + @paypal_accounts.dup
+      @credit_cards.dup + @paypal_accounts.dup + @apple_pay_cards.dup
     end
 
     def inspect # :nodoc:
