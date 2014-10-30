@@ -146,6 +146,24 @@ describe Braintree::CreditCard do
       end
     end
 
+    it "verifies the credit card if options[verify_card]=true" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+        :expiration_date => "05/2009",
+        :options => {:verify_card => true, :verification_amount => "1.01"}
+      )
+      result.success?.should == false
+      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      result.credit_card_verification.processor_response_code.should == "2000"
+      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
+      result.credit_card_verification.cvv_response_code.should == "I"
+      result.credit_card_verification.avs_error_response_code.should == nil
+      result.credit_card_verification.avs_postal_code_response_code.should == "I"
+      result.credit_card_verification.avs_street_address_response_code.should == "I"
+    end
+
     it "allows user to specify merchant account for verification" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
