@@ -122,6 +122,22 @@ describe Braintree::Transaction do
   end
 
   describe "self.create" do
+    describe "risk data" do
+      it "returns decision and id" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+            :expiration_date => "05/2009"
+          }
+        )
+        result.transaction.risk_data.should be_a(Braintree::RiskData)
+        result.transaction.risk_data.should respond_to(:id)
+        result.transaction.risk_data.should respond_to(:decision)
+      end
+    end
+
     describe "card type indicators" do
       it "sets the prepaid field if the card is prepaid" do
         result = Braintree::Transaction.create(

@@ -81,5 +81,13 @@ describe Braintree::CreditCardVerification do
       verification.should_not == same_id_different_object
     end
   end
+
+  describe "risk_data" do
+    it "initializes a RiskData object" do
+      verification = Braintree::CreditCardVerification._new(:risk_data => {:id => "123", :decision => "WOO YOU WON $1000 dollars" })
+      verification.risk_data.id.should == "123"
+      verification.risk_data.decision.should == "WOO YOU WON $1000 dollars"
+    end
+  end
 end
 

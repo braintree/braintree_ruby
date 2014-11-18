@@ -112,6 +112,7 @@ module Braintree
     attr_reader :updated_at
     attr_reader :add_ons, :discounts
     attr_reader :payment_instrument_type
+    attr_reader :risk_data
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
     def self.create(attributes)
@@ -250,6 +251,7 @@ module Braintree
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
       @payment_instrument_type = attributes[:payment_instrument_type]
+      @risk_data = RiskData.new(attributes[:risk_data])
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.
