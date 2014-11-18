@@ -131,7 +131,7 @@ module Braintree
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone, :url]},
         {:paypal_account => [:email, :token, :paypal_data, :payee_email]},
-        {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name]}]}
+        {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate]}]}
       ]
     end
 

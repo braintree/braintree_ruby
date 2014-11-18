@@ -152,7 +152,8 @@ describe Braintree::Transaction do
               :data => {
                 :folio_number => "ABCDEFG",
                 :check_in_date => "2014-06-01",
-                :check_out_date => "2014-06-30"
+                :check_out_date => "2014-06-30",
+                :room_rate => "239.00",
               }
             }
           )
@@ -172,7 +173,8 @@ describe Braintree::Transaction do
               :data => {
                 :folio_number => "foo bar",
                 :check_in_date => "2014-06-30",
-                :check_out_date => "2014-06-01"
+                :check_out_date => "2014-06-01",
+                :room_rate => "asdfasdf",
               }
             }
           )
@@ -199,7 +201,7 @@ describe Braintree::Transaction do
                 :departure_date => "2014-07-01",
                 :lodging_check_in_date => "2014-07-07",
                 :lodging_check_out_date => "2014-07-07",
-                :lodging_name => "Royal Caribbean"
+                :lodging_name => "Royal Caribbean",
               }
             }
           )
