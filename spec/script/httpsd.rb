@@ -12,7 +12,7 @@ cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
 pid_file = ARGV[0]
 
 s = WEBrick::HTTPServer.new(
-  :Port => (ENV['SSL_TEST_PORT'] || 8443),
+  :Port => (ENV['SSL_TEST_PORT'] || 8444),
   :Logger => WEBrick::Log::new(nil, WEBrick::Log::ERROR),
   :DocumentRoot => File.join(File.dirname(__FILE__)),
   :ServerType => WEBrick::Daemon,
