@@ -217,4 +217,20 @@ describe Braintree::CreditCard do
       end.to raise_error(NoMethodError, /protected method .new/)
     end
   end
+
+  describe "self._new" do
+    describe "initializing verification" do
+      it "picks the youngest verification" do
+        verification1 = { :created_at => Time.now, :id => 123 }
+        verification2 = { :created_at => Time.now - 3600, :id => 456 }
+        credit_card = Braintree::CreditCard._new(Braintree::Configuration.gateway, {:verifications => [verification1, verification2]})
+        credit_card.verification.id.should == 123
+      end
+
+      it "picks nil if verifications are empty" do
+        credit_card = Braintree::CreditCard._new(Braintree::Configuration.gateway, {})
+        credit_card.verification.should be_nil
+      end
+    end
+  end
 end

@@ -119,7 +119,7 @@ describe Braintree::CreditCard do
       result.credit_card_verification.avs_street_address_response_code.should == "I"
     end
 
-    it "returns risk data on verifications on credit_card create" do
+    it "returns risk data on verification on credit_card create" do
       customer = Braintree::Customer.create!
       credit_card = Braintree::CreditCard.create!(
         :cardholder_name => "Original Holder",
@@ -129,7 +129,7 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2020",
         :options => {:verify_card => true}
       )
-      verification = credit_card.verifications.first
+      verification = credit_card.verification
       verification.risk_data.should respond_to(:id)
       verification.risk_data.should respond_to(:decision)
     end

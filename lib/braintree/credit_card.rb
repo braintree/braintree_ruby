@@ -38,7 +38,7 @@ module Braintree
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance,
       :created_at, :customer_id, :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare,
       :issuing_bank, :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at,
-      :image_url, :verifications
+      :image_url, :verification
 
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create(attributes)
@@ -139,7 +139,12 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
-      @verifications = (@verifications || []).map { |verification_hash| CreditCardVerification._new(verification_hash) }
+      @verification = _most_recent_verification(attributes)
+    end
+
+    def _most_recent_verification(attributes)
+      verification = (attributes[:verifications] || []).sort_by{ |verification| verification[:created_at] }.reverse.first
+      CreditCardVerification._new(verification) if verification
     end
 
     # Deprecated. Use Braintree::CreditCard.credit
