@@ -3,12 +3,12 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe Braintree::WebhookNotification do
   describe "self.sample_notification" do
     it "builds a sample notification and signature given an identifier and kind" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
 
-      notification = Braintree::WebhookNotification.parse(signature, payload)
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
       notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionWentPastDue
       notification.subscription.id.should == "my_id"
@@ -16,12 +16,12 @@ describe Braintree::WebhookNotification do
     end
 
     it "builds a sample notification for a partner merchant connected webhook" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::PartnerMerchantConnected,
         "my_id"
       )
 
-      notification = Braintree::WebhookNotification.parse(signature, payload)
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantConnected
       notification.partner_merchant.merchant_public_id.should == "public_id"
@@ -33,12 +33,12 @@ describe Braintree::WebhookNotification do
     end
 
     it "builds a sample notification for a partner merchant disconnected webhook" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected,
         "my_id"
       )
 
-      notification = Braintree::WebhookNotification.parse(signature, payload)
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected
       notification.partner_merchant.partner_merchant_id.should == "abc123"
@@ -46,12 +46,12 @@ describe Braintree::WebhookNotification do
     end
 
     it "builds a sample notification for a partner merchant declined webhook" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::PartnerMerchantDeclined,
         "my_id"
       )
 
-      notification = Braintree::WebhookNotification.parse(signature, payload)
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantDeclined
       notification.partner_merchant.partner_merchant_id.should == "abc123"
@@ -60,12 +60,12 @@ describe Braintree::WebhookNotification do
 
     context "disputes" do
       it "builds a sample notification for a dispute opened webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::DisputeOpened,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::DisputeOpened
 
@@ -75,12 +75,12 @@ describe Braintree::WebhookNotification do
       end
 
       it "builds a sample notification for a dispute lost webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::DisputeLost,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::DisputeLost
 
@@ -90,12 +90,12 @@ describe Braintree::WebhookNotification do
       end
 
       it "builds a sample notification for a dispute won webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::DisputeWon,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::DisputeWon
 
@@ -107,12 +107,12 @@ describe Braintree::WebhookNotification do
 
     context "disbursement" do
       it "builds a sample notification for a transaction disbursed webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::TransactionDisbursed,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::TransactionDisbursed
         notification.transaction.id.should == "my_id"
@@ -121,12 +121,12 @@ describe Braintree::WebhookNotification do
       end
 
       it "builds a sample notification for a disbursement_exception webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::DisbursementException,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::DisbursementException
         notification.disbursement.id.should == "my_id"
@@ -140,12 +140,12 @@ describe Braintree::WebhookNotification do
       end
 
       it "builds a sample notification for a disbursement webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::Disbursement,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::Disbursement
         notification.disbursement.id.should == "my_id"
@@ -161,12 +161,12 @@ describe Braintree::WebhookNotification do
 
     context "merchant account" do
       it "builds a sample notification for a merchant account approved webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::SubMerchantAccountApproved,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
         notification.merchant_account.id.should == "my_id"
@@ -176,12 +176,12 @@ describe Braintree::WebhookNotification do
       end
 
       it "builds a sample notification for a merchant account declined webhook" do
-        signature, payload = Braintree::WebhookTesting.sample_notification(
+        sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined,
           "my_id"
         )
 
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
         notification.kind.should == Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
         notification.merchant_account.id.should == "my_id"
@@ -194,30 +194,30 @@ describe Braintree::WebhookNotification do
     end
 
     it "includes a valid signature" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
-      expected_signature = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, payload)
+      expected_signature = Braintree::Digest.hexdigest(Braintree::Configuration.private_key, sample_notification[:bt_payload])
 
-      signature.should == "#{Braintree::Configuration.public_key}|#{expected_signature}"
+      sample_notification[:bt_signature].should == "#{Braintree::Configuration.public_key}|#{expected_signature}"
     end
   end
 
   describe "parse" do
     it "raises InvalidSignature error when the signature is completely invalid" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
 
       expect do
-        notification = Braintree::WebhookNotification.parse("not a valid signature", payload)
+        Braintree::WebhookNotification.parse("not a valid signature", sample_notification[:bt_payload])
       end.to raise_error(Braintree::InvalidSignature)
     end
 
     it "raises InvalidSignature error with a message when the public key is not found" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
@@ -230,51 +230,51 @@ describe Braintree::WebhookNotification do
       gateway = Braintree::Gateway.new(config)
 
       expect do
-        notification = gateway.webhook_notification.parse(signature, payload)
+        gateway.webhook_notification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
       end.to raise_error(Braintree::InvalidSignature, /no matching public key/)
     end
 
     it "raises InvalidSignature error if the payload has been changed" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
 
       expect do
-        notification = Braintree::WebhookNotification.parse(signature, "badstuff" + payload)
+        Braintree::WebhookNotification.parse(sample_notification[:bt_signature], "badstuff" + sample_notification[:bt_payload])
       end.to raise_error(Braintree::InvalidSignature, /signature does not match payload - one has been modified/)
     end
 
     it "raises InvalidSignature error with a message complaining about invalid characters" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
 
       expect do
-        notification = Braintree::WebhookNotification.parse(signature, "^& bad ,* chars @!" + payload)
+        Braintree::WebhookNotification.parse(sample_notification[:bt_signature], "^& bad ,* chars @!" + sample_notification[:bt_payload])
       end.to raise_error(Braintree::InvalidSignature, /payload contains illegal characters/)
     end
 
     it "allows all valid characters" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
 
-      payload = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+=/\n"
+      sample_notification[:bt_payload] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+=/\n"
       expect do
-        notification = Braintree::WebhookNotification.parse(signature, payload)
+        Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
       end.to_not raise_error(Braintree::InvalidSignature, /payload contains illegal characters/)
     end
 
     it "retries a payload with a newline" do
-      signature, payload = Braintree::WebhookTesting.sample_notification(
+      sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
         "my_id"
       )
 
-      notification = Braintree::WebhookNotification.parse(signature, payload.rstrip)
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload].rstrip)
 
       notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionWentPastDue
       notification.subscription.id.should == "my_id"

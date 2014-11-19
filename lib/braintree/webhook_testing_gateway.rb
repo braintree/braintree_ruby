@@ -9,7 +9,7 @@ module Braintree
       payload = Base64.encode64(_sample_xml(kind, id))
       signature_string = "#{@config.public_key}|#{Braintree::Digest.hexdigest(@config.private_key, payload)}"
 
-      return signature_string, payload
+      return {:bt_signature => signature_string, :bt_payload => payload}
     end
 
     def _sample_xml(kind, data)
