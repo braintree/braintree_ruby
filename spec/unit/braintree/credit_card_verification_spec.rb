@@ -88,6 +88,11 @@ describe Braintree::CreditCardVerification do
       verification.risk_data.id.should == "123"
       verification.risk_data.decision.should == "WOO YOU WON $1000 dollars"
     end
+
+    it "handles a nil risk_data" do
+      verification = Braintree::CreditCardVerification._new(:risk_data => nil)
+      verification.risk_data.should be_nil
+    end
   end
 end
 

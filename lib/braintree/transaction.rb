@@ -251,7 +251,7 @@ module Braintree
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
       @payment_instrument_type = attributes[:payment_instrument_type]
-      @risk_data = RiskData.new(attributes[:risk_data])
+      @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.

@@ -16,7 +16,7 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
-      @risk_data = RiskData.new(attributes[:risk_data])
+      @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
     end
 
     def inspect # :nodoc:

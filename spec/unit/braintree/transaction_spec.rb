@@ -179,6 +179,14 @@ describe Braintree::Transaction do
         Braintree::Transaction._new(:gateway, :amount => 12.34)
       }.to raise_error(/Argument must be a String or BigDecimal/)
     end
+
+    it "handles nil risk_data" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :risk_data => nil
+      )
+      transaction.risk_data.should be_nil
+    end
   end
 
   describe "inspect" do
