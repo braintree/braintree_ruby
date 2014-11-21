@@ -25,7 +25,7 @@ describe Braintree::CreditCard do
         :device_data,
         :fraud_merchant_id,
         :payment_method_nonce,
-        {:options => [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session, :fail_on_duplicate_payment_method]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method]},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -61,7 +61,7 @@ describe Braintree::CreditCard do
         :device_data,
         :fraud_merchant_id,
         :payment_method_nonce,
-        {:options => [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session]},
+        {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session]},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -215,6 +215,22 @@ describe Braintree::CreditCard do
       expect do
         Braintree::CreditCard.new
       end.to raise_error(NoMethodError, /protected method .new/)
+    end
+  end
+
+  describe "self._new" do
+    describe "initializing verification" do
+      it "picks the youngest verification" do
+        verification1 = { :created_at => Time.now, :id => 123 }
+        verification2 = { :created_at => Time.now - 3600, :id => 456 }
+        credit_card = Braintree::CreditCard._new(Braintree::Configuration.gateway, {:verifications => [verification1, verification2]})
+        credit_card.verification.id.should == 123
+      end
+
+      it "picks nil if verifications are empty" do
+        credit_card = Braintree::CreditCard._new(Braintree::Configuration.gateway, {})
+        credit_card.verification.should be_nil
+      end
     end
   end
 end

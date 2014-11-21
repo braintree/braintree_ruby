@@ -2,7 +2,7 @@ require "securerandom"
 
 unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   INTEGRATION_SPEC_HELPER_LOADED = true
-  SSL_TEST_PORT = ENV['SSL_TEST_PORT'] || 8443
+  SSL_TEST_PORT = ENV['SSL_TEST_PORT'] || 8444
 
   require File.dirname(__FILE__) + "/../spec_helper"
   require File.dirname(__FILE__) + "/../hacks/tcp_socket"

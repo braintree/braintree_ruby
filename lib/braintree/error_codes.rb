@@ -293,6 +293,25 @@ module Braintree
         SubmitForSettlementIsRequiredForCloning = "91544"
         VaultIsDisabled = "91525"
       end
+
+      module Industry
+        module Lodging
+          EmptyData = "93402"
+          FolioNumberIsInvalid = "93403"
+          CheckInDateIsInvalid = "93404"
+          CheckOutDateIsInvalid = "93405"
+          CheckOutDateMustFollowCheckInDate = "93406"
+        end
+
+        module TravelCruise
+          EmptyData = "93408"
+          UnknownDataField = "93409"
+          TravelPackageIsInvalid = "93410"
+          DepartureDateIsInvalid = "93411"
+          LodgingCheckInDateIsInvalid = "93412"
+          LodgingCheckOutDateIsInvalid = "93413"
+        end
+      end
     end
 
     module MerchantAccount

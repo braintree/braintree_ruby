@@ -403,6 +403,20 @@ describe Braintree::Customer do
         result.customer.credit_cards.first.last_4.should == "1111"
       end
     end
+
+    it "can create a customer with an apple pay payment method" do
+      result = Braintree::Customer.create(:payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa)
+
+      result.success?.should == true
+      result.customer.payment_methods.should_not be_empty
+      result.customer.payment_methods.first.token.should_not be_nil
+    end
+
+    it "can create a customer with an unknown payment method" do
+      result = Braintree::Customer.create(:payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable)
+
+      result.success?.should == true
+    end
   end
 
   describe "self.create!" do
@@ -728,6 +742,20 @@ describe Braintree::Customer do
       found_customer.credit_cards.first.subscriptions.first.plan_id.should == "integration_trialless_plan"
       found_customer.credit_cards.first.subscriptions.first.payment_method_token.should == credit_card.token
       found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal.new("1.00")
+    end
+
+    it "returns associated ApplePayCards" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx
+      )
+      result.success?.should == true
+
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.apple_pay_cards.should_not be_nil
+      apple_pay_card = found_customer.apple_pay_cards.first
+      apple_pay_card.should be_a Braintree::ApplePayCard
+      apple_pay_card.token.should_not be_nil
+      apple_pay_card.expiration_year.should_not be_nil
     end
 
     it "works for a blank customer" do
