@@ -3,7 +3,7 @@ module Braintree
     class PayPalDetails
       include BaseModule
 
-      attr_reader :payer_email, :payment_id, :authorization_id, :token,
+      attr_reader :custom_field, :payer_email, :payment_id, :authorization_id, :token,
         :image_url, :debug_id, :payee_email
 
       def initialize(attributes)
