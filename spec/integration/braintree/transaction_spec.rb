@@ -2729,6 +2729,20 @@ describe Braintree::Transaction do
         dispute.transaction_details.id.should == "disputedtransaction"
       end
 
+      it "includes disputes on found transactions" do
+        found_transaction = Braintree::Transaction.find("retrievaltransaction")
+
+        found_transaction.disputes.count.should == 1
+
+        dispute = found_transaction.disputes.first
+        dispute.amount.should == Braintree::Util.to_big_decimal("1000.00")
+        dispute.currency_iso_code.should == "USD"
+        dispute.reason.should == Braintree::Dispute::Reason::Retrieval
+        dispute.status.should == Braintree::Dispute::Status::Open
+        dispute.transaction_details.amount.should == Braintree::Util.to_big_decimal("1000.00")
+        dispute.transaction_details.id.should == "retrievaltransaction"
+      end
+
       it "is not disputed" do
         result = Braintree::Transaction.create(
           :type => "sale",
