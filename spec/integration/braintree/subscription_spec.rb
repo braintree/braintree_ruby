@@ -38,9 +38,6 @@ describe Braintree::Subscription do
       result.subscription.next_bill_amount.should == "12.34"
       result.subscription.next_billing_period_amount.should == "12.34"
       result.subscription.payment_method_token.should == @credit_card.token
-
-      result.subscription.status_history.first.price.should == "12.34"
-      result.subscription.status_history.first.status.should == Braintree::Subscription::Status::Active
     end
 
     it "returns a transaction with billing period populated" do
