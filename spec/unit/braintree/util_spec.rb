@@ -115,7 +115,7 @@ describe Braintree::Util do
             :add => [{:bar => 5}]
           }
         )
-      end.to_not raise_error(ArgumentError, "invalid keys: add_ons[update][foo], add_ons[add][bar]")
+      end.to raise_error(ArgumentError, /invalid keys: add_ons\[add\]\[bar\], add_ons\[update\]\[foo\]/)
     end
   end
 

@@ -75,7 +75,7 @@ describe Braintree::TransparentRedirect do
 
       expect do
         Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_encoded_query_string
-      end.to_not raise_error(Braintree::ForgedQueryString)
+      end.to raise_error(Braintree::UnexpectedError)
     end
 
     it "does not raise Braintree::ForgedQueryString if query string is url decoded" do
@@ -88,7 +88,7 @@ describe Braintree::TransparentRedirect do
 
       expect do
         Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_decoded_query_string
-      end.to_not raise_error(Braintree::ForgedQueryString)
+      end.to_not raise_error
     end
 
     it "does not raise Braintree::ForgedQueryString if the query string is partially encoded" do
@@ -100,7 +100,7 @@ describe Braintree::TransparentRedirect do
 
       expect do
         Braintree::Configuration.gateway.transparent_redirect.parse_and_validate_query_string url_partially_encoded_query_string
-      end.to_not raise_error(Braintree::ForgedQueryString)
+      end.to_not raise_error
     end
 
     it "raises an AuthenticationError if authentication fails" do

@@ -75,7 +75,7 @@ describe Braintree::TestTransaction do
       sale_result.success?.should == true
 
       settle_result = Braintree::TestTransaction.settlement_decline(sale_result.transaction.id)
-      settle_result.success?.should be_false
+      settle_result.success?.should be(false)
       settle_result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotSimulateTransactionSettlement
     end
   end

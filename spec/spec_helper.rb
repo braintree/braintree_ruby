@@ -2,6 +2,8 @@ unless defined?(SPEC_HELPER_LOADED)
   SPEC_HELPER_LOADED = true
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
+  require "bundler/setup"
+  require "rspec"
   require "libxml"
 
   braintree_lib = "#{project_root}/lib"
@@ -184,8 +186,12 @@ unless defined?(SPEC_HELPER_LOADED)
       ParseTo.new(hash)
     end
   end
+end
 
-  Spec::Runner.configure do |config|
-    config.include CustomMatchers
+RSpec.configure do |config|
+  config.include CustomMatchers
+
+  config.expect_with :rspec do |expect|
+    expect.syntax = [:should, :expect]
   end
 end
