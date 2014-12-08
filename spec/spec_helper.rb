@@ -177,7 +177,7 @@ unless defined?(SPEC_HELPER_LOADED)
         "xml parsing failed for #{@failed_parser}, expected #{@expected_hash.inspect} but was #{@results.inspect}"
       end
 
-      def negative_failure_message
+      def failure_message_when_negated
         raise NotImplementedError
       end
     end
