@@ -9,12 +9,12 @@ end
 
 desc "Run units"
 RSpec::Core::RakeTask.new("spec:unit") do |t|
-  t.rspec_path = FileList["spec/unit/**/*_spec.rb"]
+  t.pattern = "spec/unit/**/*_spec.rb"
 end
 
 desc "Run integration"
 RSpec::Core::RakeTask.new("spec:integration") do |t|
-  t.rspec_path = FileList["spec/integration/**/*_spec.rb"]
+  t.pattern = "spec/integration/**/*_spec.rb"
 end
 
 task :gem do
