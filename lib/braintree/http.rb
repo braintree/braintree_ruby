@@ -60,6 +60,7 @@ module Braintree
 
     def _http_do(http_verb, path, body = nil)
       connection = Net::HTTP.new(@config.server, @config.port)
+      connection.open_timeout = 60
       connection.read_timeout = 60
       if @config.ssl?
         connection.use_ssl = true

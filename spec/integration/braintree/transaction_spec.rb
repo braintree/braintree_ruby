@@ -1328,6 +1328,58 @@ describe Braintree::Transaction do
         result.transaction.paypal_details.debug_id.should_not be_nil
         result.transaction.paypal_details.payee_email.should == "bt_seller_us@paypal.com"
       end
+
+      it "can create a transaction with a payee email in options.paypal" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce,
+          :options => {
+            :paypal => {
+              :payee_email => "bt_seller_us@paypal.com"
+            }
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
+        result.transaction.paypal_details.payee_email.should == "bt_seller_us@paypal.com"
+      end
+
+      it "can create a transaction with a paypal custom field" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce,
+          :options => {
+            :paypal => {
+              :custom_field => "Additional info"
+            }
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
+        result.transaction.paypal_details.custom_field.should == "Additional info"
+      end
     end
 
     context "three_d_secure" do
@@ -2675,6 +2727,20 @@ describe Braintree::Transaction do
         dispute.status.should == Braintree::Dispute::Status::Won
         dispute.transaction_details.amount.should == Braintree::Util.to_big_decimal("1000.00")
         dispute.transaction_details.id.should == "disputedtransaction"
+      end
+
+      it "includes disputes on found transactions" do
+        found_transaction = Braintree::Transaction.find("retrievaltransaction")
+
+        found_transaction.disputes.count.should == 1
+
+        dispute = found_transaction.disputes.first
+        dispute.amount.should == Braintree::Util.to_big_decimal("1000.00")
+        dispute.currency_iso_code.should == "USD"
+        dispute.reason.should == Braintree::Dispute::Reason::Retrieval
+        dispute.status.should == Braintree::Dispute::Status::Open
+        dispute.transaction_details.amount.should == Braintree::Util.to_big_decimal("1000.00")
+        dispute.transaction_details.id.should == "retrievaltransaction"
       end
 
       it "is not disputed" do

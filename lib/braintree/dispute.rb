@@ -28,6 +28,7 @@ module Braintree
       ProductNotReceived = "product_not_received"
       ProductUnsatisfactory = "product_unsatisfactory"
       TransactionAmountDiffers = "transaction_amount_differs"
+      Retrieval = "retrieval"
     end
 
     class << self
