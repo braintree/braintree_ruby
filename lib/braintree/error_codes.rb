@@ -52,6 +52,10 @@ module Braintree
       MerchantKeysAlreadyConfigured = "93515"
       MerchantKeysNotConfigured = "93516"
       CertificateInvalid = "93517"
+      CertificateMismatch = "93519"
+      InvalidToken = "83520"
+      PrivateKeyMismatch = "93521"
+      KeyMismatchStoringCertificate = "93522"
     end
 
     # See http://www.braintreepayments.com/docs/ruby/credit_cards/validations
@@ -81,6 +85,7 @@ module Braintree
       NumberLengthIsInvalid = "81716"
       NumberMustBeTestNumber = "81717"
       PaymentMethodConflict = "81725"
+      PaymentMethodIsNotACreditCard = "91738"
       PaymentMethodNonceCardTypeIsNotAccepted = "91734"
       PaymentMethodNonceConsumed = "91731"
       PaymentMethodNonceLocked = "91733"
@@ -96,8 +101,11 @@ module Braintree
       module Options
         UseBillingForShippingDisabled = "91572"
         UpdateExistingTokenIsInvalid = "91723"
-        VerificationMerchantAccountIdIsInvalid = "91728"
         UpdateExistingTokenNotAllowed = "91729"
+        VerificationMerchantAccountIdIsInvalid = "91728"
+        VerificationAmountCannotBeNegative = "91739"
+        VerificationAmountFormatIsInvalid = "91740"
+        VerificationAmountNotSupportedByProcessor = "91741"
       end
     end
 
@@ -143,6 +151,32 @@ module Braintree
       PayPalAccountsAreNotAccepted = "82904"
       PayPalCommunicationError = "92910"
       TokenIsInUse = "92906"
+      AuthExpired = "92911"
+      CannotHaveFundingSourceWithoutAccessToken = "92912"
+      InvalidFundingSourceSelection = "92913"
+      CannotUpdatePayPalAccountUsingPaymentMethodNonce = "92914"
+    end
+
+    module SEPABankAccount
+      IBANIsRequired = "93001"
+      BICIsRequired = "93002"
+      AccountHolderNameIsRequired = "93003"
+    end
+
+    module SEPAMandate
+      AccountHolderNameIsRequired = "83301"
+      BICIsRequired = "83302"
+      IBANIsRequired = "83303"
+      TypeIsRequired = "93304"
+      IBANInvalidCharacter = "83305"
+      BICInvalidCharacter = "83306"
+      BICLengthIsInvalid = "83307"
+      BICUnsupportedCountry = "83308"
+      IBANUnsupportedCountry = "83309"
+      IBANInvalidFormat = "83310"
+      LocaleIsUnsupported = "93311"
+      BillingAddressIsInvalid = "93312"
+      TypeIsInvalid = "93313"
     end
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/validations
@@ -260,6 +294,7 @@ module Braintree
       PaymentMethodTokenCardTypeIsNotAccepted = "91517"
       PaymentMethodTokenIsInvalid = "91518"
       PaymentInstrumentNotSupportedByMerchantAccount = "91577"
+      PayPalAuthExpired = "91579"
       PayPalNotEnabled = "91576"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
@@ -273,8 +308,10 @@ module Braintree
       ServiceFeeAmountIsTooLarge = "91556"
       ServiceFeeAmountNotAllowedOnMasterMerchantAccount = "91557"
       ServiceFeeIsNotAllowedOnCredits = "91552"
+      ServiceFeeNotAcceptedForPayPal = "91578"
       SettlementAmountIsLessThanServiceFeeAmount = "91551"
       SettlementAmountIsTooLarge = "91522"
+      ShippingAddressDoesntMatchCustomer = "91581"
       SubMerchantAccountRequiresServiceFeeAmount = "91553"
       SubscriptionDoesNotBelongToCustomer = "91529"
       SubscriptionIdIsInvalid = "91528"
@@ -292,15 +329,22 @@ module Braintree
       module Options
         SubmitForSettlementIsRequiredForCloning = "91544"
         VaultIsDisabled = "91525"
+
+        module PayPal
+          CustomFieldTooLong = "91580"
+        end
       end
 
       module Industry
+        IndustryTypeIsInvalid = "93401"
+
         module Lodging
           EmptyData = "93402"
           FolioNumberIsInvalid = "93403"
           CheckInDateIsInvalid = "93404"
           CheckOutDateIsInvalid = "93405"
           CheckOutDateMustFollowCheckInDate = "93406"
+          UnknownDataField = "93407"
         end
 
         module TravelCruise
@@ -435,14 +479,18 @@ module Braintree
       ProxyMerchantDoesNotExist = "92805"
       VerifyCardRequiresCustomerId = "92802"
       UnsupportedVersion = "92806"
+      MerchantAccountDoesNotExist = "92807"
     end
 
     module PaymentMethod
+      PaymentMethodNonceConsumed = "93106"
       CustomerIdIsInvalid = "93105"
       CustomerIdIsRequired = "93104"
       NonceIsInvalid = "93102"
       NonceIsRequired = "93103"
       PaymentMethodParamsAreRequired = "93101"
+      PaymentMethodNonceUnknown = "93108"
+      PaymentMethodNonceLocked = "93109"
       CannotForwardPaymentMethodType = "93107"
     end
 
