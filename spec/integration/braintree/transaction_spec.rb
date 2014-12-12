@@ -1269,6 +1269,22 @@ describe Braintree::Transaction do
         apple_pay_details.cardholder_name.should_not be_nil
       end
 
+      it "can create a transaction with a fake sepa bank account nonce" do
+        with_altpay_merchant do
+          customer = Braintree::Customer.create!
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => Braintree::Test::Nonce::SEPA,
+            :merchant_account_id => "sepa_ma"
+          )
+          result.success?.should == true
+          result.transaction.should_not be_nil
+          sepa_bank_account_details = result.transaction.sepa_bank_account_details
+          sepa_bank_account_details.should_not be_nil
+        end
+      end
+
       it "can create a transaction with an unknown nonce" do
         customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(

@@ -9,6 +9,7 @@ module Braintree
       ApplePayMasterCard = "fake-apple-pay-mastercard-nonce"
       ApplePayAmEx = "fake-apple-pay-amex-nonce"
       AbstractTransactable = "fake-abstract-transactable-nonce"
+      SEPA = "fake-sepa-bank-account-nonce"
     end
   end
 end
