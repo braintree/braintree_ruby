@@ -41,6 +41,7 @@ describe Braintree::Subscription do
 
       result.subscription.status_history.first.price.should == "12.34"
       result.subscription.status_history.first.status.should == Braintree::Subscription::Status::Active
+      result.subscription.status_history.first.subscription_source.should == Braintree::Subscription::Source::Api
     end
 
     it "returns a transaction with billing period populated" do

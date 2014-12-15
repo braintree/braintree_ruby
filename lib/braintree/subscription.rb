@@ -3,6 +3,13 @@ module Braintree
   class Subscription
     include BaseModule
 
+    module Source
+      Api          = "api"
+      ControlPanel = "control_panel"
+      Recurring    = "recurring"
+      Unrecognized = "unrecognized"
+    end
+
     module Status
       Active = 'Active'
       Canceled = 'Canceled'
