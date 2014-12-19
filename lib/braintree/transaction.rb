@@ -116,7 +116,7 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
     def self.create(attributes)
-      Configuration.gateway.transaction.create(attributes)
+      config.gateway.transaction.create(attributes)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
@@ -125,7 +125,7 @@ module Braintree
     end
 
     def self.cancel_release(transaction_id)
-      Configuration.gateway.transaction.cancel_release(transaction_id)
+      config.gateway.transaction.cancel_release(transaction_id)
     end
 
     def self.cancel_release!(transaction_id)
@@ -133,7 +133,7 @@ module Braintree
     end
 
     def self.clone_transaction(transaction_id, attributes)
-      Configuration.gateway.transaction.clone_transaction(transaction_id, attributes)
+      config.gateway.transaction.clone_transaction(transaction_id, attributes)
     end
 
     def self.clone_transaction!(transaction_id, attributes)
@@ -145,7 +145,7 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/transactions/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Transaction.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      Configuration.gateway.transaction.create_from_transparent_redirect(query_string)
+      config.gateway.transaction.create_from_transparent_redirect(query_string)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
@@ -153,11 +153,11 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/transactions/create_tr
     def self.create_transaction_url
       warn "[DEPRECATED] Transaction.create_transaction_url is deprecated. Please use TransparentRedirect.url"
-      Configuration.gateway.transaction.create_transaction_url
+      config.gateway.transaction.create_transaction_url
     end
 
     def self.credit(attributes)
-      Configuration.gateway.transaction.credit(attributes)
+      config.gateway.transaction.credit(attributes)
     end
 
     def self.credit!(attributes)
@@ -166,11 +166,11 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/search
     def self.find(id)
-      Configuration.gateway.transaction.find(id)
+      config.gateway.transaction.find(id)
     end
 
     def self.hold_in_escrow(id)
-      Configuration.gateway.transaction.hold_in_escrow(id)
+      config.gateway.transaction.hold_in_escrow(id)
     end
 
     def self.hold_in_escrow!(id)
@@ -179,7 +179,7 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/refund
     def self.refund(id, amount = nil)
-      Configuration.gateway.transaction.refund(id, amount)
+      config.gateway.transaction.refund(id, amount)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/refund
@@ -189,7 +189,7 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
     def self.sale(attributes)
-      Configuration.gateway.transaction.sale(attributes)
+      config.gateway.transaction.sale(attributes)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create
@@ -198,12 +198,12 @@ module Braintree
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/search
-    def self.search(&block)
-      Configuration.gateway.transaction.search(&block)
+    def self.search(config, &block)
+      config.gateway.transaction.search(&block)
     end
 
     def self.release_from_escrow(transaction_id)
-      Configuration.gateway.transaction.release_from_escrow(transaction_id)
+      config.gateway.transaction.release_from_escrow(transaction_id)
     end
 
     def self.release_from_escrow!(transaction_id)
@@ -212,7 +212,7 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/submit_for_settlement
     def self.submit_for_settlement(transaction_id, amount = nil)
-      Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount)
+      config.gateway.transaction.submit_for_settlement(transaction_id, amount)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/submit_for_settlement
@@ -222,7 +222,7 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/void
     def self.void(transaction_id)
-      Configuration.gateway.transaction.void(transaction_id)
+      config.gateway.transaction.void(transaction_id)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/void

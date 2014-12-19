@@ -32,6 +32,10 @@ module Braintree
       Braintree::Gateway.new(instantiate)
     end
 
+    def gateway
+      Braintree::Gateway.new(self)
+    end
+
     def self.instantiate # :nodoc:
       config = new(
         :custom_user_agent => @custom_user_agent,

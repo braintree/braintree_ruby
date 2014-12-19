@@ -7,13 +7,13 @@ module Braintree
       :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards
 
     # See http://www.braintreepayments.com/docs/ruby/customers/search
-    def self.all
-      Configuration.gateway.customer.all
+    def self.all(config)
+      config.gateway.customer.all
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/create
     def self.create(attributes = {})
-      Configuration.gateway.customer.create(attributes)
+      config.gateway.customer.create(attributes)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/create
@@ -26,7 +26,7 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/customers/create_tr
     def self.create_customer_url
       warn "[DEPRECATED] Customer.create_customer_url is deprecated. Please use TransparentRedirect.url"
-      Configuration.gateway.customer.create_customer_url
+      config.gateway.customer.create_customer_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
@@ -34,7 +34,7 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/customers/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Customer.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      Configuration.gateway.customer.create_from_transparent_redirect(query_string)
+      config.gateway.customer.create_from_transparent_redirect(query_string)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
@@ -49,12 +49,12 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/customers/delete
     def self.delete(customer_id)
-      Configuration.gateway.customer.delete(customer_id)
+      config.gateway.customer.delete(customer_id)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/search
-    def self.find(customer_id)
-      Configuration.gateway.customer.find(customer_id)
+    def self.find(config, customer_id)
+      config.gateway.customer.find(customer_id)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
@@ -68,18 +68,18 @@ module Braintree
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/search
-    def self.search(&block)
-      Configuration.gateway.customer.search(&block)
+    def self.search(config, &block)
+      config.gateway.customer.search(&block)
     end
 
     # Returns a ResourceCollection of transactions for the customer with the given +customer_id+.
     def self.transactions(customer_id, options = {})
-      Configuration.gateway.customer.transactions(customer_id, options = {})
+      config.gateway.customer.transactions(customer_id, options = {})
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/update
     def self.update(customer_id, attributes)
-      Configuration.gateway.customer.update(customer_id, attributes)
+      config.gateway.customer.update(customer_id, attributes)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/customers/update
@@ -92,7 +92,7 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/customers/update_tr
     def self.update_customer_url
       warn "[DEPRECATED] Customer.update_customer_url is deprecated. Please use TransparentRedirect.url"
-      Configuration.gateway.customer.update_customer_url
+      config.gateway.customer.update_customer_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
@@ -100,7 +100,7 @@ module Braintree
     # See http://www.braintreepayments.com/docs/ruby/customers/update_tr
     def self.update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Customer.update_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      Configuration.gateway.customer.update_from_transparent_redirect(query_string)
+      config.gateway.customer.update_from_transparent_redirect(query_string)
     end
 
     def initialize(gateway, attributes) # :nodoc:
