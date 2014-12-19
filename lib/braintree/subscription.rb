@@ -33,12 +33,12 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/cancel
     def self.cancel(subscription_id)
-      Configuration.gateway.subscription.cancel(subscription_id)
+      config.gateway.subscription.cancel(subscription_id)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/create
     def self.create(attributes)
-      Configuration.gateway.subscription.create(attributes)
+      config.gateway.subscription.create(attributes)
     end
 
     def self.create!(attributes)
@@ -47,21 +47,21 @@ module Braintree
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/search
     def self.find(id)
-      Configuration.gateway.subscription.find(id)
+      config.gateway.subscription.find(id)
     end
 
     def self.retry_charge(subscription_id, amount=nil)
-      Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount)
+      config.gateway.transaction.retry_subscription_charge(subscription_id, amount)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/search
-    def self.search(&block)
-      Configuration.gateway.subscription.search(&block)
+    def self.search(config, &block)
+      config.gateway.subscription.search(&block)
     end
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/update
     def self.update(subscription_id, attributes)
-      Configuration.gateway.subscription.update(subscription_id, attributes)
+      config.gateway.subscription.update(subscription_id, attributes)
     end
 
     def self.update!(subscription_id, attributes)

@@ -21,8 +21,8 @@ module Braintree
     attr_reader :add_ons
 
     # See http://www.braintreepayments.com/docs/ruby/plans/all
-    def self.all
-      Configuration.gateway.plan.all
+    def self.all(config)
+      config.gateway.plan.all
     end
 
     def initialize(gateway, attributes) # :nodoc:
