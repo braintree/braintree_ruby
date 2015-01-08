@@ -4,7 +4,7 @@ module Braintree
     include BaseModule
 
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
-      :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards
+      :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards, :coinbase_accounts
 
     # See http://www.braintreepayments.com/docs/ruby/customers/search
     def self.all
@@ -108,6 +108,7 @@ module Braintree
       set_instance_variables_from_hash(attributes)
       @credit_cards = (@credit_cards || []).map { |pm| CreditCard._new gateway, pm }
       @paypal_accounts = (@paypal_accounts || []).map { |pm| PayPalAccount._new gateway, pm }
+      @coinbase_accounts = (@coinbase_accounts || []).map { |pm| CoinbaseAccount._new gateway, pm }
       @apple_pay_cards = (@apple_pay_cards || []).map { |pm| ApplePayCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
@@ -143,7 +144,7 @@ module Braintree
 
     # Returns the customer's payment methods
     def payment_methods
-      @credit_cards.dup + @paypal_accounts.dup + @apple_pay_cards.dup
+      @credit_cards.dup + @paypal_accounts.dup + @apple_pay_cards.dup + @coinbase_accounts.dup
     end
 
     def inspect # :nodoc:
