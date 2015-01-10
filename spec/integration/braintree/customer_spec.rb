@@ -756,6 +756,7 @@ describe Braintree::Customer do
       apple_pay_card.should be_a Braintree::ApplePayCard
       apple_pay_card.token.should_not be_nil
       apple_pay_card.expiration_year.should_not be_nil
+      apple_pay_card.payment_instrument_name.should == "AmEx 41002"
     end
 
     it "works for a blank customer" do

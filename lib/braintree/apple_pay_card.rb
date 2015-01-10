@@ -13,7 +13,7 @@ module Braintree
 
     attr_reader :token, :card_type, :last_4, :default, :image_url,
       :created_at, :updated_at, :subscriptions, :expiration_month,
-      :expiration_year, :expired
+      :expiration_year, :expired, :payment_instrument_name
 
 
     def initialize(gateway, attributes) # :nodoc:

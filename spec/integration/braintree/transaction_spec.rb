@@ -1264,6 +1264,7 @@ describe Braintree::Transaction do
         apple_pay_details = result.transaction.apple_pay_details
         apple_pay_details.should_not be_nil
         apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
+        apple_pay_details.payment_instrument_name.should == "Visa 8886"
         apple_pay_details.expiration_month.to_i.should > 0
         apple_pay_details.expiration_year.to_i.should > 0
         apple_pay_details.cardholder_name.should_not be_nil
