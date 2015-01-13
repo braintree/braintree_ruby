@@ -36,6 +36,20 @@ module Braintree
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
       response = @config.http.get "/payment_methods/any/#{token}"
+      _payment_method_from_response(response)
+    rescue NotFoundError
+      raise NotFoundError, "payment method with token #{token.inspect} not found"
+    end
+
+    def from_nonce(nonce)
+      raise ArgumentError if nonce.nil? || nonce.to_s.strip == ""
+      response = @config.http.get "/payment_methods/from_nonce/#{nonce}"
+      _payment_method_from_response(response)
+    rescue NotFoundError
+      raise NotFoundError, "nonce #{nonce.inspect} locked, consumed, or not found"
+    end
+
+    def _payment_method_from_response(response)
       if response.has_key?(:credit_card)
         CreditCard._new(@gateway, response[:credit_card])
       elsif response.has_key?(:paypal_account)
@@ -47,8 +61,6 @@ module Braintree
       else
         UnknownPaymentMethod._new(@gateway, response)
       end
-    rescue NotFoundError
-      raise NotFoundError, "payment method with token #{token.inspect} not found"
     end
 
     def update(token, attributes)

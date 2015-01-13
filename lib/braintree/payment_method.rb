@@ -10,6 +10,10 @@ module Braintree
       Configuration.gateway.payment_method.find(token)
     end
 
+    def self.from_nonce(nonce)
+      Configuration.gateway.payment_method.from_nonce(nonce)
+    end
+
     def self.update(token, attributes)
       Configuration.gateway.payment_method.update(token, attributes)
     end
