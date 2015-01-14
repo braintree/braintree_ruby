@@ -83,6 +83,7 @@ module Braintree
     attr_reader :billing_details, :shipping_details
     attr_reader :paypal_details
     attr_reader :apple_pay_details
+    attr_reader :coinbase_details
     attr_reader :plan_id
     # The authorization code from the processor.
     attr_reader :processor_authorization_code
@@ -246,6 +247,7 @@ module Braintree
       @descriptor = Descriptor.new(@descriptor)
       @paypal_details = PayPalDetails.new(@paypal)
       @apple_pay_details = ApplePayDetails.new(@apple_pay)
+      @coinbase_details = CoinbaseDetails.new(@coinbase_account)
       disputes.map! { |attrs| Dispute._new(attrs) } if disputes
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
