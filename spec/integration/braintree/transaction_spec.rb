@@ -1404,6 +1404,31 @@ describe Braintree::Transaction do
         result.success?.should == true
       end
 
+      it "gateway rejects transactions if 3DS is required but not provided" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => "4111111111111111",
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        nonce.should_not be_nil
+        result = Braintree::Transaction.create(
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce,
+          :options => {
+            :three_d_secure => {
+              :required => true,
+            }
+          }
+        )
+
+        result.success?.should == false
+        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ThreeDSecure
+      end
+
       it "can create a transaction without a three_d_secure token" do
         result = Braintree::Transaction.create(
           :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,

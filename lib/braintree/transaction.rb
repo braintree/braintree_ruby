@@ -24,6 +24,7 @@ module Braintree
       CVV          = "cvv"
       Duplicate    = "duplicate"
       Fraud        = "fraud"
+      ThreeDSecure = "three_d_secure"
       Unrecognized = "unrecognized"
     end
 
