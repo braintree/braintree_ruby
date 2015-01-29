@@ -42,10 +42,10 @@ describe Braintree::Subscription do
     end
 
     it "does not raise an error if subscription id does not respond to strip" do
-      Braintree::Http.stub(:new).and_return stub(:get => {:subscription => default_params})
+      Braintree::Http.stub(:new).and_return double(:get => {:subscription => default_params})
       expect do
         Braintree::Subscription.find(8675309)
-      end.to_not raise_error(NoMethodError)
+      end.to_not raise_error
     end
   end
 

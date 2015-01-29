@@ -3,6 +3,13 @@ module Braintree
   class Subscription
     include BaseModule
 
+    module Source
+      Api          = "api"
+      ControlPanel = "control_panel"
+      Recurring    = "recurring"
+      Unrecognized = "unrecognized"
+    end
+
     module Status
       Active = 'Active'
       Canceled = 'Canceled'
@@ -30,6 +37,7 @@ module Braintree
     attr_reader :descriptor
     attr_reader :current_billing_cycle
     attr_reader :updated_at, :created_at
+    attr_reader :status_history
 
     # See http://www.braintreepayments.com/docs/ruby/subscriptions/cancel
     def self.cancel(subscription_id)
@@ -77,6 +85,7 @@ module Braintree
       transactions.map! { |attrs| Transaction._new(gateway, attrs) }
       add_ons.map! { |attrs| AddOn._new(attrs) }
       discounts.map! { |attrs| Discount._new(attrs) }
+      @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
     end
 
     def next_bill_amount

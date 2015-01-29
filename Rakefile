@@ -1,5 +1,5 @@
 require "rubygems"
-require "spec/rake/spectask"
+require "rspec/core/rake_task"
 
 task :default => %w[spec:unit spec:integration]
 
@@ -8,13 +8,13 @@ task :dev_console do
 end
 
 desc "Run units"
-Spec::Rake::SpecTask.new("spec:unit") do |t|
-  t.spec_files = FileList["spec/unit/**/*_spec.rb"]
+RSpec::Core::RakeTask.new("spec:unit") do |t|
+  t.pattern = "spec/unit/**/*_spec.rb"
 end
 
 desc "Run integration"
-Spec::Rake::SpecTask.new("spec:integration") do |t|
-  t.spec_files = FileList["spec/integration/**/*_spec.rb"]
+RSpec::Core::RakeTask.new("spec:integration") do |t|
+  t.pattern = "spec/integration/**/*_spec.rb"
 end
 
 task :gem do

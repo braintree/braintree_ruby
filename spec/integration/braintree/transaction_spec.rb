@@ -70,7 +70,7 @@ describe Braintree::Transaction do
         }
       )
 
-      result.success?.should be_true
+      result.success?.should be(true)
 
       clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {:submit_for_settlement => true})
       clone_result.success?.should == true
@@ -87,7 +87,7 @@ describe Braintree::Transaction do
         }
       )
       result = Braintree::Transaction.clone_transaction(transaction.id, :amount => "112.44")
-      result.success?.should be_false
+      result.success?.should be(false)
 
       result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotCloneCredit
     end
@@ -173,7 +173,7 @@ describe Braintree::Transaction do
               }
             }
           )
-          result.success?.should be_true
+          result.success?.should be(true)
         end
 
         it "returns errors if validations on industry lodging data fails" do
@@ -194,7 +194,7 @@ describe Braintree::Transaction do
               }
             }
           )
-          result.success?.should be_false
+          result.success?.should be(false)
           invalid_folio = Braintree::ErrorCodes::Transaction::Industry::Lodging::FolioNumberIsInvalid
           check_out_date_must_follow_check_in_date = Braintree::ErrorCodes::Transaction::Industry::Lodging::CheckOutDateMustFollowCheckInDate
           result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [invalid_folio, check_out_date_must_follow_check_in_date]
@@ -221,7 +221,7 @@ describe Braintree::Transaction do
               }
             }
           )
-          result.success?.should be_true
+          result.success?.should be(true)
         end
 
         it "returns errors if validations on industry data fails" do
@@ -239,7 +239,7 @@ describe Braintree::Transaction do
               }
             }
           )
-          result.success?.should be_false
+          result.success?.should be(false)
           result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelCruise::TravelPackageIsInvalid]
         end
       end
@@ -799,7 +799,7 @@ describe Braintree::Transaction do
         }
       )
 
-      result.success?.should be_true
+      result.success?.should be(true)
       transaction = result.subscription.transactions.first
 
       transaction.plan_id.should == SpecHelper::TriallessPlan[:id]
@@ -811,13 +811,13 @@ describe Braintree::Transaction do
       add_ons.first.amount.should == BigDecimal.new("11.00")
       add_ons.first.quantity.should == 2
       add_ons.first.number_of_billing_cycles.should == 5
-      add_ons.first.never_expires?.should be_false
+      add_ons.first.never_expires?.should be(false)
 
       add_ons.last.id.should == "increase_20"
       add_ons.last.amount.should == BigDecimal.new("21.00")
       add_ons.last.quantity.should == 3
       add_ons.last.number_of_billing_cycles.should == 6
-      add_ons.last.never_expires?.should be_false
+      add_ons.last.never_expires?.should be(false)
 
       transaction.discounts.size.should == 1
 
@@ -825,7 +825,7 @@ describe Braintree::Transaction do
       transaction.discounts.first.amount.should == BigDecimal.new("7.50")
       transaction.discounts.first.quantity.should == 2
       transaction.discounts.first.number_of_billing_cycles.should be_nil
-      transaction.discounts.first.never_expires?.should be_true
+      transaction.discounts.first.never_expires?.should be(true)
     end
 
     context "descriptors" do
@@ -1264,6 +1264,7 @@ describe Braintree::Transaction do
         apple_pay_details = result.transaction.apple_pay_details
         apple_pay_details.should_not be_nil
         apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
+        apple_pay_details.payment_instrument_name.should == "Visa 8886"
         apple_pay_details.expiration_month.to_i.should > 0
         apple_pay_details.expiration_year.to_i.should > 0
         apple_pay_details.cardholder_name.should_not be_nil
@@ -2342,7 +2343,7 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.cancel_release(transaction.id)
 
-      result.success?.should be_true
+      result.success?.should be(true)
       result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::Held
     end
 
@@ -2351,7 +2352,7 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.cancel_release(transaction.id)
 
-      result.success?.should be_false
+      result.success?.should be(false)
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotCancelRelease
     end
   end
@@ -2693,7 +2694,7 @@ describe Braintree::Transaction do
         disbursement.settlement_currency_iso_code.should == "USD"
         disbursement.settlement_currency_exchange_rate.should == "1"
         disbursement.funds_held?.should == false
-        disbursement.success?.should be_true
+        disbursement.success?.should be(true)
       end
 
       it "is not disbursed" do
@@ -2776,7 +2777,7 @@ describe Braintree::Transaction do
       result.transaction.escrow_status.should be_nil
       result = Braintree::Transaction.hold_in_escrow(result.transaction.id)
 
-      result.success?.should be_true
+      result.success?.should be(true)
       result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
     end
 

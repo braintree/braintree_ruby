@@ -216,7 +216,7 @@ describe Braintree::Http do
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
         expect do
           Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context)
-        end.to_not raise_error(OpenSSL::SSL::SSLError)
+        end.to_not raise_error
         output.string.should == ""
       ensure
         Braintree::Configuration.logger = old_logger

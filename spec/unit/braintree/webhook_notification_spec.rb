@@ -12,7 +12,7 @@ describe Braintree::WebhookNotification do
 
       notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionWentPastDue
       notification.subscription.id.should == "my_id"
-      notification.timestamp.should be_close(Time.now.utc, 10)
+      notification.timestamp.should be_within(10).of(Time.now.utc)
     end
 
     it "builds a sample notification for a partner merchant connected webhook" do
@@ -29,7 +29,7 @@ describe Braintree::WebhookNotification do
       notification.partner_merchant.private_key.should == "private_key"
       notification.partner_merchant.partner_merchant_id.should == "abc123"
       notification.partner_merchant.client_side_encryption_key.should == "cse_key"
-      notification.timestamp.should be_close(Time.now.utc, 10)
+      notification.timestamp.should be_within(10).of(Time.now.utc)
     end
 
     it "builds a sample notification for a partner merchant disconnected webhook" do
@@ -42,7 +42,7 @@ describe Braintree::WebhookNotification do
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected
       notification.partner_merchant.partner_merchant_id.should == "abc123"
-      notification.timestamp.should be_close(Time.now.utc, 10)
+      notification.timestamp.should be_within(10).of(Time.now.utc)
     end
 
     it "builds a sample notification for a partner merchant declined webhook" do
@@ -55,7 +55,7 @@ describe Braintree::WebhookNotification do
 
       notification.kind.should == Braintree::WebhookNotification::Kind::PartnerMerchantDeclined
       notification.partner_merchant.partner_merchant_id.should == "abc123"
-      notification.timestamp.should be_close(Time.now.utc, 10)
+      notification.timestamp.should be_within(10).of(Time.now.utc)
     end
 
     context "disputes" do
@@ -131,8 +131,8 @@ describe Braintree::WebhookNotification do
         notification.kind.should == Braintree::WebhookNotification::Kind::DisbursementException
         notification.disbursement.id.should == "my_id"
         notification.disbursement.transaction_ids.should == %W{ afv56j kj8hjk }
-        notification.disbursement.retry.should be_false
-        notification.disbursement.success.should be_false
+        notification.disbursement.retry.should be(false)
+        notification.disbursement.success.should be(false)
         notification.disbursement.exception_message.should == "bank_rejected"
         notification.disbursement.disbursement_date.should == Date.parse("2014-02-10")
         notification.disbursement.follow_up_action.should == "update_funding_information"
@@ -150,8 +150,8 @@ describe Braintree::WebhookNotification do
         notification.kind.should == Braintree::WebhookNotification::Kind::Disbursement
         notification.disbursement.id.should == "my_id"
         notification.disbursement.transaction_ids.should == %W{ afv56j kj8hjk }
-        notification.disbursement.retry.should be_false
-        notification.disbursement.success.should be_true
+        notification.disbursement.retry.should be(false)
+        notification.disbursement.success.should be(true)
         notification.disbursement.exception_message.should be_nil
         notification.disbursement.disbursement_date.should == Date.parse("2014-02-10")
         notification.disbursement.follow_up_action.should be_nil
@@ -263,9 +263,14 @@ describe Braintree::WebhookNotification do
       )
 
       sample_notification[:bt_payload] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+=/\n"
-      expect do
+
+      begin
         Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-      end.to_not raise_error(Braintree::InvalidSignature, /payload contains illegal characters/)
+      rescue Braintree::InvalidSignature => e
+        exception = e
+      end
+
+      exception.message.should_not match(/payload contains illegal characters/)
     end
 
     it "retries a payload with a newline" do
@@ -278,7 +283,7 @@ describe Braintree::WebhookNotification do
 
       notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionWentPastDue
       notification.subscription.id.should == "my_id"
-      notification.timestamp.should be_close(Time.now.utc, 10)
+      notification.timestamp.should be_within(10).of(Time.now.utc)
     end
   end
 

@@ -2,6 +2,8 @@ unless defined?(SPEC_HELPER_LOADED)
   SPEC_HELPER_LOADED = true
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
+  require "bundler/setup"
+  require "rspec"
   require "libxml"
 
   braintree_lib = "#{project_root}/lib"
@@ -175,7 +177,7 @@ unless defined?(SPEC_HELPER_LOADED)
         "xml parsing failed for #{@failed_parser}, expected #{@expected_hash.inspect} but was #{@results.inspect}"
       end
 
-      def negative_failure_message
+      def failure_message_when_negated
         raise NotImplementedError
       end
     end
@@ -184,8 +186,16 @@ unless defined?(SPEC_HELPER_LOADED)
       ParseTo.new(hash)
     end
   end
+end
 
-  Spec::Runner.configure do |config|
-    config.include CustomMatchers
+RSpec.configure do |config|
+  config.include CustomMatchers
+
+  config.expect_with :rspec do |expect|
+    expect.syntax = [:should, :expect]
+  end
+
+  config.mock_with :rspec do |mock|
+    mock.syntax = :should
   end
 end

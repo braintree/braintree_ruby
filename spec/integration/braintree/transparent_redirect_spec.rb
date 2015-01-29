@@ -9,6 +9,14 @@ describe Braintree::TransparentRedirect do
     end.to raise_error(Braintree::DownForMaintenanceError)
   end
 
+  it "raises a DownForMaintenanceError when the request times out", :if => ENV['UNICORN'] do
+    tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge({}))
+    query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, {}, Braintree::Configuration.instantiate.base_merchant_url + "/test/die")
+    expect do
+      Braintree::Customer.create_from_transparent_redirect(query_string_response)
+    end.to raise_error(Braintree::DownForMaintenanceError)
+  end
+
   it "raises an AuthenticationError when authentication fails on TR requests" do
     SpecHelper.using_configuration(:private_key => "incorrect") do
       tr_data = Braintree::TransparentRedirect.create_customer_data({:redirect_url => "http://example.com"}.merge({}))

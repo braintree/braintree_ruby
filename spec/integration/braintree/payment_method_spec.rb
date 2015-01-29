@@ -86,6 +86,7 @@ describe Braintree::PaymentMethod do
       apple_pay_card.should_not be_nil
       apple_pay_card.token.should == token
       apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
+      apple_pay_card.payment_instrument_name.should == "AmEx 41002"
       apple_pay_card.default.should == true
       apple_pay_card.image_url.should =~ /apple_pay/
       apple_pay_card.expiration_month.to_i.should > 0

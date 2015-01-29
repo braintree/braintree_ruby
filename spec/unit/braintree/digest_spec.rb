@@ -22,15 +22,15 @@ describe Braintree::Digest do
 
   describe "self.secure_compare" do
     it "returns true if two strings are equal" do
-      Braintree::Digest.secure_compare("A_string", "A_string").should be_true
+      Braintree::Digest.secure_compare("A_string", "A_string").should be(true)
     end
 
     it "returns false if two strings are different and the same length" do
-      Braintree::Digest.secure_compare("A_string", "A_strong").should be_false
+      Braintree::Digest.secure_compare("A_string", "A_strong").should be(false)
     end
 
     it "returns false if one is a prefix of the other" do
-      Braintree::Digest.secure_compare("A_string", "A_string_that_is_longer").should be_false
+      Braintree::Digest.secure_compare("A_string", "A_string_that_is_longer").should be(false)
     end
   end
 end

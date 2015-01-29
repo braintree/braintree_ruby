@@ -1,10 +1,9 @@
 module Braintree
-  class Transaction
-    class ApplePayDetails
+  class Subscription
+    class StatusDetails # :nodoc:
       include BaseModule
 
-      attr_reader :card_type, :last_4, :expiration_month, :expiration_year,
-        :cardholder_name, :payment_instrument_name
+      attr_reader :balance, :price, :status, :subscription_source, :timestamp, :user
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
