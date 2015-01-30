@@ -45,6 +45,10 @@ module Braintree
       PaymentMethodGateway.new(self)
     end
 
+    def payment_method_nonce
+      PaymentMethodNonceGateway.new(self)
+    end
+
     def paypal_account
       PayPalAccountGateway.new(self)
     end
