@@ -235,6 +235,10 @@ module Braintree
       return_object_or_raise(:credit_card) { update(attributes) }
     end
 
+    def nonce
+      @nonce ||= PaymentMethodNonce.create(self)
+    end
+
     # Returns true if the card is associated with Venmo SDK
     def venmo_sdk?
       @venmo_sdk
