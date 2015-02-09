@@ -2170,6 +2170,21 @@ describe Braintree::Transaction do
       result.params.should == {:transaction => {:type => 'sale', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
+
+    it "works with Apple Pay params" do
+      params = {
+        :amount => "3.12",
+        :apple_pay_card => {
+          :number => "370295001292109",
+          :cardholder_name => "JANE SMITH",
+          :cryptogram => "AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==",
+          :expiration_month => "10",
+          :expiration_year => "14",
+        }
+      }
+      result = Braintree::Transaction.sale(params)
+      result.success?.should == true
+    end
   end
 
   describe "self.sale!" do
