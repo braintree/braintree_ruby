@@ -2787,7 +2787,7 @@ describe Braintree::Transaction do
 
     context "paypal" do
       it "returns all the required paypal fields" do
-        transaction = Braintree::Transaction.find("SETTLED_TRANSACTION")
+        transaction = Braintree::Transaction.find("settledtransaction")
 
         transaction.paypal_details.debug_id.should_not be_nil
         transaction.paypal_details.payer_email.should_not be_nil
