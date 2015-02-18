@@ -1,5 +1,4 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby
   class Plan
     include BaseModule
 
@@ -20,7 +19,6 @@ module Braintree
     attr_reader :updated_at
     attr_reader :add_ons
 
-    # See http://www.braintreepayments.com/docs/ruby/plans/all
     def self.all
       Configuration.gateway.plan.all
     end
