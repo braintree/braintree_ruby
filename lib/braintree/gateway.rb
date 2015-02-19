@@ -53,6 +53,10 @@ module Braintree
       PayPalAccountGateway.new(self)
     end
 
+    def merchant
+      MerchantGateway.new(self)
+    end
+
     def merchant_account
       MerchantAccountGateway.new(self)
     end
