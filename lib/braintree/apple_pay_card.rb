@@ -1,5 +1,4 @@
 module Braintree
-  # See https://developers.braintreepayments.com/ios+ruby/sdk/server
   class ApplePayCard
     include BaseModule # :nodoc:
 

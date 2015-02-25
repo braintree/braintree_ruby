@@ -1,5 +1,4 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby
   class CreditCard
     include BaseModule # :nodoc:
 
@@ -40,56 +39,46 @@ module Braintree
       :issuing_bank, :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at,
       :image_url, :verification
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create(attributes)
       Configuration.gateway.credit_card.create(attributes)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/create
     def self.create!(attributes)
       return_object_or_raise(:credit_card) { create(attributes) }
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/create_tr
     def self.create_credit_card_url
       warn "[DEPRECATED] CreditCard.create_credit_card_url is deprecated. Please use TransparentRedirect.url"
       Configuration.gateway.credit_card.create_credit_card_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       Configuration.gateway.credit_card.create_from_transparent_redirect(query_string)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.credit(token, transaction_attributes)
       Transaction.credit(transaction_attributes.merge(:payment_method_token => token))
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.credit!(token, transaction_attributes)
       return_object_or_raise(:transaction) { credit(token, transaction_attributes) }
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/delete
     def self.delete(token)
       Configuration.gateway.credit_card.delete(token)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/search
     def self.expired(options = {})
       Configuration.gateway.credit_card.expired(options)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/search
     def self.expiring_between(start_date, end_date, options = {})
       Configuration.gateway.credit_card.expiring_between(start_date, end_date, options)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/search
     def self.find(token)
       Configuration.gateway.credit_card.find(token)
     end
@@ -98,37 +87,29 @@ module Braintree
       Configuration.gateway.credit_card.from_nonce(nonce)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.sale(token, transaction_attributes)
       Configuration.gateway.transaction.sale(transaction_attributes.merge(:payment_method_token => token))
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.sale!(token, transaction_attributes)
       return_object_or_raise(:transaction) { sale(token, transaction_attributes) }
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/update
     def self.update(token, attributes)
       Configuration.gateway.credit_card.update(token, attributes)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/update
     def self.update!(token, attributes)
       return_object_or_raise(:credit_card) { update(token, attributes) }
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
-    #
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/update_tr
     def self.update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"
       Configuration.gateway.credit_card.update_from_transparent_redirect(query_string)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
-    #
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/update_tr
     def self.update_credit_card_url
       warn "[DEPRECATED] CreditCard.update_credit_card_url is deprecated. Please use TransparentRedirect.url"
       Configuration.gateway.credit_card.update_credit_card_url
@@ -148,24 +129,18 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::CreditCard.credit
-    #
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def credit(transaction_attributes)
       warn "[DEPRECATED] credit as an instance method is deprecated. Please use CreditCard.credit"
       @gateway.transaction.credit(transaction_attributes.merge(:payment_method_token => token))
     end
 
     # Deprecated. Use Braintree::CreditCard.credit!
-    #
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def credit!(transaction_attributes)
       warn "[DEPRECATED] credit! as an instance method is deprecated. Please use CreditCard.credit!"
       return_object_or_raise(:transaction) { credit(transaction_attributes) }
     end
 
     # Deprecated. Use Braintree::CreditCard.delete
-    #
-    # http://www.braintreepayments.com/docs/ruby/credit_cards/delete
     def delete
       warn "[DEPRECATED] delete as an instance method is deprecated. Please use CreditCard.delete"
       @gateway.credit_card.delete(token)
@@ -200,24 +175,18 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::CreditCard.sale
-    #
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def sale(transaction_attributes)
       warn "[DEPRECATED] sale as an instance method is deprecated. Please use CreditCard.sale"
       @gateway.transaction.sale(transaction_attributes.merge(:payment_method_token => token))
     end
 
     # Deprecated. Use Braintree::CreditCard.sale!
-    #
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def sale!(transaction_attributes)
       warn "[DEPRECATED] sale! as an instance method is deprecated. Please use CreditCard.sale!"
       return_object_or_raise(:transaction) { sale(transaction_attributes) }
     end
 
     # Deprecated. Use Braintree::CreditCard.update
-    #
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/update
     def update(attributes)
       warn "[DEPRECATED] update as an instance method is deprecated. Please use CreditCard.update"
       result = @gateway.credit_card.update(token, attributes)
@@ -228,8 +197,6 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::CreditCard.update!
-    #
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/update
     def update!(attributes)
       warn "[DEPRECATED] update! as an instance method is deprecated. Please use CreditCard.update!"
       return_object_or_raise(:credit_card) { update(attributes) }

@@ -1,5 +1,4 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby/general/card_verification
   class CreditCardVerification
     include BaseModule
 
