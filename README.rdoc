@@ -16,6 +16,8 @@ The Braintree gem provides integration access to the Braintree Gateway.
   Braintree::Configuration.merchant_id = "your_merchant_id"
   Braintree::Configuration.public_key = "your_public_key"
   Braintree::Configuration.private_key = "your_private_key"
+  Braintree::Configuration.open_timeout = 60
+  Braintree::Configuration.read_timeout = 60
 
   result = Braintree::Transaction.sale(
     :amount => "1000.00",
