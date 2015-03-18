@@ -56,8 +56,8 @@ module Braintree
       MerchantAccountGateway.new(self)
     end
 
-    def sepa_bank_account
-      SEPABankAccountGateway.new(self)
+    def europe_bank_account
+      EuropeBankAccountGateway.new(self)
     end
 
     def settlement_batch_summary

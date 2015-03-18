@@ -1,5 +1,5 @@
 module Braintree
-  class SEPABankAccount
+  class EuropeBankAccount
     include BaseModule
 
     module MandateType
@@ -23,7 +23,7 @@ module Braintree
     end
 
     def self.find(token)
-      Configuration.gateway.sepa_bank_account.find(token)
+      Configuration.gateway.europe_bank_account.find(token)
     end
 
     def default?

@@ -151,7 +151,7 @@ describe Braintree::Transaction, "search" do
         with_altpay_merchant do
           config = Braintree::Configuration.instantiate
           customer = Braintree::Customer.create.customer
-          raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business)
+          raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::EuropeBankAccount::MandateType::Business)
           client_token = decode_client_token(raw_client_token)
           authorization_fingerprint = client_token["authorizationFingerprint"]
           http = ClientApiHttp.new(
@@ -159,7 +159,7 @@ describe Braintree::Transaction, "search" do
             :authorization_fingerprint => authorization_fingerprint
           )
 
-          nonce = http.create_sepa_bank_account_nonce(
+          nonce = http.create_europe_bank_account_nonce(
             :accountHolderName => "Bob Holder",
             :iban => "DE89370400440532013000",
             :bic => "DEUTDEFF",
@@ -178,7 +178,7 @@ describe Braintree::Transaction, "search" do
           )
 
           collection = Braintree::Transaction.search do |search|
-            search.sepa_bank_account_iban.is  "DE89370400440532013000"
+            search.europe_bank_account_iban.is  "DE89370400440532013000"
           end
 
           collection.maximum_size.should >= 1

@@ -154,7 +154,7 @@ module Braintree
       CannotUpdatePayPalAccountUsingPaymentMethodNonce = "92914"
     end
 
-    module SEPABankAccount
+    module EuropeBankAccount
       IBANIsRequired = "93001"
       BICIsRequired = "93002"
       AccountHolderNameIsRequired = "93003"
