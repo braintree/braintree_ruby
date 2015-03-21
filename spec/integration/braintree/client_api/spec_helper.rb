@@ -156,7 +156,7 @@ class ClientApiHttp
 
     response = post("/merchants/#{config.merchant_id}/client_api/v1/sepa_mandates", foo)
 
-    mrn = JSON.parse(response.body)['sepaMandates'][0]['mandateReferenceNumber']
+    mrn = JSON.parse(response.body)['europeBankAccounts'][0]['sepaMandates'][0]['mandateReferenceNumber']
     JSON.parse(response.body)['europeBankAccounts'][0]['nonce']
   end
 end
