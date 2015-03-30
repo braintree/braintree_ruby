@@ -145,7 +145,7 @@ class ClientApiHttp
     post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/paypal_accounts", params)
   end
 
-  def create_sepa_bank_account_nonce(params)
+  def create_europe_bank_account_nonce(params)
     foo = {
       :authorization_fingerprint => @options[:authorization_fingerprint],
       :shared_customer_identifier => "fake_identifier",
@@ -156,8 +156,7 @@ class ClientApiHttp
 
     response = post("/merchants/#{config.merchant_id}/client_api/v1/sepa_mandates", foo)
 
-    mrn = JSON.parse(response.body)['sepaMandates'][0]['mandateReferenceNumber']
-    accept_response = put("/merchants/#{config.merchant_id}/client_api/v1/sepa_mandates/#{mrn}/accept.json",foo)
-    JSON.parse(accept_response.body)['sepaBankAccounts'][0]['nonce']
+    mrn = JSON.parse(response.body)['europeBankAccounts'][0]['sepaMandates'][0]['mandateReferenceNumber']
+    JSON.parse(response.body)['europeBankAccounts'][0]['nonce']
   end
 end

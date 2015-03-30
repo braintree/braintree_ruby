@@ -194,7 +194,7 @@ describe Braintree::ClientToken do
           raw_client_token = Braintree::ClientToken.generate(
             :customer_id => customer_id,
             :sepa_mandate_acceptance_location => "Hamburg, Germany",
-            :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business
+            :sepa_mandate_type => Braintree::EuropeBankAccount::MandateType::Business
           )
           client_token = decode_client_token(raw_client_token)
 

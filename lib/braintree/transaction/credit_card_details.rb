@@ -5,7 +5,7 @@ module Braintree
 
       attr_reader :bin, :card_type, :cardholder_name, :customer_location, :expiration_month,
         :expiration_year, :last_4, :token, :prepaid, :healthcare, :durbin_regulated, :debit,
-        :commercial, :payroll, :country_of_issuance, :issuing_bank
+        :commercial, :payroll, :country_of_issuance, :issuing_bank, :image_url
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
@@ -17,7 +17,7 @@ module Braintree
 
       def inspect
         attr_order = [:token, :bin, :last_4, :card_type, :expiration_date, :cardholder_name, :customer_location, :prepaid,
-        :healthcare, :durbin_regulated, :debit, :commercial, :payroll, :country_of_issuance, :issuing_bank]
+        :healthcare, :durbin_regulated, :debit, :commercial, :payroll, :country_of_issuance, :issuing_bank, :image_url]
         formatted_attrs = attr_order.map do |attr|
           "#{attr}: #{send(attr).inspect}"
         end

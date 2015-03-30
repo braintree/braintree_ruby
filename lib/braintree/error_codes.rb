@@ -3,7 +3,6 @@ module Braintree
   # The constants should be used to check for a specific validation error in a ValidationErrorCollection.
   # The error messages returned from the server may change, but the codes will remain the same.
   module ErrorCodes
-    # See http://www.braintreepayments.com/docs/ruby/addresses/validations
     module Address
       CompanyIsInvalid = "91821"
       CountryNameIsNotAccepted = "91803"
@@ -58,7 +57,6 @@ module Braintree
       KeyMismatchStoringCertificate = "93522"
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/validations
     module CreditCard
       BillingAddressConflict = "91701"
       BillingAddressIdIsInvalid = "91702"
@@ -109,7 +107,6 @@ module Braintree
       end
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/validations
     module Customer
       CustomFieldIsInvalid = "91602"
       IdIsInUse = "91609"
@@ -157,7 +154,7 @@ module Braintree
       CannotUpdatePayPalAccountUsingPaymentMethodNonce = "92914"
     end
 
-    module SEPABankAccount
+    module EuropeBankAccount
       IBANIsRequired = "93001"
       BICIsRequired = "93002"
       AccountHolderNameIsRequired = "93003"
@@ -179,7 +176,6 @@ module Braintree
       TypeIsInvalid = "93313"
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/subscriptions/validations
     module Subscription
       BillingDayOfMonthCannotBeUpdated = "91918"
       BillingDayOfMonthIsInvalid = "91914"
@@ -244,7 +240,6 @@ module Braintree
       end
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
       AmountFormatIsInvalid = "81503" # Keep for backwards compatibility

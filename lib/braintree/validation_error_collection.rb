@@ -1,5 +1,4 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby/general/validation_errors
   class ValidationErrorCollection
     include Enumerable
 

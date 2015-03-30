@@ -29,9 +29,10 @@ describe Braintree::Transaction::CreditCardDetails do
         :commercial => "Unknown",
         :payroll => "Unknown",
         :country_of_issuance => "Lilliput",
-        :issuing_bank => "Gulliver Bank"
+        :issuing_bank => "Gulliver Bank",
+        :image_url => "example.com/visa.png"
       )
-      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US", prepaid: "Yes", healthcare: "No", durbin_regulated: "No", debit: "Yes", commercial: "Unknown", payroll: "Unknown", country_of_issuance: "Lilliput", issuing_bank: "Gulliver Bank">)
+      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US", prepaid: "Yes", healthcare: "No", durbin_regulated: "No", debit: "Yes", commercial: "Unknown", payroll: "Unknown", country_of_issuance: "Lilliput", issuing_bank: "Gulliver Bank", image_url: "example.com/visa.png">)
     end
 
   end

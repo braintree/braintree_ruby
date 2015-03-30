@@ -18,8 +18,8 @@ module Braintree
         SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
       elsif response[:coinbase_account]
         SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
-      elsif response[:sepa_bank_account]
-        SuccessfulResult.new(:payment_method => SEPABankAccount._new(@gateway, response[:sepa_bank_account]))
+      elsif response[:europe_bank_account]
+        SuccessfulResult.new(:payment_method => EuropeBankAccount._new(@gateway, response[:europe_bank_account]))
       elsif response[:apple_pay_card]
         SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
       elsif response[:api_error_response]
@@ -44,8 +44,8 @@ module Braintree
         PayPalAccount._new(@gateway, response[:paypal_account])
       elsif response[:coinbase_account]
         SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
-      elsif response.has_key?(:sepa_bank_account)
-        SEPABankAccount._new(@gateway, response[:sepa_bank_account])
+      elsif response.has_key?(:europe_bank_account)
+        EuropeBankAccount._new(@gateway, response[:europe_bank_account])
       elsif response.has_key?(:apple_pay_card)
         ApplePayCard._new(@gateway, response[:apple_pay_card])
       else
