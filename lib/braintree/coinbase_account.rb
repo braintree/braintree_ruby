@@ -16,5 +16,10 @@ module Braintree
     def self._new(*args) # :nodoc:
       self.new *args
     end
+    
+    # Returns true if this coinbase account is the customer's default payment method.
+    def default?
+      @default
+    end
   end
 end
