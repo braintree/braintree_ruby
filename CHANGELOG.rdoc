@@ -1,3 +1,8 @@
+== 2.42.0
+* Add {ApplePayCard,CoinbaseAccount}#default?
+* Add {ApplePayCard,CoinbaseAccount} payment instrument constants
+* Add European Bank Account test nonce
+
 == 2.41.0
 * Add support for new SEPA workflow
 
