@@ -21,6 +21,10 @@ module Braintree
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
     end
 
+    def default?
+      @default
+    end
+
     class << self
       protected :new
     end
