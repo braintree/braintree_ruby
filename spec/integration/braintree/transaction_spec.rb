@@ -2785,6 +2785,19 @@ describe Braintree::Transaction do
       end
     end
 
+    context "three_d_secure" do
+      it "returns all the three_d_secure_info" do
+        transaction = Braintree::Transaction.find("three-d-secured-transaction")
+
+        transaction.three_d_secure_info.enrolled.should == "Y"
+        transaction.three_d_secure_info.cavv.should == "somebase64value"
+        transaction.three_d_secure_info.xid.should == "xidvalue"
+        transaction.three_d_secure_info.should be_liability_shifted
+        transaction.three_d_secure_info.should be_liability_shift_possible
+        transaction.three_d_secure_info.status.should == "authenticate_successful"
+      end
+    end
+
     context "paypal" do
       it "returns all the required paypal fields" do
         transaction = Braintree::Transaction.find("settledtransaction")
