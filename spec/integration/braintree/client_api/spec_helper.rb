@@ -81,7 +81,7 @@ class ClientApiHttp
 
   def _http_do(http_verb, path, body = nil)
     connection = Net::HTTP.new(@config.server, @config.port)
-    connection.read_timeout = 60
+    connection.read_timeout = @config.read_timeout
     if @config.ssl?
       connection.use_ssl = true
       connection.verify_mode = OpenSSL::SSL::VERIFY_PEER

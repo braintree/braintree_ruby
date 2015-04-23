@@ -4,7 +4,8 @@ module Braintree
     DEFAULT_ENDPOINT = "api" # :nodoc:
 
     class << self
-      attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id, :public_key, :private_key
+      attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id,
+                  :public_key, :private_key, :open_timeout, :read_timeout
     end
     attr_reader :merchant_id, :public_key, :private_key
 
@@ -53,6 +54,14 @@ module Braintree
 
     def self.sha256_signature_service
       instantiate.sha256_signature_service
+    end
+
+    def self.open_timeout
+      @open_timeout || 60
+    end
+
+    def self.read_timeout
+      @read_timeout || 60
     end
 
     def initialize(options = {})

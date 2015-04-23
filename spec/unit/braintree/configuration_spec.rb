@@ -298,4 +298,34 @@ describe Braintree::Configuration do
       config.signature_service.key.should == "secret_key"
     end
   end
+
+  describe "open_timeout" do
+    after :each do
+      Braintree::Configuration.open_timeout = nil
+    end
+
+    it "sets the open timeout if one is provided" do
+      Braintree::Configuration.open_timeout = 30
+      Braintree::Configuration.open_timeout.should == 30
+    end
+
+    it "defaults the open timeout if one is not provided" do
+      Braintree::Configuration.open_timeout.should == 60
+    end
+  end
+
+  describe "read_timeout" do
+    after :each do
+      Braintree::Configuration.read_timeout = nil
+    end
+
+    it "sets the read timeout if one is provided" do
+      Braintree::Configuration.read_timeout = 30
+      Braintree::Configuration.read_timeout.should == 30
+    end
+
+    it "defaults the read timeout if one is not provided" do
+      Braintree::Configuration.read_timeout.should == 60
+    end
+  end
 end
