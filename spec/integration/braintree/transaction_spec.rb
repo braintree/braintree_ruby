@@ -2785,7 +2785,7 @@ describe Braintree::Transaction do
       end
     end
 
-    context "three_d_secure" do
+    context "three_d_secure_info" do
       it "returns all the three_d_secure_info" do
         transaction = Braintree::Transaction.find("three-d-secured-transaction")
 
@@ -2795,6 +2795,12 @@ describe Braintree::Transaction do
         transaction.three_d_secure_info.should be_liability_shifted
         transaction.three_d_secure_info.should be_liability_shift_possible
         transaction.three_d_secure_info.status.should == "authenticate_successful"
+      end
+
+      it "is nil if the transaction wasn't 3d secured" do
+        transaction = Braintree::Transaction.find("settledtransaction")
+
+        transaction.three_d_secure_info.should be_nil
       end
     end
 

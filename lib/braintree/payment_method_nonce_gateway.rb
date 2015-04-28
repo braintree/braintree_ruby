@@ -10,5 +10,11 @@ module Braintree
       payment_method_nonce = PaymentMethodNonce._new(@gateway, response.fetch(:payment_method_nonce))
       SuccessfulResult.new(:payment_method_nonce => payment_method_nonce)
     end
+
+    def find(payment_method_nonce)
+      response = @config.http.get "/payment_method_nonces/#{payment_method_nonce}"
+      payment_method_nonce = PaymentMethodNonce._new(@gateway, response.fetch(:payment_method_nonce))
+      SuccessfulResult.new(:payment_method_nonce => payment_method_nonce)
+    end
   end
 end
