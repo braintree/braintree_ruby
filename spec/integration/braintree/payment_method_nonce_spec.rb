@@ -42,12 +42,12 @@ describe Braintree::PaymentMethodNonce do
 
   describe "self.find" do
     it "finds and returns the nonce if one was found" do
-      result = Braintree::PaymentMethodNonce.find("three-d-secured-nonce")
+      result = Braintree::PaymentMethodNonce.find("threedsecurednonce")
 
       nonce = result.payment_method_nonce
 
       result.should be_success
-      nonce.nonce.should == "three-d-secured-nonce"
+      nonce.nonce.should == "threedsecurednonce"
       nonce.type.should == "CreditCard"
       nonce.three_d_secure_info.liability_shifted.should == true
     end

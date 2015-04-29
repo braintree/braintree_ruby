@@ -2787,7 +2787,7 @@ describe Braintree::Transaction do
 
     context "three_d_secure_info" do
       it "returns all the three_d_secure_info" do
-        transaction = Braintree::Transaction.find("three-d-secured-transaction")
+        transaction = Braintree::Transaction.find("threedsecuredtransaction")
 
         transaction.three_d_secure_info.enrolled.should == "Y"
         transaction.three_d_secure_info.cavv.should == "somebase64value"
