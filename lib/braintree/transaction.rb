@@ -114,6 +114,7 @@ module Braintree
     attr_reader :add_ons, :discounts
     attr_reader :payment_instrument_type
     attr_reader :risk_data
+    attr_reader :three_d_secure_info
 
     def self.create(attributes)
       Configuration.gateway.transaction.create(attributes)
@@ -238,6 +239,7 @@ module Braintree
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
       @payment_instrument_type = attributes[:payment_instrument_type]
       @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
+      @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.
