@@ -2790,8 +2790,6 @@ describe Braintree::Transaction do
         transaction = Braintree::Transaction.find("threedsecuredtransaction")
 
         transaction.three_d_secure_info.enrolled.should == "Y"
-        transaction.three_d_secure_info.cavv.should == "somebase64value"
-        transaction.three_d_secure_info.xid.should == "xidvalue"
         transaction.three_d_secure_info.should be_liability_shifted
         transaction.three_d_secure_info.should be_liability_shift_possible
         transaction.three_d_secure_info.status.should == "authenticate_successful"

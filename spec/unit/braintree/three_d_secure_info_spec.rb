@@ -15,8 +15,6 @@ describe Braintree::ThreeDSecureInfo do
   describe "#initialize" do
     it "sets attributes" do
       three_d_secure_info.enrolled.should == "Y"
-      three_d_secure_info.xid.should == "xidvalue"
-      three_d_secure_info.cavv.should == "cavvvalue"
       three_d_secure_info.status.should == "authenticate_successful"
       three_d_secure_info.liability_shifted.should == true
       three_d_secure_info.liability_shift_possible.should == true
@@ -25,7 +23,7 @@ describe Braintree::ThreeDSecureInfo do
 
   describe "inspect" do
     it "prints the attributes" do
-      three_d_secure_info.inspect.should == %(#<ThreeDSecureInfo enrolled: "Y", liability_shifted: true, liability_shift_possible: true, xid: "xidvalue", cavv: "cavvvalue", status: "authenticate_successful">)
+      three_d_secure_info.inspect.should == %(#<ThreeDSecureInfo enrolled: "Y", liability_shifted: true, liability_shift_possible: true, status: "authenticate_successful">)
     end
   end
 

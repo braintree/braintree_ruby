@@ -150,15 +150,11 @@ describe Braintree::Transaction do
           :enrolled => "Y",
           :liability_shifted => true,
           :liability_shift_possible => true,
-          :cavv => "cavvvalue",
-          :xid => "xidvalue",
           :status => "authenticate_successful",
         }
       )
 
       transaction.three_d_secure_info.enrolled.should == "Y"
-      transaction.three_d_secure_info.xid.should == "xidvalue"
-      transaction.three_d_secure_info.cavv.should == "cavvvalue"
       transaction.three_d_secure_info.status.should == "authenticate_successful"
       transaction.three_d_secure_info.liability_shifted.should == true
       transaction.three_d_secure_info.liability_shift_possible.should == true

@@ -2,7 +2,7 @@ module Braintree
   class ThreeDSecureInfo # :nodoc:
     include BaseModule
 
-    attr_reader :enrolled, :liability_shifted, :liability_shift_possible, :xid, :cavv, :status
+    attr_reader :enrolled, :liability_shifted, :liability_shift_possible, :status
     alias_method :liability_shifted?, :liability_shifted
     alias_method :liability_shift_possible?, :liability_shift_possible
 
@@ -11,7 +11,7 @@ module Braintree
     end
 
     def inspect
-      attr_order = [:enrolled, :liability_shifted, :liability_shift_possible, :xid, :cavv, :status]
+      attr_order = [:enrolled, :liability_shifted, :liability_shift_possible, :status]
       formatted_attrs = attr_order.map do |attr|
         "#{attr}: #{send(attr).inspect}"
       end
