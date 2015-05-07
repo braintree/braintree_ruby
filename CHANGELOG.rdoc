@@ -1,3 +1,6 @@
+== 2.43.0
+* Add 3DS info to server side
+
 == 2.42.0
 * Add {ApplePayCard,CoinbaseAccount}#default?
 * Add {ApplePayCard,CoinbaseAccount} payment instrument constants

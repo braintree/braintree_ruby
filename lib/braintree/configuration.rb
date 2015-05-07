@@ -3,10 +3,28 @@ module Braintree
     API_VERSION = "4" # :nodoc:
     DEFAULT_ENDPOINT = "api" # :nodoc:
 
+    READABLE_ATTRIBUTES = [
+      :merchant_id,
+      :public_key,
+      :private_key,
+    ]
+
+    WRITABLE_ATTRIBUTES = [
+      :custom_user_agent,
+      :endpoint,
+      :http_open_timeout,
+      :http_read_timeout,
+      :logger,
+      :merchant_id,
+      :public_key,
+      :private_key,
+      :environment,
+    ]
+
     class << self
-      attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id, :public_key, :private_key
+      attr_writer *WRITABLE_ATTRIBUTES
     end
-    attr_reader :merchant_id, :public_key, :private_key
+    attr_reader *READABLE_ATTRIBUTES
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
@@ -17,7 +35,7 @@ module Braintree
         end
       end
     end
-    expectant_reader :environment, :merchant_id, :public_key, :private_key
+    expectant_reader *([:environment] + READABLE_ATTRIBUTES)
 
     # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
@@ -36,11 +54,21 @@ module Braintree
         :custom_user_agent => @custom_user_agent,
         :endpoint => @endpoint,
         :environment => environment,
+        :http_open_timeout => http_open_timeout,
+        :http_read_timeout => http_read_timeout,
         :logger => logger,
         :merchant_id => merchant_id,
         :private_key => private_key,
         :public_key => public_key
       )
+    end
+
+    def self.http_open_timeout
+      @http_open_timeout ||= 60
+    end
+
+    def self.http_read_timeout
+      @http_read_timeout ||= 60
     end
 
     def self.logger
@@ -56,7 +84,7 @@ module Braintree
     end
 
     def initialize(options = {})
-      [:endpoint, :environment, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
+      WRITABLE_ATTRIBUTES.each do |attr|
         instance_variable_set "@#{attr}", options[attr]
       end
 
@@ -102,6 +130,14 @@ module Braintree
 
     def protocol # :nodoc:
       ssl? ? "https" : "http"
+    end
+
+    def http_open_timeout
+      @http_open_timeout
+    end
+
+    def http_read_timeout
+      @http_read_timeout
     end
 
     def server # :nodoc:

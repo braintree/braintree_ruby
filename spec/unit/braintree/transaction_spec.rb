@@ -143,6 +143,23 @@ describe Braintree::Transaction do
       transaction.credit_card_details.issuing_bank.should == "Mr Tumnus"
     end
 
+    it "sets up three_d_secure_info" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :three_d_secure_info => {
+          :enrolled => "Y",
+          :liability_shifted => true,
+          :liability_shift_possible => true,
+          :status => "authenticate_successful",
+        }
+      )
+
+      transaction.three_d_secure_info.enrolled.should == "Y"
+      transaction.three_d_secure_info.status.should == "authenticate_successful"
+      transaction.three_d_secure_info.liability_shifted.should == true
+      transaction.three_d_secure_info.liability_shift_possible.should == true
+    end
+
     it "sets up history attributes in status_history" do
       time = Time.utc(2010,1,14)
       transaction = Braintree::Transaction._new(
