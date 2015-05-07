@@ -8,7 +8,7 @@ describe Braintree::ThreeDSecureInfo do
       :liability_shift_possible => true,
       :cavv => "cavvvalue",
       :xid => "xidvalue",
-      :status => "authenticate_successful",
+      :status => "authenticate_successful"
     )
   }
 
