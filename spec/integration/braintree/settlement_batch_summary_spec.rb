@@ -25,9 +25,10 @@ describe Braintree::SettlementBatchSummary do
         },
         :options => { :submit_for_settlement => true }
       )
-      SpecHelper.settle_transaction transaction.id
+      result = SpecHelper.settle_transaction transaction.id
+      settlement_date = result[:transaction][:settlement_batch_id].split('_').first
+      result = Braintree::SettlementBatchSummary.generate(settlement_date)
 
-      result = Braintree::SettlementBatchSummary.generate(now_in_eastern)
       result.should be_success
       amex_records = result.settlement_batch_summary.records.select {|row| row[:card_type] == Braintree::CreditCard::CardType::AmEx }
       amex_records.first[:count].to_i.should >= 1
@@ -47,11 +48,11 @@ describe Braintree::SettlementBatchSummary do
         },
         :options => { :submit_for_settlement => true }
       )
-      SpecHelper.settle_transaction transaction.id
+      result = SpecHelper.settle_transaction transaction.id
+      settlement_date = result[:transaction][:settlement_batch_id].split('_').first
+      result = Braintree::SettlementBatchSummary.generate(settlement_date, 'store_me')
 
-      result = Braintree::SettlementBatchSummary.generate(now_in_eastern, 'store_me')
       result.should be_success
-
       amex_records = result.settlement_batch_summary.records.select {|row| row[:store_me] == "1" }
       amex_records.should_not be_empty
       amex_records.first[:count].to_i.should >= 1
