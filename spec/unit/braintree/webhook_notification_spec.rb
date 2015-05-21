@@ -289,8 +289,16 @@ describe Braintree::WebhookNotification do
 
   describe "self.verify" do
     it "creates a verification string" do
-      response = Braintree::WebhookNotification.verify("verification_token")
-      response.should == "integration_public_key|c9f15b74b0d98635cd182c51e2703cffa83388c3"
+      response = Braintree::WebhookNotification.verify("AC90F")
+      response.should == "integration_public_key|afd1c721470426e14f23924c4e16090841d98bfd"
+    end
+
+    it "raises InvalidChallenge error with a message complaining about invalid characters" do
+      challenge = "HELLOWORLD"
+
+      expect do
+        Braintree::WebhookNotification.verify(challenge)
+      end.to raise_error(Braintree::InvalidChallenge, /challenge contains non-hex characters/)
     end
   end
 end
