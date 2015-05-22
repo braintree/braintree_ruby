@@ -29,7 +29,7 @@ describe Braintree::CreditCardVerification do
         :merchant_account_id => "some_id"
       )
 
-      verification.status.should == Braintree::CreditCardVerification::Status::VERIFIED
+      verification.status.should == Braintree::CreditCardVerification::Status::Verified
     end
   end
 

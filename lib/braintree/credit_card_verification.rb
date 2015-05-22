@@ -3,12 +3,12 @@ module Braintree
     include BaseModule
 
     module Status
-      FAILED = 'failed'
-      GATEWAY_REJECTED = 'gateway_rejected'
-      PROCESSOR_DECLINED = 'processor_declined'
-      VERIFIED = 'verified'
+      Failed = 'failed'
+      GatewayRejected = 'gateway_rejected'
+      ProcessorDeclined = 'processor_declined'
+      Verified = 'verified'
 
-      All = [FAILED, GATEWAY_REJECTED, PROCESSOR_DECLINED, VERIFIED]
+      All = [Failed, GatewayRejected, ProcessorDeclined, Verified]
     end
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code,
