@@ -294,7 +294,7 @@ describe Braintree::WebhookNotification do
     end
 
     it "raises InvalidChallenge error with a message complaining about invalid characters" do
-      challenge = "HELLOWORLD"
+      challenge = "bad challenge"
 
       expect do
         Braintree::WebhookNotification.verify(challenge)
