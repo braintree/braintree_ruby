@@ -18,6 +18,8 @@ module Braintree # :nodoc:
 
   class InvalidSignature < BraintreeError; end
 
+  class InvalidChallenge < BraintreeError; end
+
   class NotFoundError < BraintreeError; end
 
   class ServerError < BraintreeError; end

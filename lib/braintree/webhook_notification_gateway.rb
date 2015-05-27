@@ -15,6 +15,7 @@ module Braintree
     end
 
     def verify(challenge)
+      raise InvalidChallenge, 'challenge contains non-hex characters' unless challenge =~ /\A[a-f0-9]{20,32}\z/
       digest = Braintree::Digest.hexdigest(@config.private_key, challenge)
       "#{@config.public_key}|#{digest}"
     end
