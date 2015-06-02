@@ -27,7 +27,7 @@ describe Braintree::Transaction, "search" do
         :billing => {
           :company => "Braintree",
           :country_name => "United States of America",
-          :extended_address => "Suite 123",
+         :extended_address => "Suite 123",
           :first_name => first_name,
           :last_name => "Smith",
           :locality => "Chicago",
@@ -65,6 +65,7 @@ describe Braintree::Transaction, "search" do
 
       SpecHelper.settle_transaction transaction.id
       transaction = Braintree::Transaction.find(transaction.id)
+      credit_card = Braintree::CreditCard.find(token)
 
       search_criteria = {
         :billing_company => "Braintree",
@@ -79,6 +80,7 @@ describe Braintree::Transaction, "search" do
         :credit_card_cardholder_name => "Tom Smith",
         :credit_card_expiration_date => "05/2012",
         :credit_card_number => Braintree::Test::CreditCardNumbers::Visa,
+        :credit_card_unique_identifier => credit_card.unique_number_identifier,
         :customer_company => "Braintree",
         :customer_email => "smith@example.com",
         :customer_fax => "5551231234",
@@ -125,6 +127,19 @@ describe Braintree::Transaction, "search" do
       end
 
       collection.maximum_size.should == 1
+      collection.first.id.should == transaction.id
+    end
+
+    it "searches on users" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+      )
+
+      collection = Braintree::Transaction.search do |search|
+        search.user.is "integration_user_public_id"
+      end
+
       collection.first.id.should == transaction.id
     end
 
@@ -319,6 +334,26 @@ describe Braintree::Transaction, "search" do
         collection.maximum_size.should == 0
       end
 
+      # TODO
+      it "searches by payment instrument type" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/12"
+          }
+        )
+
+        p transaction.payment_instrument_type
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction.id
+          # search.payment_instrument_type.in ["credit_card"]
+        end
+
+        puts "The payment type - #{collection.first.payment_instrument_type}"
+        collection.maximum_size.should == 1
+      end
+
       it "searches on status" do
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -348,6 +383,31 @@ describe Braintree::Transaction, "search" do
         end
 
         collection.maximum_size.should == 0
+      end
+
+      it "searches on all unsuccessful" do
+       result_1 = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Fail,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/19"
+          }
+        )
+
+        result_2 = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Decline,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/19"
+          }
+        )
+
+        collection = Braintree::Transaction.search do |search|
+          search.ids.in [result_1.transaction.id, result_2.transaction.id]
+          search.status.in Braintree::Transaction::Status::Unsuccessful
+        end
+
+        collection.maximum_size.should == 2
       end
 
       it "finds expired authorizations by status" do

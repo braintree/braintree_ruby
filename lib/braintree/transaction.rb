@@ -42,6 +42,7 @@ module Braintree
       SubmittedForSettlement = 'submitted_for_settlement'
       Voided                 = 'voided'
       Unrecognized           = 'unrecognized'
+      Unsuccessful           = ['failed','processor_declined', 'gateway_rejected', 'settlement_declined','authorization_expired']
 
       All = constants.map { |c| const_get(c) }
     end
