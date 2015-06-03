@@ -1,4 +1,4 @@
-== 3.0.0
+== 2.44.0
 * Validate webhook challenge payload
 * Changed CreditCardVerification::Status constants
 * Add missing criteria to CreditCardVerification search
