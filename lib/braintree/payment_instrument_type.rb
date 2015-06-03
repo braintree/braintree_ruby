@@ -5,7 +5,5 @@ module Braintree
     CreditCard = 'credit_card'
     CoinbaseAccount = 'coinbase_account'
     ApplePayCard = 'apple_pay_card'
-
-    All = constants.map { |c| const_get(c) }
   end
 end

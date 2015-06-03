@@ -54,9 +54,9 @@ module Braintree
       CreditCard::CustomerLocation::US
     ]
     multiple_value_field :ids
+    multiple_value_field :payment_instrument_type
     multiple_value_field :user
     multiple_value_field :merchant_account_id
-    multiple_value_field :payment_instrument_type, :allows => ["credit_card"]
     multiple_value_field :status, :allows => Transaction::Status::All
     multiple_value_field :source, :allows => [
       Transaction::Source::Api,

@@ -27,7 +27,7 @@ describe Braintree::Transaction, "search" do
         :billing => {
           :company => "Braintree",
           :country_name => "United States of America",
-         :extended_address => "Suite 123",
+          :extended_address => "Suite 123",
           :first_name => first_name,
           :last_name => "Smith",
           :locality => "Chicago",
@@ -334,8 +334,7 @@ describe Braintree::Transaction, "search" do
         collection.maximum_size.should == 0
       end
 
-      # TODO
-      it "searches by payment instrument type" do
+      it "searches by payment instrument type CreditCardDetail" do
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
@@ -344,14 +343,82 @@ describe Braintree::Transaction, "search" do
           }
         )
 
-        p transaction.payment_instrument_type
         collection = Braintree::Transaction.search do |search|
           search.id.is transaction.id
-          # search.payment_instrument_type.in ["credit_card"]
+          search.payment_instrument_type.in ["CreditCardDetail"]
         end
 
-        puts "The payment type - #{collection.first.payment_instrument_type}"
-        collection.maximum_size.should == 1
+        collection.first.id.should == transaction.id
+        collection.first.payment_instrument_type.should ==Braintree::PaymentInstrumentType::CreditCard
+      end
+
+      it "searches by payment instrument type PayPal" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+        )
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction.id
+          search.payment_instrument_type.in ["PayPalDetail"]
+        end
+
+        collection.first.id.should == transaction.id
+        collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::PayPalAccount
+      end
+
+      it "searches by payment instrument type ApplePay" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa
+        )
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction.id
+          search.payment_instrument_type.in ["ApplePayDetail"]
+        end
+
+        collection.first.id.should == transaction.id
+        collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::ApplePayCard
+      end
+
+      it "searches by payment instrument type EuropeBank" do
+        with_altpay_merchant do
+          config = Braintree::Configuration.instantiate
+          customer = Braintree::Customer.create.customer
+          raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::EuropeBankAccount::MandateType::Business)
+          client_token = decode_client_token(raw_client_token)
+          authorization_fingerprint = client_token["authorizationFingerprint"]
+          http = ClientApiHttp.new(
+            config,
+            :authorization_fingerprint => authorization_fingerprint
+          )
+
+          nonce = http.create_europe_bank_account_nonce(
+            :accountHolderName => "Bob Holder",
+            :iban => "DE89370400440532013000",
+            :bic => "DEUTDEFF",
+            :locale => "en-US",
+            :billingAddress =>  {
+              :region => "Hesse",
+              :country_name => "Germany"
+            }
+          )
+
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => nonce,
+            :merchant_account_id => "fake_sepa_ma"
+          )
+
+          collection = Braintree::Transaction.search do |search|
+            search.id.is transaction.id
+            search.payment_instrument_type.in ["EuropeBankAccountDetail"]
+          end
+
+          collection.first.id.should == transaction.id
+          collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::EuropeBankAccount
+        end
       end
 
       it "searches on status" do
