@@ -1,3 +1,6 @@
+== 2.45.0
+* Add support for Android Pay
+
 == 2.44.0
 * Validate webhook challenge payload
 * Changed CreditCardVerification::Status constants
