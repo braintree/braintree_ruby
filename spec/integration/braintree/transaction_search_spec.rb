@@ -452,31 +452,6 @@ describe Braintree::Transaction, "search" do
         collection.maximum_size.should == 0
       end
 
-      it "searches on all unsuccessful" do
-       result_1 = Braintree::Transaction.sale(
-          :amount => Braintree::Test::TransactionAmounts::Fail,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/19"
-          }
-        )
-
-        result_2 = Braintree::Transaction.sale(
-          :amount => Braintree::Test::TransactionAmounts::Decline,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/19"
-          }
-        )
-
-        collection = Braintree::Transaction.search do |search|
-          search.ids.in [result_1.transaction.id, result_2.transaction.id]
-          search.status.in Braintree::Transaction::Status::Unsuccessful
-        end
-
-        collection.maximum_size.should == 2
-      end
-
       it "finds expired authorizations by status" do
         collection = Braintree::Transaction.search do |search|
           search.status.in Braintree::Transaction::Status::AuthorizationExpired
