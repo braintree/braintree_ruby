@@ -1270,6 +1270,26 @@ describe Braintree::Transaction do
         apple_pay_details.cardholder_name.should_not be_nil
       end
 
+      it "can create a transaction with a fake android pay nonce" do
+        customer = Braintree::Customer.create!
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::AndroidPay
+        )
+        result.success?.should == true
+        result.transaction.should_not be_nil
+        android_pay_details = result.transaction.android_pay_details
+        android_pay_details.should_not be_nil
+        android_pay_details.card_type.should == Braintree::CreditCard::CardType::Discover
+        android_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
+        android_pay_details.last_4.should == "1117"
+        android_pay_details.virtual_card_last_4.should == "1117"
+        android_pay_details.expiration_month.to_i.should > 0
+        android_pay_details.expiration_year.to_i.should > 0
+        android_pay_details.google_transaction_id.should == "google_transaction_id"
+      end
+
       it "can create a transaction with an unknown nonce" do
         customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(

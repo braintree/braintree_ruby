@@ -22,6 +22,8 @@ module Braintree
         SuccessfulResult.new(:payment_method => EuropeBankAccount._new(@gateway, response[:europe_bank_account]))
       elsif response[:apple_pay_card]
         SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
+      elsif response[:android_pay_card]
+        SuccessfulResult.new(:payment_method => AndroidPayCard._new(@gateway, response[:android_pay_card]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       elsif response
@@ -48,6 +50,8 @@ module Braintree
         EuropeBankAccount._new(@gateway, response[:europe_bank_account])
       elsif response.has_key?(:apple_pay_card)
         ApplePayCard._new(@gateway, response[:apple_pay_card])
+      elsif response.has_key?(:android_pay_card)
+        AndroidPayCard._new(@gateway, response[:android_pay_card])
       else
         UnknownPaymentMethod._new(@gateway, response)
       end
