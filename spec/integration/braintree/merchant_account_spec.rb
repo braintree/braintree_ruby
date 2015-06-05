@@ -109,7 +109,6 @@ describe Braintree::MerchantAccount do
     context "funding destination" do
       it "accepts a bank" do
         params = VALID_APPLICATION_PARAMS.dup
-        params[:funding] = VALID_APPLICATION_PARAMS[:funding].dup
         params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestination::Bank
         result = Braintree::MerchantAccount.create(params)
 
@@ -118,9 +117,6 @@ describe Braintree::MerchantAccount do
 
       it "accepts an email" do
         params = VALID_APPLICATION_PARAMS.dup
-        params[:funding] = VALID_APPLICATION_PARAMS[:funding].dup
-        params[:funding].delete(:routing_number)
-        params[:funding].delete(:account_number)
         params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestination::Email
         params[:funding][:email] = "joebloggs@compuserve.com"
         result = Braintree::MerchantAccount.create(params)
@@ -130,9 +126,6 @@ describe Braintree::MerchantAccount do
 
       it "accepts a mobile_phone" do
         params = VALID_APPLICATION_PARAMS.dup
-        params[:funding] = VALID_APPLICATION_PARAMS[:funding].dup
-        params[:funding].delete(:routing_number)
-        params[:funding].delete(:account_number)
         params[:funding][:destination] = ::Braintree::MerchantAccount::FundingDestination::MobilePhone
         params[:funding][:mobile_phone] = "3125882300"
         result = Braintree::MerchantAccount.create(params)
