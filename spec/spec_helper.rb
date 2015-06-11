@@ -9,6 +9,7 @@ unless defined?(SPEC_HELPER_LOADED)
   braintree_lib = "#{project_root}/lib"
   $LOAD_PATH << braintree_lib
   require "braintree"
+  require File.dirname(__FILE__) + "/oauth_test_helper"
 
   Braintree::Configuration.environment = :development
   Braintree::Configuration.merchant_id = "integration_merchant_id"
