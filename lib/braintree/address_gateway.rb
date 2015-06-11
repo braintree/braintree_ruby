@@ -13,7 +13,7 @@ module Braintree
       unless attributes[:customer_id] =~ /\A[0-9A-Za-z_-]+\z/
         raise ArgumentError, ":customer_id contains invalid characters"
       end
-      response = @config.http.post "/customers/#{attributes.delete(:customer_id)}/addresses", :address => attributes
+      response = @config.http.post("#{@config.base_merchant_path}/customers/#{attributes.delete(:customer_id)}/addresses", :address => attributes)
       if response[:address]
         SuccessfulResult.new(:address => Address._new(@gateway, response[:address]))
       elsif response[:api_error_response]
@@ -25,14 +25,14 @@ module Braintree
 
     def delete(customer_or_customer_id, address_id)
       customer_id = _determine_customer_id(customer_or_customer_id)
-      @config.http.delete("/customers/#{customer_id}/addresses/#{address_id}")
+      @config.http.delete("#{@config.base_merchant_path}/customers/#{customer_id}/addresses/#{address_id}")
       SuccessfulResult.new
     end
 
     def find(customer_or_customer_id, address_id)
       customer_id = _determine_customer_id(customer_or_customer_id)
       raise ArgumentError if address_id.nil? || address_id.to_s.strip == ""
-      response = @config.http.get("/customers/#{customer_id}/addresses/#{address_id}")
+      response = @config.http.get("#{@config.base_merchant_path}/customers/#{customer_id}/addresses/#{address_id}")
       Address._new(@gateway, response[:address])
     rescue NotFoundError
       raise NotFoundError, "address for customer #{customer_id.inspect} with id #{address_id.inspect} not found"
@@ -41,7 +41,7 @@ module Braintree
     def update(customer_or_customer_id, address_id, attributes)
       Util.verify_keys(AddressGateway._update_signature, attributes)
       customer_id = _determine_customer_id(customer_or_customer_id)
-      response = @config.http.put "/customers/#{customer_id}/addresses/#{address_id}", :address => attributes
+      response = @config.http.put("#{@config.base_merchant_path}/customers/#{customer_id}/addresses/#{address_id}", :address => attributes)
       if response[:address]
         SuccessfulResult.new(:address => Address._new(@gateway, response[:address]))
       elsif response[:api_error_response]

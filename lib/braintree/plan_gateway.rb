@@ -6,7 +6,7 @@ module Braintree
     end
 
     def all
-      response = @config.http.get "/plans"
+      response = @config.http.get("#{@config.base_merchant_path}/plans")
       attributes_collection = response[:plans] || []
       attributes_collection.map do |attributes|
         Plan._new(@gateway, attributes)

@@ -6,7 +6,7 @@ module Braintree
     end
 
     def all
-      response = @config.http.get "/add_ons"
+      response = @config.http.get("#{@config.base_merchant_path}/add_ons")
       attributes_collection = response[:add_ons]
       attributes_collection.map do |attributes|
         AddOn._new(attributes)

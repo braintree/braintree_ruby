@@ -13,7 +13,7 @@ module Braintree
 
     def find(merchant_account_id)
       raise ArgumentError if merchant_account_id.nil? || merchant_account_id.to_s.strip == ""
-      response = @config.http.get "/merchant_accounts/#{merchant_account_id}"
+      response = @config.http.get("#{@config.base_merchant_path}/merchant_accounts/#{merchant_account_id}")
       MerchantAccount._new(@gateway, response[:merchant_account])
     rescue NotFoundError
       raise NotFoundError, "Merchant account with id #{merchant_account_id} not found"
@@ -24,8 +24,8 @@ module Braintree
       _do_update "/merchant_accounts/#{merchant_account_id}/update_via_api", :merchant_account => attributes
     end
 
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
+    def _do_create(path, params=nil) # :nodoc:
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       else
@@ -33,8 +33,8 @@ module Braintree
       end
     end
 
-    def _do_update(url, params=nil) # :nodoc:
-      response = @config.http.put(url, params)
+    def _do_update(path, params=nil) # :nodoc:
+      response = @config.http.put("#{@config.base_merchant_path}#{path}", params)
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       else

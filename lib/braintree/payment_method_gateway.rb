@@ -10,8 +10,8 @@ module Braintree
       _do_create("/payment_methods", :payment_method => attributes)
     end
 
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
+    def _do_create(path, params=nil) # :nodoc:
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:paypal_account]
@@ -34,12 +34,12 @@ module Braintree
     end
 
     def delete(token)
-      @config.http.delete("/payment_methods/any/#{token}")
+      @config.http.delete("#{@config.base_merchant_path}/payment_methods/any/#{token}")
     end
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
-      response = @config.http.get "/payment_methods/any/#{token}"
+      response = @config.http.get("#{@config.base_merchant_path}/payment_methods/any/#{token}")
       if response.has_key?(:credit_card)
         CreditCard._new(@gateway, response[:credit_card])
       elsif response.has_key?(:paypal_account)
@@ -64,8 +64,8 @@ module Braintree
       _do_update(:put, "/payment_methods/any/#{token}", :payment_method => attributes)
     end
 
-    def _do_update(http_verb, url, params) # :nodoc:
-      response = @config.http.send http_verb, url, params
+    def _do_update(http_verb, path, params) # :nodoc:
+      response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:paypal_account]

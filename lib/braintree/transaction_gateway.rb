@@ -12,13 +12,13 @@ module Braintree
 
     def cancel_release(transaction_id)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put "/transactions/#{transaction_id}/cancel_release"
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/cancel_release")
       _handle_transaction_response(response)
     end
 
     def hold_in_escrow(transaction_id)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put "/transactions/#{transaction_id}/hold_in_escrow"
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/hold_in_escrow")
       _handle_transaction_response(response)
     end
 
@@ -54,14 +54,14 @@ module Braintree
 
     def find(id)
       raise ArgumentError if id.nil? || id.strip.to_s == ""
-      response = @config.http.get "/transactions/#{id}"
+      response = @config.http.get("#{@config.base_merchant_path}/transactions/#{id}")
       Transaction._new(@gateway, response[:transaction])
     rescue NotFoundError
       raise NotFoundError, "transaction with id #{id.inspect} not found"
     end
 
     def refund(transaction_id, amount = nil)
-      response = @config.http.post "/transactions/#{transaction_id}/refund", :transaction => {:amount => amount}
+      response = @config.http.post("#{@config.base_merchant_path}/transactions/#{transaction_id}/refund", :transaction => {:amount => amount})
       _handle_transaction_response(response)
     end
 
@@ -82,7 +82,7 @@ module Braintree
       search = TransactionSearch.new
       block.call(search) if block
 
-      response = @config.http.post "/transactions/advanced_search_ids", {:search => search.to_hash}
+      response = @config.http.post("#{@config.base_merchant_path}/transactions/advanced_search_ids", {:search => search.to_hash})
 
       if response.has_key?(:search_results)
         ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
@@ -93,18 +93,18 @@ module Braintree
 
     def release_from_escrow(transaction_id)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put "/transactions/#{transaction_id}/release_from_escrow"
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/release_from_escrow")
       _handle_transaction_response(response)
     end
 
     def submit_for_settlement(transaction_id, amount = nil)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put "/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount}
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount})
       _handle_transaction_response(response)
     end
 
     def void(transaction_id)
-      response = @config.http.put "/transactions/#{transaction_id}/void"
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/void")
       _handle_transaction_response(response)
     end
 
@@ -146,14 +146,14 @@ module Braintree
       ]
     end
 
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
+    def _do_create(path, params=nil) # :nodoc:
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       _handle_transaction_response(response)
     end
 
     def _fetch_transactions(search, ids) # :nodoc:
       search.ids.in ids
-      response = @config.http.post "/transactions/advanced_search", {:search => search.to_hash}
+      response = @config.http.post("#{@config.base_merchant_path}/transactions/advanced_search", {:search => search.to_hash})
       attributes = response[:credit_card_transactions]
       Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| Transaction._new(@gateway, attrs) }
     end

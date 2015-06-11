@@ -3251,7 +3251,8 @@ describe Braintree::Transaction do
       }
     )
 
-    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
+    config = Braintree::Configuration.instantiate
+    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
     Braintree::Transaction.find(transaction.id)
   end
 
@@ -3264,7 +3265,8 @@ describe Braintree::Transaction do
       }
     )
 
-    Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
+    config = Braintree::Configuration.instantiate
+    config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
     Braintree::Transaction.find(transaction.id)
   end
 
@@ -3280,8 +3282,9 @@ describe Braintree::Transaction do
       :options => { :hold_in_escrow => true }
     )
 
-    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
-    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/escrow"
+    config = Braintree::Configuration.instantiate
+    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/escrow")
     Braintree::Transaction.find(transaction.id)
   end
 

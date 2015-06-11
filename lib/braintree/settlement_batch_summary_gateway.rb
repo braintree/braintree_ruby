@@ -7,7 +7,7 @@ module Braintree
 
     def generate(criteria)
       Util.verify_keys(_signature, criteria)
-      response = @config.http.post "/settlement_batch_summary", :settlement_batch_summary => criteria
+      response = @config.http.post("#{@config.base_merchant_path}/settlement_batch_summary", :settlement_batch_summary => criteria)
       if response[:settlement_batch_summary]
         SuccessfulResult.new(:settlement_batch_summary => SettlementBatchSummary._new(@gateway, response[:settlement_batch_summary]))
       elsif response[:api_error_response]

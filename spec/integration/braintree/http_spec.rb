@@ -7,7 +7,8 @@ describe Braintree::Http do
         original_key = Braintree::Configuration.public_key
         Braintree::Configuration.public_key = "invalid_public_key"
         expect do
-          Braintree::Configuration.instantiate.http.get "/customers"
+          config = Braintree::Configuration.instantiate
+          config.http.get("#{config.base_merchant_path}/customers")
         end.to raise_error(Braintree::AuthenticationError)
       ensure
         Braintree::Configuration.public_key = original_key
@@ -16,7 +17,8 @@ describe Braintree::Http do
 
     it "raises an AuthorizationError if authorization fails" do
       expect do
-        Braintree::Configuration.instantiate.http.get "/users"
+        config = Braintree::Configuration.instantiate
+        config.http.get("#{config.base_merchant_path}/users")
       end.to raise_error(Braintree::AuthorizationError)
     end
   end
@@ -32,7 +34,7 @@ describe Braintree::Http do
           Braintree::Configuration.logger.level = Logger::INFO
           Braintree::Customer.all
           utc_or_gmt = Time.now.utc.strftime("%Z")
-          output.string.should include("[Braintree] [10/Oct/2009 13:55:36 #{utc_or_gmt}] POST /customers/advanced_search_ids 200")
+          output.string.should include("[Braintree] [10/Oct/2009 13:55:36 #{utc_or_gmt}] POST /merchants/integration_merchant_id/customers/advanced_search_ids 200")
         end
       ensure
         Braintree::Configuration.logger = old_logger
@@ -56,7 +58,7 @@ describe Braintree::Http do
           )
           result.success?.should == true
           utc_or_gmt = Time.now.utc.strftime("%Z")
-          output.string.should include("[Braintree] [10/Oct/2009 13:55:36 #{utc_or_gmt}] POST /payment_methods")
+          output.string.should include("[Braintree] [10/Oct/2009 13:55:36 #{utc_or_gmt}] POST /merchants/integration_merchant_id/payment_methods")
           output.string.should include("[Braintree]   <cardholder-name>Sam Jones</cardholder-name>")
           output.string.should include("[Braintree]   <number>401288******1881</number>")
           output.string.should include("[Braintree] [10/Oct/2009 13:55:36 #{utc_or_gmt}] 201 Created")
@@ -73,13 +75,15 @@ describe Braintree::Http do
       end
 
       it "sets the User-Agent header using the default user agent" do
-        response = Braintree::Configuration.instantiate.http.get "/test/headers"
+        config = Braintree::Configuration.instantiate
+        response = config.http.get("#{config.base_merchant_path}/test/headers")
         response[:headers][:HTTP_USER_AGENT].should == "Braintree Ruby Gem #{Braintree::Version::String}"
       end
 
       it "sets the User-Agent header using a customer user agent" do
         Braintree::Configuration.custom_user_agent = "ActiveMerchant 1.2.3"
-        response = Braintree::Configuration.instantiate.http.get "/test/headers"
+        config = Braintree::Configuration.instantiate
+        response = config.http.get("#{config.base_merchant_path}/test/headers")
         response[:headers][:HTTP_USER_AGENT].should == "Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)"
       end
     end

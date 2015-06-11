@@ -7,7 +7,7 @@ module Braintree
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
-      response = @config.http.get "/payment_methods/paypal_account/#{token}"
+      response = @config.http.get("#{@config.base_merchant_path}/payment_methods/paypal_account/#{token}")
       PayPalAccount._new(@gateway, response[:paypal_account])
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
@@ -19,11 +19,11 @@ module Braintree
     end
 
     def delete(token)
-      @config.http.delete("/payment_methods/paypal_account/#{token}")
+      @config.http.delete("#{@config.base_merchant_path}/payment_methods/paypal_account/#{token}")
     end
 
-    def _do_update(http_verb, url, params) # :nodoc:
-      response = @config.http.send http_verb, url, params
+    def _do_update(http_verb, path, params) # :nodoc:
+      response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:paypal_account]
         SuccessfulResult.new(:paypal_account => PayPalAccount._new(@gateway, response[:paypal_account]))
       elsif response[:api_error_response]

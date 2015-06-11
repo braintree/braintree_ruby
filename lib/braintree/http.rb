@@ -69,7 +69,7 @@ module Braintree
         connection.verify_callback = proc { |preverify_ok, ssl_context| _verify_ssl_certificate(preverify_ok, ssl_context) }
       end
       connection.start do |http|
-        request = http_verb.new("#{@config.base_merchant_path}#{path}")
+        request = http_verb.new(path)
         request["Accept"] = "application/xml"
         request["User-Agent"] = @config.user_agent
         request["Accept-Encoding"] = "gzip"
