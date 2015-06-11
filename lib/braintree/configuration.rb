@@ -21,17 +21,10 @@ module Braintree
       :public_key,
       :private_key,
       :environment,
-      :client_id,
-      :client_secret,
-    ]
-
-    CLASS_WRITEABLE_ATTRIBUTES = WRITABLE_ATTRIBUTES - [
-      :client_id,
-      :client_secret,
     ]
 
     class << self
-      attr_writer *CLASS_WRITEABLE_ATTRIBUTES
+      attr_writer *WRITABLE_ATTRIBUTES
     end
     attr_reader *READABLE_ATTRIBUTES
 
@@ -39,7 +32,7 @@ module Braintree
       attributes.each do |attribute|
         (class << self; self; end).send(:define_method, attribute) do
           attribute_value = instance_variable_get("@#{attribute}")
-          raise ConfigurationError.new(attribute.to_s, "needs to be set") unless attribute_value
+          raise ConfigurationError.new("Braintree::Configuration.#{attribute.to_s} needs to be set") unless attribute_value
           attribute_value
         end
       end
@@ -97,7 +90,14 @@ module Braintree
         instance_variable_set "@#{attr}", options[attr]
       end
 
-      @merchant_id = options[:merchant_id] || options[:partner_id]
+      if options[:client_id] || options[:client_secret]
+        parser = Braintree::CredentialsParser.new(options)
+        @client_id = parser.client_id
+        @client_secret = parser.client_secret
+        @environment = parser.environment
+      else
+        @merchant_id = options[:merchant_id] || options[:partner_id]
+      end
     end
 
     def api_version # :nodoc:
