@@ -9,9 +9,15 @@ module Braintree
       params[:grant_type] = "authorization_code"
       params = {:credentials => params}
       response = @config.http.post("/oauth/access_tokens", params)
-      Braintree::SuccessfulResult.new(
-        :credentials => OAuthCredentials._new(response[:credentials])
-      )
+      if response[:credentials]
+        Braintree::SuccessfulResult.new(
+          :credentials => OAuthCredentials._new(response[:credentials])
+        )
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise "expected :credentials or :api_error_response"
+      end
     end
   end
 end

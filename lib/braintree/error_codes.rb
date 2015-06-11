@@ -528,6 +528,14 @@ module Braintree
       OptionsNotAllowedWithoutCustomer = "93207"
       SignatureRevoked = "93203"
     end
+
+    module OAuth
+      InvalidGrant = "93801";
+      InvalidCredentials = "93802";
+      InvalidScope = "93803";
+      InvalidRequest = "93804";
+      UnsupportedGrantType = "93805";
+    end
   end
 end
 

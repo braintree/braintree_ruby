@@ -28,5 +28,16 @@ describe "OAuth" do
       credentials.expires_at.should_not be_nil
       credentials.token_type.should == "bearer"
     end
+
+    it "returns validation errors for bad params" do
+      result = @gateway.oauth.create_token_from_code(
+        :code => "bad_code",
+        :scope => "read_write",
+      )
+
+      result.should_not be_success
+      errors = result.errors.for(:credentials).on(:code)[0].code.should == Braintree::ErrorCodes::OAuth::InvalidGrant
+      result.message.should =~ /Invalid grant: code not found/
+    end
   end
 end
