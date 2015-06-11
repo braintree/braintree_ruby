@@ -74,7 +74,11 @@ module Braintree
         request["User-Agent"] = @config.user_agent
         request["Accept-Encoding"] = "gzip"
         request["X-ApiVersion"] = @config.api_version
-        request.basic_auth @config.public_key, @config.private_key
+        if @config.client_credentials?
+          request.basic_auth @config.client_id, @config.client_secret
+        else
+          request.basic_auth @config.public_key, @config.private_key
+        end
         @config.logger.debug "[Braintree] [#{_current_time}] #{request.method} #{path}"
         if body
           request["Content-Type"] = "application/xml"

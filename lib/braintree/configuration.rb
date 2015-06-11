@@ -7,6 +7,8 @@ module Braintree
       :merchant_id,
       :public_key,
       :private_key,
+      :client_id,
+      :client_secret,
     ]
 
     WRITABLE_ATTRIBUTES = [
@@ -19,10 +21,17 @@ module Braintree
       :public_key,
       :private_key,
       :environment,
+      :client_id,
+      :client_secret,
+    ]
+
+    CLASS_WRITEABLE_ATTRIBUTES = WRITABLE_ATTRIBUTES - [
+      :client_id,
+      :client_secret,
     ]
 
     class << self
-      attr_writer *WRITABLE_ATTRIBUTES
+      attr_writer *CLASS_WRITEABLE_ATTRIBUTES
     end
     attr_reader *READABLE_ATTRIBUTES
 
@@ -188,6 +197,10 @@ module Braintree
 
     def inspect
       super.gsub(/@private_key=\".*\"/, '@private_key="[FILTERED]"')
+    end
+
+    def client_credentials?
+      !client_id.nil?
     end
 
     def signature_service
