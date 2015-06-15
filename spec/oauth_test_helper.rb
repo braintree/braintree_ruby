@@ -6,5 +6,12 @@ module Braintree
       })
       response[:grant][:code]
     end
+
+    def self.create_token(gateway, params)
+      code = create_grant(gateway, params)
+      gateway.oauth.create_token_from_code(
+        :code => code,
+      )
+    end
   end
 end

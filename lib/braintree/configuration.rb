@@ -9,6 +9,7 @@ module Braintree
       :private_key,
       :client_id,
       :client_secret,
+      :access_token,
     ]
 
     WRITABLE_ATTRIBUTES = [
@@ -95,6 +96,10 @@ module Braintree
         @client_id = parser.client_id
         @client_secret = parser.client_secret
         @environment = parser.environment
+      elsif options[:access_token]
+        @access_token = options[:access_token]
+        @merchant_id = options[:merchant_id]
+        @environment = options[:environment]
       else
         @merchant_id = options[:merchant_id] || options[:partner_id]
       end

@@ -76,6 +76,8 @@ module Braintree
         request["X-ApiVersion"] = @config.api_version
         if @config.client_credentials?
           request.basic_auth @config.client_id, @config.client_secret
+        elsif @config.access_token
+          request["Authorization"] = "Bearer #{@config.access_token}"
         else
           request.basic_auth @config.public_key, @config.private_key
         end
