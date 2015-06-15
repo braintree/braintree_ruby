@@ -41,6 +41,29 @@ describe Braintree::Configuration do
       config.public_key.should == 'public_key'
       config.private_key.should == 'private_key'
     end
+
+    it "raises if combining client_id/secret with access_token" do
+      expect do
+        Braintree::Configuration.new(
+          :client_id => "client_id$development$integration_client_id",
+          :client_secret => "client_secret$development$integration_client_secret",
+          :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
+        )
+      end.to raise_error(Braintree::ConfigurationError, /mixed credential types/)
+    end
+
+    it "raises if combining client_id/secret with public_key/private_key" do
+      expect do
+        Braintree::Configuration.new(
+          :client_id => "client_id$development$integration_client_id",
+          :client_secret => "client_secret$development$integration_client_secret",
+          :merchant_id => "merchant_id",
+          :public_key => "public_key",
+          :private_key => "private_key",
+          :environment => "development",
+        )
+      end.to raise_error(Braintree::ConfigurationError, /mixed credential types/)
+    end
   end
 
   describe "base_merchant_path" do

@@ -91,6 +91,8 @@ module Braintree
         instance_variable_set "@#{attr}", options[attr]
       end
 
+      _check_for_mixed_credentials(options)
+
       parser = Braintree::CredentialsParser.new
       if options[:client_id] || options[:client_secret]
         parser.parse_client_credentials(options[:client_id], options[:client_secret])
@@ -104,6 +106,20 @@ module Braintree
         @merchant_id = parser.merchant_id
       else
         @merchant_id = options[:merchant_id] || options[:partner_id]
+      end
+    end
+
+    def _check_for_mixed_credentials(options)
+      if (options[:client_id] || options[:client_secret]) && (options[:public_key] || options[:private_key])
+        raise ConfigurationError.new("Braintree::Gateway cannot be initialized with mixed credential types: client_id and client_secret mixed with public_key and private_key.")
+      end
+
+      if (options[:client_id] || options[:client_secret]) && (options[:access_token])
+        raise ConfigurationError.new("Braintree::Gateway cannot be initialized with mixed credential types: client_id and client_secret mixed with access_token.")
+      end
+
+      if (options[:public_key] || options[:private_key]) && (options[:access_token])
+        raise ConfigurationError.new("Braintree::Gateway cannot be initialized with mixed credential types: public_key and private_key mixed with access_token.")
       end
     end
 
@@ -208,6 +224,12 @@ module Braintree
 
     def client_credentials?
       !client_id.nil?
+    end
+
+    def assert_has_client_credentials
+      if client_id.nil? || client_secret.nil?
+        raise ConfigurationError.new("Braintree::Gateway client_id and client_secret are required.")
+      end
     end
 
     def signature_service

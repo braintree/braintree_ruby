@@ -39,6 +39,20 @@ describe "OAuth" do
       errors = result.errors.for(:credentials).on(:code)[0].code.should == Braintree::ErrorCodes::OAuth::InvalidGrant
       result.message.should =~ /Invalid grant: code not found/
     end
+
+    it "raises with a helpful error if client_id and client_secret are not set" do
+      gateway = Braintree::Gateway.new(
+        :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
+        :logger => Logger.new("/dev/null"),
+      )
+
+      expect do
+        gateway.oauth.create_token_from_code(
+          :code => "some code",
+          :scope => "read_write",
+        )
+      end.to raise_error(Braintree::ConfigurationError, /client_id and client_secret are required/);
+    end
   end
 
   describe "self.create_token_from_refresh_token" do

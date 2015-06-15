@@ -3,6 +3,7 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @config.assert_has_client_credentials
     end
 
     def create_token_from_code(params)
