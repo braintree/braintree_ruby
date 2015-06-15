@@ -91,15 +91,17 @@ module Braintree
         instance_variable_set "@#{attr}", options[attr]
       end
 
+      parser = Braintree::CredentialsParser.new
       if options[:client_id] || options[:client_secret]
-        parser = Braintree::CredentialsParser.new(options)
+        parser.parse_client_credentials(options[:client_id], options[:client_secret])
         @client_id = parser.client_id
         @client_secret = parser.client_secret
         @environment = parser.environment
       elsif options[:access_token]
-        @access_token = options[:access_token]
-        @merchant_id = options[:merchant_id]
-        @environment = options[:environment]
+        parser.parse_access_token(options[:access_token])
+        @access_token = parser.access_token
+        @environment = parser.environment
+        @merchant_id = parser.merchant_id
       else
         @merchant_id = options[:merchant_id] || options[:partner_id]
       end

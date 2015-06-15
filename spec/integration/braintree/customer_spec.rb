@@ -68,8 +68,6 @@ describe Braintree::Customer do
       gateway = Braintree::Gateway.new(
         :access_token => access_token,
         :logger => Logger.new("/dev/null"),
-        :environment => :development,
-        :merchant_id => "integration_merchant_id",
       )
 
       result = gateway.customer.create(
