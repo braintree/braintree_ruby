@@ -9,7 +9,7 @@ describe "OAuth" do
     )
   end
 
-  describe "self.create_token_from_code" do
+  describe "create_token_from_code" do
     it "creates an access token given a grant code" do
       code = Braintree::OAuthTestHelper.create_grant(@gateway, {
         :merchant_public_id => "integration_merchant_id",
@@ -55,7 +55,7 @@ describe "OAuth" do
     end
   end
 
-  describe "self.create_token_from_refresh_token" do
+  describe "create_token_from_refresh_token" do
     it "creates an access token given a refresh token" do
       code = Braintree::OAuthTestHelper.create_grant(@gateway, {
         :merchant_public_id => "integration_merchant_id",
@@ -77,6 +77,95 @@ describe "OAuth" do
       credentials.refresh_token.should_not be_nil
       credentials.expires_at.should_not be_nil
       credentials.token_type.should == "bearer"
+    end
+  end
+
+  describe "connect_url" do
+    it "builds a connect url" do
+      url = @gateway.oauth.connect_url(
+        :merchant_id => "integration_merchant_id",
+        :redirect_uri => "http://bar.example.com",
+        :scope => "read_write",
+        :state => "baz_state",
+        :user => {
+          :country => "USA",
+          :email => "foo@example.com",
+          :first_name => "Bob",
+          :last_name => "Jones",
+          :phone => "555-555-5555",
+          :dob_year => "1970",
+          :dob_month => "01",
+          :dob_day => "01",
+          :street_address => "222 W Merchandise Mart",
+          :locality => "Chicago",
+          :region => "IL",
+          :postal_code => "60606",
+        },
+        :business => {
+          :name => "14 Ladders",
+          :registered_as => "14.0 Ladders",
+          :industry => "Ladders",
+          :description => "We sell the best ladders",
+          :street_address => "111 N Canal",
+          :locality => "Chicago",
+          :region => "IL",
+          :postal_code => "60606",
+          :country => "USA",
+          :annual_volume_amount => "1000000",
+          :average_transaction_amount => "100",
+          :maximum_transaction_amount => "10000",
+          :ship_physical_goods => true,
+          :fulfillment_completed_in => 7,
+          :currency => "USD",
+          :website => "http://example.com",
+        },
+      )
+
+      uri = URI.parse(url)
+      uri.host.should == "localhost"
+      uri.path.should == "/oauth/connect"
+
+      query = CGI.parse(uri.query)
+      query["merchant_id"].should == ["integration_merchant_id"]
+      query["client_id"].should == ["client_id$development$integration_client_id"]
+      query["redirect_uri"].should == ["http://bar.example.com"]
+      query["scope"].should == ["read_write"]
+      query["state"].should == ["baz_state"]
+
+      query["user[country]"].should == ["USA"]
+      query["business[name]"].should == ["14 Ladders"]
+
+      query["user[email]"].should == ["foo@example.com"]
+      query["user[first_name]"].should == ["Bob"]
+      query["user[last_name]"].should == ["Jones"]
+      query["user[phone]"].should == ["555-555-5555"]
+      query["user[dob_year]"].should == ["1970"]
+      query["user[dob_month]"].should == ["01"]
+      query["user[dob_day]"].should == ["01"]
+      query["user[street_address]"].should == ["222 W Merchandise Mart"]
+      query["user[locality]"].should == ["Chicago"]
+      query["user[region]"].should == ["IL"]
+      query["user[postal_code]"].should == ["60606"]
+
+      query["business[name]"].should == ["14 Ladders"]
+      query["business[registered_as]"].should == ["14.0 Ladders"]
+      query["business[industry]"].should == ["Ladders"]
+      query["business[description]"].should == ["We sell the best ladders"]
+      query["business[street_address]"].should == ["111 N Canal"]
+      query["business[locality]"].should == ["Chicago"]
+      query["business[region]"].should == ["IL"]
+      query["business[postal_code]"].should == ["60606"]
+      query["business[country]"].should == ["USA"]
+      query["business[annual_volume_amount]"].should == ["1000000"]
+      query["business[average_transaction_amount]"].should == ["100"]
+      query["business[maximum_transaction_amount]"].should == ["10000"]
+      query["business[ship_physical_goods]"].should == ["true"]
+      query["business[fulfillment_completed_in]"].should == ["7"]
+      query["business[currency]"].should == ["USD"]
+      query["business[website]"].should == ["http://example.com"]
+
+      query["signature"][0].length.should == 64
+      query["algorithm"].should == ["SHA256"]
     end
   end
 end

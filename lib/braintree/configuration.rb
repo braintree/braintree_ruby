@@ -131,8 +131,12 @@ module Braintree
       "/merchants/#{merchant_id}"
     end
 
+    def base_url
+      "#{protocol}://#{server}:#{port}"
+    end
+
     def base_merchant_url # :nodoc:
-      "#{protocol}://#{server}:#{port}#{base_merchant_path}"
+      "#{base_url}#{base_merchant_path}"
     end
 
     def ca_file # :nodoc:
