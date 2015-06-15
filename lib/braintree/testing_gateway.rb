@@ -4,6 +4,7 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @config.assert_has_access_token_or_keys
       @transaction_gateway = TransactionGateway.new(gateway)
     end
 

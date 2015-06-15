@@ -232,6 +232,12 @@ module Braintree
       end
     end
 
+    def assert_has_access_token_or_keys
+      if (public_key.nil? || private_key.nil?) && access_token.nil?
+        raise ConfigurationError.new("Braintree::Gateway public_key and private_key are required.")
+      end
+    end
+
     def signature_service
       @signature_service ||= SignatureService.new(@private_key)
     end
