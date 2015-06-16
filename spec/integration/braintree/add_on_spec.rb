@@ -30,5 +30,17 @@ describe Braintree::AddOn do
       add_on.number_of_billing_cycles.should == expected[:number_of_billing_cycles]
       add_on.updated_at.should_not be_nil
     end
+
+    it "raises with a helpful error if public_key and private_key are not set" do
+      gateway = Braintree::Gateway.new(
+        :client_id => "client_id$development$integration_client_id",
+        :client_secret => "client_secret$development$integration_client_secret",
+        :logger => Logger.new("/dev/null"),
+      )
+
+      expect do
+        gateway.add_on.all
+      end.to raise_error(Braintree::ConfigurationError, /public_key and private_key are required/)
+    end
   end
 end

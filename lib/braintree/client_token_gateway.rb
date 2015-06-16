@@ -3,6 +3,7 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @config.assert_has_access_token_or_keys
     end
 
     def generate(options={})
@@ -11,7 +12,7 @@ module Braintree
         Util.verify_keys(ClientTokenGateway._generate_signature, options)
         params = {:client_token => options}
       end
-      result = @config.http.post("/client_token", params)
+      result = @config.http.post("#{@config.base_merchant_path}/client_token", params)
 
       if result[:client_token]
         result[:client_token][:value]
