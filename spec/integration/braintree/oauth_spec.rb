@@ -119,6 +119,7 @@ describe "OAuth" do
           :currency => "USD",
           :website => "http://example.com",
         },
+        :payment_methods => ["credit_card", "paypal"],
       )
 
       uri = URI.parse(url)
@@ -166,6 +167,56 @@ describe "OAuth" do
 
       query["signature"][0].length.should == 64
       query["algorithm"].should == ["SHA256"]
+    end
+
+    it "limits the payment_methods based on passed in param" do
+      url = @gateway.oauth.connect_url(
+        :merchant_id => "integration_merchant_id",
+        :redirect_uri => "http://bar.example.com",
+        :scope => "read_write",
+        :state => "baz_state",
+        :user => {
+          :country => "USA",
+          :email => "foo@example.com",
+          :first_name => "Bob",
+          :last_name => "Jones",
+          :phone => "555-555-5555",
+          :dob_year => "1970",
+          :dob_month => "01",
+          :dob_day => "01",
+          :street_address => "222 W Merchandise Mart",
+          :locality => "Chicago",
+          :region => "IL",
+          :postal_code => "60606",
+        },
+        :business => {
+          :name => "14 Ladders",
+          :registered_as => "14.0 Ladders",
+          :industry => "Ladders",
+          :description => "We sell the best ladders",
+          :street_address => "111 N Canal",
+          :locality => "Chicago",
+          :region => "IL",
+          :postal_code => "60606",
+          :country => "USA",
+          :annual_volume_amount => "1000000",
+          :average_transaction_amount => "100",
+          :maximum_transaction_amount => "10000",
+          :ship_physical_goods => true,
+          :fulfillment_completed_in => 7,
+          :currency => "USD",
+          :website => "http://example.com",
+        },
+        :payment_methods => ["credit_card"],
+      )
+
+      uri = URI.parse(url)
+      uri.host.should == "localhost"
+      uri.path.should == "/oauth/connect"
+
+      query = CGI.parse(uri.query)
+      query["payment_methods"].length.should == 1
+      query["payment_methods"].should_not include("paypal")
     end
   end
 end

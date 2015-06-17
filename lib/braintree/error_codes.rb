@@ -381,6 +381,7 @@ module Braintree
       EmailFormatIsInvalid = "93602"
       EmailIsRequired = "83601"
       InconsistentCountry = "93612"
+      PaymentMethodsAreInvalid = "93613"
     end
 
     module MerchantAccount
