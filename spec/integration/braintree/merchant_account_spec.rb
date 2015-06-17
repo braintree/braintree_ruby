@@ -133,6 +133,26 @@ describe Braintree::MerchantAccount do
         result.should be_success
       end
     end
+
+    it "doesn't allow invalid payment methods" do
+      expect {
+        result = Braintree::MerchantAccount.create(
+          VALID_APPLICATION_PARAMS.merge(
+            :payment_methods => ["fake_money"]
+          )
+        )
+      }.to raise_error
+    end
+
+    it "allows payment methods to be set" do
+      result = Braintree::MerchantAccount.create(
+        VALID_APPLICATION_PARAMS.merge(
+          :payment_methods => ["credit_card", "paypal"]
+        )
+      )
+
+      result.should be_success
+    end
   end
 
   describe "find" do

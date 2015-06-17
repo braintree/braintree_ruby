@@ -36,6 +36,10 @@ module Braintree
       DiscountGateway.new(self)
     end
 
+    def merchant
+      MerchantGateway.new(self)
+    end
+
     def oauth
       OAuthGateway.new(self)
     end
