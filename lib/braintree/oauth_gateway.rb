@@ -35,12 +35,12 @@ module Braintree
       params[:client_id] = @config.client_id
       user_params = _sub_query(params, :user)
       business_params = _sub_query(params, :business)
-      query = params
-        .merge(user_params)
-        .merge(business_params)
-        .merge(:client_id => @config.client_id)
+      query = params.
+        merge(user_params).
+        merge(business_params).
+        merge(:client_id => @config.client_id)
 
-      query_string = URI.encode_www_form(query)
+      query_string = query.map { |k, v| "#{URI.escape(k.to_s)}=#{URI.escape(v.to_s)}" }.join("&")
       _sign_url("#{@config.base_url}/oauth/connect?#{query_string}")
     end
 

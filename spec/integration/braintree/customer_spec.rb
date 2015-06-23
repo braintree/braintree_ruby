@@ -58,16 +58,16 @@ describe Braintree::Customer do
       oauth_gateway = Braintree::Gateway.new(
         :client_id => "client_id$development$integration_client_id",
         :client_secret => "client_secret$development$integration_client_secret",
-        :logger => Logger.new("/dev/null"),
+        :logger => Logger.new("/dev/null")
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
         :merchant_public_id => "integration_merchant_id",
-        :scope => "read_write",
+        :scope => "read_write"
       }).credentials.access_token
 
       gateway = Braintree::Gateway.new(
         :access_token => access_token,
-        :logger => Logger.new("/dev/null"),
+        :logger => Logger.new("/dev/null")
       )
 
       result = gateway.customer.create(

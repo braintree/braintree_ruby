@@ -35,7 +35,7 @@ describe Braintree::AddOn do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$development$integration_client_id",
         :client_secret => "client_secret$development$integration_client_secret",
-        :logger => Logger.new("/dev/null"),
+        :logger => Logger.new("/dev/null")
       )
 
       expect do

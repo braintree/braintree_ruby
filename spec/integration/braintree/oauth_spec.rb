@@ -5,7 +5,7 @@ describe "OAuth" do
     @gateway = Braintree::Gateway.new(
       :client_id => "client_id$development$integration_client_id",
       :client_secret => "client_secret$development$integration_client_secret",
-      :logger => Logger.new("/dev/null"),
+      :logger => Logger.new("/dev/null")
     )
   end
 
@@ -13,12 +13,12 @@ describe "OAuth" do
     it "creates an access token given a grant code" do
       code = Braintree::OAuthTestHelper.create_grant(@gateway, {
         :merchant_public_id => "integration_merchant_id",
-        :scope => "read_write",
+        :scope => "read_write"
       })
 
       result = @gateway.oauth.create_token_from_code(
         :code => code,
-        :scope => "read_write",
+        :scope => "read_write"
       )
 
       result.should be_success
@@ -32,7 +32,7 @@ describe "OAuth" do
     it "returns validation errors for bad params" do
       result = @gateway.oauth.create_token_from_code(
         :code => "bad_code",
-        :scope => "read_write",
+        :scope => "read_write"
       )
 
       result.should_not be_success
@@ -43,13 +43,13 @@ describe "OAuth" do
     it "raises with a helpful error if client_id and client_secret are not set" do
       gateway = Braintree::Gateway.new(
         :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
-        :logger => Logger.new("/dev/null"),
+        :logger => Logger.new("/dev/null")
       )
 
       expect do
         gateway.oauth.create_token_from_code(
           :code => "some code",
-          :scope => "read_write",
+          :scope => "read_write"
         )
       end.to raise_error(Braintree::ConfigurationError, /client_id and client_secret are required/);
     end
@@ -59,16 +59,16 @@ describe "OAuth" do
     it "creates an access token given a refresh token" do
       code = Braintree::OAuthTestHelper.create_grant(@gateway, {
         :merchant_public_id => "integration_merchant_id",
-        :scope => "read_write",
+        :scope => "read_write"
       })
       refresh_token = @gateway.oauth.create_token_from_code(
         :code => code,
-        :scope => "read_write",
+        :scope => "read_write"
       ).credentials.refresh_token
 
       result = @gateway.oauth.create_token_from_refresh_token(
         :refresh_token => refresh_token,
-        :scope => "read_write",
+        :scope => "read_write"
       )
 
       result.should be_success
@@ -99,7 +99,7 @@ describe "OAuth" do
           :street_address => "222 W Merchandise Mart",
           :locality => "Chicago",
           :region => "IL",
-          :postal_code => "60606",
+          :postal_code => "60606"
         },
         :business => {
           :name => "14 Ladders",
@@ -117,9 +117,9 @@ describe "OAuth" do
           :ship_physical_goods => true,
           :fulfillment_completed_in => 7,
           :currency => "USD",
-          :website => "http://example.com",
+          :website => "http://example.com"
         },
-        :payment_methods => ["credit_card", "paypal"],
+        :payment_methods => ["credit_card", "paypal"]
       )
 
       uri = URI.parse(url)
@@ -175,7 +175,7 @@ describe "OAuth" do
         :redirect_uri => "http://bar.example.com",
         :scope => "read_write",
         :state => "baz_state",
-        :payment_methods => ["credit_card"],
+        :payment_methods => ["credit_card"]
       )
 
       uri = URI.parse(url)
