@@ -169,13 +169,13 @@ describe "OAuth" do
       query["algorithm"].should == ["SHA256"]
     end
 
-    it "limits the payment_methods based on passed in param" do
+    it "builds the query string with multiple payment_methods" do
       url = @gateway.oauth.connect_url(
         :merchant_id => "integration_merchant_id",
         :redirect_uri => "http://bar.example.com",
         :scope => "read_write",
         :state => "baz_state",
-        :payment_methods => ["credit_card"]
+        :payment_methods => ["credit_card", "paypal"]
       )
 
       uri = URI.parse(url)
@@ -183,8 +183,9 @@ describe "OAuth" do
       uri.path.should == "/oauth/connect"
 
       query = CGI.parse(uri.query)
-      query["payment_methods"].length.should == 1
-      query["payment_methods"].should_not include("paypal")
+      query["payment_methods[]"].length.should == 2
+      query["payment_methods[]"].should include("paypal")
+      query["payment_methods[]"].should include("credit_card")
     end
   end
 end
