@@ -157,7 +157,7 @@ module Braintree
 
     def port # :nodoc:
       case @environment
-      when :development
+      when :development, :integration
         ENV['GATEWAY_PORT'] || 3000
       when :production, :qa, :sandbox
         443
@@ -178,7 +178,7 @@ module Braintree
 
     def server # :nodoc:
       case @environment
-      when :development
+      when :development, :integration
         "localhost"
       when :production
         "#{endpoint}.braintreegateway.com"
@@ -191,7 +191,7 @@ module Braintree
 
     def auth_url
       case @environment
-      when :development
+      when :development, :integration
         "http://auth.venmo.dev:9292"
       when :production
         "https://auth.venmo.com"
@@ -204,7 +204,7 @@ module Braintree
 
     def ssl? # :nodoc:
       case @environment
-      when :development
+      when :development, :integration
         false
       when :production, :qa, :sandbox
         true
