@@ -35,10 +35,11 @@ module Braintree
       params[:client_id] = @config.client_id
       user_params = _sub_query(params, :user)
       business_params = _sub_query(params, :business)
-      query = params.
-        merge(user_params).
-        merge(business_params).
-        merge(:client_id => @config.client_id)
+      payment_methods = _sub_array_query(params, :payment_methods)
+      query = params.to_a.
+        concat(user_params).
+        concat(business_params).
+        concat(payment_methods)
 
       query_string = query.map { |k, v| "#{URI.escape(k.to_s)}=#{URI.escape(v.to_s)}" }.join("&")
       _sign_url("#{@config.base_url}/oauth/connect?#{query_string}")
@@ -46,9 +47,15 @@ module Braintree
 
     def _sub_query(params, root)
       sub_params = params.delete(root) || {}
-      sub_params.reduce({}) do |query, (key, value)|
-        query["#{root}[#{key}]"] = value
-        query
+      sub_params.map do |key, value|
+        ["#{root}[#{key}]", value]
+      end
+    end
+
+    def _sub_array_query(params, root)
+      sub_params = params.delete(root) || []
+      sub_params.map do |value|
+        ["#{root}[]", value]
       end
     end
 
