@@ -498,6 +498,35 @@ describe Braintree::Transaction do
         end
       end
 
+      it "exposes the application incomplete gateway rejection reason" do
+        gateway = Braintree::Gateway.new(
+          :client_id => "client_id$development$integration_client_id",
+          :client_secret => "client_secret$development$integration_client_secret",
+          :logger => Logger.new("/dev/null")
+        )
+        result = gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "USA",
+          :payment_methods => ["credit_card", "paypal"]
+        )
+
+        gateway = Braintree::Gateway.new(
+          :access_token => result.credentials.access_token,
+          :logger => Logger.new("/dev/null")
+        )
+
+        result = gateway.transaction.create(
+          :type => "sale",
+          :amount => "4000.00",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2020"
+          }
+        )
+        result.success?.should == false
+        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete
+      end
+
       it "exposes the avs gateway rejection reason" do
         old_merchant = Braintree::Configuration.merchant_id
         old_public_key = Braintree::Configuration.public_key
