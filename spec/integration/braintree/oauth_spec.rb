@@ -126,7 +126,7 @@ describe "OAuth" do
       uri.host.should == "localhost"
       uri.path.should == "/oauth/connect"
 
-      query = CGI.parse(uri.query)
+      query = CGI.parse(CGI.unescape(uri.query))
       query["merchant_id"].should == ["integration_merchant_id"]
       query["client_id"].should == ["client_id$development$integration_client_id"]
       query["redirect_uri"].should == ["http://bar.example.com"]
@@ -182,7 +182,7 @@ describe "OAuth" do
       uri.host.should == "localhost"
       uri.path.should == "/oauth/connect"
 
-      query = CGI.parse(uri.query)
+      query = CGI.parse(CGI.unescape(uri.query))
       query["payment_methods[]"].length.should == 2
       query["payment_methods[]"].should include("paypal")
       query["payment_methods[]"].should include("credit_card")

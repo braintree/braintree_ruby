@@ -42,7 +42,7 @@ module Braintree
         concat(payment_methods)
 
       query_string = query.map { |k, v| "#{URI.escape(k.to_s)}=#{URI.escape(v.to_s)}" }.join("&")
-      _sign_url("#{@config.base_url}/oauth/connect?#{query_string}")
+      _sign_url("#{@config.base_url}/oauth/connect?#{CGI.escape(query_string)}")
     end
 
     def _sub_query(params, root)
@@ -60,7 +60,8 @@ module Braintree
     end
 
     def _sign_url(url)
-      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), @config.client_secret, url)
+      key_digest = OpenSSL::Digest::SHA256.digest(@config.client_secret)
+      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, key_digest, url)
       "#{url}&signature=#{signature}&algorithm=SHA256"
     end
   end
