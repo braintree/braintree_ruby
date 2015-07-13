@@ -3,10 +3,11 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @config.assert_has_access_token_or_keys
     end
 
     def all
-      response = @config.http.post "/customers/advanced_search_ids"
+      response = @config.http.post("#{@config.base_merchant_path}/customers/advanced_search_ids")
       ResourceCollection.new(response) { |ids| _fetch_customers(CustomerSearch.new, ids) }
     end
 
@@ -27,14 +28,14 @@ module Braintree
     end
 
     def delete(customer_id)
-      @config.http.delete("/customers/#{customer_id}")
+      @config.http.delete("#{@config.base_merchant_path}/customers/#{customer_id}")
       SuccessfulResult.new
     end
 
     def find(customer_id)
       raise ArgumentError, "customer_id contains invalid characters" unless customer_id.to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "customer_id cannot be blank" if customer_id.nil?|| customer_id.to_s.strip == ""
-      response = @config.http.get("/customers/#{customer_id}")
+      response = @config.http.get("#{@config.base_merchant_path}/customers/#{customer_id}")
       Customer._new(@gateway, response[:customer])
     rescue NotFoundError
       raise NotFoundError, "customer with id #{customer_id.inspect} not found"
@@ -44,12 +45,12 @@ module Braintree
       search = CustomerSearch.new
       block.call(search) if block
 
-      response = @config.http.post "/customers/advanced_search_ids", {:search => search.to_hash}
+      response = @config.http.post("#{@config.base_merchant_path}/customers/advanced_search_ids", {:search => search.to_hash})
       ResourceCollection.new(response) { |ids| _fetch_customers(search, ids) }
     end
 
     def transactions(customer_id, options = {})
-      response = @config.http.post "/customers/#{customer_id}/transaction_ids"
+      response = @config.http.post("#{@config.base_merchant_path}/customers/#{customer_id}/transaction_ids")
       ResourceCollection.new(response) { |ids| _fetch_transactions(customer_id, ids) }
     end
 
@@ -80,8 +81,8 @@ module Braintree
       ]
     end
 
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
+    def _do_create(path, params=nil) # :nodoc:
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:customer]
         SuccessfulResult.new(:customer => Customer._new(@gateway, response[:customer]))
       elsif response[:api_error_response]
@@ -91,8 +92,8 @@ module Braintree
       end
     end
 
-    def _do_update(http_verb, url, params) # :nodoc:
-      response = @config.http.send http_verb, url, params
+    def _do_update(http_verb, path, params) # :nodoc:
+      response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:customer]
         SuccessfulResult.new(:customer => Customer._new(@gateway, response[:customer]))
       elsif response[:api_error_response]
@@ -104,13 +105,13 @@ module Braintree
 
     def _fetch_customers(search, ids) # :nodoc:
       search.ids.in ids
-      response = @config.http.post "/customers/advanced_search", {:search => search.to_hash}
+      response = @config.http.post("#{@config.base_merchant_path}/customers/advanced_search", {:search => search.to_hash})
       attributes = response[:customers]
       Util.extract_attribute_as_array(attributes, :customer).map { |attrs| Customer._new(@gateway, attrs) }
     end
 
     def _fetch_transactions(customer_id, ids) # :nodoc:
-      response = @config.http.post "/customers/#{customer_id}/transactions", :search => {:ids => ids}
+      response = @config.http.post("#{@config.base_merchant_path}/customers/#{customer_id}/transactions", :search => {:ids => ids})
       attributes = response[:credit_card_transactions]
       Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
         Transaction._new @gateway, transaction_attributes

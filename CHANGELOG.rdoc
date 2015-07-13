@@ -1,3 +1,6 @@
+== 2.46.0
+* Add oauth support
+
 == 2.45.0
 * Add support for Android Pay
 

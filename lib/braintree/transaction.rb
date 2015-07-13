@@ -18,6 +18,7 @@ module Braintree
     end
 
     module GatewayRejectionReason
+      ApplicationIncomplete = "application_incomplete"
       AVS          = "avs"
       AVSAndCVV    = "avs_and_cvv"
       CVV          = "cvv"

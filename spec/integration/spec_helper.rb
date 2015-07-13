@@ -24,7 +24,7 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
 
   def create_modification_for_tests(attributes)
     config = Braintree::Configuration.gateway.config
-    config.http.post "/modifications/create_modification_for_tests", :modification => attributes
+    config.http.post("#{config.base_merchant_path}/modifications/create_modification_for_tests", :modification => attributes)
   end
 
   def with_other_merchant(merchant_id, public_key, private_key, &block)

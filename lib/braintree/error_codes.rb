@@ -381,6 +381,7 @@ module Braintree
       EmailFormatIsInvalid = "93602"
       EmailIsRequired = "83601"
       InconsistentCountry = "93612"
+      PaymentMethodsAreInvalid = "93613"
     end
 
     module MerchantAccount
@@ -527,6 +528,14 @@ module Braintree
       MissingFingerprint = "93201"
       OptionsNotAllowedWithoutCustomer = "93207"
       SignatureRevoked = "93203"
+    end
+
+    module OAuth
+      InvalidGrant = "93801";
+      InvalidCredentials = "93802";
+      InvalidScope = "93803";
+      InvalidRequest = "93804";
+      UnsupportedGrantType = "93805";
     end
   end
 end
