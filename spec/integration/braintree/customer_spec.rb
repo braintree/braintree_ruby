@@ -54,6 +54,37 @@ describe Braintree::Customer do
       result.customer.updated_at.between?(Time.now - 10, Time.now).should == true
     end
 
+    it "returns a successful result if successful using an access token" do
+      oauth_gateway = Braintree::Gateway.new(
+        :client_id => "client_id$development$integration_client_id",
+        :client_secret => "client_secret$development$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+      access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "read_write"
+      }).credentials.access_token
+
+      gateway = Braintree::Gateway.new(
+        :access_token => access_token,
+        :logger => Logger.new("/dev/null")
+      )
+
+      result = gateway.customer.create(
+        :first_name => "Joe",
+        :last_name => "Brown",
+        :company => "ExampleCo",
+        :email => "joe@example.com",
+        :phone => "312.555.1234",
+        :fax => "614.555.5678",
+        :website => "www.example.com"
+      )
+      result.success?.should == true
+      result.customer.id.should =~ /^\d{6}$/
+      result.customer.first_name.should == "Joe"
+      result.customer.last_name.should == "Brown"
+    end
+
     it "supports creation with a device session ID and (optional) fraud_merchant_id" do
       result = Braintree::Customer.create(
         :credit_card => {
@@ -757,6 +788,20 @@ describe Braintree::Customer do
       apple_pay_card.token.should_not be_nil
       apple_pay_card.expiration_year.should_not be_nil
       apple_pay_card.payment_instrument_name.should == "AmEx 41002"
+    end
+
+    it "returns associated AndroidPayCards" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::AndroidPay
+      )
+      result.success?.should == true
+
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.android_pay_cards.should_not be_nil
+      android_pay_card = found_customer.android_pay_cards.first
+      android_pay_card.should be_a Braintree::AndroidPayCard
+      android_pay_card.token.should_not be_nil
+      android_pay_card.expiration_year.should_not be_nil
     end
 
     it "works for a blank customer" do

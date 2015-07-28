@@ -83,6 +83,7 @@ describe Braintree::PaymentMethod do
 
       result.should be_success
       apple_pay_card = result.payment_method
+      apple_pay_card.should be_a(Braintree::ApplePayCard)
       apple_pay_card.should_not be_nil
       apple_pay_card.token.should == token
       apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
@@ -91,6 +92,31 @@ describe Braintree::PaymentMethod do
       apple_pay_card.image_url.should =~ /apple_pay/
       apple_pay_card.expiration_month.to_i.should > 0
       apple_pay_card.expiration_year.to_i.should > 0
+    end
+
+    it "creates a payment method from a fake android pay nonce" do
+      customer = Braintree::Customer.create.customer
+      token = SecureRandom.hex(16)
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::AndroidPay,
+        :customer_id => customer.id,
+        :token => token
+      )
+
+      result.should be_success
+      android_pay_card = result.payment_method
+      android_pay_card.should be_a(Braintree::AndroidPayCard)
+      android_pay_card.should_not be_nil
+      android_pay_card.token.should == token
+      android_pay_card.card_type.should == Braintree::CreditCard::CardType::Discover
+      android_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
+      android_pay_card.expiration_month.to_i.should > 0
+      android_pay_card.expiration_year.to_i.should > 0
+      android_pay_card.default.should == true
+      android_pay_card.image_url.should =~ /android_pay/
+      android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Visa
+      android_pay_card.source_card_last_4.should == "1111"
+      android_pay_card.google_transaction_id.should == "google_transaction_id"
     end
 
     it "allows passing the make_default option alongside the nonce" do
@@ -459,7 +485,7 @@ describe Braintree::PaymentMethod do
       it "returns the SEPA bank account behind the nonce" do
         config = Braintree::Configuration.instantiate
         customer = Braintree::Customer.create.customer
-        raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::SEPABankAccount::MandateType::Business)
+        raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::EuropeBankAccount::MandateType::Business)
         client_token = decode_client_token(raw_client_token)
         authorization_fingerprint = client_token["authorizationFingerprint"]
         http = ClientApiHttp.new(
@@ -467,7 +493,7 @@ describe Braintree::PaymentMethod do
           :authorization_fingerprint => authorization_fingerprint
         )
 
-        nonce = http.create_sepa_bank_account_nonce(
+        nonce = http.create_europe_bank_account_nonce(
           :accountHolderName => "Bob Holder",
           :iban => "DE89370400440532013000",
           :bic => "DEUTDEFF",
@@ -589,6 +615,33 @@ describe Braintree::PaymentMethod do
         apple_pay_card.image_url.should =~ /apple_pay/
         apple_pay_card.expiration_month.to_i.should > 0
         apple_pay_card.expiration_year.to_i.should > 0
+      end
+    end
+
+    context "android pay cards" do
+      it "finds the payment method with the given token" do
+        customer = Braintree::Customer.create!
+        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::AndroidPay,
+          :customer_id => customer.id,
+          :token => payment_method_token
+        )
+        result.should be_success
+
+        android_pay_card = Braintree::PaymentMethod.find(payment_method_token)
+        android_pay_card.should be_a(Braintree::AndroidPayCard)
+        android_pay_card.should_not be_nil
+        android_pay_card.token.should == payment_method_token
+        android_pay_card.card_type.should == Braintree::CreditCard::CardType::Discover
+        android_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
+        android_pay_card.expiration_month.to_i.should > 0
+        android_pay_card.expiration_year.to_i.should > 0
+        android_pay_card.default.should == true
+        android_pay_card.image_url.should =~ /android_pay/
+        android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Visa
+        android_pay_card.source_card_last_4.should == "1111"
+        android_pay_card.google_transaction_id.should == "google_transaction_id"
       end
     end
 

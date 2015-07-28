@@ -1,73 +1,59 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby
   class Customer
     include BaseModule
 
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
-      :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards, :coinbase_accounts
+      :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards, :coinbase_accounts,
+      :android_pay_cards
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/search
     def self.all
       Configuration.gateway.customer.all
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/create
     def self.create(attributes = {})
       Configuration.gateway.customer.create(attributes)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/create
     def self.create!(attributes = {})
       return_object_or_raise(:customer) { create(attributes) }
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
-    #
-    # See http://www.braintreepayments.com/docs/ruby/customers/create_tr
     def self.create_customer_url
       warn "[DEPRECATED] Customer.create_customer_url is deprecated. Please use TransparentRedirect.url"
       Configuration.gateway.customer.create_customer_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
-    #
-    # See http://www.braintreepayments.com/docs/ruby/customers/create_tr
     def self.create_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Customer.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       Configuration.gateway.customer.create_from_transparent_redirect(query_string)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.credit(customer_id, transaction_attributes)
       Transaction.credit(transaction_attributes.merge(:customer_id => customer_id))
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.credit!(customer_id, transaction_attributes)
        return_object_or_raise(:transaction){ credit(customer_id, transaction_attributes) }
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/delete
     def self.delete(customer_id)
       Configuration.gateway.customer.delete(customer_id)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/search
     def self.find(customer_id)
       Configuration.gateway.customer.find(customer_id)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.sale(customer_id, transaction_attributes)
       Transaction.sale(transaction_attributes.merge(:customer_id => customer_id))
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def self.sale!(customer_id, transaction_attributes)
       return_object_or_raise(:transaction) { sale(customer_id, transaction_attributes) }
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/search
     def self.search(&block)
       Configuration.gateway.customer.search(&block)
     end
@@ -77,27 +63,21 @@ module Braintree
       Configuration.gateway.customer.transactions(customer_id, options = {})
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/update
     def self.update(customer_id, attributes)
       Configuration.gateway.customer.update(customer_id, attributes)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/update
     def self.update!(customer_id, attributes)
       return_object_or_raise(:customer) { update(customer_id, attributes) }
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
-    #
-    # See http://www.braintreepayments.com/docs/ruby/customers/update_tr
     def self.update_customer_url
       warn "[DEPRECATED] Customer.update_customer_url is deprecated. Please use TransparentRedirect.url"
       Configuration.gateway.customer.update_customer_url
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
-    #
-    # See http://www.braintreepayments.com/docs/ruby/customers/update_tr
     def self.update_from_transparent_redirect(query_string)
       warn "[DEPRECATED] Customer.update_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
       Configuration.gateway.customer.update_from_transparent_redirect(query_string)
@@ -110,16 +90,16 @@ module Braintree
       @paypal_accounts = (@paypal_accounts || []).map { |pm| PayPalAccount._new gateway, pm }
       @coinbase_accounts = (@coinbase_accounts || []).map { |pm| CoinbaseAccount._new gateway, pm }
       @apple_pay_cards = (@apple_pay_cards || []).map { |pm| ApplePayCard._new gateway, pm }
+      @europe_bank_accounts = (@europe_bank_Accounts || []).map { |pm| EuropeBankAccount._new gateway, pm }
+      @android_pay_cards = (@android_pay_cards || []).map { |pm| AndroidPayCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def credit(transaction_attributes)
       @gateway.transaction.credit(transaction_attributes.merge(:customer_id => id))
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def credit!(transaction_attributes)
       return_object_or_raise(:transaction) { credit(transaction_attributes) }
     end
@@ -137,7 +117,6 @@ module Braintree
       payment_methods.find { |payment_instrument| payment_instrument.default? }
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/delete
     def delete
       @gateway.customer.delete(id)
     end
@@ -158,16 +137,12 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::Customer.sale
-    #
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def sale(transaction_attributes)
       warn "[DEPRECATED] sale as an instance method is deprecated. Please use Customer.sale"
       @gateway.transaction.sale(transaction_attributes.merge(:customer_id => id))
     end
 
     # Deprecated. Use Braintree::Customer.sale!
-    #
-    # See http://www.braintreepayments.com/docs/ruby/transactions/create_from_vault
     def sale!(transaction_attributes)
       warn "[DEPRECATED] sale! as an instance method is deprecated. Please use Customer.sale!"
       return_object_or_raise(:transaction) { sale(transaction_attributes) }
@@ -179,8 +154,6 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::Customer.update
-    #
-    # See http://www.braintreepayments.com/docs/ruby/customers/update
     def update(attributes)
       warn "[DEPRECATED] update as an instance method is deprecated. Please use Customer.update"
       result = @gateway.customer.update(id, attributes)
@@ -191,8 +164,6 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::Customer.update!
-    #
-    # See http://www.braintreepayments.com/docs/ruby/customers/update
     def update!(attributes)
       warn "[DEPRECATED] update! as an instance method is deprecated. Please use Customer.update!"
       return_object_or_raise(:customer) { update(attributes) }

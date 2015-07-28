@@ -1,19 +1,10 @@
 module Braintree
-  class ApplePayCard
+  class AndroidPayCard
     include BaseModule # :nodoc:
 
-    module CardType
-      AmEx = "Apple Pay - American Express"
-      Visa = "Apple Pay - Visa"
-      MasterCard = "Apple Pay - MasterCard"
-
-      All = constants.map { |c| const_get(c) }
-    end
-
-    attr_reader :token, :card_type, :last_4, :default, :image_url,
-      :created_at, :updated_at, :subscriptions, :expiration_month,
-      :expiration_year, :expired, :payment_instrument_name
-
+    attr_reader :token, :virtual_card_type, :virtual_card_last_4, :source_card_type, :source_card_last_4,
+      :expiration_month, :expiration_year, :created_at, :updated_at, :image_url, :subscriptions, :bin,
+      :google_transaction_id, :default
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
@@ -23,6 +14,14 @@ module Braintree
 
     def default?
       @default
+    end
+
+    def card_type
+      virtual_card_type
+    end
+
+    def last_4
+      virtual_card_last_4
     end
 
     class << self

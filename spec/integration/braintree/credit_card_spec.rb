@@ -1091,7 +1091,7 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.create!(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "01/2010"
+          :expiration_date => "01/2015"
         )
       end
 

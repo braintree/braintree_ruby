@@ -3,6 +3,7 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @config.assert_has_access_token_or_keys
     end
 
     def create(attributes)
@@ -25,24 +26,24 @@ module Braintree
     end
 
     def delete(token)
-      @config.http.delete("/payment_methods/credit_card/#{token}")
+      @config.http.delete("#{@config.base_merchant_path}/payment_methods/credit_card/#{token}")
     end
 
     def expired(options = {})
-      response = @config.http.post("/payment_methods/all/expired_ids")
+      response = @config.http.post("#{@config.base_merchant_path}/payment_methods/all/expired_ids")
       ResourceCollection.new(response) { |ids| _fetch_expired(ids) }
     end
 
     def expiring_between(start_date, end_date, options = {})
       formatted_start_date = start_date.strftime('%m%Y')
       formatted_end_date = end_date.strftime('%m%Y')
-      response = @config.http.post("/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}")
+      response = @config.http.post("#{@config.base_merchant_path}/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}")
       ResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
     end
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
-      response = @config.http.get "/payment_methods/credit_card/#{token}"
+      response = @config.http.get("#{@config.base_merchant_path}/payment_methods/credit_card/#{token}")
       CreditCard._new(@gateway, response[:credit_card])
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
@@ -50,7 +51,7 @@ module Braintree
 
     def from_nonce(nonce)
       raise ArgumentError if nonce.nil? || nonce.to_s.strip == ""
-      response = @config.http.get "/payment_methods/from_nonce/#{nonce}"
+      response = @config.http.get("#{@config.base_merchant_path}/payment_methods/from_nonce/#{nonce}")
       CreditCard._new(@gateway, response[:credit_card])
     rescue NotFoundError
       raise NotFoundError, "nonce #{nonce.inspect} locked, consumed, or not found"
@@ -106,8 +107,8 @@ module Braintree
       return signature
     end
 
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
+    def _do_create(path, params=nil) # :nodoc:
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:credit_card => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:api_error_response]
@@ -117,8 +118,8 @@ module Braintree
       end
     end
 
-    def _do_update(http_verb, url, params) # :nodoc:
-      response = @config.http.send http_verb, url, params
+    def _do_update(http_verb, path, params) # :nodoc:
+      response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:credit_card => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:api_error_response]
@@ -129,14 +130,14 @@ module Braintree
     end
 
     def _fetch_expired(ids) # :nodoc:
-      response = @config.http.post("/payment_methods/all/expired", :search => {:ids => ids})
+      response = @config.http.post("#{@config.base_merchant_path}/payment_methods/all/expired", :search => {:ids => ids})
       attributes = response[:payment_methods]
       Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(@gateway, attrs) }
     end
 
     def _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) # :nodoc:
       response = @config.http.post(
-        "/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
+        "#{@config.base_merchant_path}/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
         :search => {:ids => ids}
       )
       attributes = response[:payment_methods]

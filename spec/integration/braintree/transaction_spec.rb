@@ -266,6 +266,43 @@ describe Braintree::Transaction do
       result.transaction.credit_card_details.customer_location.should == "US"
     end
 
+    it "returns a successful result using an access token" do
+      oauth_gateway = Braintree::Gateway.new(
+        :client_id => "client_id$development$integration_client_id",
+        :client_secret => "client_secret$development$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+      access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "read_write"
+      }).credentials.access_token
+
+      gateway = Braintree::Gateway.new(
+        :access_token => access_token,
+        :logger => Logger.new("/dev/null")
+      )
+
+      result = gateway.transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result.success?.should == true
+      result.transaction.id.should =~ /^\w{6}$/
+      result.transaction.type.should == "sale"
+      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.processor_authorization_code.should_not be_nil
+      result.transaction.voice_referral_number.should be_nil
+      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
+      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
+      result.transaction.credit_card_details.expiration_date.should == "05/2009"
+      result.transaction.credit_card_details.customer_location.should == "US"
+    end
+
     it "accepts additional security parameters: device_session_id and fraud_merchant_id" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -459,6 +496,35 @@ describe Braintree::Transaction do
           Braintree::Configuration.public_key = old_public_key
           Braintree::Configuration.private_key = old_private_key
         end
+      end
+
+      it "exposes the application incomplete gateway rejection reason" do
+        gateway = Braintree::Gateway.new(
+          :client_id => "client_id$development$integration_client_id",
+          :client_secret => "client_secret$development$integration_client_secret",
+          :logger => Logger.new("/dev/null")
+        )
+        result = gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "USA",
+          :payment_methods => ["credit_card", "paypal"]
+        )
+
+        gateway = Braintree::Gateway.new(
+          :access_token => result.credentials.access_token,
+          :logger => Logger.new("/dev/null")
+        )
+
+        result = gateway.transaction.create(
+          :type => "sale",
+          :amount => "4000.00",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2020"
+          }
+        )
+        result.success?.should == false
+        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete
       end
 
       it "exposes the avs gateway rejection reason" do
@@ -1268,6 +1334,26 @@ describe Braintree::Transaction do
         apple_pay_details.expiration_month.to_i.should > 0
         apple_pay_details.expiration_year.to_i.should > 0
         apple_pay_details.cardholder_name.should_not be_nil
+      end
+
+      it "can create a transaction with a fake android pay nonce" do
+        customer = Braintree::Customer.create!
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::AndroidPay
+        )
+        result.success?.should == true
+        result.transaction.should_not be_nil
+        android_pay_details = result.transaction.android_pay_details
+        android_pay_details.should_not be_nil
+        android_pay_details.card_type.should == Braintree::CreditCard::CardType::Discover
+        android_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
+        android_pay_details.last_4.should == "1117"
+        android_pay_details.virtual_card_last_4.should == "1117"
+        android_pay_details.expiration_month.to_i.should > 0
+        android_pay_details.expiration_year.to_i.should > 0
+        android_pay_details.google_transaction_id.should == "google_transaction_id"
       end
 
       it "can create a transaction with an unknown nonce" do
@@ -2799,6 +2885,39 @@ describe Braintree::Transaction do
         created_transaction.disputes.should == []
       end
     end
+
+    context "three_d_secure_info" do
+      it "returns all the three_d_secure_info" do
+        transaction = Braintree::Transaction.find("threedsecuredtransaction")
+
+        transaction.three_d_secure_info.enrolled.should == "Y"
+        transaction.three_d_secure_info.should be_liability_shifted
+        transaction.three_d_secure_info.should be_liability_shift_possible
+        transaction.three_d_secure_info.status.should == "authenticate_successful"
+      end
+
+      it "is nil if the transaction wasn't 3d secured" do
+        transaction = Braintree::Transaction.find("settledtransaction")
+
+        transaction.three_d_secure_info.should be_nil
+      end
+    end
+
+    context "paypal" do
+      it "returns all the required paypal fields" do
+        transaction = Braintree::Transaction.find("settledtransaction")
+
+        transaction.paypal_details.debug_id.should_not be_nil
+        transaction.paypal_details.payer_email.should_not be_nil
+        transaction.paypal_details.authorization_id.should_not be_nil
+        transaction.paypal_details.payer_id.should_not be_nil
+        transaction.paypal_details.payer_first_name.should_not be_nil
+        transaction.paypal_details.payer_last_name.should_not be_nil
+        transaction.paypal_details.seller_protection_status.should_not be_nil
+        transaction.paypal_details.capture_id.should_not be_nil
+        transaction.paypal_details.refund_id.should_not be_nil
+      end
+    end
   end
 
   describe "self.hold_in_escrow" do
@@ -3213,7 +3332,8 @@ describe Braintree::Transaction do
       }
     )
 
-    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
+    config = Braintree::Configuration.instantiate
+    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
     Braintree::Transaction.find(transaction.id)
   end
 
@@ -3226,7 +3346,8 @@ describe Braintree::Transaction do
       }
     )
 
-    Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
+    config = Braintree::Configuration.instantiate
+    config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
     Braintree::Transaction.find(transaction.id)
   end
 
@@ -3242,8 +3363,9 @@ describe Braintree::Transaction do
       :options => { :hold_in_escrow => true }
     )
 
-    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/settle"
-    response = Braintree::Configuration.instantiate.http.put "/transactions/#{transaction.id}/escrow"
+    config = Braintree::Configuration.instantiate
+    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/escrow")
     Braintree::Transaction.find(transaction.id)
   end
 

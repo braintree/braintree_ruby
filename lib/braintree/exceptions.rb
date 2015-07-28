@@ -6,17 +6,15 @@ module Braintree # :nodoc:
 
   class AuthorizationError < BraintreeError; end
 
-  class ConfigurationError < BraintreeError
-    def initialize(setting, message) # :nodoc:
-      super "Braintree::Configuration.#{setting} #{message}"
-    end
-  end
+  class ConfigurationError < BraintreeError; end
 
   class DownForMaintenanceError < BraintreeError; end
 
   class ForgedQueryString < BraintreeError; end
 
   class InvalidSignature < BraintreeError; end
+
+  class InvalidChallenge < BraintreeError; end
 
   class NotFoundError < BraintreeError; end
 

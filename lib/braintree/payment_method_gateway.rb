@@ -3,6 +3,7 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @config.assert_has_access_token_or_keys
     end
 
     def create(attributes)
@@ -10,18 +11,20 @@ module Braintree
       _do_create("/payment_methods", :payment_method => attributes)
     end
 
-    def _do_create(url, params=nil) # :nodoc:
-      response = @config.http.post url, params
+    def _do_create(path, params=nil) # :nodoc:
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:paypal_account]
         SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
       elsif response[:coinbase_account]
         SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
-      elsif response[:sepa_bank_account]
-        SuccessfulResult.new(:payment_method => SEPABankAccount._new(@gateway, response[:sepa_bank_account]))
+      elsif response[:europe_bank_account]
+        SuccessfulResult.new(:payment_method => EuropeBankAccount._new(@gateway, response[:europe_bank_account]))
       elsif response[:apple_pay_card]
         SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
+      elsif response[:android_pay_card]
+        SuccessfulResult.new(:payment_method => AndroidPayCard._new(@gateway, response[:android_pay_card]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       elsif response
@@ -32,22 +35,24 @@ module Braintree
     end
 
     def delete(token)
-      @config.http.delete("/payment_methods/any/#{token}")
+      @config.http.delete("#{@config.base_merchant_path}/payment_methods/any/#{token}")
     end
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
-      response = @config.http.get "/payment_methods/any/#{token}"
+      response = @config.http.get("#{@config.base_merchant_path}/payment_methods/any/#{token}")
       if response.has_key?(:credit_card)
         CreditCard._new(@gateway, response[:credit_card])
       elsif response.has_key?(:paypal_account)
         PayPalAccount._new(@gateway, response[:paypal_account])
       elsif response[:coinbase_account]
         SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
-      elsif response.has_key?(:sepa_bank_account)
-        SEPABankAccount._new(@gateway, response[:sepa_bank_account])
+      elsif response.has_key?(:europe_bank_account)
+        EuropeBankAccount._new(@gateway, response[:europe_bank_account])
       elsif response.has_key?(:apple_pay_card)
         ApplePayCard._new(@gateway, response[:apple_pay_card])
+      elsif response.has_key?(:android_pay_card)
+        AndroidPayCard._new(@gateway, response[:android_pay_card])
       else
         UnknownPaymentMethod._new(@gateway, response)
       end
@@ -60,8 +65,8 @@ module Braintree
       _do_update(:put, "/payment_methods/any/#{token}", :payment_method => attributes)
     end
 
-    def _do_update(http_verb, url, params) # :nodoc:
-      response = @config.http.send http_verb, url, params
+    def _do_update(http_verb, path, params) # :nodoc:
+      response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:paypal_account]

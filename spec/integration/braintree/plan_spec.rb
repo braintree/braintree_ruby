@@ -49,6 +49,7 @@ describe Braintree::Plan do
   end
 
   def create_plan_for_tests(attributes)
-    Braintree::Configuration.gateway.config.http.post "/plans/create_plan_for_tests", :plan => attributes
+    config = Braintree::Configuration.gateway.config
+    config.http.post("#{config.base_merchant_path}/plans/create_plan_for_tests", :plan => attributes)
   end
 end

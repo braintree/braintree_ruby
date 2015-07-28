@@ -1,24 +1,44 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby
   class Configuration
     API_VERSION = "4" # :nodoc:
     DEFAULT_ENDPOINT = "api" # :nodoc:
 
+    READABLE_ATTRIBUTES = [
+      :merchant_id,
+      :public_key,
+      :private_key,
+      :client_id,
+      :client_secret,
+      :access_token,
+    ]
+
+    WRITABLE_ATTRIBUTES = [
+      :custom_user_agent,
+      :endpoint,
+      :http_open_timeout,
+      :http_read_timeout,
+      :logger,
+      :merchant_id,
+      :public_key,
+      :private_key,
+      :environment,
+    ]
+
     class << self
-      attr_writer :custom_user_agent, :endpoint, :logger, :merchant_id, :public_key, :private_key
+      attr_writer *WRITABLE_ATTRIBUTES
     end
-    attr_reader :merchant_id, :public_key, :private_key
+    attr_reader *READABLE_ATTRIBUTES
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
         (class << self; self; end).send(:define_method, attribute) do
           attribute_value = instance_variable_get("@#{attribute}")
-          raise ConfigurationError.new(attribute.to_s, "needs to be set") unless attribute_value
+          raise ConfigurationError.new("Braintree::Configuration.#{attribute.to_s} needs to be set") unless attribute_value
           attribute_value
         end
       end
     end
-    expectant_reader :environment, :merchant_id, :public_key, :private_key
+    expectant_reader *([:environment] + READABLE_ATTRIBUTES)
 
     # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
@@ -37,11 +57,21 @@ module Braintree
         :custom_user_agent => @custom_user_agent,
         :endpoint => @endpoint,
         :environment => environment,
+        :http_open_timeout => http_open_timeout,
+        :http_read_timeout => http_read_timeout,
         :logger => logger,
         :merchant_id => merchant_id,
         :private_key => private_key,
         :public_key => public_key
       )
+    end
+
+    def self.http_open_timeout
+      @http_open_timeout ||= 60
+    end
+
+    def self.http_read_timeout
+      @http_read_timeout ||= 60
     end
 
     def self.logger
@@ -57,11 +87,40 @@ module Braintree
     end
 
     def initialize(options = {})
-      [:endpoint, :environment, :public_key, :private_key, :custom_user_agent, :logger].each do |attr|
+      WRITABLE_ATTRIBUTES.each do |attr|
         instance_variable_set "@#{attr}", options[attr]
       end
 
-      @merchant_id = options[:merchant_id] || options[:partner_id]
+      _check_for_mixed_credentials(options)
+
+      parser = Braintree::CredentialsParser.new
+      if options[:client_id] || options[:client_secret]
+        parser.parse_client_credentials(options[:client_id], options[:client_secret])
+        @client_id = parser.client_id
+        @client_secret = parser.client_secret
+        @environment = parser.environment
+      elsif options[:access_token]
+        parser.parse_access_token(options[:access_token])
+        @access_token = parser.access_token
+        @environment = parser.environment
+        @merchant_id = parser.merchant_id
+      else
+        @merchant_id = options[:merchant_id] || options[:partner_id]
+      end
+    end
+
+    def _check_for_mixed_credentials(options)
+      if (options[:client_id] || options[:client_secret]) && (options[:public_key] || options[:private_key])
+        raise ConfigurationError.new("Braintree::Gateway cannot be initialized with mixed credential types: client_id and client_secret mixed with public_key and private_key.")
+      end
+
+      if (options[:client_id] || options[:client_secret]) && (options[:access_token])
+        raise ConfigurationError.new("Braintree::Gateway cannot be initialized with mixed credential types: client_id and client_secret mixed with access_token.")
+      end
+
+      if (options[:public_key] || options[:private_key]) && (options[:access_token])
+        raise ConfigurationError.new("Braintree::Gateway cannot be initialized with mixed credential types: public_key and private_key mixed with access_token.")
+      end
     end
 
     def api_version # :nodoc:
@@ -72,8 +131,12 @@ module Braintree
       "/merchants/#{merchant_id}"
     end
 
+    def base_url
+      "#{protocol}://#{server}:#{port}"
+    end
+
     def base_merchant_url # :nodoc:
-      "#{protocol}://#{server}:#{port}#{base_merchant_path}"
+      "#{base_url}#{base_merchant_path}"
     end
 
     def ca_file # :nodoc:
@@ -94,7 +157,7 @@ module Braintree
 
     def port # :nodoc:
       case @environment
-      when :development
+      when :development, :integration
         ENV['GATEWAY_PORT'] || 3000
       when :production, :qa, :sandbox
         443
@@ -105,9 +168,17 @@ module Braintree
       ssl? ? "https" : "http"
     end
 
+    def http_open_timeout
+      @http_open_timeout
+    end
+
+    def http_read_timeout
+      @http_read_timeout
+    end
+
     def server # :nodoc:
       case @environment
-      when :development
+      when :development, :integration
         "localhost"
       when :production
         "#{endpoint}.braintreegateway.com"
@@ -120,7 +191,7 @@ module Braintree
 
     def auth_url
       case @environment
-      when :development
+      when :development, :integration
         "http://auth.venmo.dev:9292"
       when :production
         "https://auth.venmo.com"
@@ -133,7 +204,7 @@ module Braintree
 
     def ssl? # :nodoc:
       case @environment
-      when :development
+      when :development, :integration
         false
       when :production, :qa, :sandbox
         true
@@ -153,6 +224,22 @@ module Braintree
 
     def inspect
       super.gsub(/@private_key=\".*\"/, '@private_key="[FILTERED]"')
+    end
+
+    def client_credentials?
+      !client_id.nil?
+    end
+
+    def assert_has_client_credentials
+      if client_id.nil? || client_secret.nil?
+        raise ConfigurationError.new("Braintree::Gateway client_id and client_secret are required.")
+      end
+    end
+
+    def assert_has_access_token_or_keys
+      if (public_key.nil? || private_key.nil?) && access_token.nil?
+        raise ConfigurationError.new("Braintree::Gateway public_key and private_key are required.")
+      end
     end
 
     def signature_service

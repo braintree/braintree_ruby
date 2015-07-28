@@ -1,8 +1,8 @@
 module Braintree
-  class Merchant
+  class OAuthCredentials
     include BaseModule # :nodoc:
 
-    attr_reader :id, :email, :company_name, :country_code_alpha2, :country_code_alpha3, :country_code_numeric, :country_name
+    attr_reader :access_token, :refresh_token, :expires_at, :token_type
 
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
@@ -14,10 +14,6 @@ module Braintree
 
     def self._new(*args) # :nodoc:
       self.new *args
-    end
-
-    def self.provision_raw_apple_pay
-      Configuration.gateway.merchant.provision_raw_apple_pay
     end
   end
 end

@@ -1,13 +1,14 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby/general/card_verification
   class CreditCardVerification
     include BaseModule
 
     module Status
-      FAILED = 'failed'
-      GATEWAY_REJECTED = 'gateway_rejected'
-      PROCESSOR_DECLINED = 'processor_declined'
-      VERIFIED = 'verified'
+      Failed = 'failed'
+      GatewayRejected = 'gateway_rejected'
+      ProcessorDeclined = 'processor_declined'
+      Verified = 'verified'
+
+      All = [Failed, GatewayRejected, ProcessorDeclined, Verified]
     end
 
     attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code,

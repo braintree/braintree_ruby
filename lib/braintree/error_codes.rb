@@ -3,15 +3,14 @@ module Braintree
   # The constants should be used to check for a specific validation error in a ValidationErrorCollection.
   # The error messages returned from the server may change, but the codes will remain the same.
   module ErrorCodes
-    # See http://www.braintreepayments.com/docs/ruby/addresses/validations
     module Address
+      CannotBeBlank = "81801"
       CompanyIsInvalid = "91821"
-      CountryNameIsNotAccepted = "91803"
+      CompanyIsTooLong = "81802"
       CountryCodeAlpha2IsNotAccepted = "91814"
       CountryCodeAlpha3IsNotAccepted = "91816"
       CountryCodeNumericIsNotAccepted = "91817"
-      CannotBeBlank = "81801"
-      CompanyIsTooLong = "81802"
+      CountryNameIsNotAccepted = "91803"
       ExtendedAddressIsInvalid = "91823"
       ExtendedAddressIsTooLong = "81804"
       FirstNameIsInvalid = "91819"
@@ -27,6 +26,7 @@ module Braintree
       PostalCodeIsTooLong = "81809"
       RegionIsInvalid = "91825"
       RegionIsTooLong = "81810"
+      StateIsInvalidForSellerProtection = "81827"
       StreetAddressIsInvalid = "91822"
       StreetAddressIsRequired = "81811"
       StreetAddressIsTooLong = "81812"
@@ -58,9 +58,9 @@ module Braintree
       KeyMismatchStoringCertificate = "93522"
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/credit_cards/validations
     module CreditCard
       BillingAddressConflict = "91701"
+      BillingAddressFormatIsInvalid = "91744"
       BillingAddressIdIsInvalid = "91702"
       CannotUpdateCardUsingPaymentMethodNonce = "91735"
       CardholderNameIsTooLong = "81723"
@@ -71,7 +71,6 @@ module Braintree
       CvvIsInvalid = "81707"
       CvvIsRequired = "81706"
       CvvVerificationFailed = "81736"
-      PostalCodeVerificationFailed = "81737"
       DuplicateCardExists = "81724"
       ExpirationDateConflict = "91708"
       ExpirationDateIsInvalid = "81710"
@@ -79,6 +78,7 @@ module Braintree
       ExpirationDateYearIsInvalid = "81711"
       ExpirationMonthIsInvalid = "81712"
       ExpirationYearIsInvalid = "81713"
+      InvalidParamsForCreditCardUpdate = "91745"
       InvalidVenmoSDKPaymentMethodCode = "91727"
       NumberIsInvalid = "81715"
       NumberIsRequired = "81714"
@@ -90,6 +90,7 @@ module Braintree
       PaymentMethodNonceConsumed = "91731"
       PaymentMethodNonceLocked = "91733"
       PaymentMethodNonceUnknown = "91732"
+      PostalCodeVerificationFailed = "81737"
       TokenFormatIsInvalid = "91718"
       TokenIsInUse = "91719"
       TokenIsNotAllowed = "91721"
@@ -99,35 +100,37 @@ module Braintree
       VerificationNotSupportedOnThisMerchantAccount = "91730"
 
       module Options
-        UseBillingForShippingDisabled = "91572"
         UpdateExistingTokenIsInvalid = "91723"
         UpdateExistingTokenNotAllowed = "91729"
-        VerificationMerchantAccountIdIsInvalid = "91728"
+        UseBillingForShippingDisabled = "91572"
         VerificationAmountCannotBeNegative = "91739"
         VerificationAmountFormatIsInvalid = "91740"
         VerificationAmountNotSupportedByProcessor = "91741"
+        VerificationMerchantAccountIdIsInvalid = "91728"
+        VerificationMerchantAccountIsForbidden = "91743"
+        VerificationMerchantAccountIsSuspended = "91742"
       end
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/customers/validations
     module Customer
+      CompanyIsTooLong = "81601"
       CustomFieldIsInvalid = "91602"
+      CustomFieldIsTooLong = "81603"
+      EmailFormatIsInvalid = "81604"
+      EmailIsRequired = "81606"
+      EmailIsTooLong = "81605"
+      FaxIsTooLong = "81607"
+      FirstNameIsTooLong = "81608"
       IdIsInUse = "91609"
       IdIsInvalid = "91610"
       IdIsNotAllowed = "91611"
       IdIsRequired = "91613"
       IdIsTooLong = "91612"
-      CompanyIsTooLong = "81601"
-      CustomFieldIsTooLong = "81603"
-      EmailFormatIsInvalid = "81604"
-      EmailIsTooLong = "81605"
-      EmailIsRequired = "81606"
-      FaxIsTooLong = "81607"
-      FirstNameIsTooLong = "81608"
       LastNameIsTooLong = "81613"
       PhoneIsTooLong = "81614"
-      WebsiteIsTooLong = "81615"
+      VaultedPaymentInstrumentNonceBelongsToDifferentCustomer = "91617"
       WebsiteFormatIsInvalid = "81616"
+      WebsiteIsTooLong = "81615"
     end
 
     module Descriptor
@@ -140,24 +143,25 @@ module Braintree
     end
 
     module PayPalAccount
-      CannotVaultOneTimeUsePayPalAccount = "82902"
+      AuthExpired = "92911"
       CannotHaveBothAccessTokenAndConsentCode = "82903"
+      CannotHaveFundingSourceWithoutAccessToken = "92912"
+      CannotUpdatePayPalAccountUsingPaymentMethodNonce = "92914"
+      CannotVaultOneTimeUsePayPalAccount = "82902"
       ConsentCodeOrAccessTokenIsRequired = "82901"
       CustomerIdIsRequiredForVaulting = "82905"
       IncompletePayPalAccount = "82901"
+      InvalidFundingSourceSelection = "92913"
+      InvalidParamsForPayPalAccountUpdate = "92915"
+      PayPalAccountsAreNotAccepted = "82904"
+      PayPalCommunicationError = "92910"
       PaymentMethodNonceConsumed = "92907"
       PaymentMethodNonceLocked = "92909"
       PaymentMethodNonceUnknown = "92908"
-      PayPalAccountsAreNotAccepted = "82904"
-      PayPalCommunicationError = "92910"
       TokenIsInUse = "92906"
-      AuthExpired = "92911"
-      CannotHaveFundingSourceWithoutAccessToken = "92912"
-      InvalidFundingSourceSelection = "92913"
-      CannotUpdatePayPalAccountUsingPaymentMethodNonce = "92914"
     end
 
-    module SEPABankAccount
+    module EuropeBankAccount
       IBANIsRequired = "93001"
       BICIsRequired = "93002"
       AccountHolderNameIsRequired = "93003"
@@ -179,7 +183,6 @@ module Braintree
       TypeIsInvalid = "93313"
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/subscriptions/validations
     module Subscription
       BillingDayOfMonthCannotBeUpdated = "91918"
       BillingDayOfMonthIsInvalid = "91914"
@@ -195,6 +198,7 @@ module Braintree
       InconsistentNumberOfBillingCycles = "91908"
       InconsistentStartDate = "91917"
       InvalidRequestFormat = "91921"
+      MerchantAccountDoesNotSupportInstrumentType = "91930"
       MerchantAccountIdIsInvalid = "91901"
       MismatchCurrencyISOCode = "91923"
       NumberOfBillingCyclesCannotBeBlank = "91912"
@@ -202,10 +206,12 @@ module Braintree
       NumberOfBillingCyclesMustBeGreaterThanZero = "91907"
       NumberOfBillingCyclesMustBeNumeric = "91906"
       PaymentMethodNonceCardTypeIsNotAccepted = "91924"
+      PaymentMethodNonceInstrumentTypeDoesNotSupportSubscriptions = "91929"
       PaymentMethodNonceIsInvalid = "91925"
       PaymentMethodNonceNotAssociatedWithCustomer = "91926"
       PaymentMethodNonceUnvaultedCardIsNotAccepted = "91927"
       PaymentMethodTokenCardTypeIsNotAccepted = "91902"
+      PaymentMethodTokenInstrumentTypeDoesNotSupportSubscriptions = "91928"
       PaymentMethodTokenIsInvalid = "91903"
       PaymentMethodTokenNotAssociatedWithCustomer = "91905"
       PlanBillingFrequencyCannotBeUpdated = "91922"
@@ -244,9 +250,9 @@ module Braintree
       end
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/transactions/validations
     module Transaction
       AmountCannotBeNegative = "81501"
+      AmountDoesNotMatch3DSecureAmount = "91585"
       AmountFormatIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsRequired = "81502"
@@ -263,9 +269,9 @@ module Braintree
       CannotHoldInEscrow = "91560"
       CannotPartiallyRefundEscrowedTransaction = "91563"
       CannotRefundCredit = "91505"
+      CannotRefundSettlingTransaction = "91574"
       CannotRefundUnlessSettled = "91506"
       CannotRefundWithPendingMerchantAccount = "91559"
-      CannotRefundSettlingTransaction = "91574"
       CannotRefundWithSuspendedMerchantAccount = "91538"
       CannotReleaseFromEscrow = "91561"
       CannotSimulateTransactionSettlement = "91575"
@@ -278,24 +284,27 @@ module Braintree
       CustomerDoesNotHaveCreditCard = "91511"
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
+      MerchantAccountDoesNotMatch3DSecureMerchantAccount = "91584"
       MerchantAccountDoesNotSupportMOTO = "91558"
       MerchantAccountDoesNotSupportRefunds = "91547"
       MerchantAccountIdIsInvalid = "91513"
       MerchantAccountIsSuspended = "91514"
       OrderIdIsTooLong = "91501"
+      PayPalAuthExpired = "91579"
+      PayPalNotEnabled = "91576"
+      PayPalVaultRecordMissingData = "91583"
+      PaymentInstrumentNotSupportedByMerchantAccount = "91577"
       PaymentMethodConflict = "91515"
       PaymentMethodConflictWithVenmoSDK = "91549"
       PaymentMethodDoesNotBelongToCustomer = "91516"
       PaymentMethodDoesNotBelongToSubscription = "91527"
       PaymentMethodNonceCardTypeIsNotAccepted = "91567"
       PaymentMethodNonceConsumed = "91564"
+      PaymentMethodNonceHasNoValidPaymentInstrumentType = "91569"
       PaymentMethodNonceLocked = "91566"
       PaymentMethodNonceUnknown = "91565"
       PaymentMethodTokenCardTypeIsNotAccepted = "91517"
       PaymentMethodTokenIsInvalid = "91518"
-      PaymentInstrumentNotSupportedByMerchantAccount = "91577"
-      PayPalAuthExpired = "91579"
-      PayPalNotEnabled = "91576"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
       ProcessorDoesNotSupportCredits = "91546"
@@ -328,6 +337,7 @@ module Braintree
 
       module Options
         SubmitForSettlementIsRequiredForCloning = "91544"
+        SubmitForSettlementIsRequiredForPayPalUnilateral = "91582"
         VaultIsDisabled = "91525"
 
         module PayPal
@@ -356,6 +366,22 @@ module Braintree
           LodgingCheckOutDateIsInvalid = "93413"
         end
       end
+    end
+
+    module Merchant
+      CountryCannotBeBlank = "83603"
+      CountryCodeAlpha2IsInvalid = "93607"
+      CountryCodeAlpha2IsNotAccepted = "93606"
+      CountryCodeAlpha3IsInvalid = "93605"
+      CountryCodeAlpha3IsNotAccepted = "93604"
+      CountryCodeNumericIsInvalid = "93609"
+      CountryCodeNumericIsNotAccepted = "93608"
+      CountryNameIsInvalid = "93611"
+      CountryNameIsNotAccepted = "93610"
+      EmailFormatIsInvalid = "93602"
+      EmailIsRequired = "83601"
+      InconsistentCountry = "93612"
+      PaymentMethodsAreInvalid = "93613"
     end
 
     module MerchantAccount
@@ -502,6 +528,14 @@ module Braintree
       MissingFingerprint = "93201"
       OptionsNotAllowedWithoutCustomer = "93207"
       SignatureRevoked = "93203"
+    end
+
+    module OAuth
+      InvalidGrant = "93801";
+      InvalidCredentials = "93802";
+      InvalidScope = "93803";
+      InvalidRequest = "93804";
+      UnsupportedGrantType = "93805";
     end
   end
 end

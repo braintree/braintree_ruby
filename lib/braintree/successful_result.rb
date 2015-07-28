@@ -1,9 +1,8 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby/general/result_objects
   class SuccessfulResult
     include BaseModule
 
-    attr_reader :address, :credit_card, :customer, :merchant_account, :payment_method, :settlement_batch_summary, :subscription, :new_transaction, :transaction, :payment_method_nonce, :supported_networks
+    attr_reader :address, :credit_card, :customer, :merchant_account, :payment_method, :settlement_batch_summary, :subscription, :new_transaction, :transaction, :payment_method_nonce, :credentials, :merchant, :supported_networks
 
     def initialize(attributes = {}) # :nodoc:
       @attrs = attributes.keys

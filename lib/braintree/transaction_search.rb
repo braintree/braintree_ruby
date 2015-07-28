@@ -11,6 +11,7 @@ module Braintree
       :billing_region,
       :billing_street_address,
       :credit_card_cardholder_name,
+      :credit_card_unique_identifier,
       :currency,
       :customer_company,
       :customer_email,
@@ -27,7 +28,7 @@ module Braintree
       :paypal_authorization_id,
       :paypal_payer_email,
       :processor_authorization_code,
-      :sepa_bank_account_iban,
+      :europe_bank_account_iban,
       :settlement_batch_id,
       :shipping_company,
       :shipping_country_name,
@@ -53,6 +54,8 @@ module Braintree
       CreditCard::CustomerLocation::US
     ]
     multiple_value_field :ids
+    multiple_value_field :payment_instrument_type
+    multiple_value_field :user
     multiple_value_field :merchant_account_id
     multiple_value_field :status, :allows => Transaction::Status::All
     multiple_value_field :source, :allows => [

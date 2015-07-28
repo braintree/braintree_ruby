@@ -1,5 +1,4 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby/general/result_objects
   class ErrorResult
 
     attr_reader :credit_card_verification, :merchant_account, :transaction, :subscription, :errors, :params, :message

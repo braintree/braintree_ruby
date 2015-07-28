@@ -3,6 +3,7 @@ module Braintree
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
+      @config.assert_has_access_token_or_keys
     end
 
     def parse(signature_string, payload)
@@ -15,6 +16,7 @@ module Braintree
     end
 
     def verify(challenge)
+      raise InvalidChallenge, 'challenge contains non-hex characters' unless challenge =~ /\A[a-f0-9]{20,32}\z/
       digest = Braintree::Digest.hexdigest(@config.private_key, challenge)
       "#{@config.public_key}|#{digest}"
     end

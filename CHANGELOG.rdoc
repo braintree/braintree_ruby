@@ -1,3 +1,25 @@
+== 2.46.0
+* Add oauth support
+
+== 2.45.0
+* Add support for Android Pay
+
+== 2.44.0
+* Validate webhook challenge payload
+* Changed CreditCardVerification::Status constants
+* Add missing criteria to CreditCardVerification search
+
+== 2.43.0
+* Add 3DS info to server side
+
+== 2.42.0
+* Add {ApplePayCard,CoinbaseAccount}#default?
+* Add {ApplePayCard,CoinbaseAccount} payment instrument constants
+* Add European Bank Account test nonce
+
+== 2.41.0
+* Add support for new SEPA workflow
+
 == 2.40.0
 * Add 3D Secure transaction fields
 * Add ability to create nonce from vaulted payment methods

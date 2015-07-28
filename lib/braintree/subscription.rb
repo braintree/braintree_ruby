@@ -1,5 +1,4 @@
 module Braintree
-  # See http://www.braintreepayments.com/docs/ruby/subscriptions/overview
   class Subscription
     include BaseModule
 
@@ -39,12 +38,10 @@ module Braintree
     attr_reader :updated_at, :created_at
     attr_reader :status_history
 
-    # See http://www.braintreepayments.com/docs/ruby/subscriptions/cancel
     def self.cancel(subscription_id)
       Configuration.gateway.subscription.cancel(subscription_id)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/subscriptions/create
     def self.create(attributes)
       Configuration.gateway.subscription.create(attributes)
     end
@@ -53,7 +50,6 @@ module Braintree
       return_object_or_raise(:subscription) { create(attributes) }
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/subscriptions/search
     def self.find(id)
       Configuration.gateway.subscription.find(id)
     end
@@ -62,12 +58,10 @@ module Braintree
       Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/subscriptions/search
     def self.search(&block)
       Configuration.gateway.subscription.search(&block)
     end
 
-    # See http://www.braintreepayments.com/docs/ruby/subscriptions/update
     def self.update(subscription_id, attributes)
       Configuration.gateway.subscription.update(subscription_id, attributes)
     end
