@@ -90,6 +90,10 @@ module Braintree
     def never_expires?
       @never_expires
     end
+    
+    def plan
+      Braintree::Plan.all.detect { |plan| plan.id == self.plan_id }
+    end
 
     # True if <tt>other</tt> has the same id.
     def ==(other)
