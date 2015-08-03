@@ -22,6 +22,10 @@ module Braintree
     def self.all
       Configuration.gateway.plan.all
     end
+    
+    def self.find(plan_id)
+      Braintree::Plan.all.detect { |plan| plan.id == plan_id }
+    end
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
