@@ -188,4 +188,13 @@ describe "OAuth" do
       query["payment_methods[]"].should include("credit_card")
     end
   end
+
+  describe "_compute_signature" do
+    it "computes the correct signature" do
+      url = "http://localhost:3000/oauth/connect?business%5Bname%5D=We+Like+Spaces&client_id=client_id%24development%24integration_client_id"
+      signature = @gateway.oauth._compute_signature(url)
+
+      signature.should == "a36bcf10dd982e2e47e0d6a2cb930aea47ade73f954b7d59c58dae6167894d41"
+    end
+  end
 end
