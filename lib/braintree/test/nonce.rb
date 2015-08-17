@@ -11,7 +11,10 @@ module Braintree
       AbstractTransactable = "fake-abstract-transactable-nonce"
       Europe = "fake-europe-bank-account-nonce"
       Coinbase = "fake-coinbase-nonce"
-      AndroidPay = "fake-android-pay-nonce"
+      AndroidPayDiscover = "fake-android-pay-discover-nonce"
+      AndroidPayVisa = "fake-android-pay-visa-nonce"
+      AndroidPayMasterCard = "fake-android-pay-mastercard-nonce"
+      AndroidPayAmEx = "fake-android-pay-amex-nonce"
       TransactableVisa = "fake-valid-visa-nonce"
       TransactableAmEx = "fake-valid-amex-nonce"
       TransactableMasterCard = "fake-valid-mastercard-nonce"
@@ -39,6 +42,15 @@ module Braintree
       PayPalFuturePaymentRefreshToken = "fake-paypal-future-refresh-token-nonce"
       SEPA = "fake-sepa-bank-account-nonce"
       GatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce"
+
+      def self.const_missing(const_name)
+        if const_name == :AndroidPay
+          warn "[DEPRECATED] Braintree::Test::Nonce::AndroidPay is deprecated. Use a card-specific nonce, e.g. Braintree::Test::Nonce::AndroidPayMasterCard"
+          "fake-android-pay-nonce"
+        else
+          super
+        end
+      end
     end
   end
 end

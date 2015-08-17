@@ -4,7 +4,7 @@ module Braintree
 
     attr_reader :token, :virtual_card_type, :virtual_card_last_4, :source_card_type, :source_card_last_4,
       :expiration_month, :expiration_year, :created_at, :updated_at, :image_url, :subscriptions, :bin,
-      :google_transaction_id, :default
+      :google_transaction_id, :default, :source_description
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
