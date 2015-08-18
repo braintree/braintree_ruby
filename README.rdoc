@@ -7,6 +7,14 @@ The Braintree gem provides integration access to the Braintree Gateway.
 * builder
 * libxml-ruby
 
+== Installation
+
+  gem install braintree
+
+Or add to your Gemfile:
+
+  gem 'braintree'
+
 == Quick Start Example
 
   require "rubygems"
@@ -34,6 +42,8 @@ The Braintree gem provides integration access to the Braintree Gateway.
   else
     p result.errors
   end
+
+You retrieve your `merchant_id, `public_key`, and `private_key` when [signing up](https://braintreepayments.com/get-started) for Braintree. Signing up for a sandbox account is easy, free, and instant.
 
 == Bang Methods
 

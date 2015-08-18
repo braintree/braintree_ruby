@@ -19,7 +19,7 @@ module Braintree
       end
 
       def self._determine_parser
-        if defined?(::LibXml::XML) && ::LibXml::XML.respond_to?(:default_keep_blanks=)
+        if defined?(::LibXML::XML) && ::LibXML::XML.respond_to?(:default_keep_blanks=)
           ::Braintree::Xml::Libxml
         else
           ::Braintree::Xml::Rexml

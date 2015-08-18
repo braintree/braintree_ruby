@@ -4,7 +4,7 @@ module Braintree
       include BaseModule
 
       attr_reader :card_type, :last_4, :expiration_month, :expiration_year,
-        :cardholder_name, :payment_instrument_name
+        :cardholder_name, :payment_instrument_name, :source_description
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

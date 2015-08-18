@@ -88,17 +88,18 @@ describe Braintree::PaymentMethod do
       apple_pay_card.token.should == token
       apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
       apple_pay_card.payment_instrument_name.should == "AmEx 41002"
+      apple_pay_card.source_description.should == "AmEx 41002"
       apple_pay_card.default.should == true
       apple_pay_card.image_url.should =~ /apple_pay/
       apple_pay_card.expiration_month.to_i.should > 0
       apple_pay_card.expiration_year.to_i.should > 0
     end
 
-    it "creates a payment method from a fake android pay nonce" do
+    it "creates a payment method from a fake android pay proxy card nonce" do
       customer = Braintree::Customer.create.customer
       token = SecureRandom.hex(16)
       result = Braintree::PaymentMethod.create(
-        :payment_method_nonce => Braintree::Test::Nonce::AndroidPay,
+        :payment_method_nonce => Braintree::Test::Nonce::AndroidPayDiscover,
         :customer_id => customer.id,
         :token => token
       )
@@ -117,6 +118,33 @@ describe Braintree::PaymentMethod do
       android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Visa
       android_pay_card.source_card_last_4.should == "1111"
       android_pay_card.google_transaction_id.should == "google_transaction_id"
+      android_pay_card.source_description.should == "Visa 1111"
+    end
+
+    it "creates a payment method from a android pay network token nonce" do
+      customer = Braintree::Customer.create.customer
+      token = SecureRandom.hex(16)
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::AndroidPayMasterCard,
+        :customer_id => customer.id,
+        :token => token
+      )
+
+      result.should be_success
+      android_pay_card = result.payment_method
+      android_pay_card.should be_a(Braintree::AndroidPayCard)
+      android_pay_card.should_not be_nil
+      android_pay_card.token.should == token
+      android_pay_card.card_type.should == Braintree::CreditCard::CardType::MasterCard
+      android_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::MasterCard
+      android_pay_card.expiration_month.to_i.should > 0
+      android_pay_card.expiration_year.to_i.should > 0
+      android_pay_card.default.should == true
+      android_pay_card.image_url.should =~ /android_pay/
+      android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::MasterCard
+      android_pay_card.source_card_last_4.should == "4444"
+      android_pay_card.google_transaction_id.should == "google_transaction_id"
+      android_pay_card.source_description.should == "MasterCard 4444"
     end
 
     it "allows passing the make_default option alongside the nonce" do
@@ -615,15 +643,16 @@ describe Braintree::PaymentMethod do
         apple_pay_card.image_url.should =~ /apple_pay/
         apple_pay_card.expiration_month.to_i.should > 0
         apple_pay_card.expiration_year.to_i.should > 0
+        apple_pay_card.source_description.should == "AmEx 41002"
       end
     end
 
     context "android pay cards" do
-      it "finds the payment method with the given token" do
+      it "finds the proxy card payment method with the given token" do
         customer = Braintree::Customer.create!
         payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
         result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => Braintree::Test::Nonce::AndroidPay,
+          :payment_method_nonce => Braintree::Test::Nonce::AndroidPayDiscover,
           :customer_id => customer.id,
           :token => payment_method_token
         )
@@ -642,6 +671,33 @@ describe Braintree::PaymentMethod do
         android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Visa
         android_pay_card.source_card_last_4.should == "1111"
         android_pay_card.google_transaction_id.should == "google_transaction_id"
+        android_pay_card.source_description.should == "Visa 1111"
+      end
+
+      it "finds the network token payment method with the given token" do
+        customer = Braintree::Customer.create!
+        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::AndroidPayMasterCard,
+          :customer_id => customer.id,
+          :token => payment_method_token
+        )
+        result.should be_success
+
+        android_pay_card = Braintree::PaymentMethod.find(payment_method_token)
+        android_pay_card.should be_a(Braintree::AndroidPayCard)
+        android_pay_card.should_not be_nil
+        android_pay_card.token.should == payment_method_token
+        android_pay_card.card_type.should == Braintree::CreditCard::CardType::MasterCard
+        android_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::MasterCard
+        android_pay_card.expiration_month.to_i.should > 0
+        android_pay_card.expiration_year.to_i.should > 0
+        android_pay_card.default.should == true
+        android_pay_card.image_url.should =~ /android_pay/
+        android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::MasterCard
+        android_pay_card.source_card_last_4.should == "4444"
+        android_pay_card.google_transaction_id.should == "google_transaction_id"
+        android_pay_card.source_description.should == "MasterCard 4444"
       end
     end
 

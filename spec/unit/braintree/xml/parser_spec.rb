@@ -56,5 +56,11 @@ describe Braintree::Xml::Parser do
       END
       xml.should parse_to(:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]})
     end
+
+    it "parses using libxml" do
+      xml = "<root><foo type=\"integer\">123</foo></root>"
+      ::Braintree::Xml::Libxml.should_receive(:parse).and_call_original
+      Braintree::Xml::Parser.hash_from_xml(xml)
+    end
   end
 end

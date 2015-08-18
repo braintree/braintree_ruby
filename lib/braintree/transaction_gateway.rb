@@ -137,7 +137,7 @@ module Braintree
           :store_shipping_address_in_vault,
           :venmo_sdk_session,
           :payee_email,
-          {:paypal => [:custom_field, :payee_email]},
+          {:paypal => [:custom_field, :payee_email, :description]},
           {:three_d_secure => [:required]}]
         },
         {:custom_fields => :_any_key_},

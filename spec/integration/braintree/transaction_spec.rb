@@ -1331,17 +1331,18 @@ describe Braintree::Transaction do
         apple_pay_details.should_not be_nil
         apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
         apple_pay_details.payment_instrument_name.should == "Visa 8886"
+        apple_pay_details.source_description.should == "Visa 8886"
         apple_pay_details.expiration_month.to_i.should > 0
         apple_pay_details.expiration_year.to_i.should > 0
         apple_pay_details.cardholder_name.should_not be_nil
       end
 
-      it "can create a transaction with a fake android pay nonce" do
+      it "can create a transaction with a fake android pay proxy card nonce" do
         customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => Braintree::Test::Nonce::AndroidPay
+          :payment_method_nonce => Braintree::Test::Nonce::AndroidPayDiscover
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1351,6 +1352,28 @@ describe Braintree::Transaction do
         android_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
         android_pay_details.last_4.should == "1117"
         android_pay_details.virtual_card_last_4.should == "1117"
+        android_pay_details.source_description.should == "Visa 1111"
+        android_pay_details.expiration_month.to_i.should > 0
+        android_pay_details.expiration_year.to_i.should > 0
+        android_pay_details.google_transaction_id.should == "google_transaction_id"
+      end
+
+      it "can create a transaction with a fake android pay network token nonce" do
+        customer = Braintree::Customer.create!
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::AndroidPayMasterCard
+        )
+        result.success?.should == true
+        result.transaction.should_not be_nil
+        android_pay_details = result.transaction.android_pay_details
+        android_pay_details.should_not be_nil
+        android_pay_details.card_type.should == Braintree::CreditCard::CardType::MasterCard
+        android_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::MasterCard
+        android_pay_details.last_4.should == "4444"
+        android_pay_details.virtual_card_last_4.should == "4444"
+        android_pay_details.source_description.should == "MasterCard 4444"
         android_pay_details.expiration_month.to_i.should > 0
         android_pay_details.expiration_year.to_i.should > 0
         android_pay_details.google_transaction_id.should == "google_transaction_id"
@@ -1466,6 +1489,32 @@ describe Braintree::Transaction do
         result.transaction.paypal_details.should_not be_nil
         result.transaction.paypal_details.debug_id.should_not be_nil
         result.transaction.paypal_details.custom_field.should == "Additional info"
+      end
+
+      it "can create a transaction with a paypal description" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce,
+          :options => {
+            :paypal => {
+              :description => "A great product"
+            }
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.paypal_details.should_not be_nil
+        result.transaction.paypal_details.debug_id.should_not be_nil
+        result.transaction.paypal_details.description.should == "A great product"
       end
     end
 
@@ -2901,6 +2950,8 @@ describe Braintree::Transaction do
         transaction.paypal_details.seller_protection_status.should_not be_nil
         transaction.paypal_details.capture_id.should_not be_nil
         transaction.paypal_details.refund_id.should_not be_nil
+        transaction.paypal_details.transaction_fee_amount.should_not be_nil
+        transaction.paypal_details.transaction_fee_currency_iso_code.should_not be_nil
       end
     end
   end
