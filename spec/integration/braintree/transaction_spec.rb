@@ -2305,6 +2305,108 @@ describe Braintree::Transaction do
       result.params.should == {:transaction => {:type => 'sale', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
+
+    context "Amex Pay with Points" do
+      context "transaction creation" do
+        it "burns rewards points when submit_for_settlement is true" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true,
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            }
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          result.transaction.amex_rewards_response.should == "success"
+        end
+
+        it "returns an error if the credit card is not eligible" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true,
+              :amex_rewards => {
+                :request_id => Braintree::Test::AmexRewards::RequestIds::CardIneligible,
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            }
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          result.transaction.amex_rewards_response.should == "RDM2002 Card is not eligible for redemption"
+        end
+      end
+
+      context "submit for settlement" do
+        it "burns rewards points when option is set" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            }
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::Authorized
+          result.transaction.amex_rewards_response.should be_nil
+
+          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          result.transaction.amex_rewards_response.should == "success"
+        end
+
+        it "returns an error if the credit card is not eligible" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :amex_rewards => {
+                :request_id => Braintree::Test::AmexRewards::RequestIds::CardIneligible,
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            }
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::Authorized
+          result.transaction.amex_rewards_response.should be_nil
+
+          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          result.transaction.amex_rewards_response.should == "RDM2002 Card is not eligible for redemption"
+        end
+      end
+    end
   end
 
   describe "self.sale!" do

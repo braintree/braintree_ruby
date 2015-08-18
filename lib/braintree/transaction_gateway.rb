@@ -138,7 +138,8 @@ module Braintree
           :venmo_sdk_session,
           :payee_email,
           {:paypal => [:custom_field, :payee_email, :description]},
-          {:three_d_secure => [:required]}]
+          {:three_d_secure => [:required]},
+          {:amex_rewards => [:request_id, :points, :currency_amount, :currency_iso_code]}]
         },
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone, :url]},

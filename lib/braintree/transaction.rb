@@ -117,6 +117,7 @@ module Braintree
     attr_reader :payment_instrument_type
     attr_reader :risk_data
     attr_reader :three_d_secure_info
+    attr_reader :amex_rewards_response
 
     def self.create(attributes)
       Configuration.gateway.transaction.create(attributes)
