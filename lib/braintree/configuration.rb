@@ -179,7 +179,7 @@ module Braintree
     def server # :nodoc:
       case @environment
       when :development, :integration
-        "localhost"
+        ENV["GATEWAY_SERVER"] || "localhost"
       when :production
         "#{endpoint}.braintreegateway.com"
       when :qa
@@ -205,7 +205,7 @@ module Braintree
     def ssl? # :nodoc:
       case @environment
       when :development, :integration
-        false
+        %w(true 1).include? ENV["GATEWAY_SSL"]
       when :production, :qa, :sandbox
         true
       end
