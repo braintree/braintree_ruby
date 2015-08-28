@@ -26,6 +26,21 @@ describe Braintree::PayPalAccount do
       paypal_account.updated_at.should_not be_nil
     end
 
+    it "returns a PayPalAccount with a billing agreement id" do
+      customer = Braintree::Customer.create!
+      payment_method_token = random_payment_method_token
+
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
+        :customer_id => customer.id,
+        :token => payment_method_token
+      )
+      result.should be_success
+
+      paypal_account = Braintree::PayPalAccount.find(payment_method_token)
+      paypal_account.billing_agreement_id.should_not be_nil
+    end
+
     it "raises if the payment method token is not found" do
       expect do
         Braintree::PayPalAccount.find("nonexistant-paypal-account")
