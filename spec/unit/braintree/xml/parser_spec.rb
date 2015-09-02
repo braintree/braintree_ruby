@@ -59,7 +59,13 @@ describe Braintree::Xml::Parser do
 
     it "parses using libxml" do
       xml = "<root><foo type=\"integer\">123</foo></root>"
-      ::Braintree::Xml::Libxml.should_receive(:parse).and_call_original
+
+      if RUBY_VERSION.start_with?('2.0')
+        ::Braintree::Xml::Rexml.should_receive(:parse).and_call_original
+      else
+        ::Braintree::Xml::Libxml.should_receive(:parse).and_call_original
+      end
+
       Braintree::Xml::Parser.hash_from_xml(xml)
     end
   end
