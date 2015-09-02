@@ -37,7 +37,7 @@ module Braintree
     end
 
     def check_environment
-      raise TestOperationPerformedInProduction if Braintree::Configuration.environment == :production
+      raise TestOperationPerformedInProduction if @config.environment == :production
     end
   end
 end
