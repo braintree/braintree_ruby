@@ -10,6 +10,7 @@ module Braintree
       :client_id,
       :client_secret,
       :access_token,
+      :environment,
     ]
 
     WRITABLE_ATTRIBUTES = [
