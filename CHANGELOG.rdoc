@@ -1,3 +1,8 @@
+== 2.48.0
+* Add support for Amex rewards transactions
+* Add billing_agreement_id to PayPalAccount
+* Fix bug in TestingGateway#check_environment
+
 == 2.47.0
 * Add {ApplePayDetails,ApplePayCard,AndroidPayDetails,AndroidPayCard}#source_description
 * Add AndroidPayDetails#source_card_type, #source_card_last_4
