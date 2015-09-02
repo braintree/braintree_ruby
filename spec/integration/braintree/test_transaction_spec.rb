@@ -91,6 +91,30 @@ describe Braintree::TestTransaction do
       end
     end
 
+    it "does not raise an exception when using non-global, non-production gateway" do
+      expect do
+        in_prod do
+          config = Braintree::Configuration.new(
+            :environment => :development,
+            :merchant_id => 'integration_merchant_id',
+            :public_key => 'integration_public_key',
+            :private_key => 'integration_private_key',
+            :logger => Logger.new(StringIO.new),
+          )
+
+          gateway = Braintree::Gateway.new(config)
+
+          transaction_gateway = Braintree::TransactionGateway.new(gateway)
+          testing_gateway = Braintree::TestingGateway.new(gateway)
+
+          sale_result = transaction_gateway.sale(
+            :amount => "100",
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+          )
+          testing_gateway.settle(sale_result.transaction.id)
+        end
+      end.to_not raise_error
+    end
 
     it "raises an exception if settle is called in a production environment" do
       expect do
