@@ -1,3 +1,7 @@
+== 2.48.1
+* Fix issue in TestTransaction spec
+* Fix issue with LibXML causing a segfault when using Ruby version 2.0.0
+
 == 2.48.0
 * Add support for Amex rewards transactions
 * Add billing_agreement_id to PayPalAccount
