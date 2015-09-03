@@ -99,7 +99,7 @@ describe Braintree::TestTransaction do
             :merchant_id => 'integration_merchant_id',
             :public_key => 'integration_public_key',
             :private_key => 'integration_private_key',
-            :logger => Logger.new(StringIO.new),
+            :logger => Logger.new(StringIO.new)
           )
 
           gateway = Braintree::Gateway.new(config)
