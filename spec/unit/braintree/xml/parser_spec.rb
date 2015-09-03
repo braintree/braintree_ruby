@@ -57,14 +57,22 @@ describe Braintree::Xml::Parser do
       xml.should parse_to(:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]})
     end
 
-    it "parses using libxml" do
+    it "parses using libxml when using not using ruby 2.0" do
       xml = "<root><foo type=\"integer\">123</foo></root>"
+      stub_const("RUBY_VERSION", "2.1.1")
+      ::Braintree::Xml::Libxml.should_receive(:parse).and_call_original
 
-      if RUBY_VERSION.start_with?('2.0')
-        ::Braintree::Xml::Rexml.should_receive(:parse).and_call_original
-      else
-        ::Braintree::Xml::Libxml.should_receive(:parse).and_call_original
-      end
+      Braintree::Xml::Parser.hash_from_xml(xml)
+    end
+
+    it "parses using rexml when using using ruby 2.0 to avoid Libxml segfault" do
+      segfault_prone_library_in_ruby_2_0 = ::Braintree::Xml::Libxml
+
+      xml = "<root><foo type=\"integer\">123</foo></root>"
+      stub_const("RUBY_VERSION", "2.0.0")
+
+      ::Braintree::Xml::Rexml.should_receive(:parse).and_call_original
+      segfault_prone_library_in_ruby_2_0.should_not_receive(:parse)
 
       Braintree::Xml::Parser.hash_from_xml(xml)
     end
