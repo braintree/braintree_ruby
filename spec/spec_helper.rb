@@ -37,6 +37,7 @@ unless defined?(SPEC_HELPER_LOADED)
     NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
     NonDefaultSubMerchantAccountId = "sandbox_sub_merchant_account"
     ThreeDSecureMerchantAccountId = "three_d_secure_merchant_account"
+    SalemMerchantAccountId = "salem_test_usd"
 
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",

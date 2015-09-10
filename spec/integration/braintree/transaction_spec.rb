@@ -2544,6 +2544,106 @@ describe Braintree::Transaction do
     end
   end
 
+
+  describe "submit for partial settlement" do
+    it "successfully submits multiple times for partial settlement" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        }
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
+      result.success?.should == true
+      settlement_transaction1 = result.transaction
+      settlement_transaction1.amount.should == 100
+      settlement_transaction1.type.should == Braintree::Transaction::Type::Sale
+      settlement_transaction1.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      settlement_transaction1.authorized_transaction_id.should == authorized_transaction.id
+
+      refreshed_authorized_transaction = Braintree::Transaction.find(authorized_transaction.id)
+      refreshed_authorized_transaction.status.should == Braintree::Transaction::Status::SettlementPending
+      refreshed_authorized_transaction.settlement_transaction_ids.should == [settlement_transaction1.id]
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 800)
+      result.success?.should == true
+      settlement_transaction2 = result.transaction
+      settlement_transaction2.amount.should == 800
+      settlement_transaction2.type.should == Braintree::Transaction::Type::Sale
+      settlement_transaction2.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      settlement_transaction2.authorized_transaction_id.should == authorized_transaction.id
+
+      refreshed_authorized_transaction = Braintree::Transaction.find(authorized_transaction.id)
+      refreshed_authorized_transaction.status.should == Braintree::Transaction::Status::SettlementPending
+      refreshed_authorized_transaction.settlement_transaction_ids.sort.should == [settlement_transaction1.id, settlement_transaction2.id].sort
+    end
+
+    it "returns an error with an unsupported processor" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        }
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportPartialSettlement
+    end
+
+    it "returns an error with an invalid payment instrument type" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentInstrumentTypeIsNotAccepted
+    end
+
+    it "returns an error result if settlement amount greater than authorized amount" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        }
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
+      result.success?.should == true
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 901)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
+    end
+
+    it "returns an error result if status is not authorized" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        }
+      )
+
+      result = Braintree::Transaction.void(authorized_transaction.id)
+      result.success?.should == true
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement
+    end
+  end
+
   describe "self.release_from_escrow" do
     it "returns the transaction if successful" do
       original_transaction = create_escrowed_transcation

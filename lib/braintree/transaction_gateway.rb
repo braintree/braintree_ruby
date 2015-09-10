@@ -104,6 +104,12 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def submit_for_partial_settlement(authorized_transaction_id, amount = nil)
+      raise ArgumentError, "authorized_transaction_id is invalid" unless authorized_transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.post("#{@config.base_merchant_path}/transactions/#{authorized_transaction_id}/submit_for_partial_settlement", :transaction => {:amount => amount})
+      _handle_transaction_response(response)
+    end
+
     def void(transaction_id)
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/void")
       _handle_transaction_response(response)

@@ -104,6 +104,8 @@ module Braintree
     attr_reader :recurring
     attr_reader :refund_ids, :refunded_transaction_id
     attr_reader :settlement_batch_id
+    attr_reader :authorized_transaction_id
+    attr_reader :settlement_transaction_ids
     # See Transaction::Status
     attr_reader :status
     attr_reader :status_history
@@ -209,6 +211,10 @@ module Braintree
 
     def self.submit_for_settlement!(transaction_id, amount = nil)
       return_object_or_raise(:transaction) { submit_for_settlement(transaction_id, amount) }
+    end
+
+    def self.submit_for_partial_settlement(authorized_transaction_id, amount = nil)
+      Configuration.gateway.transaction.submit_for_partial_settlement(authorized_transaction_id, amount)
     end
 
     def self.void(transaction_id)
