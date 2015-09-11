@@ -105,7 +105,7 @@ module Braintree
     attr_reader :refund_ids, :refunded_transaction_id
     attr_reader :settlement_batch_id
     attr_reader :authorized_transaction_id
-    attr_reader :settlement_transaction_ids
+    attr_reader :partial_settlement_transaction_ids
     # See Transaction::Status
     attr_reader :status
     attr_reader :status_history

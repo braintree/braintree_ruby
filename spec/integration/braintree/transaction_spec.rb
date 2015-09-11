@@ -2558,27 +2558,27 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
       result.success?.should == true
-      settlement_transaction1 = result.transaction
-      settlement_transaction1.amount.should == 100
-      settlement_transaction1.type.should == Braintree::Transaction::Type::Sale
-      settlement_transaction1.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      settlement_transaction1.authorized_transaction_id.should == authorized_transaction.id
+      partial_settlement_transaction1 = result.transaction
+      partial_settlement_transaction1.amount.should == 100
+      partial_settlement_transaction1.type.should == Braintree::Transaction::Type::Sale
+      partial_settlement_transaction1.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      partial_settlement_transaction1.authorized_transaction_id.should == authorized_transaction.id
 
       refreshed_authorized_transaction = Braintree::Transaction.find(authorized_transaction.id)
       refreshed_authorized_transaction.status.should == Braintree::Transaction::Status::SettlementPending
-      refreshed_authorized_transaction.settlement_transaction_ids.should == [settlement_transaction1.id]
+      refreshed_authorized_transaction.partial_settlement_transaction_ids.should == [partial_settlement_transaction1.id]
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 800)
       result.success?.should == true
-      settlement_transaction2 = result.transaction
-      settlement_transaction2.amount.should == 800
-      settlement_transaction2.type.should == Braintree::Transaction::Type::Sale
-      settlement_transaction2.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      settlement_transaction2.authorized_transaction_id.should == authorized_transaction.id
+      partial_settlement_transaction2 = result.transaction
+      partial_settlement_transaction2.amount.should == 800
+      partial_settlement_transaction2.type.should == Braintree::Transaction::Type::Sale
+      partial_settlement_transaction2.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      partial_settlement_transaction2.authorized_transaction_id.should == authorized_transaction.id
 
       refreshed_authorized_transaction = Braintree::Transaction.find(authorized_transaction.id)
       refreshed_authorized_transaction.status.should == Braintree::Transaction::Status::SettlementPending
-      refreshed_authorized_transaction.settlement_transaction_ids.sort.should == [settlement_transaction1.id, settlement_transaction2.id].sort
+      refreshed_authorized_transaction.partial_settlement_transaction_ids.sort.should == [partial_settlement_transaction1.id, partial_settlement_transaction2.id].sort
     end
 
     it "returns an error with an unsupported processor" do
