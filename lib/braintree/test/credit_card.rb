@@ -47,7 +47,14 @@ module Braintree
         Numbers    = [AmEx, Discover, MasterCard, Visa]
       end
 
-      All = AmExes + Discovers + MasterCards + Visas
+      module AmexPayWithPoints
+        Success            = "371260714673002"
+        IneligibleCard     = "378267515471109"
+        InsufficientPoints = "371544868764018"
+        All = [Success, IneligibleCard, InsufficientPoints]
+      end
+
+      All = AmExes + Discovers + MasterCards + Visas + AmexPayWithPoints::All
     end
 
     module CreditCardDefaults
