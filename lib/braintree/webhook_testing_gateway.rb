@@ -64,7 +64,7 @@ module Braintree
           <transactions type="array">
             <transaction>
               <status>submitted_for_settlement</status>
-              <amount>49.00</amount>
+              <amount>49.99</amount>
             </transaction>
           </transactions>
           <add_ons type="array">
