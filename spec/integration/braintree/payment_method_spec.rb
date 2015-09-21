@@ -737,6 +737,47 @@ describe Braintree::PaymentMethod do
   end
 
   describe "self.delete" do
+    it "deletes an android pay card" do
+      customer = Braintree::Customer.create!
+
+      create_result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::AndroidPayDiscover,
+        :customer_id => customer.id
+      )
+
+      token = create_result.payment_method.token
+
+      android_card = Braintree::PaymentMethod.find(token)
+      android_card.should be_a(Braintree::AndroidPayCard)
+
+      delete_result = Braintree::PaymentMethod.delete(token)
+      delete_result.success?.should == true
+
+      expect do
+        Braintree::PaymentMethod.find(token)
+      end.to raise_error(Braintree::NotFoundError)
+    end
+
+    it "deletes an apple pay card" do
+      customer = Braintree::Customer.create!
+
+      create_result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
+        :customer_id => customer.id
+      )
+      token = create_result.payment_method.token
+
+      apple_pay_card = Braintree::PaymentMethod.find(token)
+      apple_pay_card.should be_a(Braintree::ApplePayCard)
+
+      delete_result = Braintree::PaymentMethod.delete(token)
+      delete_result.success?.should == true
+
+      expect do
+        Braintree::PaymentMethod.find(token)
+      end.to raise_error(Braintree::NotFoundError)
+    end
+
     it "deletes a paypal account" do
       customer = Braintree::Customer.create!
       paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
@@ -753,6 +794,7 @@ describe Braintree::PaymentMethod do
       paypal_account.should be_a(Braintree::PayPalAccount)
 
       result = Braintree::PaymentMethod.delete(paypal_account_token)
+      result.success?.should == true
 
       expect do
         Braintree::PaymentMethod.find(paypal_account_token)
@@ -777,11 +819,21 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id
       )
 
-      Braintree::PaymentMethod.delete(token)
+      result = Braintree::PaymentMethod.delete(token)
+      result.success?.should == true
 
       expect do
         Braintree::PaymentMethod.find(token)
       end.to raise_error(Braintree::NotFoundError, "payment method with token \"#{token}\" not found")
+    end
+
+    it "raises a NotFoundError exception if payment method cannot be found" do
+      token = "CREDIT_CARD_#{rand(36**3).to_s(36)}"
+      customer = Braintree::Customer.create!
+
+      expect do
+        Braintree::PaymentMethod.delete(token)
+      end.to raise_error(Braintree::NotFoundError)
     end
   end
 
