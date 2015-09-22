@@ -24,6 +24,10 @@ module Braintree
       @default
     end
 
+    def expired?
+      @expired
+    end
+
     class << self
       protected :new
     end

@@ -10,4 +10,14 @@ describe Braintree::ApplePayCard do
       Braintree::ApplePayCard._new(:gateway, :default => false).default?.should == false
     end
   end
+
+  describe "expired?" do
+    it "is true if the Apple pay card is expired" do
+      Braintree::ApplePayCard._new(:gateway, :expired => true).expired?.should == true
+    end
+
+    it "is false if the Apple pay card is not expired" do
+      Braintree::ApplePayCard._new(:gateway, :expired => false).expired?.should == false
+    end
+  end
 end
