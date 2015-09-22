@@ -36,7 +36,7 @@ module Braintree
 
     def delete(token)
       @config.http.delete("#{@config.base_merchant_path}/payment_methods/any/#{token}")
-      SuccessfulResult.new()
+      SuccessfulResult.new
     end
 
     def find(token)
