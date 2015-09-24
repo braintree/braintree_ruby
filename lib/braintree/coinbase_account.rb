@@ -2,7 +2,7 @@ module Braintree
   class CoinbaseAccount
     include BaseModule # :nodoc:
 
-    attr_reader :token, :user_id, :user_email, :user_name, :subscriptions, :created_at, :updated_at, :default
+    attr_reader :token, :user_id, :user_email, :user_name, :subscriptions, :created_at, :updated_at, :default, :customer_id
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)

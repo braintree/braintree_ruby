@@ -93,6 +93,7 @@ describe Braintree::PaymentMethod do
       apple_pay_card.image_url.should =~ /apple_pay/
       apple_pay_card.expiration_month.to_i.should > 0
       apple_pay_card.expiration_year.to_i.should > 0
+      apple_pay_card.customer_id.should == customer.id
     end
 
     it "creates a payment method from a fake android pay proxy card nonce" do
@@ -119,6 +120,7 @@ describe Braintree::PaymentMethod do
       android_pay_card.source_card_last_4.should == "1111"
       android_pay_card.google_transaction_id.should == "google_transaction_id"
       android_pay_card.source_description.should == "Visa 1111"
+      android_pay_card.customer_id.should == customer.id
     end
 
     it "creates a payment method from a android pay network token nonce" do
@@ -145,6 +147,7 @@ describe Braintree::PaymentMethod do
       android_pay_card.source_card_last_4.should == "4444"
       android_pay_card.google_transaction_id.should == "google_transaction_id"
       android_pay_card.source_description.should == "MasterCard 4444"
+      android_pay_card.customer_id.should == customer.id
     end
 
     it "allows passing the make_default option alongside the nonce" do
@@ -540,6 +543,7 @@ describe Braintree::PaymentMethod do
         result.should be_success
         result.payment_method.token.should_not == nil
         result.payment_method.image_url.should_not be_nil
+        result.payment_method.customer_id.should == customer.id
       end
     end
 
@@ -620,6 +624,7 @@ describe Braintree::PaymentMethod do
         paypal_account.should be_a(Braintree::PayPalAccount)
         paypal_account.token.should == payment_method_token
         paypal_account.email.should == "jane.doe@example.com"
+        paypal_account.customer_id.should == customer.id
       end
     end
 
@@ -644,6 +649,7 @@ describe Braintree::PaymentMethod do
         apple_pay_card.expiration_month.to_i.should > 0
         apple_pay_card.expiration_year.to_i.should > 0
         apple_pay_card.source_description.should == "AmEx 41002"
+        apple_pay_card.customer_id.should == customer.id
       end
     end
 
@@ -672,6 +678,7 @@ describe Braintree::PaymentMethod do
         android_pay_card.source_card_last_4.should == "1111"
         android_pay_card.google_transaction_id.should == "google_transaction_id"
         android_pay_card.source_description.should == "Visa 1111"
+        android_pay_card.customer_id.should == customer.id
       end
 
       it "finds the network token payment method with the given token" do
@@ -698,6 +705,7 @@ describe Braintree::PaymentMethod do
         android_pay_card.source_card_last_4.should == "4444"
         android_pay_card.google_transaction_id.should == "google_transaction_id"
         android_pay_card.source_description.should == "MasterCard 4444"
+        android_pay_card.customer_id.should == customer.id
       end
     end
 
@@ -717,6 +725,7 @@ describe Braintree::PaymentMethod do
         payment_method.token.should == payment_method_token
         payment_method.image_url.should_not be_nil
         payment_method.should be_a Braintree::UnknownPaymentMethod
+        payment_method.customer_id.should == customer.id
       end
     end
 
