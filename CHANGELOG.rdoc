@@ -1,3 +1,9 @@
+== 2.49.0
+* Remove Amex Pay with Points response from Transaction.sale response
+* Add expired? method to Apple Pay card
+* Add customer_id property to `AndroidPayCard`, `ApplePayCard`, `CoinbaseAccount`, `EuropeBankAccount`, `PaypalAccount`, and `UnknownPaymentMethod`
+* Add new error `ProcessorDoesNotSupportAuths`
+
 == 2.48.1
 * Fix issue in TestTransaction spec
 * Fix issue with LibXML causing a segfault when using Ruby version 2.0.0
