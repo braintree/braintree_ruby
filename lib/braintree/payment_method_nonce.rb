@@ -2,8 +2,8 @@ module Braintree
   class PaymentMethodNonce
     include BaseModule # :nodoc:
 
-    def self.create(payment_method)
-      Configuration.gateway.payment_method_nonce.create(payment_method)
+    def self.create(payment_method_token)
+      Configuration.gateway.payment_method_nonce.create(payment_method_token)
     end
 
     def self.find(payment_method_nonce)
