@@ -203,7 +203,7 @@ module Braintree
     end
 
     def nonce
-      @nonce ||= PaymentMethodNonce.create(self)
+      @nonce ||= PaymentMethodNonce.create(token)
     end
 
     # Returns true if the card is associated with Venmo SDK

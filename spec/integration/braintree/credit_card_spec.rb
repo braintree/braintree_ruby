@@ -1554,4 +1554,18 @@ describe Braintree::CreditCard do
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
+
+  describe "nonce" do
+    it "returns the credit card nonce" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+
+      credit_card.nonce.should_not be_nil
+    end
+  end
 end
