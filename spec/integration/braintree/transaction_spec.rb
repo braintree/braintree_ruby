@@ -3696,4 +3696,58 @@ describe Braintree::Transaction do
       end
     end
   end
+
+  context "transaction facilitator" do
+    before(:each) do
+      partner_merchant_gateway = Braintree::Gateway.new(
+        :merchant_id => "integration_merchant_public_id",
+        :public_key => "oauth_app_partner_user_public_key",
+        :private_key => "oauth_app_partner_user_private_key",
+        :environment => :development,
+        :logger => Logger.new("/dev/null")
+      )
+      customer = partner_merchant_gateway.customer.create(
+        :first_name => "Joe",
+        :last_name => "Brown",
+        :company => "ExampleCo",
+        :email => "joe@example.com",
+        :phone => "312.555.1234",
+        :fax => "614.555.5678",
+        :website => "www.example.com"
+      ).customer
+      @credit_card = partner_merchant_gateway.credit_card.create(
+        :customer_id => customer.id,
+        :cardholder_name => "Adam Davis",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009"
+      ).credit_card
+
+      oauth_gateway = Braintree::Gateway.new(
+        :client_id => "client_id$development$integration_client_id",
+        :client_secret => "client_secret$development$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+      access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "grant_payment_method"
+      }).credentials.access_token
+
+      @granting_gateway = Braintree::Gateway.new(
+        :access_token => access_token,
+        :logger => Logger.new("/dev/null")
+      )
+    end
+
+    it "is returned on transaction created via nonce granting" do
+      grant_result = @granting_gateway.credit_card.grant(@credit_card.token, false)
+
+      result = Braintree::Transaction.sale(
+        :payment_method_nonce => grant_result.nonce,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+      result.transaction.facilitator_details.should_not == nil
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$development$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+    end
+  end
 end
