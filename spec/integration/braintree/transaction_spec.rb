@@ -2311,6 +2311,7 @@ describe Braintree::Transaction do
         it "succeeds when submit_for_settlement is true" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
               :expiration_date => "05/2009"
@@ -2332,6 +2333,7 @@ describe Braintree::Transaction do
         it "succeeds even if the card is ineligible" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
               :expiration_date => "05/2009"
@@ -2353,6 +2355,7 @@ describe Braintree::Transaction do
         it "succeeds even if the card's balance is insufficient" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::InsufficientPoints,
               :expiration_date => "05/2009"
@@ -2376,6 +2379,7 @@ describe Braintree::Transaction do
         it "succeeds" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
               :expiration_date => "05/2009"
@@ -2399,6 +2403,7 @@ describe Braintree::Transaction do
         it "succeeds even if the card is ineligible" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
               :expiration_date => "05/2009"
@@ -2423,6 +2428,7 @@ describe Braintree::Transaction do
         it "succeeds even if the card's balance is insufficient" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
               :expiration_date => "05/2009"
