@@ -576,7 +576,7 @@ describe Braintree::CreditCard do
 
       result = Braintree::PaymentMethod.create(
         :customer_id => customer_result.customer.id,
-        :payment_method_nonce => grant_result.nonce,
+        :payment_method_nonce => grant_result.nonce
       )
       result.success?.should == false
     end
