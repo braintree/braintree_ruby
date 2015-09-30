@@ -27,6 +27,8 @@ module Braintree
 
     def _subject_sample_xml(kind, id)
       case kind
+      when Braintree::WebhookNotification::Kind::Check
+        _check
       when Braintree::WebhookNotification::Kind::DisputeOpened
         _dispute_opened_sample_xml(id)
       when Braintree::WebhookNotification::Kind::DisputeLost
@@ -54,6 +56,13 @@ module Braintree
       else
         _subscription_sample_xml(id)
       end
+    end
+
+    def _check
+
+      <<-XML
+        <check type="boolean">true</check>
+      XML
     end
 
     def _subscription_charged_successfully(id)

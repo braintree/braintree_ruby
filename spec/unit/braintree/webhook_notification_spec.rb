@@ -304,6 +304,30 @@ describe Braintree::WebhookNotification do
     end
   end
 
+  describe "check?" do
+    it "returns true for check webhook kinds" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::Check,
+        nil
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload].rstrip)
+
+      notification.check?.should == true
+    end
+
+    it "returns false for non-check webhook kinds" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
+        nil
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload].rstrip)
+
+      notification.check?.should == false
+    end
+  end
+
   describe "self.verify" do
     it "creates a verification string" do
       response = Braintree::WebhookNotification.verify("20f9f8ed05f77439fe955c977e4c8a53")

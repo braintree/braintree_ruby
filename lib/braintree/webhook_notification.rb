@@ -5,6 +5,8 @@ module Braintree
     include BaseModule
 
     module Kind
+      Check = "check"
+
       Disbursement = "disbursement"
       DisbursementException = "disbursement_exception"
 
@@ -60,6 +62,10 @@ module Braintree
 
     def message
       @error_result.message if @error_result
+    end
+
+    def check?
+      !!@subject[:check]
     end
 
     class << self
