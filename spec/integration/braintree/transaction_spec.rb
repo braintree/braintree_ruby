@@ -2593,7 +2593,7 @@ describe Braintree::Transaction do
     it "successfully submits multiple times for partial settlement" do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
@@ -2628,9 +2628,10 @@ describe Braintree::Transaction do
     it "returns an error with an unsupported processor" do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
         :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "06/2009"
+          :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
+          :expiration_date => "05/2009"
         }
       )
 
@@ -2642,7 +2643,7 @@ describe Braintree::Transaction do
     it "returns an error with an invalid payment instrument type" do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
         :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx
       )
 
@@ -2654,7 +2655,7 @@ describe Braintree::Transaction do
     it "returns an error result if settlement amount greater than authorized amount" do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
@@ -2672,7 +2673,7 @@ describe Braintree::Transaction do
     it "returns an error result if status is not authorized" do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::SalemMerchantAccountId,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
