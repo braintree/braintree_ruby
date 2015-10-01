@@ -308,6 +308,7 @@ module Braintree
       PaymentMethodTokenIsInvalid = "91518"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
+      ProcessorDoesNotSupportAuths = "915104"
       ProcessorDoesNotSupportCredits = "91546"
       ProcessorDoesNotSupportPartialSettlement = "915102"
       ProcessorDoesNotSupportVoiceAuthorizations = "91545"

@@ -512,6 +512,94 @@ describe Braintree::CreditCard do
     end
   end
 
+  describe "self.grant" do
+    before(:each) do
+      partner_merchant_gateway = Braintree::Gateway.new(
+        :merchant_id => "integration_merchant_public_id",
+        :public_key => "oauth_app_partner_user_public_key",
+        :private_key => "oauth_app_partner_user_private_key",
+        :environment => :development,
+        :logger => Logger.new("/dev/null")
+      )
+      customer = partner_merchant_gateway.customer.create(
+        :first_name => "Joe",
+        :last_name => "Brown",
+        :company => "ExampleCo",
+        :email => "joe@example.com",
+        :phone => "312.555.1234",
+        :fax => "614.555.5678",
+        :website => "www.example.com"
+      ).customer
+      @credit_card = partner_merchant_gateway.credit_card.create(
+        :customer_id => customer.id,
+        :cardholder_name => "Adam Davis",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009"
+      ).credit_card
+
+      oauth_gateway = Braintree::Gateway.new(
+        :client_id => "client_id$development$integration_client_id",
+        :client_secret => "client_secret$development$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+      access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "grant_payment_method"
+      }).credentials.access_token
+
+      @granting_gateway = Braintree::Gateway.new(
+        :access_token => access_token,
+        :logger => Logger.new("/dev/null")
+      )
+    end
+
+    it "returns a nonce that is transactable by a partner merchant exactly once" do
+      grant_result = @granting_gateway.credit_card.grant(@credit_card.token, false)
+
+      result = Braintree::Transaction.sale(
+        :payment_method_nonce => grant_result.nonce,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+      result.success?.should == true
+
+      result2 = Braintree::Transaction.sale(
+        :payment_method_nonce => grant_result.nonce,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+      result2.success?.should == false
+    end
+
+    it "returns a nonce that is not vaultable" do
+      grant_result = @granting_gateway.credit_card.grant(@credit_card.token, false)
+
+      customer_result = Braintree::Customer.create()
+
+      result = Braintree::PaymentMethod.create(
+        :customer_id => customer_result.customer.id,
+        :payment_method_nonce => grant_result.nonce
+      )
+      result.success?.should == false
+    end
+
+    it "returns a nonce that is vaultable" do
+      grant_result = @granting_gateway.credit_card.grant(@credit_card.token, true)
+
+      customer_result = Braintree::Customer.create()
+
+      result = Braintree::PaymentMethod.create(
+        :customer_id => customer_result.customer.id,
+        :payment_method_nonce => grant_result.nonce
+      )
+      result.success?.should == true
+    end
+
+    it "raises an error if the token isn't found" do
+      expect do
+        @granting_gateway.credit_card.grant("not_a_real_token", false)
+      end.to raise_error
+    end
+  end
+
   describe "self.create!" do
     it "returns the credit card if successful" do
       customer = Braintree::Customer.create!
@@ -1552,6 +1640,20 @@ describe Braintree::CreditCard do
           :expiration_date => "invalid/date"
         )
       end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
+  describe "nonce" do
+    it "returns the credit card nonce" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+
+      credit_card.nonce.should_not be_nil
     end
   end
 end

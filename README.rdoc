@@ -27,9 +27,9 @@ Or add to your Gemfile:
 
   result = Braintree::Transaction.sale(
     :amount => "1000.00",
-    :credit_card => {
-      :number => "5105105105105100",
-      :expiration_date => "05/12"
+    :payment_method_nonce => nonce_from_the_client,
+    :options => {
+      :submit_for_settlement => true
     }
   )
 

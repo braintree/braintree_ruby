@@ -2308,11 +2308,12 @@ describe Braintree::Transaction do
 
     context "Amex Pay with Points" do
       context "transaction creation" do
-        it "burns rewards points when submit_for_settlement is true" do
+        it "succeeds when submit_for_settlement is true" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
               :expiration_date => "05/2009"
             },
             :options => {
@@ -2327,20 +2328,20 @@ describe Braintree::Transaction do
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-          result.transaction.amex_rewards_response.should == "success"
         end
 
-        it "returns an error if the credit card is not eligible" do
+        it "succeeds even if the card is ineligible" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
               :expiration_date => "05/2009"
             },
             :options => {
               :submit_for_settlement => true,
               :amex_rewards => {
-                :request_id => Braintree::Test::AmexRewards::RequestIds::CardIneligible,
+                :request_id => "ABC123",
                 :points => "1000",
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
@@ -2349,16 +2350,62 @@ describe Braintree::Transaction do
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-          result.transaction.amex_rewards_response.should == "RDM2002 Card is not eligible for redemption"
+        end
+
+        it "succeeds even if the card's balance is insufficient" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::InsufficientPoints,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true,
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            }
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
         end
       end
 
       context "submit for settlement" do
-        it "burns rewards points when option is set" do
+        it "succeeds" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            }
+          )
+          result.success?.should == true
+
+          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+
+        it "succeeds even if the card is ineligible" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
               :expiration_date => "05/2009"
             },
             :options => {
@@ -2372,24 +2419,23 @@ describe Braintree::Transaction do
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::Authorized
-          result.transaction.amex_rewards_response.should be_nil
 
           result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-          result.transaction.amex_rewards_response.should == "success"
         end
 
-        it "returns an error if the credit card is not eligible" do
+        it "succeeds even if the card's balance is insufficient" do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
               :expiration_date => "05/2009"
             },
             :options => {
               :amex_rewards => {
-                :request_id => Braintree::Test::AmexRewards::RequestIds::CardIneligible,
+                :request_id => "ABC123",
                 :points => "1000",
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
@@ -2398,12 +2444,10 @@ describe Braintree::Transaction do
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::Authorized
-          result.transaction.amex_rewards_response.should be_nil
 
           result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-          result.transaction.amex_rewards_response.should == "RDM2002 Card is not eligible for redemption"
         end
       end
     end
@@ -3756,6 +3800,60 @@ describe Braintree::Transaction do
         settlement_declined_transaction.processor_settlement_response_code.should == "4002"
         settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Pending"
       end
+    end
+  end
+
+  context "transaction facilitator" do
+    before(:each) do
+      partner_merchant_gateway = Braintree::Gateway.new(
+        :merchant_id => "integration_merchant_public_id",
+        :public_key => "oauth_app_partner_user_public_key",
+        :private_key => "oauth_app_partner_user_private_key",
+        :environment => :development,
+        :logger => Logger.new("/dev/null")
+      )
+      customer = partner_merchant_gateway.customer.create(
+        :first_name => "Joe",
+        :last_name => "Brown",
+        :company => "ExampleCo",
+        :email => "joe@example.com",
+        :phone => "312.555.1234",
+        :fax => "614.555.5678",
+        :website => "www.example.com"
+      ).customer
+      @credit_card = partner_merchant_gateway.credit_card.create(
+        :customer_id => customer.id,
+        :cardholder_name => "Adam Davis",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009"
+      ).credit_card
+
+      oauth_gateway = Braintree::Gateway.new(
+        :client_id => "client_id$development$integration_client_id",
+        :client_secret => "client_secret$development$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+      access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "grant_payment_method"
+      }).credentials.access_token
+
+      @granting_gateway = Braintree::Gateway.new(
+        :access_token => access_token,
+        :logger => Logger.new("/dev/null")
+      )
+    end
+
+    it "is returned on transaction created via nonce granting" do
+      grant_result = @granting_gateway.credit_card.grant(@credit_card.token, false)
+
+      result = Braintree::Transaction.sale(
+        :payment_method_nonce => grant_result.nonce,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+      result.transaction.facilitator_details.should_not == nil
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$development$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
     end
   end
 end

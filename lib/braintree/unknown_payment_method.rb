@@ -2,7 +2,7 @@ module Braintree
   class UnknownPaymentMethod
     include BaseModule
 
-    attr_reader :token
+    attr_reader :token, :customer_id
 
     def initialize(gateway, attributes)
       @gateway = gateway

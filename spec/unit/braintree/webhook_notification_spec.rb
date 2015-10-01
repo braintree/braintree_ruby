@@ -193,6 +193,23 @@ describe Braintree::WebhookNotification do
       end
     end
 
+    context "subscription" do
+      it "builds a sample notification for a subscription charged successfully webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::SubscriptionChargedSuccessfully,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionChargedSuccessfully
+        notification.subscription.id.should == "my_id"
+        notification.subscription.transactions.size.should == 1
+        notification.subscription.transactions.first.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        notification.subscription.transactions.first.amount.should == BigDecimal("49.99")
+      end
+    end
+
     it "includes a valid signature" do
       sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
