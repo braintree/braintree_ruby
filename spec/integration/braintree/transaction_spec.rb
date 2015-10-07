@@ -3804,7 +3804,7 @@ describe Braintree::Transaction do
     end
   end
 
-  context "transaction facilitator" do
+  context "shared payment method" do
     before(:each) do
       partner_merchant_gateway = Braintree::Gateway.new(
         :merchant_id => "integration_merchant_public_id",
@@ -3813,7 +3813,7 @@ describe Braintree::Transaction do
         :environment => :development,
         :logger => Logger.new("/dev/null")
       )
-      customer = partner_merchant_gateway.customer.create(
+      @customer = partner_merchant_gateway.customer.create(
         :first_name => "Joe",
         :last_name => "Brown",
         :company => "ExampleCo",
@@ -3822,8 +3822,13 @@ describe Braintree::Transaction do
         :fax => "614.555.5678",
         :website => "www.example.com"
       ).customer
+      @address = partner_merchant_gateway.address.create(
+        :customer_id => @customer.id,
+        :first_name => "Testy",
+        :last_name => "McTesterson"
+      ).address
       @credit_card = partner_merchant_gateway.credit_card.create(
-        :customer_id => customer.id,
+        :customer_id => @customer.id,
         :cardholder_name => "Adam Davis",
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009"
@@ -3836,7 +3841,7 @@ describe Braintree::Transaction do
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
         :merchant_public_id => "integration_merchant_id",
-        :scope => "grant_payment_method"
+        :scope => "grant_payment_method,shared_vault_transactions"
       }).credentials.access_token
 
       @granting_gateway = Braintree::Gateway.new(
@@ -3845,11 +3850,34 @@ describe Braintree::Transaction do
       )
     end
 
-    it "is returned on transaction created via nonce granting" do
+    it "oauth app details are returned on transaction created via nonce granting" do
       grant_result = @granting_gateway.credit_card.grant(@credit_card.token, false)
 
       result = Braintree::Transaction.sale(
         :payment_method_nonce => grant_result.nonce,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+      result.transaction.facilitator_details.should_not == nil
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$development$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+    end
+
+    it "allows transactions to be created with a shared payment method, customer, billing and shipping addresses" do
+      result = @granting_gateway.transaction.sale(
+        :shared_payment_method_token => @credit_card.token,
+        :shared_customer_id => @customer.id,
+        :shared_shipping_address_id => @address.id,
+        :shared_billing_address_id => @address.id,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+      result.success?.should == true
+      result.transaction.shipping_details.first_name.should == @address.first_name
+      result.transaction.billing_details.first_name.should == @address.first_name
+    end
+
+    it "oauth app details are returned on transaction created via a shared_payment_method_token" do
+      result = @granting_gateway.transaction.sale(
+        :shared_payment_method_token => @credit_card.token,
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
       result.transaction.facilitator_details.should_not == nil

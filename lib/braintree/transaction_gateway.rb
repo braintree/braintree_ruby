@@ -126,6 +126,7 @@ module Braintree
         :purchase_order_number, :recurring, :shipping_address_id, :type, :tax_amount, :tax_exempt,
         :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data, :fraud_merchant_id,
         :billing_address_id, :payment_method_nonce, :three_d_secure_token,
+        :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {
