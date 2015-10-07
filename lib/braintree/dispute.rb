@@ -10,6 +10,7 @@ module Braintree
     attr_reader :currency_iso_code
     attr_reader :id
     attr_reader :transaction_details
+    attr_reader :kind
 
     module Status
       Open = "open"
