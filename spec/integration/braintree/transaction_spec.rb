@@ -2306,6 +2306,21 @@ describe Braintree::Transaction do
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
 
+    it "works with Apple Pay params" do
+      params = {
+        :amount => "3.12",
+        :apple_pay_card => {
+          :number => "370295001292109",
+          :cardholder_name => "JANE SMITH",
+          :cryptogram => "AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==",
+          :expiration_month => "10",
+          :expiration_year => "14",
+        }
+      }
+      result = Braintree::Transaction.sale(params)
+      result.success?.should == true
+    end
+
     context "Amex Pay with Points" do
       context "transaction creation" do
         it "succeeds when submit_for_settlement is true" do

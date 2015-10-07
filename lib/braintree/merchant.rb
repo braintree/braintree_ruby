@@ -15,5 +15,9 @@ module Braintree
     def self._new(*args) # :nodoc:
       self.new *args
     end
+
+    def self.provision_raw_apple_pay
+      Configuration.gateway.merchant.provision_raw_apple_pay
+    end
   end
 end
