@@ -32,6 +32,12 @@ module Braintree
       Retrieval = "retrieval"
     end
 
+    module Kind
+      Chargeback = "chargeback"
+      PreArbitration = "pre_arbitration"
+      Retrieval = "retrieval"
+    end
+
     class << self
       protected :new
       def _new(*args) # :nodoc:
