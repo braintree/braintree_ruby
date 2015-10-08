@@ -25,6 +25,8 @@ module Braintree
         SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
       elsif response[:android_pay_card]
         SuccessfulResult.new(:payment_method => AndroidPayCard._new(@gateway, response[:android_pay_card]))
+      elsif response[:amex_express_checkout_card]
+        SuccessfulResult.new(:payment_method => AmexExpressCheckoutCard._new(@gateway, response[:amex_express_checkout_card]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       elsif response

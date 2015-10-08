@@ -150,6 +150,33 @@ describe Braintree::PaymentMethod do
       android_pay_card.customer_id.should == customer.id
     end
 
+    it "creates a payment method from an amex express checkout card nonce" do
+      customer = Braintree::Customer.create.customer
+      token = SecureRandom.hex(16)
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::AmexExpressCheckout,
+        :customer_id => customer.id,
+        :token => token
+      )
+
+      result.should be_success
+      amex_express_checkout_card = result.payment_method
+      amex_express_checkout_card.should be_a(Braintree::AmexExpressCheckoutCard)
+      amex_express_checkout_card.should_not be_nil
+
+      amex_express_checkout_card.default.should == true
+      amex_express_checkout_card.card_type.should == "American Express"
+      amex_express_checkout_card.token.should == token
+      amex_express_checkout_card.bin.should =~ /\A\d{6}\z/
+      amex_express_checkout_card.expiration_month.should =~ /\A\d{2}\z/
+      amex_express_checkout_card.expiration_year.should =~ /\A\d{4}\z/
+      amex_express_checkout_card.card_member_number.should =~ /\A\d{4}\z/
+      amex_express_checkout_card.card_member_expiry_date.should =~ /\A\d{4}\z/
+      amex_express_checkout_card.image_url.should include(".png")
+      amex_express_checkout_card.source_description.should =~ /\AAmEx \d{4}\z/
+      amex_express_checkout_card.customer_id.should == customer.id
+    end
+
     it "allows passing the make_default option alongside the nonce" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(

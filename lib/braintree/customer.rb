@@ -4,7 +4,7 @@ module Braintree
 
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
       :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards, :coinbase_accounts,
-      :android_pay_cards
+      :android_pay_cards, :amex_express_checkout_cards
 
     def self.all
       Configuration.gateway.customer.all
@@ -92,6 +92,7 @@ module Braintree
       @apple_pay_cards = (@apple_pay_cards || []).map { |pm| ApplePayCard._new gateway, pm }
       @europe_bank_accounts = (@europe_bank_Accounts || []).map { |pm| EuropeBankAccount._new gateway, pm }
       @android_pay_cards = (@android_pay_cards || []).map { |pm| AndroidPayCard._new gateway, pm }
+      @amex_express_checkout_cards = (@amex_express_checkout_cards || []).map { |pm| AmexExpressCheckoutCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
     end
