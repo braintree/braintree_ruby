@@ -104,6 +104,8 @@ module Braintree
     attr_reader :recurring
     attr_reader :refund_ids, :refunded_transaction_id
     attr_reader :settlement_batch_id
+    attr_reader :authorized_transaction_id
+    attr_reader :partial_settlement_transaction_ids
     # See Transaction::Status
     attr_reader :status
     attr_reader :status_history
@@ -116,6 +118,7 @@ module Braintree
     attr_reader :add_ons, :discounts
     attr_reader :payment_instrument_type
     attr_reader :risk_data
+    attr_reader :facilitator_details
     attr_reader :three_d_secure_info
 
     def self.create(attributes)
@@ -210,6 +213,10 @@ module Braintree
       return_object_or_raise(:transaction) { submit_for_settlement(transaction_id, amount) }
     end
 
+    def self.submit_for_partial_settlement(authorized_transaction_id, amount = nil)
+      Configuration.gateway.transaction.submit_for_partial_settlement(authorized_transaction_id, amount)
+    end
+
     def self.void(transaction_id)
       Configuration.gateway.transaction.void(transaction_id)
     end
@@ -242,6 +249,7 @@ module Braintree
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
       @payment_instrument_type = attributes[:payment_instrument_type]
       @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
+      @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
     end
 

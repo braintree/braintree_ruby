@@ -1,3 +1,13 @@
+== 2.50.0
+* Adds support for nonce granting to CreditCards
+* Adds FacilitatorDetails for facilitated transactions
+* Adds authorized_transaction_id, partial_settlement_transaction_ids and facilitator_details attr_readers to Transaction
+* Adds support for Transaction#sale with raw Apple Pay parameters
+* Adds Merchant.provision_raw_apple_pay
+* Relaxes constraints on TrasnactionSearch#source
+* Adds Check WebhookNotifications
+* Adds Transaction.submit_for_partial_settlement
+
 == 2.49.0
 * Remove Amex Pay with Points response from Transaction.sale response
 * Add expired? method to Apple Pay card

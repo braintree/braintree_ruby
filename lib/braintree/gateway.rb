@@ -36,10 +36,6 @@ module Braintree
       DiscountGateway.new(self)
     end
 
-    def merchant
-      MerchantGateway.new(self)
-    end
-
     def oauth
       OAuthGateway.new(self)
     end
@@ -58,6 +54,10 @@ module Braintree
 
     def paypal_account
       PayPalAccountGateway.new(self)
+    end
+
+    def merchant
+      MerchantGateway.new(self)
     end
 
     def merchant_account

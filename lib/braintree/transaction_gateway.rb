@@ -104,6 +104,12 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def submit_for_partial_settlement(authorized_transaction_id, amount = nil)
+      raise ArgumentError, "authorized_transaction_id is invalid" unless authorized_transaction_id =~ /\A[0-9a-z]+\z/
+      response = @config.http.post("#{@config.base_merchant_path}/transactions/#{authorized_transaction_id}/submit_for_partial_settlement", :transaction => {:amount => amount})
+      _handle_transaction_response(response)
+    end
+
     def void(transaction_id)
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/void")
       _handle_transaction_response(response)
@@ -120,6 +126,7 @@ module Braintree
         :purchase_order_number, :recurring, :shipping_address_id, :type, :tax_amount, :tax_exempt,
         :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data, :fraud_merchant_id,
         :billing_address_id, :payment_method_nonce, :three_d_secure_token,
+        :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id,
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
         {
@@ -144,7 +151,8 @@ module Braintree
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone, :url]},
         {:paypal_account => [:email, :token, :paypal_data, :payee_email]},
-        {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate]}]}
+        {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate]}]},
+        {:apple_pay_card => [:number, :cardholder_name, :cryptogram, :expiration_month, :expiration_year]}
       ]
     end
 
