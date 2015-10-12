@@ -87,6 +87,7 @@ module Braintree
       Configuration.gateway.credit_card.from_nonce(nonce)
     end
 
+    # Deprecated. Use Braintree::PaymentMethod.grant
     def self.grant(token, allow_vaulting)
       Configuration.gateway.credit_card.grant(token, allow_vaulting)
     end
