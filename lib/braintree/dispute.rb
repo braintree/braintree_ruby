@@ -10,6 +10,7 @@ module Braintree
     attr_reader :currency_iso_code
     attr_reader :id
     attr_reader :transaction_details
+    attr_reader :kind
 
     module Status
       Open = "open"
@@ -28,6 +29,12 @@ module Braintree
       ProductNotReceived = "product_not_received"
       ProductUnsatisfactory = "product_unsatisfactory"
       TransactionAmountDiffers = "transaction_amount_differs"
+      Retrieval = "retrieval"
+    end
+
+    module Kind
+      Chargeback = "chargeback"
+      PreArbitration = "pre_arbitration"
       Retrieval = "retrieval"
     end
 
