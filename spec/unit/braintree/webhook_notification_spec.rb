@@ -73,6 +73,7 @@ describe Braintree::WebhookNotification do
         dispute.status.should == Braintree::Dispute::Status::Open
         dispute.id.should == "my_id"
         dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        dispute.date_opened.should == '2014-03-21'
       end
 
       it "builds a sample notification for a dispute lost webhook" do
@@ -89,6 +90,7 @@ describe Braintree::WebhookNotification do
         dispute.status.should == Braintree::Dispute::Status::Lost
         dispute.id.should == "my_id"
         dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        dispute.date_opened.should == '2014-03-21'
       end
 
       it "builds a sample notification for a dispute won webhook" do
@@ -105,6 +107,8 @@ describe Braintree::WebhookNotification do
         dispute.status.should == Braintree::Dispute::Status::Won
         dispute.id.should == "my_id"
         dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        dispute.date_opened.should == '2014-03-21'
+        dispute.date_won.should == '2014-03-22'
       end
     end
 
