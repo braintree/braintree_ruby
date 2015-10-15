@@ -11,6 +11,8 @@ module Braintree
     attr_reader :id
     attr_reader :transaction_details
     attr_reader :kind
+    attr_reader :date_opened
+    attr_reader :date_won
 
     module Status
       Open = "open"
