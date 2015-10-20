@@ -1,3 +1,8 @@
+== 2.51.0
+* Fixes bug with signature of partner oauth connect url
+* Adds date_won, date_opened and kind to dispute webhook parsing
+* Make grant a method on PaymentMethod and not just CreditCard
+
 == 2.50.0
 * Adds support for nonce granting to CreditCards
 * Adds FacilitatorDetails for facilitated transactions

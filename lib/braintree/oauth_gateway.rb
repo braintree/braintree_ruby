@@ -41,8 +41,8 @@ module Braintree
         concat(business_params).
         concat(payment_methods)
 
-      query_string = query.map { |k, v| "#{URI.escape(k.to_s)}=#{URI.escape(v.to_s)}" }.join("&")
-      url = "#{@config.base_url}/oauth/connect?#{CGI.escape(query_string)}"
+      query_string = query.map { |k, v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join("&")
+      url = "#{@config.base_url}/oauth/connect?#{query_string}"
       "#{url}&signature=#{_compute_signature(url)}&algorithm=SHA256"
     end
 

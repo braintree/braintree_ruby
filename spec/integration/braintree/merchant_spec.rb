@@ -28,9 +28,9 @@ describe Braintree::MerchantGateway do
 
       credentials = result.credentials
       credentials.access_token.should start_with("access_token$")
+      credentials.refresh_token.should start_with("refresh_token$")
       credentials.expires_at.should_not be_nil
       credentials.token_type.should == "bearer"
-      credentials.refresh_token.should be_nil
     end
 
     it "gives an error when using invalid payment_methods" do

@@ -17,5 +17,9 @@ module Braintree
     def self.delete(token)
       Configuration.gateway.payment_method.delete(token)
     end
+
+    def self.grant(token, allow_vaulting)
+      Configuration.gateway.payment_method.grant(token, allow_vaulting)
+    end
   end
 end

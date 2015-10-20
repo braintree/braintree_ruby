@@ -66,6 +66,20 @@ module Braintree
       _do_update(:put, "/payment_methods/any/#{token}", :payment_method => attributes)
     end
 
+    def grant(token, allow_vaulting)
+      raise ArgumentError if token.nil? || token.to_s.strip == ""
+      response = @config.http.post(
+        "#{@config.base_merchant_path}/payment_methods/grant",
+        :payment_method => {
+          :shared_payment_method_token => token,
+          :allow_vaulting => allow_vaulting
+        }
+      )
+      PaymentMethodNonce._new(@gateway, response[:payment_method_nonce])
+    rescue NotFoundError
+      raise NotFoundError, "payment method with token #{token.inspect} not found"
+    end
+
     def _do_update(http_verb, path, params) # :nodoc:
       response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
