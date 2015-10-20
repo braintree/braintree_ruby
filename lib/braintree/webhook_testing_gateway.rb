@@ -202,6 +202,7 @@ module Braintree
             <id>#{id}</id>
             <amount>250.00</amount>
           </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end
@@ -222,6 +223,7 @@ module Braintree
             <id>#{id}</id>
             <amount>250.00</amount>
           </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end
@@ -242,6 +244,8 @@ module Braintree
             <id>#{id}</id>
             <amount>250.00</amount>
           </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+          <date-won type=\"date\">2014-03-22</date-won>
         </dispute>
       XML
     end
