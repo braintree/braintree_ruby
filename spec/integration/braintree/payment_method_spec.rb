@@ -171,7 +171,7 @@ describe Braintree::PaymentMethod do
       amex_express_checkout_card.expiration_month.should =~ /\A\d{2}\z/
       amex_express_checkout_card.expiration_year.should =~ /\A\d{4}\z/
       amex_express_checkout_card.card_member_number.should =~ /\A\d{4}\z/
-      amex_express_checkout_card.card_member_expiry_date.should =~ /\A\d{4}\z/
+      amex_express_checkout_card.card_member_expiry_date.should =~ /\A\d{2}\/\d{2}\z/
       amex_express_checkout_card.image_url.should include(".png")
       amex_express_checkout_card.source_description.should =~ /\AAmEx \d{4}\z/
       amex_express_checkout_card.customer_id.should == customer.id

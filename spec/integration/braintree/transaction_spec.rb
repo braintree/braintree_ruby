@@ -1397,7 +1397,7 @@ describe Braintree::Transaction do
         checkout_details.expiration_month.should =~ /\A\d{2}\z/
         checkout_details.expiration_year.should =~ /\A\d{4}\z/
         checkout_details.card_member_number.should =~ /\A\d{4}\z/
-        checkout_details.card_member_expiry_date.should =~ /\A\d{4}\z/
+        checkout_details.card_member_expiry_date.should =~ /\A\d{2}\/\d{2}\z/
         checkout_details.image_url.should include(".png")
         checkout_details.source_description.should =~ /\AAmEx \d{4}\z/
       end
