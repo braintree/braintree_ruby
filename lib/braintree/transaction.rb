@@ -206,8 +206,8 @@ module Braintree
       return_object_or_raise(:transaction) { release_from_escrow(transaction_id) }
     end
 
-    def self.submit_for_settlement(transaction_id, amount = nil)
-      Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount)
+    def self.submit_for_settlement(transaction_id, amount = nil, options = {})
+      Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount, options)
     end
 
     def self.submit_for_settlement!(transaction_id, amount = nil)

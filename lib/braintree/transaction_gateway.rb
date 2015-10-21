@@ -98,9 +98,11 @@ module Braintree
       _handle_transaction_response(response)
     end
 
-    def submit_for_settlement(transaction_id, amount = nil)
+    def submit_for_settlement(transaction_id, amount = nil, options = {})
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/submit_for_settlement", :transaction => {:amount => amount})
+      Util.verify_keys(TransactionGateway._submit_for_settlement_signature, options)
+      transaction_params = {:amount => amount}.merge(options)
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/submit_for_settlement", :transaction => transaction_params)
       _handle_transaction_response(response)
     end
 
@@ -155,6 +157,13 @@ module Braintree
         {:paypal_account => [:email, :token, :paypal_data, :payee_email]},
         {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate]}]},
         {:apple_pay_card => [:number, :cardholder_name, :cryptogram, :expiration_month, :expiration_year]}
+      ]
+    end
+
+    def self._submit_for_settlement_signature # :nodoc:
+      [
+        :order_id,
+        {:descriptor => [:name, :phone, :url]},
       ]
     end
 
