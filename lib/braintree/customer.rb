@@ -124,7 +124,7 @@ module Braintree
 
     # Returns the customer's payment methods
     def payment_methods
-      @credit_cards.dup + @paypal_accounts.dup + @apple_pay_cards.dup + @coinbase_accounts.dup + @android_pay_cards + @amex_express_checkout_cards
+      @credit_cards.dup + @paypal_accounts.dup + @apple_pay_cards.dup + @coinbase_accounts.dup + @android_pay_cards.dup + @amex_express_checkout_cards.dup
     end
 
     def inspect # :nodoc:
