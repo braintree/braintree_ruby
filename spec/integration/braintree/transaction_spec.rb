@@ -1379,6 +1379,29 @@ describe Braintree::Transaction do
         android_pay_details.google_transaction_id.should == "google_transaction_id"
       end
 
+      it "can create a transaction with a fake amex express checkout card nonce" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::AmexExpressCheckout,
+          :options => {:store_in_vault => true}
+        )
+        result.success?.should == true
+        result.transaction.should_not be_nil
+        checkout_details = result.transaction.amex_express_checkout_details
+        checkout_details.should_not be_nil
+        checkout_details.card_type.should == "American Express"
+        checkout_details.token.should respond_to(:to_str)
+        checkout_details.bin.should =~ /\A\d{6}\z/
+        checkout_details.expiration_month.should =~ /\A\d{2}\z/
+        checkout_details.expiration_year.should =~ /\A\d{4}\z/
+        checkout_details.card_member_number.should =~ /\A\d{4}\z/
+        checkout_details.card_member_expiry_date.should =~ /\A\d{2}\/\d{2}\z/
+        checkout_details.image_url.should include(".png")
+        checkout_details.source_description.should =~ /\AAmEx \d{4}\z/
+      end
+
       it "can create a transaction with an unknown nonce" do
         customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(

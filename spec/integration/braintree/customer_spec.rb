@@ -797,7 +797,8 @@ describe Braintree::Customer do
       result.success?.should == true
 
       found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.android_pay_cards.should_not be_nil
+      found_customer.android_pay_cards.size.should == 1
+      found_customer.payment_methods.size.should == 1
       android_pay_card = found_customer.android_pay_cards.first
       android_pay_card.should be_a Braintree::AndroidPayCard
       android_pay_card.token.should_not be_nil
@@ -811,11 +812,27 @@ describe Braintree::Customer do
       result.success?.should == true
 
       found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.android_pay_cards.should_not be_nil
+      found_customer.android_pay_cards.size.should == 1
+      found_customer.payment_methods.size.should == 1
       android_pay_card = found_customer.android_pay_cards.first
       android_pay_card.should be_a Braintree::AndroidPayCard
       android_pay_card.token.should_not be_nil
       android_pay_card.expiration_year.should_not be_nil
+    end
+
+    it "returns associated amex express checkout cards" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::AmexExpressCheckout
+      )
+      result.success?.should == true
+
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.amex_express_checkout_cards.size.should == 1
+      found_customer.payment_methods.size.should == 1
+      amex_express_checkout_card = found_customer.amex_express_checkout_cards.first
+      amex_express_checkout_card.should be_a Braintree::AmexExpressCheckoutCard
+      amex_express_checkout_card.token.should_not be_nil
+      amex_express_checkout_card.expiration_year.should_not be_nil
     end
 
     it "works for a blank customer" do

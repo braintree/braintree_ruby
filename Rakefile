@@ -1,21 +1,27 @@
 require "rubygems"
 require "rspec/core/rake_task"
 
-task :default => %w[spec:unit spec:integration]
+task :default => "test:all"
 
 task :dev_console do
   sh "irb -I lib -rubygems -r braintree -r env/development"
 end
 
-desc "Run units"
-RSpec::Core::RakeTask.new("spec:unit") do |t|
-  t.pattern = "spec/unit/**/*_spec.rb"
+namespace :test do
+  desc "Run unit tests"
+  RSpec::Core::RakeTask.new(:unit) do |t|
+    t.pattern = "spec/unit/**/*_spec.rb"
+  end
+
+  desc "Run integration tests"
+  RSpec::Core::RakeTask.new(:integration) do |t|
+    t.pattern = "spec/integration/**/*_spec.rb"
+  end
+
+  task :all => [:unit, :integration]
 end
 
-desc "Run integration"
-RSpec::Core::RakeTask.new("spec:integration") do |t|
-  t.pattern = "spec/integration/**/*_spec.rb"
-end
+task :test => "test:all"
 
 task :gem do
   exec('gem build braintree.gemspec')
