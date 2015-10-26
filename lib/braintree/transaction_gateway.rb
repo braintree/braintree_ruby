@@ -144,6 +144,8 @@ module Braintree
           :store_shipping_address_in_vault,
           :venmo_sdk_session,
           :payee_email,
+          :skip_avs,
+          :skip_cvv,
           {:paypal => [:custom_field, :payee_email, :description]},
           {:three_d_secure => [:required]},
           {:amex_rewards => [:request_id, :points, :currency_amount, :currency_iso_code]}]
