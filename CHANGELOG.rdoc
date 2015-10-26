@@ -1,3 +1,6 @@
+== 2.53.0
+* Adds options to skip avs and cvv checks for a single transaction
+
 == 2.52.0
 * Add Amex Express Checkout payment method
 * Fix bug where Customer#payment_methods didn't include Android Pay cards
