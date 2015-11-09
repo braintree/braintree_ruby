@@ -1,3 +1,6 @@
+== 2.54.0
+* Treat dispute date_opened and date_won attributes as Dates
+
 == 2.53.0
 * Adds options to skip avs and cvv checks for a single transaction
 
