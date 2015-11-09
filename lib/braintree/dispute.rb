@@ -53,6 +53,8 @@ module Braintree
       @reply_by_date = Date.parse(reply_by_date) unless reply_by_date.nil?
       @amount = Util.to_big_decimal(amount)
       @transaction_details = TransactionDetails.new(@transaction)
+      @date_opened = Date.parse(date_opened) unless date_opened.nil?
+      @date_won = Date.parse(date_won) unless date_won.nil?
     end
   end
 end
