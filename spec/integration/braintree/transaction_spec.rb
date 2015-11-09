@@ -3173,6 +3173,9 @@ describe Braintree::Transaction do
         dispute.status.should == Braintree::Dispute::Status::Won
         dispute.transaction_details.amount.should == Braintree::Util.to_big_decimal("1000.00")
         dispute.transaction_details.id.should == "disputedtransaction"
+        dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        dispute.date_opened.should == Date.new(2014, 3, 1)
+        dispute.date_won.should == Date.new(2014, 3, 7)
       end
 
       it "includes disputes on found transactions" do
