@@ -149,6 +149,12 @@ describe Braintree::MerchantAccount do
       merchant_account.individual_details.last_name.should == VALID_APPLICATION_PARAMS[:individual][:last_name]
     end
 
+    it "retrieves the currency iso code for an existing master merchant account" do
+      merchant_account = Braintree::MerchantAccount.find("sandbox_master_merchant_account")
+
+      merchant_account.currency_iso_code.should == "USD"
+    end
+
     it "raises a NotFoundError exception if merchant account cannot be found" do
       expect do
         Braintree::MerchantAccount.find("non-existant")
