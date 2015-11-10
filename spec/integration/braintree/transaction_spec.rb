@@ -1558,6 +1558,33 @@ describe Braintree::Transaction do
         result.transaction.paypal_details.debug_id.should_not be_nil
         result.transaction.paypal_details.description.should == "A great product"
       end
+
+      it "can create a transaction with STC supplementary data" do
+        customer = Braintree::Customer.create!
+        nonce = nonce_for_new_payment_method(
+          :paypal_account => {
+            :consent_code => "PAYPAL_CONSENT_CODE",
+          }
+        )
+        nonce.should_not be_nil
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => nonce,
+          :options => {
+            :paypal => {
+              :supplementary_data => {
+                :key1 => "value1",
+                :key2 => "value2",
+              }
+            }
+          }
+        )
+
+        # note - supplementary data is not returned in response
+        result.success?.should == true
+      end
     end
 
     context "three_d_secure" do

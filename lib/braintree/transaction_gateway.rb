@@ -148,7 +148,7 @@ module Braintree
           :payee_email,
           :skip_avs,
           :skip_cvv,
-          {:paypal => [:custom_field, :payee_email, :description]},
+          {:paypal => [:custom_field, :payee_email, :description, {:supplementary_data => :_any_key_}]},
           {:three_d_secure => [:required]},
           {:amex_rewards => [:request_id, :points, :currency_amount, :currency_iso_code]}]
         },
