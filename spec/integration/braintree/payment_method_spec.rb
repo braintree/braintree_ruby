@@ -177,6 +177,28 @@ describe Braintree::PaymentMethod do
       amex_express_checkout_card.customer_id.should == customer.id
     end
 
+    it "creates a payment method from venmo account nonce" do
+      customer = Braintree::Customer.create.customer
+      token = SecureRandom.hex(16)
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
+        :customer_id => customer.id,
+        :token => token
+      )
+
+      result.should be_success
+      venmo_account = result.payment_method
+      venmo_account.should be_a(Braintree::VenmoAccount)
+
+      venmo_account.default.should == true
+      venmo_account.token.should == token
+      venmo_account.username.should == "venmojoe"
+      venmo_account.venmo_user_id.should == "Venmo-Joe-1"
+      venmo_account.image_url.should include(".png")
+      venmo_account.source_description.should == "Venmo Account: venmojoe"
+      venmo_account.customer_id.should == customer.id
+    end
+
     it "allows passing the make_default option alongside the nonce" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(

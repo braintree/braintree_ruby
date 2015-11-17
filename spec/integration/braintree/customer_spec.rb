@@ -835,6 +835,21 @@ describe Braintree::Customer do
       amex_express_checkout_card.expiration_year.should_not be_nil
     end
 
+    it "returns associated venmo accounts" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount
+      )
+      result.success?.should == true
+
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.venmo_accounts.size.should == 1
+      found_customer.payment_methods.size.should == 1
+      venmo_account = found_customer.venmo_accounts.first
+      venmo_account.should be_a Braintree::VenmoAccount
+      venmo_account.token.should_not be_nil
+      venmo_account.username.should_not be_nil
+    end
+
     it "works for a blank customer" do
       created_customer = Braintree::Customer.create!
       found_customer = Braintree::Customer.find(created_customer.id)

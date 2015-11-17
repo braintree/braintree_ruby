@@ -1402,6 +1402,25 @@ describe Braintree::Transaction do
         checkout_details.source_description.should =~ /\AAmEx \d{4}\z/
       end
 
+      it "can create a transaction with a fake venmo account nonce" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
+          :options => {:store_in_vault => true}
+        )
+        result.should be_success
+
+        venmo_account_details = result.transaction.venmo_account_details
+        venmo_account_details.should be_a(Braintree::Transaction::VenmoAccountDetails)
+        venmo_account_details.token.should respond_to(:to_str)
+        venmo_account_details.username.should == "venmojoe"
+        venmo_account_details.venmo_user_id.should == "Venmo-Joe-1"
+        venmo_account_details.image_url.should include(".png")
+        venmo_account_details.source_description.should == "Venmo Account: venmojoe"
+      end
+
       it "can create a transaction with an unknown nonce" do
         customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(

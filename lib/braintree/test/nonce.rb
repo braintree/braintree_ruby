@@ -17,6 +17,7 @@ module Braintree
       AndroidPayMasterCard = "fake-android-pay-mastercard-nonce"
       AndroidPayAmEx = "fake-android-pay-amex-nonce"
       AmexExpressCheckout = "fake-amex-express-checkout-nonce"
+      VenmoAccount = "fake-venmo-account-nonce"
       TransactableVisa = "fake-valid-visa-nonce"
       TransactableAmEx = "fake-valid-amex-nonce"
       TransactableMasterCard = "fake-valid-mastercard-nonce"
