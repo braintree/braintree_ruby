@@ -38,6 +38,7 @@ unless defined?(SPEC_HELPER_LOADED)
     NonDefaultSubMerchantAccountId = "sandbox_sub_merchant_account"
     ThreeDSecureMerchantAccountId = "three_d_secure_merchant_account"
     FakeAmexDirectMerchantAccountId = "fake_amex_direct_usd"
+    FakeVenmoAccountMerchantAccountId = "fake_first_data_venmo_account"
 
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",

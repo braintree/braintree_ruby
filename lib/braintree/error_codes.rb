@@ -309,6 +309,8 @@ module Braintree
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
       ProcessorDoesNotSupportAuths = "915104"
+      ProcessorDoesNotSupportUpdatingOrderId = "915107"
+      ProcessorDoesNotSupportUpdatingDescriptor = "915108"
       ProcessorDoesNotSupportCredits = "91546"
       ProcessorDoesNotSupportPartialSettlement = "915102"
       ProcessorDoesNotSupportVoiceAuthorizations = "91545"

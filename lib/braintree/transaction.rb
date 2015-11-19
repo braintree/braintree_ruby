@@ -86,6 +86,7 @@ module Braintree
     attr_reader :apple_pay_details
     attr_reader :android_pay_details
     attr_reader :amex_express_checkout_details
+    attr_reader :venmo_account_details
     attr_reader :coinbase_details
     attr_reader :plan_id
     # The authorization code from the processor.
@@ -206,8 +207,8 @@ module Braintree
       return_object_or_raise(:transaction) { release_from_escrow(transaction_id) }
     end
 
-    def self.submit_for_settlement(transaction_id, amount = nil)
-      Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount)
+    def self.submit_for_settlement(transaction_id, amount = nil, options = {})
+      Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount, options)
     end
 
     def self.submit_for_settlement!(transaction_id, amount = nil)
@@ -244,6 +245,7 @@ module Braintree
       @apple_pay_details = ApplePayDetails.new(@apple_pay)
       @android_pay_details = AndroidPayDetails.new(@android_pay_card)
       @amex_express_checkout_details = AmexExpressCheckoutDetails.new(@amex_express_checkout_card)
+      @venmo_account_details = VenmoAccountDetails.new(@venmo_account)
       @coinbase_details = CoinbaseDetails.new(@coinbase_account)
       disputes.map! { |attrs| Dispute._new(attrs) } if disputes
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
