@@ -1,3 +1,7 @@
+== 2.55.0
+* Add VenmoAccount
+* Add support for Set Transaction Context supplementary data
+
 == 2.54.0
 * Treat dispute date_opened and date_won attributes as Dates
 
