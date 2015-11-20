@@ -3,16 +3,19 @@
 * Add support for Set Transaction Context supplementary data
 
 == 2.54.0
-* Treat dispute date_opened and date_won attributes as Dates
+* Treat dispute date_opened and date_won attributes as Dates. Note: in versions 2.51.0-2.53.0, the dispute date_opened and date_won attributes were incorrectly parsed as strings. We pulled them off RubyGems to prevent the incorrect code from being downloaded.
 
 == 2.53.0
+* This version of the library was removed from RubyGems. See the note on 2.54.0 for further explanation.
 * Adds options to skip avs and cvv checks for a single transaction
 
 == 2.52.0
+* This version of the library was removed from RubyGems. See the note on 2.54.0 for further explanation.
 * Add Amex Express Checkout payment method
 * Fix bug where Customer#payment_methods didn't include Android Pay cards
 
 == 2.51.0
+* This version of the library was removed from RubyGems. See the note on 2.54.0 for further explanation.
 * Fixes bug with signature of partner oauth connect url
 * Adds date_won, date_opened and kind to dispute webhook parsing
 * Make grant a method on PaymentMethod and not just CreditCard
