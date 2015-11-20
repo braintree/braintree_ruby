@@ -156,33 +156,6 @@ describe Braintree::CreditCard do
     end
   end
 
-  describe "self.grant" do
-    it "raises error if passed empty string" do
-      expect do
-        Braintree::CreditCard.grant("", false)
-      end.to raise_error(ArgumentError)
-    end
-
-    it "raises error if passed invalid string" do
-      expect do
-        Braintree::CreditCard.grant("\t", false)
-      end.to raise_error(ArgumentError)
-    end
-
-    it "raises error if passed nil" do
-      expect do
-        Braintree::CreditCard.grant(nil, false)
-      end.to raise_error(ArgumentError)
-    end
-
-    it "does not raise an error if token does not respond to strip" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
-      expect do
-        Braintree::CreditCard.grant(8675309, false)
-      end.to_not raise_error
-    end
-  end
-
   describe "inspect" do
     it "includes the token first" do
       output = Braintree::CreditCard._new(:gateway, :token => "cc123").inspect

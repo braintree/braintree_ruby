@@ -22,4 +22,58 @@ describe Braintree::PaymentMethod do
       paypal_account.updated_at.should == now
     end
   end
+
+  describe "self.grant" do
+    it "raises error if passed empty string" do
+      expect do
+        Braintree::PaymentMethod.grant("", false)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed invalid string" do
+      expect do
+        Braintree::PaymentMethod.grant("\t", false)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed nil" do
+      expect do
+        Braintree::PaymentMethod.grant(nil, false)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "does not raise an error if token does not respond to strip" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      expect do
+        Braintree::PaymentMethod.grant(8675309, false)
+      end.to_not raise_error
+    end
+  end
+
+  describe "self.revoke" do
+    it "raises error if passed empty string" do
+      expect do
+        Braintree::PaymentMethod.revoke("")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed invalid string" do
+      expect do
+        Braintree::PaymentMethod.revoke("\t")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed nil" do
+      expect do
+        Braintree::PaymentMethod.revoke(nil)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "does not raise an error if token does not respond to strip" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      expect do
+        Braintree::PaymentMethod.revoke(8675309)
+      end.to_not raise_error
+    end
+  end
 end

@@ -4037,7 +4037,7 @@ describe Braintree::Transaction do
       grant_result = @granting_gateway.credit_card.grant(@credit_card.token, false)
 
       result = Braintree::Transaction.sale(
-        :payment_method_nonce => grant_result.nonce,
+        :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
       result.transaction.facilitator_details.should_not == nil
