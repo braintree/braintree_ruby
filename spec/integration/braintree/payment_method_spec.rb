@@ -1270,7 +1270,7 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::PaymentMethod.create(
           :customer_id => customer_result.customer.id,
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce
         )
         result.should_not be_success
       end
@@ -1282,7 +1282,7 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::PaymentMethod.create(
           :customer_id => customer_result.customer.id,
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce
         )
         result.should be_success
       end
@@ -1310,7 +1310,7 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::PaymentMethod.create(
           :customer_id => customer_result.customer.id,
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce
         )
         result.should_not be_success
       end
