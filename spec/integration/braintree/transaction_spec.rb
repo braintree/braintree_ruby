@@ -2667,46 +2667,6 @@ describe Braintree::Transaction do
       result.params[:transaction][:amount].should == "1000.01"
     end
 
-    it "returns an error result if descriptors are passed in but not supported by processor" do
-      transaction = Braintree::Transaction.sale!(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
-          :expiration_date => "05/2009"
-        }
-      )
-
-      options = {
-          :descriptor => {
-            :name => '123*123456789012345678',
-            :phone => '3334445555',
-            :url => "ebay.com"
-          }
-      }
-
-      result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, options)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingDescriptor
-    end
-
-    it "returns an error result if order_id is passed in but not supported by processor" do
-      transaction = Braintree::Transaction.sale!(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
-          :expiration_date => "05/2009"
-        }
-      )
-
-      options = { :order_id => "ABC123" }
-
-      result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, options)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingOrderId
-    end
-
     it "returns an error result if status is not authorized" do
       transaction = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Decline,
