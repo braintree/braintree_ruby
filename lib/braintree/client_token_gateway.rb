@@ -7,11 +7,13 @@ module Braintree
     end
 
     def generate(options={})
-      params = nil
-      if options
-        Util.verify_keys(ClientTokenGateway._generate_signature, options)
-        params = {:client_token => options}
-      end
+      _validate_options(options)
+
+      options[:version] ||= ClientToken::DEFAULT_VERSION
+
+      Util.verify_keys(ClientTokenGateway._generate_signature, options)
+
+      params = {:client_token => options}
       result = @config.http.post("#{@config.base_merchant_path}/client_token", params)
 
       if result[:client_token]
@@ -27,6 +29,14 @@ module Braintree
         :version, :sepa_mandate_acceptance_location, :sepa_mandate_type,
         {:options => [:make_default, :verify_card, :fail_on_duplicate_payment_method]}
       ]
+    end
+
+    def _validate_options(options)
+      [:make_default, :fail_on_duplicate_payment_method, :verify_card].each do |credit_card_option|
+        if options[credit_card_option]
+          raise ArgumentError.new("cannot specify #{credit_card_option} without a customer_id") unless options[:customer_id]
+        end
+      end
     end
   end
 end

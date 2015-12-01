@@ -29,6 +29,10 @@ module Braintree
         SuccessfulResult.new(:payment_method => AmexExpressCheckoutCard._new(@gateway, response[:amex_express_checkout_card]))
       elsif response[:venmo_account]
         SuccessfulResult.new(:payment_method => VenmoAccount._new(@gateway, response[:venmo_account]))
+      elsif response[:payment_method_nonce]
+        SuccessfulResult.new(:payment_method_nonce => PaymentMethodNonce._new(@gateway, response[:payment_method_nonce]))
+      elsif response[:success]
+        SuccessfulResult.new
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       elsif response
@@ -72,14 +76,27 @@ module Braintree
 
     def grant(token, allow_vaulting)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
-      response = @config.http.post(
-        "#{@config.base_merchant_path}/payment_methods/grant",
+
+      _do_create(
+        "/payment_methods/grant",
         :payment_method => {
           :shared_payment_method_token => token,
           :allow_vaulting => allow_vaulting
         }
       )
-      PaymentMethodNonce._new(@gateway, response[:payment_method_nonce])
+    rescue NotFoundError
+      raise NotFoundError, "payment method with token #{token.inspect} not found"
+    end
+
+    def revoke(token)
+      raise ArgumentError if token.nil? || token.to_s.strip == ""
+
+      _do_create(
+        "/payment_methods/revoke",
+        :payment_method => {
+          :shared_payment_method_token => token
+        }
+      )
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
     end

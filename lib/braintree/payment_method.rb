@@ -21,5 +21,9 @@ module Braintree
     def self.grant(token, allow_vaulting)
       Configuration.gateway.payment_method.grant(token, allow_vaulting)
     end
+
+    def self.revoke(token)
+      Configuration.gateway.payment_method.revoke(token)
+    end
   end
 end

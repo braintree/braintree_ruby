@@ -1199,7 +1199,7 @@ describe Braintree::PaymentMethod do
     end
   end
 
-  describe "self.grant" do
+  context "payment method grant and revoke" do
     before(:each) do
       partner_merchant_gateway = Braintree::Gateway.new(
         :merchant_id => "integration_merchant_public_id",
@@ -1240,50 +1240,80 @@ describe Braintree::PaymentMethod do
       )
     end
 
-    it "returns a nonce that is transactable by a partner merchant exactly once" do
-      grant_result = @granting_gateway.payment_method.grant(@credit_card.token, false)
+    describe "self.grant" do
+      it "returns an error result when the grant doesn't succeed" do
+        grant_result = @granting_gateway.payment_method.grant("payment_method_from_grant", true)
+        grant_result.should_not be_success
+      end
 
-      result = Braintree::Transaction.sale(
-        :payment_method_nonce => grant_result.nonce,
-        :amount => Braintree::Test::TransactionAmounts::Authorize
-      )
-      result.success?.should == true
+      it "returns a nonce that is transactable by a partner merchant exactly once" do
+        grant_result = @granting_gateway.payment_method.grant(@credit_card.token, false)
+        grant_result.should be_success
 
-      result2 = Braintree::Transaction.sale(
-        :payment_method_nonce => grant_result.nonce,
-        :amount => Braintree::Test::TransactionAmounts::Authorize
-      )
-      result2.success?.should == false
+        result = Braintree::Transaction.sale(
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
+          :amount => Braintree::Test::TransactionAmounts::Authorize
+        )
+        result.should be_success
+
+        result2 = Braintree::Transaction.sale(
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
+          :amount => Braintree::Test::TransactionAmounts::Authorize
+        )
+        result2.should_not be_success
+      end
+
+      it "returns a nonce that is not vaultable" do
+        grant_result = @granting_gateway.payment_method.grant(@credit_card.token, false)
+
+        customer_result = Braintree::Customer.create()
+
+        result = Braintree::PaymentMethod.create(
+          :customer_id => customer_result.customer.id,
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce
+        )
+        result.should_not be_success
+      end
+
+      it "returns a nonce that is vaultable" do
+        grant_result = @granting_gateway.payment_method.grant(@credit_card.token, true)
+
+        customer_result = Braintree::Customer.create()
+
+        result = Braintree::PaymentMethod.create(
+          :customer_id => customer_result.customer.id,
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce
+        )
+        result.should be_success
+      end
+
+      it "raises an error if the token isn't found" do
+        expect do
+          @granting_gateway.payment_method.grant("not_a_real_token", false)
+        end.to raise_error
+      end
     end
 
-    it "returns a nonce that is not vaultable" do
-      grant_result = @granting_gateway.payment_method.grant(@credit_card.token, false)
+    describe "self.revoke" do
+      it "raises an error if the token isn't found" do
+        expect do
+          @granting_gateway.payment_method.revoke("not_a_real_token")
+        end.to raise_error
+      end
 
-      customer_result = Braintree::Customer.create()
+      it "renders a granted nonce useless" do
+        grant_result = @granting_gateway.payment_method.grant(@credit_card.token, true)
+        revoke_result = @granting_gateway.payment_method.revoke(@credit_card.token)
+        revoke_result.should be_success
 
-      result = Braintree::PaymentMethod.create(
-        :customer_id => customer_result.customer.id,
-        :payment_method_nonce => grant_result.nonce
-      )
-      result.success?.should == false
-    end
+        customer_result = Braintree::Customer.create()
 
-    it "returns a nonce that is vaultable" do
-      grant_result = @granting_gateway.payment_method.grant(@credit_card.token, true)
-
-      customer_result = Braintree::Customer.create()
-
-      result = Braintree::PaymentMethod.create(
-        :customer_id => customer_result.customer.id,
-        :payment_method_nonce => grant_result.nonce
-      )
-      result.success?.should == true
-    end
-
-    it "raises an error if the token isn't found" do
-      expect do
-        @granting_gateway.payment_method.grant("not_a_real_token", false)
-      end.to raise_error
+        result = Braintree::PaymentMethod.create(
+          :customer_id => customer_result.customer.id,
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce
+        )
+        result.should_not be_success
+      end
     end
   end
 end
