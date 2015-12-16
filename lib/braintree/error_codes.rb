@@ -543,6 +543,16 @@ module Braintree
       InvalidRequest = "93804";
       UnsupportedGrantType = "93805";
     end
+
+    module Verification
+      module Options
+        AmountCannotBeNegative = "94201"
+        AmountFormatIsInvalid = "94202"
+        AmountNotSupportedByProcessor = "94203"
+        MerchantAccountIdIsInvalid = "94204"
+        MerchantAccountIsSuspended = "94205"
+        MerchantAccountIsForbidden = "94206"
+      end
+    end
   end
 end
-

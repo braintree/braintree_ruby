@@ -38,6 +38,23 @@ describe Braintree::CreditCardVerification, "search" do
       result.verification.processor_response_code.should == "2000"
       result.verification.processor_response_text.should == "Do Not Honor"
     end
+
+    it "returns validation errors" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2012",
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+        },
+        :options => {
+          :amount => "-10.00"
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      result.success?.should == false
+      result.errors.for(:verification).for(:options).first.code.should == Braintree::ErrorCodes::Verification::Options::AmountCannotBeNegative
+    end
   end
 
   describe "self.find" do
