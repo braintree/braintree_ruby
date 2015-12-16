@@ -33,6 +33,14 @@ describe Braintree::CreditCardVerification do
     end
   end
 
+  describe "self.create" do
+    it "rejects invalid parameters" do
+      expect do
+        Braintree::CreditCardVerification.create(:invalid_key => 4, :credit_card => {:number => "number"})
+      end.to raise_error(ArgumentError, "invalid keys: invalid_key")
+    end
+  end
+
   describe "self.find" do
     it "raises error if passed empty string" do
       expect do

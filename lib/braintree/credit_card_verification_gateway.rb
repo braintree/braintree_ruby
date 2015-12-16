@@ -22,11 +22,31 @@ module Braintree
       ResourceCollection.new(response) { |ids| _fetch_verifications(search, ids) }
     end
 
+    def create(params)
+      response = @config.http.post("#{@config.base_merchant_path}/verifications", :verification => params)
+      _handle_verification_create_response(response)
+    end
+
+    def _handle_verification_create_response(response)
+      if response[:verification]
+        SuccessfulResult.new(:verification => CreditCardVerification._new(response[:verification]))
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :verification or :api_error_response"
+      end
+    end
+
     def _fetch_verifications(search, ids)
       search.ids.in ids
       response = @config.http.post("#{@config.base_merchant_path}/verifications/advanced_search", {:search => search.to_hash})
       attributes = response[:credit_card_verifications]
       Util.extract_attribute_as_array(attributes, :verification).map { |attrs| CreditCardVerification._new(attrs) }
+    end
+
+    def self._create_signature
+      [{:options => [:amount, :merchant_account_id]},
+       {:credit_card => CreditCardGateway._create_signature}]
     end
   end
 end

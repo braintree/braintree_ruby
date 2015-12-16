@@ -1,6 +1,45 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::CreditCardVerification, "search" do
+
+  describe "self.create" do
+    it "creates a new verification" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2012",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+        :options => {
+          :amount => "10.00"
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      result.should be_success
+    end
+
+    it "returns processor response code and text as well as the additional processor response if declined" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2012",
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+        },
+        :options => {
+          :amount => "10.00"
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      result.success?.should == false
+      result.verification.id.should =~ /^\w{6}$/
+      result.verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
+      result.verification.processor_response_code.should == "2000"
+      result.verification.processor_response_text.should == "Do Not Honor"
+    end
+  end
+
   describe "self.find" do
     it "finds the verification with the given id" do
       credit_card_params = {
