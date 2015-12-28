@@ -43,6 +43,7 @@ module Braintree
 
     # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
+      env = env.to_sym
       unless [:development, :qa, :sandbox, :production].include?(env)
         raise ArgumentError, "#{env.inspect} is not a valid environment"
       end
