@@ -106,9 +106,11 @@ module Braintree
       _handle_transaction_response(response)
     end
 
-    def submit_for_partial_settlement(authorized_transaction_id, amount = nil)
+    def submit_for_partial_settlement(authorized_transaction_id, amount = nil, options = {})
       raise ArgumentError, "authorized_transaction_id is invalid" unless authorized_transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.post("#{@config.base_merchant_path}/transactions/#{authorized_transaction_id}/submit_for_partial_settlement", :transaction => {:amount => amount})
+      Util.verify_keys(TransactionGateway._submit_for_settlement_signature, options)
+      transaction_params = {:amount => amount}.merge(options)
+      response = @config.http.post("#{@config.base_merchant_path}/transactions/#{authorized_transaction_id}/submit_for_partial_settlement", :transaction => transaction_params)
       _handle_transaction_response(response)
     end
 

@@ -2765,6 +2765,84 @@ describe Braintree::Transaction do
       refreshed_authorized_transaction.partial_settlement_transaction_ids.sort.should == [partial_settlement_transaction1.id, partial_settlement_transaction2.id].sort
     end
 
+    it "allows partial settlement to be submitted with order_id" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100, :order_id => 1234)
+      result.success?.should == true
+      partial_settlement_transaction = result.transaction
+      partial_settlement_transaction.order_id.should == "1234"
+    end
+
+    it "returns an error with an order_id that's too long" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100, :order_id => "1"*256)
+      result.success?.should == false
+      result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
+    end
+
+    it "allows partial settlement to be submitted with descriptors" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(
+        authorized_transaction.id,
+        100,
+        :descriptor => { :name => "123*123456789012345678", :phone => "5555551234", :url => "url.com" }
+      )
+      result.success?.should == true
+      partial_settlement_transaction = result.transaction
+      partial_settlement_transaction.descriptor.name.should == "123*123456789012345678"
+      partial_settlement_transaction.descriptor.phone.should == "5555551234"
+      partial_settlement_transaction.descriptor.url.should == "url.com"
+    end
+
+    it "returns an error with a descriptor in an invalid format" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+
+      result = Braintree::Transaction.submit_for_partial_settlement(
+        authorized_transaction.id,
+        100,
+        :descriptor => {
+          :name => "invalid_format",
+          :phone => '%bad4445555',
+          :url => '12345678901234'
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
+      result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
+      result.errors.for(:transaction).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
+    end
+
     it "returns an error with an unsupported processor" do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
