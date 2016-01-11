@@ -81,6 +81,7 @@ module Braintree
       InvalidParamsForCreditCardUpdate = "91745"
       InvalidVenmoSDKPaymentMethodCode = "91727"
       NumberIsInvalid = "81715"
+      NumberIsProhibited = "81750"
       NumberIsRequired = "81714"
       NumberLengthIsInvalid = "81716"
       NumberMustBeTestNumber = "81717"
