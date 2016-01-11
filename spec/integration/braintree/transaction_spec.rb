@@ -2907,6 +2907,36 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "self.submit_for_partial_settlement!" do
+    it "returns the transaction if successful" do
+      original_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        }
+      )
+      options = { :order_id => "ABC123" }
+      transaction = Braintree::Transaction.submit_for_partial_settlement!(original_transaction.id, "0.01", options)
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      transaction.order_id.should == options[:order_id]
+    end
+
+    it "raises a ValidationsFailed if unsuccessful" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        }
+      )
+      transaction.amount.should == BigDecimal.new("1000.00")
+      expect do
+        Braintree::Transaction.submit_for_partial_settlement!(transaction.id, "1000.01")
+      end.to raise_error(Braintree::ValidationsFailed)
+    end
+  end
+
   describe "self.release_from_escrow" do
     it "returns the transaction if successful" do
       original_transaction = create_escrowed_transcation
