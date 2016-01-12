@@ -2708,9 +2708,11 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction = Braintree::Transaction.submit_for_settlement!(original_transaction.id)
+      options = { :order_id => "ABC123" }
+      transaction = Braintree::Transaction.submit_for_settlement!(original_transaction.id, "0.01", options)
       transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       transaction.id.should == original_transaction.id
+      transaction.order_id.should == options[:order_id]
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
