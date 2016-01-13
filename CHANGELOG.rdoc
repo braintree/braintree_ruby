@@ -1,3 +1,9 @@
+== 2.57.0
+* Add Verification#create
+* Add options to `submit_for_settlement` transaction flows
+* Upgrade libxml-ruby version to 2.8.0
+* Update https certificate bundle
+
 == 2.56.0
 * Add better defaults to client token generation when using an access token by consolidating client token defaults into ClientTokenGateway
 * Add PaymentMethod#revoke
