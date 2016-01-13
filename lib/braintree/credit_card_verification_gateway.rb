@@ -45,8 +45,13 @@ module Braintree
     end
 
     def self._create_signature
-      [{:options => [:amount, :merchant_account_id]},
-       {:credit_card => CreditCardGateway._create_signature}]
+      [
+         {:options => [:amount, :merchant_account_id]},
+         {:credit_card => [
+           :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year,
+           :number, {:billing_address => AddressGateway._shared_signature}
+         ]}
+      ]
     end
   end
 end
