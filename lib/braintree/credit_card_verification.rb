@@ -49,6 +49,11 @@ module Braintree
       Configuration.gateway.verification.search(&block)
     end
 
+    def self.create(attributes)
+      Util.verify_keys(CreditCardVerificationGateway._create_signature, attributes)
+      Configuration.gateway.verification.create(attributes)
+    end
+
     def ==(other)
       return false unless other.is_a?(CreditCardVerification)
       id == other.id

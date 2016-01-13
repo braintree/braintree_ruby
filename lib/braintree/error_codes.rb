@@ -81,6 +81,7 @@ module Braintree
       InvalidParamsForCreditCardUpdate = "91745"
       InvalidVenmoSDKPaymentMethodCode = "91727"
       NumberIsInvalid = "81715"
+      NumberIsProhibited = "81750"
       NumberIsRequired = "81714"
       NumberLengthIsInvalid = "81716"
       NumberMustBeTestNumber = "81717"
@@ -542,6 +543,16 @@ module Braintree
       InvalidRequest = "93804";
       UnsupportedGrantType = "93805";
     end
+
+    module Verification
+      module Options
+        AmountCannotBeNegative = "94201"
+        AmountFormatIsInvalid = "94202"
+        AmountNotSupportedByProcessor = "94203"
+        MerchantAccountIdIsInvalid = "94204"
+        MerchantAccountIsSuspended = "94205"
+        MerchantAccountIsForbidden = "94206"
+      end
+    end
   end
 end
-

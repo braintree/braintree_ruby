@@ -1,7 +1,7 @@
 module Braintree
   class ErrorResult
 
-    attr_reader :credit_card_verification, :merchant_account, :transaction, :subscription, :errors, :params, :message
+    attr_reader :credit_card_verification, :merchant_account, :transaction, :subscription, :errors, :params, :message, :verification
 
     def initialize(gateway, data) # :nodoc:
       @gateway = gateway
@@ -10,6 +10,7 @@ module Braintree
       @merchant_account = MerchantAccount._new(gateway, data[:merchant_account]) if data[:merchant_account]
       @message = data[:message]
       @transaction = Transaction._new(gateway, data[:transaction]) if data[:transaction]
+      @verification = CreditCardVerification._new(data[:verification]) if data[:verification]
       @subscription = Subscription._new(gateway, data[:subscription]) if data[:subscription]
       @errors = Errors.new(data[:errors])
     end

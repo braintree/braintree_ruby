@@ -268,6 +268,30 @@ describe Braintree::PaymentMethod do
       result.credit_card_verification.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
     end
 
+    it "respects verification amount when included outside of the nonce" do
+      nonce = nonce_for_new_payment_method(
+        :credit_card => {
+          :number => "4000111111111115",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        }
+      )
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id,
+        :options => {
+          :verify_card => true,
+          :verification_amount => "100.00"
+        }
+      )
+
+      result.should_not be_success
+      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      result.credit_card_verification.processor_response_code.should == "2000"
+      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
+    end
+
     it "respects fail_on_duplicate_payment_method when included outside of the nonce" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(

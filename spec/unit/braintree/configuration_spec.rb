@@ -133,6 +133,17 @@ describe Braintree::Configuration do
         Braintree::Configuration.environment = :invalid_environment
       end.to raise_error(ArgumentError, ":invalid_environment is not a valid environment")
     end
+
+    it "allows the environment to be set with a string value" do
+      expect do
+        Braintree::Configuration.environment = 'sandbox'
+      end.not_to raise_error
+    end
+
+    it "sets the environment as a symbol" do
+      Braintree::Configuration.environment = 'sandbox'
+      expect(Braintree::Configuration.environment).to eq :sandbox
+    end
   end
 
   describe "self.logger" do
