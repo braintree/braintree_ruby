@@ -53,6 +53,8 @@ module Braintree
         _disbursement_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubscriptionChargedSuccessfully
         _subscription_charged_successfully(id)
+      when Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport
+        _account_updater_daily_report_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -297,6 +299,16 @@ module Braintree
           <exception-message nil="true"/>
           <follow-up-action nil="true"/>
         </disbursement>
+      XML
+    end
+
+    def _account_updater_daily_report_sample_xml(id)
+
+      <<-XML
+        <account_updater_daily_report>
+          <report-date type="date">2016-01-14</report-date>
+          <report-url>link-to-csv-report</report-url>
+        </account_updater_daily_report>
       XML
     end
   end

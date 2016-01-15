@@ -228,6 +228,21 @@ describe Braintree::WebhookNotification do
     end
   end
 
+  context "account_updater_daily_report" do
+    it "builds a sample notification for an account_updater_daily_report webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport
+        notification.account_updater_daily_report.report_url.should == "link-to-csv-report"
+        notification.account_updater_daily_report.report_date.should == "2016-01-14"
+    end
+  end
+
   describe "parse" do
     it "raises InvalidSignature error when the signature is completely invalid" do
       sample_notification = Braintree::WebhookTesting.sample_notification(
