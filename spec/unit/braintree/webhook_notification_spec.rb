@@ -239,7 +239,7 @@ describe Braintree::WebhookNotification do
 
         notification.kind.should == Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport
         notification.account_updater_daily_report.report_url.should == "link-to-csv-report"
-        notification.account_updater_daily_report.report_date.should == "2016-01-14"
+        notification.account_updater_daily_report.report_date.should == Date.parse("2016-01-14")
     end
   end
 

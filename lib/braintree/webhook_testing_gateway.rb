@@ -305,10 +305,10 @@ module Braintree
     def _account_updater_daily_report_sample_xml(id)
 
       <<-XML
-        <account_updater_daily_report>
+        <account-updater-daily-report>
           <report-date type="date">2016-01-14</report-date>
           <report-url>link-to-csv-report</report-url>
-        </account_updater_daily_report>
+        </account-updater-daily-report>
       XML
     end
   end

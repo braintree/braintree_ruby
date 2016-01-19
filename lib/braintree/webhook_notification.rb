@@ -52,7 +52,7 @@ module Braintree
       @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
       @disbursement = Disbursement._new(gateway, @subject[:disbursement]) if @subject.has_key?(:disbursement)
       @dispute = Dispute._new(@subject[:dispute]) if @subject.has_key?(:dispute)
-      @account_updater_daily_report = OpenStruct.new(@subject[:account_updater_daily_report]) if @subject.has_key?(:account_updater_daily_report)
+      @account_updater_daily_report = AccountUpdaterDailyReport._new(@subject[:account_updater_daily_report]) if @subject.has_key?(:account_updater_daily_report)
     end
 
     def merchant_account
