@@ -39,7 +39,7 @@ module Braintree
         end
       end
     end
-    expectant_reader *([:environment] + READABLE_ATTRIBUTES)
+    expectant_reader *READABLE_ATTRIBUTES
 
     # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
