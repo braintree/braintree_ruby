@@ -126,7 +126,8 @@ unless defined?(SPEC_HELPER_LOADED)
 
     def self.simulate_form_post_for_tr(tr_data_string, form_data_hash, url = Braintree::TransparentRedirect.url)
       response = nil
-      Net::HTTP.start("localhost", Braintree::Configuration.instantiate.port) do |http|
+      config = Braintree::Configuration.instantiate
+      Net::HTTP.start(config.server, config.port, :use_ssl => config.ssl?) do |http|
         request = Net::HTTP::Post.new("/" + url.split("/", 4)[3])
         request.add_field "Content-Type", "application/x-www-form-urlencoded"
         request.body = Braintree::Util.hash_to_query_string({:tr_data => tr_data_string}.merge(form_data_hash))
