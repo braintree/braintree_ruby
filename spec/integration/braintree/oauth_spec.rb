@@ -3,9 +3,9 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe "OAuth" do
   before(:each) do
     @gateway = Braintree::Gateway.new(
-      :client_id => "client_id$development$integration_client_id",
-      :client_secret => "client_secret$development$integration_client_secret",
-      :logger => Logger.new("/dev/null")
+      :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+      :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
+      :logger => Logger.new("/dev/null"),
     )
   end
 
@@ -124,12 +124,12 @@ describe "OAuth" do
       )
 
       uri = URI.parse(url)
-      uri.host.should == "localhost"
+      uri.host.should == Braintree::Configuration.instantiate.server
       uri.path.should == "/oauth/connect"
 
       query = CGI.parse(uri.query)
       query["merchant_id"].should == ["integration_merchant_id"]
-      query["client_id"].should == ["client_id$development$integration_client_id"]
+      query["client_id"].should == ["client_id$#{Braintree::Configuration.environment}$integration_client_id"]
       query["redirect_uri"].should == ["http://bar.example.com"]
       query["scope"].should == ["read_write"]
       query["state"].should == ["baz_state"]
@@ -181,7 +181,7 @@ describe "OAuth" do
       )
 
       uri = URI.parse(url)
-      uri.host.should == "localhost"
+      uri.host.should == Braintree::Configuration.instantiate.server
       uri.path.should == "/oauth/connect"
 
       query = CGI.parse(CGI.unescape(uri.query))
@@ -193,6 +193,11 @@ describe "OAuth" do
 
   describe "_compute_signature" do
     it "computes the correct signature" do
+      @gateway = Braintree::Gateway.new(
+        :client_id => "client_id$development$integration_client_id",
+        :client_secret => "client_secret$development$integration_client_secret",
+        :logger => Logger.new("/dev/null"),
+      )
       url = "http://localhost:3000/oauth/connect?business%5Bname%5D=We+Like+Spaces&client_id=client_id%24development%24integration_client_id"
       signature = @gateway.oauth._compute_signature(url)
 

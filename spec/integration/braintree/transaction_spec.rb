@@ -268,8 +268,8 @@ describe Braintree::Transaction do
 
     it "returns a successful result using an access token" do
       oauth_gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
@@ -500,8 +500,8 @@ describe Braintree::Transaction do
 
       it "exposes the application incomplete gateway rejection reason" do
         gateway = Braintree::Gateway.new(
-          :client_id => "client_id$development$integration_client_id",
-          :client_secret => "client_secret$development$integration_client_secret",
+          :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+          :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
           :logger => Logger.new("/dev/null")
         )
         result = gateway.merchant.create(
@@ -4116,7 +4116,7 @@ describe Braintree::Transaction do
         :merchant_id => "integration_merchant_public_id",
         :public_key => "oauth_app_partner_user_public_key",
         :private_key => "oauth_app_partner_user_private_key",
-        :environment => :development,
+        :environment => Braintree::Configuration.environment,
         :logger => Logger.new("/dev/null")
       )
       @customer = partner_merchant_gateway.customer.create(
@@ -4141,8 +4141,8 @@ describe Braintree::Transaction do
       ).credit_card
 
       oauth_gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
@@ -4164,7 +4164,7 @@ describe Braintree::Transaction do
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
       result.transaction.facilitator_details.should_not == nil
-      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$development$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
     end
 
@@ -4187,7 +4187,7 @@ describe Braintree::Transaction do
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
       result.transaction.facilitator_details.should_not == nil
-      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$development$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
     end
   end

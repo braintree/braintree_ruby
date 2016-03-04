@@ -82,7 +82,7 @@ unless defined?(SPEC_HELPER_LOADED)
 
     TestMerchantConfig = Braintree::Configuration.new(
                                                       :logger => Logger.new("/dev/null"),
-                                                      :environment => :development,
+                                                      :environment => Braintree::Configuration.environment,
                                                       :merchant_id => "test_merchant_id",
                                                       :public_key => "test_public_key",
                                                       :private_key => "test_private_key"

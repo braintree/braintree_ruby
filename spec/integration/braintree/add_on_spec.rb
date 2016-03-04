@@ -33,8 +33,8 @@ describe Braintree::AddOn do
 
     it "raises with a helpful error if public_key and private_key are not set" do
       gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
 

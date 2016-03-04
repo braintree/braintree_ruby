@@ -92,10 +92,11 @@ describe Braintree::TestTransaction do
     end
 
     it "does not raise an exception when using non-global, non-production gateway" do
+      original_env = Braintree::Configuration.environment
       expect do
         in_prod do
           config = Braintree::Configuration.new(
-            :environment => :development,
+            :environment => (original_env == :production ? :development : original_env),
             :merchant_id => 'integration_merchant_id',
             :public_key => 'integration_public_key',
             :private_key => 'integration_private_key',

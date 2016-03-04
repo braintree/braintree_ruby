@@ -4,8 +4,8 @@ describe Braintree::MerchantGateway do
   describe "create" do
     it "creates a merchant" do
       gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
 
@@ -35,8 +35,8 @@ describe Braintree::MerchantGateway do
 
     it "gives an error when using invalid payment_methods" do
       gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
 
