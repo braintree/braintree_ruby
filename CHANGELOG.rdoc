@@ -1,3 +1,6 @@
+== 2.59.0
+* Add support for third party Android Pay integrations
+
 == 2.58.0
 * Add AccountUpdaterDailyReport webhook parsing
 

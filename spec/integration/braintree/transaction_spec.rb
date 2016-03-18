@@ -2388,6 +2388,59 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.sale(params)
       result.success?.should == true
+      result.transaction.status.should == Braintree::Transaction::Status::Authorized
+    end
+
+    context "Android Pay params" do
+      it "works with full params" do
+        params = {
+          :amount => "3.12",
+          :android_pay_card => {
+            :number => "4012888888881881",
+            :cryptogram => "AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==",
+            :google_transaction_id => "25469d622c1dd37cb1a403c6d438e850",
+            :expiration_month => "10",
+            :expiration_year => "14",
+            :source_card_type => "Visa",
+            :source_card_last_four => "1111",
+            :eci_indicator => "05",
+          }
+        }
+        result = Braintree::Transaction.sale(params)
+        result.success?.should == true
+        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+      end
+
+      it "works with only number, cryptogram, expiration and transaction ID (network tokenized card)" do
+        params = {
+          :amount => "3.12",
+          :android_pay_card => {
+            :number => "4012888888881881",
+            :cryptogram => "AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==",
+            :google_transaction_id => "25469d622c1dd37cb1a403c6d438e850",
+            :expiration_month => "10",
+            :expiration_year => "14",
+          }
+        }
+        result = Braintree::Transaction.sale(params)
+        result.success?.should == true
+        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+      end
+
+      it "works with only number, expiration and transaction ID (non-tokenized card)" do
+        params = {
+          :amount => "3.12",
+          :android_pay_card => {
+            :number => "4012888888881881",
+            :google_transaction_id => "25469d622c1dd37cb1a403c6d438e850",
+            :expiration_month => "10",
+            :expiration_year => "14",
+          }
+        }
+        result = Braintree::Transaction.sale(params)
+        result.success?.should == true
+        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+      end
     end
 
     context "Amex Pay with Points" do
