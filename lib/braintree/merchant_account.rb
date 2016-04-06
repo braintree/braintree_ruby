@@ -20,7 +20,7 @@ module Braintree
 
     attr_reader :status, :id, :master_merchant_account,
       :individual_details, :business_details, :funding_details,
-      :currency_iso_code
+      :currency_iso_code, :default
 
     def self.create(attributes)
       Configuration.gateway.merchant_account.create(attributes)

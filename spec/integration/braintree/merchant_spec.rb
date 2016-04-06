@@ -27,8 +27,8 @@ describe Braintree::MerchantGateway do
       merchant.country_name.should == "United States of America"
 
       credentials = result.credentials
-      credentials.access_token.should start_with("access_token$")
-      credentials.refresh_token.should start_with("refresh_token$")
+      credentials.access_token.should_not be_nil
+      credentials.refresh_token.should_not be_nil
       credentials.expires_at.should_not be_nil
       credentials.token_type.should == "bearer"
     end
@@ -50,6 +50,208 @@ describe Braintree::MerchantGateway do
       errors = result.errors.for(:merchant).on(:payment_methods)
 
       errors[0].code.should == Braintree::ErrorCodes::Merchant::PaymentMethodsAreInvalid
+    end
+
+    context "multiple currencies" do
+      before(:each) do
+        @gateway = Braintree::Gateway.new(
+          :client_id => "client_id$development$signup_client_id",
+          :client_secret => "client_secret$development$signup_client_secret",
+          :logger => Logger.new("/dev/null")
+        )
+      end
+
+      it "creates a paypal-only merchant that accepts multiple currencies" do
+        result = @gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "USA",
+          :payment_methods => ["paypal"],
+          :currencies => ["GBP", "USD"],
+          :paypal_account => {
+            :client_id => "paypal_client_id",
+            :client_secret => "paypal_client_secret",
+          },
+        )
+
+        result.should be_success
+
+        merchant = result.merchant
+        merchant.id.should_not be_nil
+        merchant.email.should == "name@email.com"
+        merchant.company_name.should == "name@email.com"
+        merchant.country_code_alpha3.should == "USA"
+        merchant.country_code_alpha2.should == "US"
+        merchant.country_code_numeric.should == "840"
+        merchant.country_name.should == "United States of America"
+
+        credentials = result.credentials
+        credentials.access_token.should_not be_nil
+        credentials.refresh_token.should_not be_nil
+        credentials.expires_at.should_not be_nil
+        credentials.token_type.should == "bearer"
+
+        merchant_accounts = merchant.merchant_accounts
+        merchant_accounts.count.should == 2
+
+        merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
+        merchant_account.default.should == true
+        merchant_account.currency_iso_code.should == "USD"
+
+        merchant_account = merchant_accounts.detect { |ma| ma.id == "GBP" }
+        merchant_account.default.should == false
+        merchant_account.currency_iso_code.should == "GBP"
+      end
+
+      it "allows creation of non-US merchant if onboarding application is internal" do
+        result = @gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "JPN",
+          :payment_methods => ["paypal"],
+          :paypal_account => {
+            :client_id => "paypal_client_id",
+            :client_secret => "paypal_client_secret",
+          },
+        )
+
+        result.should be_success
+
+        merchant = result.merchant
+        merchant.id.should_not be_nil
+        merchant.email.should == "name@email.com"
+        merchant.company_name.should == "name@email.com"
+        merchant.country_code_alpha3.should == "JPN"
+        merchant.country_code_alpha2.should == "JP"
+        merchant.country_code_numeric.should == "392"
+        merchant.country_name.should == "Japan"
+
+        credentials = result.credentials
+        credentials.access_token.should_not be_nil
+        credentials.refresh_token.should_not be_nil
+        credentials.expires_at.should_not be_nil
+        credentials.token_type.should == "bearer"
+
+        merchant_accounts = merchant.merchant_accounts
+        merchant_accounts.count.should == 1
+
+        merchant_account = merchant_accounts.detect { |ma| ma.id == "JPY" }
+        merchant_account.default.should == true
+        merchant_account.currency_iso_code.should == "JPY"
+      end
+
+      it "defaults to USD for non-US merchant if onboarding application is internal and country currency not supported" do
+        result = @gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "YEM",
+          :payment_methods => ["paypal"],
+          :paypal_account => {
+            :client_id => "paypal_client_id",
+            :client_secret => "paypal_client_secret",
+          },
+        )
+
+        result.should be_success
+
+        merchant = result.merchant
+        merchant.id.should_not be_nil
+        merchant.email.should == "name@email.com"
+        merchant.company_name.should == "name@email.com"
+        merchant.country_code_alpha3.should == "YEM"
+        merchant.country_code_alpha2.should == "YE"
+        merchant.country_code_numeric.should == "887"
+        merchant.country_name.should == "Yemen"
+
+        credentials = result.credentials
+        credentials.access_token.should_not be_nil
+        credentials.refresh_token.should_not be_nil
+        credentials.expires_at.should_not be_nil
+        credentials.token_type.should == "bearer"
+
+        merchant_accounts = merchant.merchant_accounts
+        merchant_accounts.count.should == 1
+
+        merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
+        merchant_account.default.should == true
+        merchant_account.currency_iso_code.should == "USD"
+      end
+
+      it "creates a paypal-only merchant via the non multi-currency flow if the oauth_application is not internal" do
+        gateway = Braintree::Gateway.new(
+          :client_id => "client_id$development$integration_client_id",
+          :client_secret => "client_secret$development$integration_client_secret",
+          :logger => Logger.new("/dev/null")
+        )
+
+        result = gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "USA",
+          :payment_methods => ["paypal"],
+          :currencies => ["USD", "GBP"],
+          :paypal_account => {
+            :client_id => "paypal_client_id",
+            :client_secret => "paypal_client_secret",
+          },
+        )
+
+        result.should be_success
+
+        merchant = result.merchant
+        merchant.id.should_not be_nil
+        merchant.email.should == "name@email.com"
+        merchant.company_name.should == "name@email.com"
+        merchant.country_code_alpha3.should == "USA"
+        merchant.country_code_alpha2.should == "US"
+        merchant.country_code_numeric.should == "840"
+        merchant.country_name.should == "United States of America"
+
+        credentials = result.credentials
+        credentials.access_token.should_not be_nil
+        credentials.refresh_token.should_not be_nil
+        credentials.expires_at.should_not be_nil
+        credentials.token_type.should == "bearer"
+
+        merchant_accounts = merchant.merchant_accounts
+        merchant_accounts.count.should == 1
+
+        merchant_account = merchant_accounts.first
+        merchant_account.default.should == true
+        merchant_account.currency_iso_code.should == "USD"
+      end
+
+      it "returns error if valid payment_method other than paypal is passed" do
+        result = @gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "USA",
+          :payment_methods => ["credit_card", "paypal"],
+          :currencies => ["USD", "GBP"],
+          :paypal_account => {
+            :client_id => "paypal_client_id",
+            :client_secret => "paypal_client_secret",
+          },
+        )
+
+        result.should_not be_success
+        errors = result.errors.for(:merchant).on(:payment_methods)
+
+        errors[0].code.should == Braintree::ErrorCodes::Merchant::PaymentMethodsAreNotAllowed
+      end
+
+      it "returns error if invalid currency is passed" do
+        result = @gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "USA",
+          :payment_methods => ["paypal"],
+          :currencies => ["FAKE", "GBP"],
+          :paypal_account => {
+            :client_id => "paypal_client_id",
+            :client_secret => "paypal_client_secret",
+          },
+        )
+
+        result.should_not be_success
+        errors = result.errors.for(:merchant).on(:currencies)
+
+        errors[0].code.should == Braintree::ErrorCodes::Merchant::CurrenciesAreInvalid
+      end
     end
   end
 
