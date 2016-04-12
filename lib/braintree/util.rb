@@ -55,6 +55,8 @@ module Braintree
         raise NotFoundError
       when 426
         raise UpgradeRequiredError, "Please upgrade your client library."
+      when 429
+        raise TooManyRequestsError
       when 500
         raise ServerError
       when 503
