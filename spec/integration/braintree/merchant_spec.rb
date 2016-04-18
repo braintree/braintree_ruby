@@ -70,7 +70,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          },
+          }
         )
 
         result.should be_success
@@ -110,7 +110,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          },
+          }
         )
 
         result.should be_success
@@ -146,7 +146,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          },
+          }
         )
 
         result.should be_success
@@ -189,7 +189,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          },
+          }
         )
 
         result.should be_success
@@ -226,7 +226,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          },
+          }
         )
 
         result.should_not be_success
@@ -244,7 +244,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          },
+          }
         )
 
         result.should_not be_success
