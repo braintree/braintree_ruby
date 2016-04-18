@@ -13,6 +13,20 @@ describe Braintree::PaymentMethod do
     end
   end
 
+  describe "update" do
+    it "handles an unknown payment method type" do
+      unknown_response = {:unknown_payment_method => {:token => 1234, :default => true}}
+      http_instance = double(:put => unknown_response)
+      Braintree::Http.stub(:new).and_return(http_instance)
+      result = Braintree::PaymentMethod.update(:unknown,
+        {:options => {:make_default => true}})
+
+      result.should be_success
+      result.payment_method.token.should == 1234
+      result.payment_method.should be_instance_of(Braintree::UnknownPaymentMethod)
+    end
+  end
+
   describe "timestamps" do
     it "exposes created_at and updated_at" do
       now = Time.now

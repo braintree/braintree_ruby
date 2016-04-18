@@ -172,6 +172,19 @@ describe Braintree::Customer do
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
+    it "allows a verification_amount" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2019",
+          :options => {:verify_card => true, :verification_amount => "2.00"}
+        }
+      )
+      result.success?.should == true
+    end
+
     it "fails on create if credit_card[options][fail_on_duplicate_payment_method]=true and there is a duplicated payment method" do
       customer = Braintree::Customer.create!
       Braintree::CreditCard.create(
@@ -961,6 +974,24 @@ describe Braintree::Customer do
       credit_card.billing_address.first_name.should == "Joe"
       credit_card.billing_address.last_name.should == "Cool"
       credit_card.billing_address.postal_code.should == "60666"
+    end
+
+    it "can update the customer and verify_card with a specific verification_amount" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe"
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :first_name => "New Joe",
+        :credit_card => {
+          :cardholder_name => "New Joe Cardholder",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2009",
+          :options => { :verify_card => true, :verification_amount => "2.00" }
+        }
+      )
+      result.success?.should == true
     end
 
     it "can update the nested billing address with billing_address_id" do

@@ -107,8 +107,12 @@ module Braintree
         SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
       elsif response[:paypal_account]
         SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
+      elsif response[:coinbase_account]
+        SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
+      elsif response
+        SuccessfulResult.new(:payment_method => UnknownPaymentMethod._new(@gateway, response))
       else
         raise UnexpectedError, "expected :payment_method or :api_error_response"
       end

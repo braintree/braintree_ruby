@@ -2917,7 +2917,7 @@ describe Braintree::Transaction do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
         :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
-        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx
+        :payment_method_nonce => Braintree::Test::Nonce::AndroidPayDiscover
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)

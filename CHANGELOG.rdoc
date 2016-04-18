@@ -1,3 +1,9 @@
+== 2.60.0
+* Allow Coinbase account to be updated
+* Add support to pass currencies to merchant create
+* Support multiple partial settlements
+* Add IsInvalid error code for addresses
+
 == 2.59.0
 * Add support for third party Android Pay integrations
 

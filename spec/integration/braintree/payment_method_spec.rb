@@ -1137,6 +1137,33 @@ describe Braintree::PaymentMethod do
       end
     end
 
+    context "coinbase accounts" do
+      it "can make a coinbase account the default payment method" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009",
+          :options => {:make_default => true}
+        )
+        result.should be_success
+
+        nonce = Braintree::Test::Nonce::Coinbase
+        original_token = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id
+        ).payment_method.token
+
+        updated_result = Braintree::PaymentMethod.update(
+          original_token,
+          :options => {:make_default => true}
+        )
+
+        updated_customer = Braintree::Customer.find(customer.id)
+        updated_customer.default_payment_method.token.should == original_token
+      end
+    end
+
     context "paypal accounts" do
       it "updates a paypal account's token" do
         customer = Braintree::Customer.create!
