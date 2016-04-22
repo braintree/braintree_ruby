@@ -87,6 +87,7 @@ describe "OAuth" do
         :redirect_uri => "http://bar.example.com",
         :scope => "read_write",
         :state => "baz_state",
+        :landing_page => "signup",
         :user => {
           :country => "USA",
           :email => "foo@example.com",
@@ -132,6 +133,7 @@ describe "OAuth" do
       query["redirect_uri"].should == ["http://bar.example.com"]
       query["scope"].should == ["read_write"]
       query["state"].should == ["baz_state"]
+      query["landing_page"].should == ["signup"]
 
       query["user[country]"].should == ["USA"]
       query["business[name]"].should == ["14 Ladders"]
