@@ -33,7 +33,7 @@ describe Braintree::CreditCardVerification, "search" do
       result = Braintree::CreditCardVerification.create(verification_params)
 
       result.success?.should == false
-      result.verification.id.should =~ /^\w{6}$/
+      result.verification.id.should =~ /^\w{6,}$/
       result.verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
       result.verification.processor_response_code.should == "2000"
       result.verification.processor_response_text.should == "Do Not Honor"

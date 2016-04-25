@@ -255,7 +255,7 @@ describe Braintree::Transaction do
         }
       )
       result.success?.should == true
-      result.transaction.id.should =~ /^\w{6}$/
+      result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "sale"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.processor_authorization_code.should_not be_nil
@@ -292,7 +292,7 @@ describe Braintree::Transaction do
       )
 
       result.success?.should == true
-      result.transaction.id.should =~ /^\w{6}$/
+      result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "sale"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.processor_authorization_code.should_not be_nil
@@ -349,7 +349,7 @@ describe Braintree::Transaction do
         }
       )
       result.success?.should == false
-      result.transaction.id.should =~ /^\w{6}$/
+      result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "sale"
       result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result.transaction.processor_response_code.should == "2000"
@@ -1932,7 +1932,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         }
       )
-      transaction.id.should =~ /^\w{6}$/
+      transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "sale"
       transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
@@ -2052,7 +2052,7 @@ describe Braintree::Transaction do
         }
       )
       result.success?.should == true
-      result.transaction.id.should =~ /^\w{6}$/
+      result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "sale"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
@@ -2105,7 +2105,7 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.id.should =~ /\A\w{6}\z/
+      transaction.id.should =~ /\A\w{6,}\z/
       transaction.type.should == "sale"
       transaction.status.should == Braintree::Transaction::Status::Authorized
       transaction.amount.should == BigDecimal.new("100.00")
@@ -2599,7 +2599,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         }
       )
-      transaction.id.should =~ /^\w{6}$/
+      transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "sale"
       transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
@@ -3097,7 +3097,7 @@ describe Braintree::Transaction do
         }
       )
       result.success?.should == true
-      result.transaction.id.should =~ /^\w{6}$/
+      result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "credit"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
@@ -3172,7 +3172,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         }
       )
-      transaction.id.should =~ /^\w{6}$/
+      transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "credit"
       transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
@@ -3300,7 +3300,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.create_from_transparent_redirect(query_string_response)
 
       transaction = result.transaction
-      transaction.id.should =~ /\A\w{6}\z/
+      transaction.id.should =~ /\A\w{6,}\z/
       transaction.type.should == "sale"
       transaction.status.should == Braintree::Transaction::Status::Authorized
       transaction.amount.should == BigDecimal.new("100.00")
