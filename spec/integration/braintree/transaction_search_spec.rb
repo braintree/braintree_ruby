@@ -837,7 +837,7 @@ describe Braintree::Transaction, "search" do
             search.dispute_date >= disputed_time - 1
           end
 
-          collection.maximum_size.should == 2
+          collection.maximum_size.should == 1
           collection.first.id.should == transaction_id
 
           collection = Braintree::Transaction.search do |search|
@@ -887,7 +887,7 @@ describe Braintree::Transaction, "search" do
             search.dispute_date >= now - 60
           end
 
-          collection.maximum_size.should == 2
+          collection.maximum_size.should == 1
           collection.first.id.should == transaction_id
 
           collection = Braintree::Transaction.search do |search|
