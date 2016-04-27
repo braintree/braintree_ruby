@@ -140,7 +140,7 @@ describe Braintree::Transaction, "search" do
         search.user.is "integration_user_public_id"
       end
 
-      collection.first.id.should == transaction.id
+      collection.any?{ |t| t.id == transaction.id }.should == true
     end
 
     it "searches on paypal transactions" do
