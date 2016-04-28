@@ -5,7 +5,7 @@ describe "OAuth" do
     @gateway = Braintree::Gateway.new(
       :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
       :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-      :logger => Logger.new("/dev/null"),
+      :logger => Logger.new("/dev/null")
     )
   end
 
@@ -196,7 +196,7 @@ describe "OAuth" do
       @gateway = Braintree::Gateway.new(
         :client_id => "client_id$development$integration_client_id",
         :client_secret => "client_secret$development$integration_client_secret",
-        :logger => Logger.new("/dev/null"),
+        :logger => Logger.new("/dev/null")
       )
       url = "http://localhost:3000/oauth/connect?business%5Bname%5D=We+Like+Spaces&client_id=client_id%24development%24integration_client_id"
       signature = @gateway.oauth._compute_signature(url)
