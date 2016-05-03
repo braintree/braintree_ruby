@@ -2783,6 +2783,167 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "update details" do
+    context "when status is submitted_for_settlement" do
+      let(:transaction) do
+        Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+          :descriptor => {
+            :name => '123*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com"
+          },
+          :order_id => '123',
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+          :options => {
+            :submit_for_settlement => true
+          }
+        )
+      end
+
+      it "successfully updates details" do
+        result = Braintree::Transaction.update_details(transaction.id, {
+          :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+          :descriptor => {
+            :name => '456*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com",
+          },
+          :order_id => '456',
+        })
+        result.success?.should == true
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize) - 1
+        result.transaction.order_id.should == '456'
+        result.transaction.descriptor.name.should ==  '456*123456789012345678'
+      end
+
+      it "raises an error when a key is invalid" do
+        expect do
+          Braintree::Transaction.update_details(transaction.id, {
+            :invalid_key => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => '456',
+          })
+        end.to raise_error(ArgumentError)
+      end
+
+      describe "errors" do
+        it "returns an error response when the settlement amount is invalid" do
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => "10000",
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => '456',
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
+        end
+
+        it "returns an error response when the descriptor is invalid" do
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => 'invalid descriptor name',
+              :phone => 'invalid phone',
+              :url => '12345678901234'
+            },
+            :order_id => '456',
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
+          result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
+          result.errors.for(:transaction).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
+        end
+
+        it "returns an error response when the order_id is invalid" do
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => 'x' * 256,
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
+        end
+
+        it "returns an error on an unsupported processor" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :descriptor => {
+              :name => '123*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com"
+            },
+            :order_id => '123',
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true
+            }
+          )
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => '456',
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingTransactionDetails
+        end
+      end
+    end
+
+    context "when status is not submitted_for_settlement" do
+      it "returns an error" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+          :descriptor => {
+            :name => '123*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com"
+          },
+          :order_id => '123',
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+        )
+        result = Braintree::Transaction.update_details(transaction.id, {
+          :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+          :descriptor => {
+            :name => '456*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com",
+          },
+          :order_id => '456',
+        })
+        result.success?.should == false
+        result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotUpdateTransactionDetailsNotSubmittedForSettlement
+      end
+    end
+
+  end
 
   describe "submit for partial settlement" do
     it "successfully submits multiple times for partial settlement" do
