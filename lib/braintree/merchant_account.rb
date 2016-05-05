@@ -22,6 +22,8 @@ module Braintree
       :individual_details, :business_details, :funding_details,
       :currency_iso_code, :default
 
+    alias_method :default?, :default
+
     def self.create(attributes)
       Configuration.gateway.merchant_account.create(attributes)
     end
