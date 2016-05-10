@@ -60,6 +60,14 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "self.update_details" do
+    it "raises an ArgumentError if transaction_id is an invalid format" do
+      expect do
+        Braintree::Transaction.update_details("invalid-transaction-id")
+      end.to raise_error(ArgumentError, "transaction_id is invalid")
+    end
+  end
+
   describe "initialize" do
     it "sets up customer attributes in customer_details" do
       transaction = Braintree::Transaction._new(

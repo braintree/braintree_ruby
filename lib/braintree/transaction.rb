@@ -215,6 +215,14 @@ module Braintree
       return_object_or_raise(:transaction) { submit_for_settlement(transaction_id, amount, options) }
     end
 
+    def self.update_details(transaction_id, options = {})
+      Configuration.gateway.transaction.update_details(transaction_id, options)
+    end
+
+    def self.update_details!(transaction_id, options = {})
+      return_object_or_raise(:transaction) { update_details(transaction_id, options) }
+    end
+
     def self.submit_for_partial_settlement(authorized_transaction_id, amount = nil, options = {})
       Configuration.gateway.transaction.submit_for_partial_settlement(authorized_transaction_id, amount, options)
     end
