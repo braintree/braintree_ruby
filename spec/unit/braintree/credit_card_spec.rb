@@ -91,8 +91,8 @@ describe Braintree::CreditCard do
 
   describe "self.create_credit_card_url" do
     it "returns the url" do
-      port = Braintree::Configuration.instantiate.port
-      Braintree::CreditCard.create_credit_card_url.should == "http://localhost:#{port}/merchants/integration_merchant_id/payment_methods/all/create_via_transparent_redirect_request"
+      config = Braintree::Configuration.instantiate
+      Braintree::CreditCard.create_credit_card_url.should == "http#{config.ssl? ? 's' : ''}://#{config.server}:#{config.port}/merchants/integration_merchant_id/payment_methods/all/create_via_transparent_redirect_request"
     end
   end
 

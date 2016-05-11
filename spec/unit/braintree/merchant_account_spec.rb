@@ -20,5 +20,14 @@ describe Braintree::MerchantAccount do
       account.inspect.should == "#<Braintree::MerchantAccount: id: \"merchant_account\", status: \"active\", master_merchant_account: #{master_merchant_account}>"
     end
   end
+
+  describe "default?" do
+    it "is an alias of default" do
+      account = Braintree::MerchantAccount._new(nil, :default => false)
+      account.default?.should == false
+      account = Braintree::MerchantAccount._new(nil, :default => true)
+      account.default?.should == true
+    end
+  end
 end
 

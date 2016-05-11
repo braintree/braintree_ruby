@@ -218,6 +218,12 @@ describe Braintree::Util do
       end.to raise_error(Braintree::UpgradeRequiredError, "Please upgrade your client library.")
     end
 
+    it "raises a TooManyRequestsError if the rate limit threshold is exceeded" do
+      expect do
+        Braintree::Util.raise_exception_for_status_code(429)
+      end.to raise_error(Braintree::TooManyRequestsError)
+    end
+
     it "raises a ServerError if the server 500's" do
       expect do
         Braintree::Util.raise_exception_for_status_code(500)

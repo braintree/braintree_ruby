@@ -23,7 +23,7 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   end
 
   def create_modification_for_tests(attributes)
-    config = Braintree::Configuration.gateway.config
+    config = Braintree::Configuration.instantiate
     config.http.post("#{config.base_merchant_path}/modifications/create_modification_for_tests", :modification => attributes)
   end
 

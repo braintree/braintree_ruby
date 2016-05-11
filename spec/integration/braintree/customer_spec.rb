@@ -56,8 +56,8 @@ describe Braintree::Customer do
 
     it "returns a successful result if successful using an access token" do
       oauth_gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
