@@ -22,6 +22,8 @@ module Braintree # :nodoc:
 
   class SSLCertificateError < BraintreeError; end
 
+  class TooManyRequestsError < BraintreeError; end
+
   class UnexpectedError < BraintreeError; end
 
   class UpgradeRequiredError < BraintreeError; end

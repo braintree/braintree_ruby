@@ -1256,7 +1256,7 @@ describe Braintree::PaymentMethod do
         :merchant_id => "integration_merchant_public_id",
         :public_key => "oauth_app_partner_user_public_key",
         :private_key => "oauth_app_partner_user_private_key",
-        :environment => :development,
+        :environment => Braintree::Configuration.environment,
         :logger => Logger.new("/dev/null")
       )
       customer = partner_merchant_gateway.customer.create(
@@ -1276,8 +1276,8 @@ describe Braintree::PaymentMethod do
       ).credit_card
 
       oauth_gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {

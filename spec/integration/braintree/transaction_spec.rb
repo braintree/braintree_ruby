@@ -268,8 +268,8 @@ describe Braintree::Transaction do
 
     it "returns a successful result using an access token" do
       oauth_gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
@@ -500,8 +500,8 @@ describe Braintree::Transaction do
 
       it "exposes the application incomplete gateway rejection reason" do
         gateway = Braintree::Gateway.new(
-          :client_id => "client_id$development$integration_client_id",
-          :client_secret => "client_secret$development$integration_client_secret",
+          :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+          :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
           :logger => Logger.new("/dev/null")
         )
         result = gateway.merchant.create(
@@ -2783,6 +2783,167 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "update details" do
+    context "when status is submitted_for_settlement" do
+      let(:transaction) do
+        Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+          :descriptor => {
+            :name => '123*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com"
+          },
+          :order_id => '123',
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+          :options => {
+            :submit_for_settlement => true
+          }
+        )
+      end
+
+      it "successfully updates details" do
+        result = Braintree::Transaction.update_details(transaction.id, {
+          :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+          :descriptor => {
+            :name => '456*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com",
+          },
+          :order_id => '456',
+        })
+        result.success?.should == true
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize) - 1
+        result.transaction.order_id.should == '456'
+        result.transaction.descriptor.name.should ==  '456*123456789012345678'
+      end
+
+      it "raises an error when a key is invalid" do
+        expect do
+          Braintree::Transaction.update_details(transaction.id, {
+            :invalid_key => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => '456',
+          })
+        end.to raise_error(ArgumentError)
+      end
+
+      describe "errors" do
+        it "returns an error response when the settlement amount is invalid" do
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => "10000",
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => '456',
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
+        end
+
+        it "returns an error response when the descriptor is invalid" do
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => 'invalid descriptor name',
+              :phone => 'invalid phone',
+              :url => '12345678901234'
+            },
+            :order_id => '456',
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
+          result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
+          result.errors.for(:transaction).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
+        end
+
+        it "returns an error response when the order_id is invalid" do
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => 'x' * 256,
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
+        end
+
+        it "returns an error on an unsupported processor" do
+          transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :descriptor => {
+              :name => '123*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com"
+            },
+            :order_id => '123',
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true
+            }
+          )
+          result = Braintree::Transaction.update_details(transaction.id, {
+            :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+            :descriptor => {
+              :name => '456*123456789012345678',
+              :phone => '3334445555',
+              :url => "ebay.com",
+            },
+            :order_id => '456',
+          })
+          result.success?.should == false
+          result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingTransactionDetails
+        end
+      end
+    end
+
+    context "when status is not submitted_for_settlement" do
+      it "returns an error" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+          :descriptor => {
+            :name => '123*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com"
+          },
+          :order_id => '123',
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+        )
+        result = Braintree::Transaction.update_details(transaction.id, {
+          :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
+          :descriptor => {
+            :name => '456*123456789012345678',
+            :phone => '3334445555',
+            :url => "ebay.com",
+          },
+          :order_id => '456',
+        })
+        result.success?.should == false
+        result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotUpdateTransactionDetailsNotSubmittedForSettlement
+      end
+    end
+
+  end
 
   describe "submit for partial settlement" do
     it "successfully submits multiple times for partial settlement" do
@@ -4116,7 +4277,7 @@ describe Braintree::Transaction do
         :merchant_id => "integration_merchant_public_id",
         :public_key => "oauth_app_partner_user_public_key",
         :private_key => "oauth_app_partner_user_private_key",
-        :environment => :development,
+        :environment => Braintree::Configuration.environment,
         :logger => Logger.new("/dev/null")
       )
       @customer = partner_merchant_gateway.customer.create(
@@ -4141,8 +4302,8 @@ describe Braintree::Transaction do
       ).credit_card
 
       oauth_gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
@@ -4164,7 +4325,7 @@ describe Braintree::Transaction do
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
       result.transaction.facilitator_details.should_not == nil
-      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$development$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
     end
 
@@ -4187,7 +4348,7 @@ describe Braintree::Transaction do
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
       result.transaction.facilitator_details.should_not == nil
-      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$development$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
     end
   end

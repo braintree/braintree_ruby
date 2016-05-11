@@ -99,6 +99,16 @@ class ClientApiHttp
     raise Braintree::SSLCertificateError
   end
 
+  def _verify_ssl_certificate(preverify_ok, ssl_context)
+    if preverify_ok != true || ssl_context.error != 0
+      err_msg = "SSL Verification failed -- Preverify: #{preverify_ok}, Error: #{ssl_context.error_string} (#{ssl_context.error})"
+      @config.logger.error err_msg
+      false
+    else
+      true
+    end
+  end
+
   def get_payment_methods
     encoded_fingerprint = Braintree::Util.url_encode(@options[:authorization_fingerprint])
     url = "/merchants/#{@config.merchant_id}/client_api/v1/payment_methods?"

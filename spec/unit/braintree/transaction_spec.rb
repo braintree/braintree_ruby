@@ -47,8 +47,8 @@ describe Braintree::Transaction do
 
   describe "self.create_transaction_url" do
     it "returns the url" do
-      port = Braintree::Configuration.instantiate.port
-      Braintree::Transaction.create_transaction_url.should == "http://localhost:#{port}/merchants/integration_merchant_id/transactions/all/create_via_transparent_redirect_request"
+      config = Braintree::Configuration.instantiate
+      Braintree::Transaction.create_transaction_url.should == "http#{config.ssl? ? 's' : ''}://#{config.server}:#{config.port}/merchants/integration_merchant_id/transactions/all/create_via_transparent_redirect_request"
     end
   end
 
@@ -56,6 +56,14 @@ describe Braintree::Transaction do
     it "raises an ArgumentError if transaction_id is an invalid format" do
       expect do
         Braintree::Transaction.submit_for_settlement("invalid-transaction-id")
+      end.to raise_error(ArgumentError, "transaction_id is invalid")
+    end
+  end
+
+  describe "self.update_details" do
+    it "raises an ArgumentError if transaction_id is an invalid format" do
+      expect do
+        Braintree::Transaction.update_details("invalid-transaction-id")
       end.to raise_error(ArgumentError, "transaction_id is invalid")
     end
   end

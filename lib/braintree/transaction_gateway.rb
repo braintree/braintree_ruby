@@ -106,6 +106,13 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def update_details(transaction_id, options = {})
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      Util.verify_keys(TransactionGateway._update_details_signature, options)
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/update_details", :transaction => options)
+      _handle_transaction_response(response)
+    end
+
     def submit_for_partial_settlement(authorized_transaction_id, amount = nil, options = {})
       raise ArgumentError, "authorized_transaction_id is invalid" unless authorized_transaction_id =~ /\A[0-9a-z]+\z/
       Util.verify_keys(TransactionGateway._submit_for_settlement_signature, options)
@@ -165,6 +172,14 @@ module Braintree
 
     def self._submit_for_settlement_signature # :nodoc:
       [
+        :order_id,
+        {:descriptor => [:name, :phone, :url]},
+      ]
+    end
+
+    def self._update_details_signature # :nodoc:
+      [
+        :amount,
         :order_id,
         {:descriptor => [:name, :phone, :url]},
       ]
