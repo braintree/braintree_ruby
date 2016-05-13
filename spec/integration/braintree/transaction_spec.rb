@@ -2813,7 +2813,7 @@ describe Braintree::Transaction do
             :phone => '3334445555',
             :url => "ebay.com",
           },
-          :order_id => '456',
+          :order_id => '456'
         })
         result.success?.should == true
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize) - 1
@@ -2830,7 +2830,7 @@ describe Braintree::Transaction do
               :phone => '3334445555',
               :url => "ebay.com",
             },
-            :order_id => '456',
+            :order_id => '456'
           })
         end.to raise_error(ArgumentError)
       end
@@ -2844,7 +2844,7 @@ describe Braintree::Transaction do
               :phone => '3334445555',
               :url => "ebay.com",
             },
-            :order_id => '456',
+            :order_id => '456'
           })
           result.success?.should == false
           result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
@@ -2858,7 +2858,7 @@ describe Braintree::Transaction do
               :phone => 'invalid phone',
               :url => '12345678901234'
             },
-            :order_id => '456',
+            :order_id => '456'
           })
           result.success?.should == false
           result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
@@ -2874,7 +2874,7 @@ describe Braintree::Transaction do
               :phone => '3334445555',
               :url => "ebay.com",
             },
-            :order_id => 'x' * 256,
+            :order_id => 'x' * 256
           })
           result.success?.should == false
           result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
@@ -2905,7 +2905,7 @@ describe Braintree::Transaction do
               :phone => '3334445555',
               :url => "ebay.com",
             },
-            :order_id => '456',
+            :order_id => '456'
           })
           result.success?.should == false
           result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingTransactionDetails
@@ -2927,7 +2927,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "06/2009"
-          },
+          }
         )
         result = Braintree::Transaction.update_details(transaction.id, {
           :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
@@ -2936,7 +2936,7 @@ describe Braintree::Transaction do
             :phone => '3334445555',
             :url => "ebay.com",
           },
-          :order_id => '456',
+          :order_id => '456'
         })
         result.success?.should == false
         result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotUpdateTransactionDetailsNotSubmittedForSettlement
