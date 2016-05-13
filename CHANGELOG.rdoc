@@ -1,3 +1,6 @@
+== 2.61.1
+* Fix compatibility in specs with Ruby 1.8.7
+
 == 2.61.0
 * Add transaction `UpdateDetails`
 * Support for Too Many Requests response codes
