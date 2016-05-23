@@ -2199,9 +2199,9 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,7}\z/
+      transaction.customer_details.id.should =~ /\A\d{6,}\z/
       transaction.vault_customer.id.should == transaction.customer_details.id
-      transaction.credit_card_details.token.should =~ /\A\w{4,5}\z/
+      transaction.credit_card_details.token.should =~ /\A\w{4,}\z/
       transaction.vault_credit_card.token.should == transaction.credit_card_details.token
     end
 
@@ -2234,7 +2234,7 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,7}\z/
+      transaction.customer_details.id.should =~ /\A\d{6,}\z/
       transaction.vault_customer.id.should == transaction.customer_details.id
       credit_card = Braintree::CreditCard.find(transaction.vault_credit_card.token)
       transaction.billing_details.id.should == credit_card.billing_address.id
@@ -2279,7 +2279,7 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,7}\z/
+      transaction.customer_details.id.should =~ /\A\d{6,}\z/
       transaction.vault_customer.id.should == transaction.customer_details.id
       transaction.vault_shipping_address.id.should == transaction.vault_customer.addresses[0].id
       shipping_address = transaction.vault_customer.addresses[0]

@@ -19,7 +19,7 @@ describe Braintree::CreditCard do
       )
       result.success?.should == true
       credit_card = result.credit_card
-      credit_card.token.should =~ /\A\w{4,5}\z/
+      credit_card.token.should =~ /\A\w{4,}\z/
       credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       credit_card.expiration_date.should == "05/2009"

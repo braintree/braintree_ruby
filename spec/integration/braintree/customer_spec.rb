@@ -42,7 +42,7 @@ describe Braintree::Customer do
         :website => "www.microsoft.com"
       )
       result.success?.should == true
-      result.customer.id.should =~ /^\d{6}$/
+      result.customer.id.should =~ /^\d{6,}$/
       result.customer.first_name.should == "Bill"
       result.customer.last_name.should == "Gates"
       result.customer.company.should == "Microsoft"
@@ -80,7 +80,7 @@ describe Braintree::Customer do
         :website => "www.example.com"
       )
       result.success?.should == true
-      result.customer.id.should =~ /^\d{6}$/
+      result.customer.id.should =~ /^\d{6,}$/
       result.customer.first_name.should == "Joe"
       result.customer.last_name.should == "Brown"
     end
