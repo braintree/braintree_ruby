@@ -42,4 +42,38 @@ describe Braintree::Disbursement do
       disbursement.inspect.should include('success: false')
     end
   end
+
+  describe "success?" do
+    it "is an alias of success" do
+      disbursement = Braintree::Disbursement._new(
+        :gateway,
+        :merchant_account => {
+          :id => "sandbox_sub_merchant_account",
+          :master_merchant_account => {
+            :id => "sandbox_master_merchant_account",
+            :status => "active"
+          },
+          :status => "active"
+        },
+        :success => false,
+        :disbursement_date => "2013-04-10"
+      )
+      disbursement.success?.should == false
+
+      disbursement = Braintree::Disbursement._new(
+        :gateway,
+        :merchant_account => {
+          :id => "sandbox_sub_merchant_account",
+          :master_merchant_account => {
+            :id => "sandbox_master_merchant_account",
+            :status => "active"
+          },
+          :status => "active"
+        },
+        :success => true,
+        :disbursement_date => "2013-04-10"
+      )
+      disbursement.success?.should == true
+    end
+  end
 end
