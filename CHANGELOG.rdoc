@@ -1,3 +1,6 @@
+== 2.62.0
+* Add method of revoking OAuth access tokens.
+
 == 2.61.1
 * Fix compatibility in specs with Ruby 1.8.7
 
