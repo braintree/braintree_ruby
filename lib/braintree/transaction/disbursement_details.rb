@@ -5,16 +5,14 @@ module Braintree
 
       attr_reader :disbursement_date, :settlement_amount, :settlement_currency_iso_code, :settlement_currency_exchange_rate, :success
 
+      alias_method :success?, :success
+
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
       end
 
       def funds_held?
         @funds_held
-      end
-
-      def success?
-        @success
       end
 
       def valid?
