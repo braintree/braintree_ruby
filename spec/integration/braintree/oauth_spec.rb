@@ -80,6 +80,31 @@ describe "OAuth" do
     end
   end
 
+  describe "revoke_access_token" do
+    it "revokes an access token" do
+      code = Braintree::OAuthTestHelper.create_grant(@gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "read_write"
+      })
+      access_token = @gateway.oauth.create_token_from_code(
+        :code => code,
+        :scope => "read_write"
+      ).credentials.access_token
+
+      result = @gateway.oauth.revoke_access_token(access_token)
+      result.should be_success
+
+      gateway = Braintree::Gateway.new(
+        :access_token => access_token,
+        :logger => Logger.new("/dev/null")
+      )
+
+      expect do
+        gateway.customer.create
+      end.to raise_error(Braintree::AuthenticationError)
+    end
+  end
+
   describe "connect_url" do
     it "builds a connect url" do
       url = @gateway.oauth.connect_url(

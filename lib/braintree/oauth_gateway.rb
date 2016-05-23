@@ -31,6 +31,17 @@ module Braintree
       end
     end
 
+    def revoke_access_token(access_token)
+      response = @config.http.post("/oauth/revoke_access_token", {
+        :token => access_token
+      })
+      if response[:result][:success] == true
+        Braintree::SuccessfulResult.new
+      else
+        ErrorResult.new(@gateway, "could not revoke access token")
+      end
+    end
+
     def connect_url(params)
       params[:client_id] = @config.client_id
       user_params = _sub_query(params, :user)
