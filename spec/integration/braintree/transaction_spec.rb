@@ -1683,6 +1683,101 @@ describe Braintree::Transaction do
         result.success?.should == false
         result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
       end
+
+      it "can create a transaction with a three_d_secure_pass_thru" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+      end
+
+      it "returns an error for transaction with three_d_secure_pass_thru when processor settings do not support 3DS for card type" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => "adyen_ma",
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureMerchantAccountDoesNotSupportCardType
+      end
+
+      it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is missing" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsRequired
+      end
+
+      it "returns an error for transaction when the three_d_secure_pass_thru cavv or xid is missing" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "06",
+            :cavv => "",
+            :xid => "",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:xid)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureXidIsRequired
+      end
+
+      it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "bad_eci_flag",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsInvalid
+      end
+
+
     end
 
     context "paypal" do

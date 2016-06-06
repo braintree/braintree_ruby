@@ -146,6 +146,13 @@ module Braintree
         {
           :shipping => AddressGateway._shared_signature
         },
+        {
+          :three_d_secure_pass_thru => [
+            :eci_flag,
+            :cavv,
+            :xid,
+          ]
+        },
         {:options => [
           :hold_in_escrow,
           :store_in_vault,
