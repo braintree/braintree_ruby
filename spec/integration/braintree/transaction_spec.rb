@@ -1941,14 +1941,54 @@ describe Braintree::Transaction do
             transaction = Braintree::Transaction.find(transaction.id)
             transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
           end
+
+          it "allows partial refunds passed in an options hash" do
+            transaction = create_paypal_transaction_for_refund
+
+            transaction_1 = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount / 2).transaction
+            transaction_2 = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount / 2).transaction
+
+            transaction = Braintree::Transaction.find(transaction.id)
+            transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+          end
         end
 
         it "returns a successful result if successful" do
           transaction = create_paypal_transaction_for_refund
 
           result = Braintree::Transaction.refund(transaction.id)
+
           result.success?.should == true
           result.transaction.type.should == "credit"
+        end
+
+        it "allows an order_id to be passed for the refund" do
+          transaction = create_paypal_transaction_for_refund
+
+          result = Braintree::Transaction.refund(transaction.id, :order_id => "123458798123")
+
+          result.success?.should == true
+          result.transaction.type.should == "credit"
+          result.transaction.order_id.should == "123458798123"
+        end
+
+        it "allows amount and order_id to be passed for the refund" do
+          transaction = create_paypal_transaction_for_refund
+
+          result = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount/2, :order_id => "123458798123")
+
+          result.success?.should == true
+          result.transaction.type.should == "credit"
+          result.transaction.order_id.should == "123458798123"
+          result.transaction.amount.should == transaction.amount/2
+        end
+
+        it "does not allow arbitrary options to be passed" do
+          transaction = create_paypal_transaction_for_refund
+
+          expect {
+            Braintree::Transaction.refund(transaction.id, :blah => "123458798123")
+          }.to raise_error(ArgumentError)
         end
 
         it "assigns the refund_id on the original transaction" do

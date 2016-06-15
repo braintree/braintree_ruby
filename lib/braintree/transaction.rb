@@ -179,12 +179,12 @@ module Braintree
       return_object_or_raise(:transaction) { hold_in_escrow(id) }
     end
 
-    def self.refund(id, amount = nil)
-      Configuration.gateway.transaction.refund(id, amount)
+    def self.refund(id, amount_or_options = nil)
+      Configuration.gateway.transaction.refund(id, amount_or_options)
     end
 
-    def self.refund!(id, amount = nil)
-      return_object_or_raise(:transaction) { refund(id, amount) }
+    def self.refund!(id, amount_or_options = nil)
+      return_object_or_raise(:transaction) { refund(id, amount_or_options) }
     end
 
     def self.sale(attributes)
