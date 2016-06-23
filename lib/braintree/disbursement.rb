@@ -4,6 +4,8 @@ module Braintree
 
     attr_reader :id, :amount, :exception_message, :disbursement_date, :follow_up_action, :merchant_account, :transaction_ids, :retry, :success
 
+    alias_method :success?, :success
+
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)

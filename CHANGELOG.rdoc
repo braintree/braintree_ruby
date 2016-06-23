@@ -1,3 +1,9 @@
+== 2.63.0
+* Add order_id to Refund
+* Enabled 3DS pass thru support
+* Expose IDs in resource collections
+* Add 'success?' method to disbursement
+
 == 2.62.0
 * Add method of revoking OAuth access tokens.
 

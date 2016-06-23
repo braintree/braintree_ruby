@@ -1683,6 +1683,101 @@ describe Braintree::Transaction do
         result.success?.should == false
         result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
       end
+
+      it "can create a transaction with a three_d_secure_pass_thru" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+      end
+
+      it "returns an error for transaction with three_d_secure_pass_thru when processor settings do not support 3DS for card type" do
+        result = Braintree::Transaction.create(
+          :merchant_account_id => "adyen_ma",
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureMerchantAccountDoesNotSupportCardType
+      end
+
+      it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is missing" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsRequired
+      end
+
+      it "returns an error for transaction when the three_d_secure_pass_thru cavv or xid is missing" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "06",
+            :cavv => "",
+            :xid => "",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:xid)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureXidIsRequired
+      end
+
+      it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :three_d_secure_pass_thru => {
+            :eci_flag => "bad_eci_flag",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+          }
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsInvalid
+      end
+
+
     end
 
     context "paypal" do
@@ -1846,14 +1941,54 @@ describe Braintree::Transaction do
             transaction = Braintree::Transaction.find(transaction.id)
             transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
           end
+
+          it "allows partial refunds passed in an options hash" do
+            transaction = create_paypal_transaction_for_refund
+
+            transaction_1 = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount / 2).transaction
+            transaction_2 = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount / 2).transaction
+
+            transaction = Braintree::Transaction.find(transaction.id)
+            transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+          end
         end
 
         it "returns a successful result if successful" do
           transaction = create_paypal_transaction_for_refund
 
           result = Braintree::Transaction.refund(transaction.id)
+
           result.success?.should == true
           result.transaction.type.should == "credit"
+        end
+
+        it "allows an order_id to be passed for the refund" do
+          transaction = create_paypal_transaction_for_refund
+
+          result = Braintree::Transaction.refund(transaction.id, :order_id => "123458798123")
+
+          result.success?.should == true
+          result.transaction.type.should == "credit"
+          result.transaction.order_id.should == "123458798123"
+        end
+
+        it "allows amount and order_id to be passed for the refund" do
+          transaction = create_paypal_transaction_for_refund
+
+          result = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount/2, :order_id => "123458798123")
+
+          result.success?.should == true
+          result.transaction.type.should == "credit"
+          result.transaction.order_id.should == "123458798123"
+          result.transaction.amount.should == transaction.amount/2
+        end
+
+        it "does not allow arbitrary options to be passed" do
+          transaction = create_paypal_transaction_for_refund
+
+          expect {
+            Braintree::Transaction.refund(transaction.id, :blah => "123458798123")
+          }.to raise_error(ArgumentError)
         end
 
         it "assigns the refund_id on the original transaction" do
@@ -2199,9 +2334,9 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,7}\z/
+      transaction.customer_details.id.should =~ /\A\d{6,}\z/
       transaction.vault_customer.id.should == transaction.customer_details.id
-      transaction.credit_card_details.token.should =~ /\A\w{4,5}\z/
+      transaction.credit_card_details.token.should =~ /\A\w{4,}\z/
       transaction.vault_credit_card.token.should == transaction.credit_card_details.token
     end
 
@@ -2234,7 +2369,7 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,7}\z/
+      transaction.customer_details.id.should =~ /\A\d{6,}\z/
       transaction.vault_customer.id.should == transaction.customer_details.id
       credit_card = Braintree::CreditCard.find(transaction.vault_credit_card.token)
       transaction.billing_details.id.should == credit_card.billing_address.id
@@ -2279,7 +2414,7 @@ describe Braintree::Transaction do
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,7}\z/
+      transaction.customer_details.id.should =~ /\A\d{6,}\z/
       transaction.vault_customer.id.should == transaction.customer_details.id
       transaction.vault_shipping_address.id.should == transaction.vault_customer.addresses[0].id
       shipping_address = transaction.vault_customer.addresses[0]

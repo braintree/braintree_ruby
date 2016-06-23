@@ -61,8 +61,15 @@ module Braintree
       raise NotFoundError, "transaction with id #{id.inspect} not found"
     end
 
-    def refund(transaction_id, amount = nil)
-      response = @config.http.post("#{@config.base_merchant_path}/transactions/#{transaction_id}/refund", :transaction => {:amount => amount})
+    def refund(transaction_id, amount_or_options = nil)
+      options = if amount_or_options.is_a?(Hash)
+                  amount_or_options
+                else
+                  { :amount => amount_or_options }
+                end
+
+      Util.verify_keys(TransactionGateway._refund_signature, options)
+      response = @config.http.post("#{@config.base_merchant_path}/transactions/#{transaction_id}/refund", :transaction => options)
       _handle_transaction_response(response)
     end
 
@@ -146,6 +153,13 @@ module Braintree
         {
           :shipping => AddressGateway._shared_signature
         },
+        {
+          :three_d_secure_pass_thru => [
+            :eci_flag,
+            :cavv,
+            :xid,
+          ]
+        },
         {:options => [
           :hold_in_escrow,
           :store_in_vault,
@@ -182,6 +196,13 @@ module Braintree
         :amount,
         :order_id,
         {:descriptor => [:name, :phone, :url]},
+      ]
+    end
+
+    def self._refund_signature
+      [
+        :amount,
+        :order_id
       ]
     end
 
