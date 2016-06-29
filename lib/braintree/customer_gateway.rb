@@ -126,6 +126,11 @@ module Braintree
         :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
         :device_data, :payment_method_nonce,
         {:credit_card => credit_card_signature},
+        {
+          :payment_method => [
+            {:options => [:update_existing_token, :make_default] }
+          ]
+        },
         {:custom_fields => :_any_key_}
       ]
     end

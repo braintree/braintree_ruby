@@ -172,6 +172,11 @@ describe Braintree::Customer do
             {:options => [:update_existing]}
           ]}
         ]},
+        {
+          :payment_method => [
+            {:options => [:update_existing_token, :make_default] }
+          ]
+        },
         {:custom_fields => :_any_key_}
       ]
     end
