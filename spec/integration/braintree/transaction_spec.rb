@@ -1013,16 +1013,46 @@ describe Braintree::Transaction do
     context "recurring" do
       it "marks a transaction as recurring" do
         result = Braintree::Transaction.create(
-            :type => "sale",
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "12/12",
-            },
-            :recurring => true
-          )
-          result.success?.should == true
-          result.transaction.recurring.should == true
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :recurring => true
+        )
+        result.success?.should == true
+        result.transaction.recurring.should == true
+      end
+    end
+
+    context "transaction_source" do
+      it "marks a transactions as recurring" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :transaction_source => "recurring"
+        )
+        result.success?.should == true
+        result.transaction.recurring.should == true
+      end
+
+      it "marks a transactions as moto" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :transaction_source => "moto"
+        )
+        result.success?.should == true
+        result.transaction.recurring.should == false
       end
     end
 
