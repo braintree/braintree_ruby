@@ -318,6 +318,23 @@ describe Braintree::Transaction do
       result.success?.should == true
     end
 
+    it "accepts additional security parameters: risk data with customer_browser and customer_ip" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :risk_data => {
+          :customer_browser => "IE6",
+          :customer_ip => "192.168.0.1"
+        }
+      )
+
+      result.success?.should == true
+    end
+
     it "accepts billing_address_id in place of billing_address" do
       result = Braintree::Customer.create()
       address_result = Braintree::Address.create(

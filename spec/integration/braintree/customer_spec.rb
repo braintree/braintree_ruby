@@ -99,6 +99,22 @@ describe Braintree::Customer do
       result.should be_success
     end
 
+    it "supports creation including risk data with customer_browser and customer_ip" do
+      result = Braintree::Customer.create(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :cvv => "100"
+        },
+        :risk_data => {
+          :customer_browser => "IE5",
+          :customer_ip => "192.168.0.1"
+        }
+      )
+
+      result.should be_success
+    end
+
     it "can create without any attributes" do
       result = Braintree::Customer.create
       result.success?.should == true
