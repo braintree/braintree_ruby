@@ -135,6 +135,7 @@ describe Braintree::Customer do
         :website,
         :device_data,
         :payment_method_nonce,
+        :default_payment_method_token,
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,
