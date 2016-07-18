@@ -99,6 +99,22 @@ describe Braintree::Customer do
       result.should be_success
     end
 
+    it "supports creation including risk data with customer_browser and customer_ip" do
+      result = Braintree::Customer.create(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :cvv => "100"
+        },
+        :risk_data => {
+          :customer_browser => "IE5",
+          :customer_ip => "192.168.0.1"
+        }
+      )
+
+      result.should be_success
+    end
+
     it "can create without any attributes" do
       result = Braintree::Customer.create
       result.success?.should == true
@@ -907,6 +923,77 @@ describe Braintree::Customer do
       result.customer.first_name.should == "Mr. Joe"
       result.customer.last_name.should == "Super Cool"
       result.customer.custom_fields[:store_me].should == "a value"
+    end
+
+    it "updates the default payment method" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+        :last_name => "Brown",
+      )
+
+      token1 = random_payment_method_token
+
+      payment_method1 = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :token => token1,
+      )
+
+      payment_method1 = Braintree::PaymentMethod.find(token1)
+      payment_method1.should be_default
+
+      token2 = random_payment_method_token
+
+      payment_method2 = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableMasterCard,
+        :token => token2
+      )
+
+      Braintree::Customer.update(customer.id,
+        :default_payment_method_token => token2
+      )
+
+      payment_method2 = Braintree::PaymentMethod.find(token2)
+      payment_method2.should be_default
+    end
+
+    it "updates the default payment method in the options" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+        :last_name => "Brown",
+      )
+
+      token1 = random_payment_method_token
+
+      payment_method1 = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :token => token1,
+      )
+
+      payment_method1 = Braintree::PaymentMethod.find(token1)
+      payment_method1.should be_default
+
+      token2 = random_payment_method_token
+
+      payment_method2 = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableMasterCard,
+        :token => token2
+      )
+
+      Braintree::Customer.update(customer.id,
+        :credit_card => {
+          :options => {
+            :update_existing_token => token2,
+            :make_default => true
+          }
+        }
+      )
+
+      payment_method2 = Braintree::PaymentMethod.find(token2)
+      payment_method2.should be_default
     end
 
     it "can use any country code" do
