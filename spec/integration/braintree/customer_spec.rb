@@ -1063,49 +1063,6 @@ describe Braintree::Customer do
       credit_card.billing_address.postal_code.should == "60666"
     end
 
-    [
-      :Coinbase,
-      :VenmoAccount,
-      :AmexExpressCheckout
-    ].each do |nonce_key|
-      it "can make a #{nonce_key} account the default payment method" do
-        nonce = Braintree::Test::Nonce.const_get(nonce_key)
-        customer = Braintree::Customer.create!(
-          :first_name => "Joe",
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/2009",
-            :billing_address => {
-              :first_name => "Joe",
-              :postal_code => "60622"
-            }
-          }
-        )
-
-        result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => nonce,
-          :customer_id => customer.id
-        )
-
-        result.should be_success
-        new_account = result.payment_method
-
-        result = Braintree::Customer.update(
-          customer.id,
-          :payment_method => {
-            :options => {
-              :update_existing_token => new_account.token,
-              :make_default => true
-            }
-          }
-        )
-
-        result.should be_success
-        result.customer.default_payment_method.token.should ==
-          new_account.token
-      end
-    end
-
     it "can update the customer and verify_card with a specific verification_amount" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe"
@@ -1387,79 +1344,6 @@ describe Braintree::Customer do
       customer.phone.should == "888.111.2222"
       customer.fax.should == "999.222.3333"
       customer.website.should == "new.website.com"
-    end
-  end
-
-  describe "make_default" do
-    context "credit_card" do
-      it "updates the customer's default payment method" do
-        customer = Braintree::Customer.create!(
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visas[0],
-            :expiration_date => "12/2015",
-            :options => {
-              :make_default => true
-            }
-          }
-        )
-
-        customer.default_credit_card.should_not be_nil
-
-        next_card_token = "new_token#{SecureRandom.hex(5)}"
-
-        Braintree::Customer.update!(
-          customer.id,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visas[1],
-            :expiration_date => "12/2015",
-            :token => next_card_token,
-            :options => { :make_default => true }
-          }
-        )
-
-        customer = Braintree::Customer.find(customer.id)
-
-        customer.default_credit_card.token.should == next_card_token
-      end
-    end
-
-    context "all payment_method types including credit cards" do
-      it "updates customer's default payment method" do
-        previous_default_payment_method_token = SecureRandom.hex(16)
-        customer = Braintree::Customer.create!(
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visas[0],
-            :expiration_date => "12/2015",
-            :token => previous_default_payment_method_token,
-            :options => {
-              :make_default => true
-            }
-          }
-        )
-
-        next_default_method_token = SecureRandom.hex(16)
-        result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
-          :customer_id => customer.id,
-          :token => next_default_method_token
-        )
-
-        customer = Braintree::Customer.find(customer.id)
-        customer.default_payment_method.token.should == previous_default_payment_method_token
-
-        Braintree::Customer.update!(
-          customer.id,
-          :payment_method => {
-            :options => {
-              :update_existing_token => next_default_method_token,
-              :make_default => true,
-            }
-          }
-        )
-
-        customer = Braintree::Customer.find(customer.id)
-        customer.default_payment_method.token.should == next_default_method_token
-      end
     end
   end
 
