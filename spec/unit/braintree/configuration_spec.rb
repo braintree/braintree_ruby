@@ -64,6 +64,20 @@ describe Braintree::Configuration do
         )
       end.to raise_error(Braintree::ConfigurationError, /mixed credential types/)
     end
+
+    it "accepts proxy params" do
+      config = Braintree::Configuration.new(
+        :proxy_address => 'localhost',
+        :proxy_port => 8080,
+        :proxy_user => 'user',
+        :proxy_pass => 'test',
+      )
+
+      config.proxy_address.should == 'localhost'
+      config.proxy_port.should == 8080
+      config.proxy_user.should == 'user'
+      config.proxy_pass.should == 'test'
+    end
   end
 
   describe "base_merchant_path" do
@@ -124,6 +138,22 @@ describe Braintree::Configuration do
       expect do
         Braintree::Configuration.environment
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.environment needs to be set")
+    end
+  end
+
+  describe "self.gateway" do
+    it "sets its proxy config" do
+      Braintree::Configuration.proxy_address = "localhost"
+      Braintree::Configuration.proxy_port = 8080
+      Braintree::Configuration.proxy_user = "user"
+      Braintree::Configuration.proxy_pass = "test"
+
+      gateway = Braintree::Configuration.gateway
+
+      gateway.config.proxy_address.should == "localhost"
+      gateway.config.proxy_port.should == 8080
+      gateway.config.proxy_user.should == "user"
+      gateway.config.proxy_pass.should == "test"
     end
   end
 

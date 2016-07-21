@@ -13,6 +13,13 @@ module Braintree
       :environment,
     ]
 
+    NON_REQUIRED_READABLE_ATTRIBUTES = [
+      :proxy_address,
+      :proxy_port,
+      :proxy_user,
+      :proxy_pass,
+    ]
+
     WRITABLE_ATTRIBUTES = [
       :custom_user_agent,
       :endpoint,
@@ -23,12 +30,17 @@ module Braintree
       :public_key,
       :private_key,
       :environment,
+      :proxy_address,
+      :proxy_port,
+      :proxy_user,
+      :proxy_pass,
     ]
 
     class << self
       attr_writer *WRITABLE_ATTRIBUTES
+      attr_reader *NON_REQUIRED_READABLE_ATTRIBUTES
     end
-    attr_reader *READABLE_ATTRIBUTES
+    attr_reader *READABLE_ATTRIBUTES, *NON_REQUIRED_READABLE_ATTRIBUTES
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
@@ -64,7 +76,11 @@ module Braintree
         :logger => logger,
         :merchant_id => merchant_id,
         :private_key => private_key,
-        :public_key => public_key
+        :public_key => public_key,
+        :proxy_address => proxy_address,
+        :proxy_port => proxy_port,
+        :proxy_user => proxy_user,
+        :proxy_pass => proxy_pass,
       )
     end
 
