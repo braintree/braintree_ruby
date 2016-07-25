@@ -40,7 +40,8 @@ module Braintree
       attr_writer *WRITABLE_ATTRIBUTES
       attr_reader *NON_REQUIRED_READABLE_ATTRIBUTES
     end
-    attr_reader *READABLE_ATTRIBUTES, *NON_REQUIRED_READABLE_ATTRIBUTES
+    attr_reader *READABLE_ATTRIBUTES
+    attr_reader *NON_REQUIRED_READABLE_ATTRIBUTES
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
@@ -80,7 +81,7 @@ module Braintree
         :proxy_address => proxy_address,
         :proxy_port => proxy_port,
         :proxy_user => proxy_user,
-        :proxy_pass => proxy_pass,
+        :proxy_pass => proxy_pass
       )
     end
 
