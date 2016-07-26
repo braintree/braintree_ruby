@@ -31,12 +31,12 @@ module Braintree
       Unknown = "Unknown"
     end
 
-    Commercial = Debit = DurbinRegulated = Healthcare = Payroll = Prepaid =
+    Commercial = Debit = DurbinRegulated = Healthcare = Payroll = Prepaid = ProductId =
       IssuingBank = CountryOfIssuance = CardTypeIndicator
 
     attr_reader :billing_address, :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance,
       :created_at, :customer_id, :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare,
-      :issuing_bank, :last_4, :payroll, :prepaid, :subscriptions, :token, :unique_number_identifier, :updated_at,
+      :issuing_bank, :last_4, :payroll, :prepaid, :product_id, :subscriptions, :token, :unique_number_identifier, :updated_at,
       :image_url, :verification
 
     def self.create(attributes)
@@ -229,7 +229,7 @@ module Braintree
     def self._attributes # :nodoc:
       [
         :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-        :expiration_year, :last_4, :token, :updated_at, :prepaid, :payroll, :commercial, :debit, :durbin_regulated,
+        :expiration_year, :last_4, :token, :updated_at, :prepaid, :payroll, :product_id, :commercial, :debit, :durbin_regulated,
         :healthcare, :country_of_issuance, :issuing_bank, :image_url
       ]
     end

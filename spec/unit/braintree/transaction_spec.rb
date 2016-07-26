@@ -131,6 +131,7 @@ describe Braintree::Transaction do
           :debit => "Yes",
           :commercial => "No",
           :payroll => "Unknown",
+          :product_id => "Unknown",
           :country_of_issuance => "Narnia",
           :issuing_bank => "Mr Tumnus"
         }
@@ -147,6 +148,8 @@ describe Braintree::Transaction do
       transaction.credit_card_details.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
       transaction.credit_card_details.debit.should == Braintree::CreditCard::Debit::Yes
       transaction.credit_card_details.commercial.should == Braintree::CreditCard::Commercial::No
+      transaction.credit_card_details.payroll.should == Braintree::CreditCard::Payroll::Unknown
+      transaction.credit_card_details.product_id.should == Braintree::CreditCard::ProductId::Unknown
       transaction.credit_card_details.country_of_issuance.should == "Narnia"
       transaction.credit_card_details.issuing_bank.should == "Mr Tumnus"
     end
