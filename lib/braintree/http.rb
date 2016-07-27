@@ -66,7 +66,7 @@ module Braintree
           @config.proxy_address,
           @config.proxy_port,
           @config.proxy_user,
-          @config.proxy_pass,
+          @config.proxy_pass
         )
       else
         connection = Net::HTTP.new(@config.server, @config.port)
