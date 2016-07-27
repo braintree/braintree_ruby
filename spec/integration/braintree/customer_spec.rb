@@ -928,7 +928,7 @@ describe Braintree::Customer do
     it "updates the default payment method" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
-        :last_name => "Brown",
+        :last_name => "Brown"
       )
 
       token1 = random_payment_method_token
@@ -936,7 +936,7 @@ describe Braintree::Customer do
       payment_method1 = Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
-        :token => token1,
+        :token => token1
       )
 
       payment_method1 = Braintree::PaymentMethod.find(token1)
@@ -961,7 +961,7 @@ describe Braintree::Customer do
     it "updates the default payment method in the options" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
-        :last_name => "Brown",
+        :last_name => "Brown"
       )
 
       token1 = random_payment_method_token
@@ -969,7 +969,7 @@ describe Braintree::Customer do
       payment_method1 = Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
-        :token => token1,
+        :token => token1
       )
 
       payment_method1 = Braintree::PaymentMethod.find(token1)
