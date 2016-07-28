@@ -10,14 +10,14 @@ module Braintree
       :client_id,
       :client_secret,
       :access_token,
-      :environment,
+      :environment
     ]
 
     NON_REQUIRED_READABLE_ATTRIBUTES = [
       :proxy_address,
       :proxy_port,
       :proxy_user,
-      :proxy_pass,
+      :proxy_pass
     ]
 
     WRITABLE_ATTRIBUTES = [
@@ -33,7 +33,7 @@ module Braintree
       :proxy_address,
       :proxy_port,
       :proxy_user,
-      :proxy_pass,
+      :proxy_pass
     ]
 
     class << self

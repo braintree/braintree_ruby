@@ -52,7 +52,7 @@ END
         "Net::HTTP",
         :open_timeout= => nil,
         :read_timeout= => nil,
-        :start => nil,
+        :start => nil
       )
 
       Net::HTTP.should_receive(:new).with(nil, nil, "localhost", 8080, "user", "test").and_return(net_http_instance)
@@ -63,7 +63,7 @@ END
     it "accepts a partially specified proxy" do
       config = Braintree::Configuration.new(
         :proxy_address => "localhost",
-        :proxy_port => 8080,
+        :proxy_port => 8080
       )
 
       http = Braintree::Http.new(config)
@@ -71,7 +71,7 @@ END
         "Net::HTTP",
         :open_timeout= => nil,
         :read_timeout= => nil,
-        :start => nil,
+        :start => nil
       )
 
       Net::HTTP.should_receive(:new).with(nil, nil, "localhost", 8080, nil, nil).and_return(net_http_instance)
@@ -86,7 +86,7 @@ END
         "Net::HTTP",
         :open_timeout= => nil,
         :read_timeout= => nil,
-        :start => nil,
+        :start => nil
       )
 
       Net::HTTP.should_receive(:new).with(nil, nil).and_return(net_http_instance)
