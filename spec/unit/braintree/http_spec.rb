@@ -44,7 +44,7 @@ END
         :proxy_address => "localhost",
         :proxy_port => 8080,
         :proxy_user => "user",
-        :proxy_pass => "test",
+        :proxy_pass => "test"
       )
 
       http = Braintree::Http.new(config)
