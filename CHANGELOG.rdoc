@@ -1,3 +1,7 @@
+== 2.65.0
+* Allow authenticated proxies
+* Add new constant for Venmo Account payment instrument type
+
 == 2.64.0
 * Add 'default_payment_method' option to Customer
 

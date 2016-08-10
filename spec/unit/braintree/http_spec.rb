@@ -38,6 +38,61 @@ END
 END
       Braintree::Http.new(:config)._format_and_sanitize_body_for_log(input_xml).should == expected_xml
     end
+
+    it "connects when proxy address is specified" do
+      config = Braintree::Configuration.new(
+        :proxy_address => "localhost",
+        :proxy_port => 8080,
+        :proxy_user => "user",
+        :proxy_pass => "test"
+      )
+
+      http = Braintree::Http.new(config)
+      net_http_instance = instance_double(
+        "Net::HTTP",
+        :open_timeout= => nil,
+        :read_timeout= => nil,
+        :start => nil
+      )
+
+      Net::HTTP.should_receive(:new).with(nil, nil, "localhost", 8080, "user", "test").and_return(net_http_instance)
+
+      http._http_do("GET", "/plans")
+    end
+
+    it "accepts a partially specified proxy" do
+      config = Braintree::Configuration.new(
+        :proxy_address => "localhost",
+        :proxy_port => 8080
+      )
+
+      http = Braintree::Http.new(config)
+      net_http_instance = instance_double(
+        "Net::HTTP",
+        :open_timeout= => nil,
+        :read_timeout= => nil,
+        :start => nil
+      )
+
+      Net::HTTP.should_receive(:new).with(nil, nil, "localhost", 8080, nil, nil).and_return(net_http_instance)
+
+      http._http_do("GET", "/plans")
+    end
+
+    it "does not specify a proxy if proxy_address is not set" do
+      config = Braintree::Configuration.new
+      http = Braintree::Http.new(config)
+      net_http_instance = instance_double(
+        "Net::HTTP",
+        :open_timeout= => nil,
+        :read_timeout= => nil,
+        :start => nil
+      )
+
+      Net::HTTP.should_receive(:new).with(nil, nil).and_return(net_http_instance)
+
+      http._http_do("GET", "/plans")
+    end
   end
 
   describe "_build_query_string" do

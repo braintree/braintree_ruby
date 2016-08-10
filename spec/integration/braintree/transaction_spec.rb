@@ -1459,6 +1459,7 @@ describe Braintree::Transaction do
         )
         result.should be_success
 
+        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::VenmoAccount
         venmo_account_details = result.transaction.venmo_account_details
         venmo_account_details.should be_a(Braintree::Transaction::VenmoAccountDetails)
         venmo_account_details.token.should respond_to(:to_str)

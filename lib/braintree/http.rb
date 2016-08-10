@@ -59,7 +59,19 @@ module Braintree
     end
 
     def _http_do(http_verb, path, body = nil)
-      connection = Net::HTTP.new(@config.server, @config.port)
+      if @config.proxy_address
+        connection = Net::HTTP.new(
+          @config.server,
+          @config.port,
+          @config.proxy_address,
+          @config.proxy_port,
+          @config.proxy_user,
+          @config.proxy_pass
+        )
+      else
+        connection = Net::HTTP.new(@config.server, @config.port)
+      end
+
       connection.open_timeout = @config.http_open_timeout
       connection.read_timeout = @config.http_read_timeout
       if @config.ssl?
