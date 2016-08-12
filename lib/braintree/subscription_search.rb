@@ -6,6 +6,6 @@ module Braintree
     multiple_value_or_text_field :plan_id
     multiple_value_field :status, :allows => Subscription::Status::All
     multiple_value_field :merchant_account_id
-    range_fields :price, :days_past_due, :billing_cycles_remaining, :next_billing_date
+    range_fields :created_at, :price, :days_past_due, :billing_cycles_remaining, :next_billing_date
   end
 end

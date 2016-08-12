@@ -116,6 +116,13 @@ module Braintree
       end
     end
 
+    context "created_at" do
+      it "is a range node" do
+        search = SubscriptionSearch.new
+        search.created_at.should be_kind_of(Braintree::AdvancedSearch::RangeNode)
+      end
+    end
+
     context "id" do
       it "is" do
         search = SubscriptionSearch.new
