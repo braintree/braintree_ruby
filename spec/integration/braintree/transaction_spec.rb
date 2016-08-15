@@ -1788,7 +1788,7 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsRequired
       end
 
-      it "returns an error for transaction when the three_d_secure_pass_thru cavv or xid is missing" do
+      it "can create transaction when the three_d_secure_pass_thru cavv or xid is missing" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -1802,9 +1802,8 @@ describe Braintree::Transaction do
             :xid => "",
           }
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:xid)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureXidIsRequired
+        result.success?.should == true
+        result.transaction.status.should == Braintree::Transaction::Status::Authorized
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is invalid" do
