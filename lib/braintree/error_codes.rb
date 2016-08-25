@@ -112,6 +112,7 @@ module Braintree
         VerificationMerchantAccountIdIsInvalid = "91728"
         VerificationMerchantAccountIsForbidden = "91743"
         VerificationMerchantAccountIsSuspended = "91742"
+        VerificationMerchantAccountCannotBeSubMerchantAccount = "91755"
       end
     end
 
@@ -564,6 +565,7 @@ module Braintree
         MerchantAccountIdIsInvalid = "94204"
         MerchantAccountIsSuspended = "94205"
         MerchantAccountIsForbidden = "94206"
+        MerchantAccountCannotBeSubMerchantAccount = "94208"
       end
     end
   end
