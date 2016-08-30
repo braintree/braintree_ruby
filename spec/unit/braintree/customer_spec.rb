@@ -162,6 +162,7 @@ describe Braintree::Customer do
             :verify_card,
             :verification_amount,
             :venmo_sdk_session,
+            :fail_on_duplicate_payment_method,
             :update_existing_token
           ]},
           {:billing_address => [
