@@ -269,7 +269,7 @@ describe Braintree::MerchantGateway do
       it "succeeds" do
         result = Braintree::Merchant.provision_raw_apple_pay
         result.should be_success
-        result.supported_networks.should == ["visa", "mastercard", "amex"]
+        result.supported_networks.should == ["visa", "mastercard", "amex", "discover"]
       end
 
       it "is repeatable" do
@@ -277,7 +277,7 @@ describe Braintree::MerchantGateway do
         result.should be_success
         result = Braintree::Merchant.provision_raw_apple_pay
         result.should be_success
-        result.supported_networks.should == ["visa", "mastercard", "amex"]
+        result.supported_networks.should == ["visa", "mastercard", "amex", "discover"]
       end
     end
 

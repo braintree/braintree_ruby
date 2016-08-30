@@ -334,6 +334,7 @@ describe Braintree::CreditCard do
         )
         credit_card = result.credit_card
         credit_card.healthcare.should == Braintree::CreditCard::Healthcare::Yes
+        credit_card.product_id.should == "J3"
       end
 
       it "sets the durbin regulated field if the card is durbin regulated" do
@@ -360,7 +361,7 @@ describe Braintree::CreditCard do
         credit_card.country_of_issuance.should == Braintree::Test::CreditCardDefaults::CountryOfIssuance
       end
 
-    it "sets the issuing bank field" do
+      it "sets the issuing bank field" do
         customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
           :customer_id => customer.id,
@@ -382,6 +383,7 @@ describe Braintree::CreditCard do
         )
         credit_card = result.credit_card
         credit_card.payroll.should == Braintree::CreditCard::Payroll::Yes
+        credit_card.product_id.should == "MSA"
       end
 
       it "sets the debit field if the card is debit" do
@@ -423,6 +425,7 @@ describe Braintree::CreditCard do
         credit_card.debit.should == Braintree::CreditCard::Prepaid::No
         credit_card.durbin_regulated.should == Braintree::CreditCard::Prepaid::No
         credit_card.healthcare.should == Braintree::CreditCard::Prepaid::No
+        credit_card.product_id.should == "MSB"
       end
 
       it "doesn't set the card type identifiers for an un-identified card" do
@@ -442,6 +445,7 @@ describe Braintree::CreditCard do
         credit_card.healthcare.should == Braintree::CreditCard::Prepaid::Unknown
         credit_card.country_of_issuance == Braintree::CreditCard::CountryOfIssuance::Unknown
         credit_card.issuing_bank == Braintree::CreditCard::IssuingBank::Unknown
+        credit_card.product_id == Braintree::CreditCard::ProductId::Unknown
       end
     end
 
