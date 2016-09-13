@@ -94,7 +94,71 @@ describe Braintree::PayPalAccount do
     end
   end
 
+  describe "self.create" do
+    it "creates a PayPalAccount" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PayPalAccount.create(
+        :customer_id => customer.id,
+        :billing_agreement_id => "some_billing_agreement_id",
+        :email => "some@example.com",
+        :options => {
+            :make_default => true,
+            :verify_card => true,
+            :fail_on_duplicate_payment_method => true,
+            :verification_merchant_account_id => "verification_merchant",
+        }
+      )
+
+      result.should be_success
+      result.paypal_account.billing_agreement_id.should == "some_billing_agreement_id"
+      result.paypal_account.email.should == "some@example.com"
+    end
+
+    it "throws an error if customer id is not specified" do
+      result = Braintree::PayPalAccount.create(
+        :billing_agreement_id => "some_billing_agreement_id",
+        :email => "some@example.com",
+      )
+
+      result.success?.should == false
+      result.errors.first.code.should == "82905"
+    end
+
+    it "throws an error if billing agreement id is not specified" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PayPalAccount.create(
+        :customer_id => customer.id,
+        :email => "some@example.com",
+      )
+
+      result.success?.should == false
+      result.errors.first.code.should == "82902"
+    end
+  end
+
   describe "self.update" do
+    it "updates a PayPalAccount" do
+      customer = Braintree::Customer.create!
+      create_result = Braintree::PayPalAccount.create(
+        :customer_id => customer.id,
+        :billing_agreement_id => "first_billing_agreement_id",
+        :email => "first@example.com",
+      )
+      create_result.success?.should == true
+
+      update_result = Braintree::PayPalAccount.update(
+        create_result.paypal_account.token,
+        :billing_agreement_id => "second_billing_agreement_id",
+        :email => "second@example.com",
+      )
+
+      update_result.success?.should == true
+      paypal_account = update_result.paypal_account
+
+      paypal_account.billing_agreement_id.should == "second_billing_agreement_id"
+      paypal_account.email.should == "second@example.com"
+    end
+
     it "updates a paypal account's token" do
       customer = Braintree::Customer.create!
       original_token = random_payment_method_token

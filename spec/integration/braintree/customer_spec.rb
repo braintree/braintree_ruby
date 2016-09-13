@@ -165,6 +165,7 @@ describe Braintree::Customer do
           :cvv => "100"
         }
       )
+
       result.success?.should == true
       result.customer.first_name.should == "Mike"
       result.customer.last_name.should == "Jones"
@@ -172,6 +173,24 @@ describe Braintree::Customer do
       result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
       result.customer.credit_cards[0].expiration_date.should == "05/2010"
       result.customer.credit_cards[0].unique_number_identifier.should =~ /\A\w{32}\z/
+    end
+
+    it "can create a customer and a paypal account at the same time" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :paypal_account => {
+          :email => "other@example.com",
+          :billing_agreement_id => "B-123456",
+          :options => {:make_default => true}
+        }
+      )
+
+      result.success?.should == true
+      result.customer.first_name.should == "Mike"
+      result.customer.last_name.should == "Jones"
+      result.customer.paypal_accounts[0].billing_agreement_id.should == "B-123456"
+      result.customer.paypal_accounts[0].email.should == "other@example.com"
     end
 
     it "verifies the card if credit_card[options][verify_card]=true" do

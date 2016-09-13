@@ -117,6 +117,12 @@ describe Braintree::Customer do
             :street_address
           ]}
         ]},
+        {:paypal_account => [
+          :email,
+          :token,
+          :billing_agreement_id,
+          {:options => [:make_default]},
+        ]},
         {:custom_fields => :_any_key_}
       ]
     end

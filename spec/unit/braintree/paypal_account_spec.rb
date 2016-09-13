@@ -1,6 +1,19 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::PayPalAccount do
+  describe "self.create" do
+    it "raises an exception if attributes contain an invalid key" do
+      expect do
+        result = Braintree::PayPalAccount.create(
+          :invalid_key => "bad stuff",
+          :options => {
+            :invalid_option => "bad option",
+          }
+        )
+      end.to raise_error(ArgumentError, "invalid keys: invalid_key, options[invalid_option]")
+    end
+  end
+
   describe "self.update" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
