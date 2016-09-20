@@ -43,6 +43,7 @@ describe Braintree::Subscription do
       result.subscription.status_history.first.status.should == Braintree::Subscription::Status::Active
       result.subscription.status_history.first.subscription_source.should == Braintree::Subscription::Source::Api
       result.subscription.status_history.first.currency_iso_code.should == "USD"
+      result.subscription.status_history.first.plan_id.should == SpecHelper::TriallessPlan[:id]
     end
 
     it "returns a transaction with billing period populated" do
