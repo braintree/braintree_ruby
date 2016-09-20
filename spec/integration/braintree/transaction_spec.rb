@@ -2103,6 +2103,92 @@ describe Braintree::Transaction do
         end
       end
     end
+
+    context "us bank account nonce" do
+      let!(:valid_nonce) { generate_valid_us_bank_account_nonce }
+      let!(:invalid_nonce) { generate_invalid_us_bank_account_nonce }
+      it "returns a successful result for tansacting on a us bank account nonce" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "us_bank_merchant_account",
+          :payment_method_nonce => valid_nonce,
+          :options => {
+            :submit_for_settlement => true,
+          },
+        )
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6,}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
+        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.last_4.should == "1234"
+        result.transaction.us_bank_account_details.account_type.should == "checking"
+        result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
+        result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+      end
+
+      it "return successful result for vaulting and transacting on vaulted token" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "us_bank_merchant_account",
+          :payment_method_nonce => valid_nonce,
+          :options => {
+            :submit_for_settlement => true,
+            :store_in_vault => true,
+          },
+        )
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6,}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
+        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.last_4.should == "1234"
+        result.transaction.us_bank_account_details.account_type.should == "checking"
+        result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
+        result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "us_bank_merchant_account",
+          :payment_method_token=> result.transaction.us_bank_account_details.token,
+          :options => {
+            :submit_for_settlement => true,
+          },
+        )
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6,}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
+        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.last_4.should == "1234"
+        result.transaction.us_bank_account_details.account_type.should == "checking"
+        result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
+        result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+      end
+
+      it "returns failure for token that doesn't exist" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => "us_bank_merchant_account",
+          :payment_method_nonce => invalid_nonce,
+          :options => {
+            :submit_for_settlement => true,
+          },
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown
+      end
+    end
   end
 
   describe "self.create!" do

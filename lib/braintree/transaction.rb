@@ -122,6 +122,7 @@ module Braintree
     attr_reader :risk_data
     attr_reader :facilitator_details
     attr_reader :three_d_secure_info
+    attr_reader :us_bank_account_details
 
     def self.create(attributes)
       Configuration.gateway.transaction.create(attributes)
@@ -267,6 +268,7 @@ module Braintree
       @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
       @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
+      @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.

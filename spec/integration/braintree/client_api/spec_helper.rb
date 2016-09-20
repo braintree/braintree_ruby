@@ -1,5 +1,6 @@
 require 'json'
 
+
 def decode_client_token(raw_client_token)
   decoded_client_token_string = Base64.decode64(raw_client_token)
   JSON.parse(decoded_client_token_string)
@@ -53,6 +54,18 @@ def nonce_for_paypal_account(paypal_account_details)
   end
 
   body["paypalAccounts"][0]["nonce"]
+end
+
+def generate_valid_us_bank_account_nonce
+  out = `./spec/client.sh`
+  out.strip
+end
+
+def generate_invalid_us_bank_account_nonce
+  nonce_characters = "bcdfghjkmnpqrstvwxyz23456789".chars
+  nonce = "tokenusbankacct_"
+  nonce += 4.times.map { nonce_characters.sample(6).join }.join("_")
+  nonce += "_xxx"
 end
 
 class ClientApiHttp
