@@ -103,9 +103,7 @@ describe Braintree::PayPalAccount do
         :email => "some@example.com",
         :options => {
             :make_default => true,
-            :verify_card => true,
             :fail_on_duplicate_payment_method => true,
-            :verification_merchant_account_id => "verification_merchant",
         }
       )
 

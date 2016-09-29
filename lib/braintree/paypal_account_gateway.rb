@@ -51,7 +51,7 @@ module Braintree
     end
 
     def self._create_signature # :nodoc:
-      options = [:fail_on_duplicate_payment_method, :make_default, :verification_merchant_account_id, :verify_card]
+      options = [:fail_on_duplicate_payment_method, :make_default]
       [
         :email, :token, :billing_agreement_id, :customer_id,
         {:options => options},
@@ -66,7 +66,7 @@ module Braintree
     end
 
     def self._update_signature # :nodoc:
-      options = [:fail_on_duplicate_payment_method, :make_default, :verification_merchant_account_id, :verify_card]
+      options = [:fail_on_duplicate_payment_method, :make_default]
       [:email, :token, :billing_agreement_id, {:options => options}]
     end
   end
