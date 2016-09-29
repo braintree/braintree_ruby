@@ -1797,7 +1797,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :three_d_secure_pass_thru => {
-            :eci_flag => "06",
+            :eci_flag => "05",
             :cavv => "",
             :xid => "",
           }
