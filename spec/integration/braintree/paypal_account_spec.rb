@@ -117,7 +117,7 @@ describe Braintree::PayPalAccount do
     it "throws an error if customer id is not specified" do
       result = Braintree::PayPalAccount.create(
         :billing_agreement_id => "some_billing_agreement_id",
-        :email => "some@example.com",
+        :email => "some@example.com"
       )
 
       result.success?.should == false
@@ -128,7 +128,7 @@ describe Braintree::PayPalAccount do
       customer = Braintree::Customer.create!
       result = Braintree::PayPalAccount.create(
         :customer_id => customer.id,
-        :email => "some@example.com",
+        :email => "some@example.com"
       )
 
       result.success?.should == false
@@ -142,14 +142,14 @@ describe Braintree::PayPalAccount do
       create_result = Braintree::PayPalAccount.create(
         :customer_id => customer.id,
         :billing_agreement_id => "first_billing_agreement_id",
-        :email => "first@example.com",
+        :email => "first@example.com"
       )
       create_result.success?.should == true
 
       update_result = Braintree::PayPalAccount.update(
         create_result.paypal_account.token,
         :billing_agreement_id => "second_billing_agreement_id",
-        :email => "second@example.com",
+        :email => "second@example.com"
       )
 
       update_result.success?.should == true
