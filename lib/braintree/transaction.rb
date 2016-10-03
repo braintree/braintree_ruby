@@ -393,7 +393,7 @@ module Braintree
     end
 
     def self._attributes # :nodoc:
-      [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :subscription_details, :type, :updated_at]
+      [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :subscription_details, :type, :updated_at, :us_bank_account_details]
     end
   end
 end
