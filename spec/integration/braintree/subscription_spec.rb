@@ -43,6 +43,7 @@ describe Braintree::Subscription do
       result.subscription.status_history.first.status.should == Braintree::Subscription::Status::Active
       result.subscription.status_history.first.subscription_source.should == Braintree::Subscription::Source::Api
       result.subscription.status_history.first.currency_iso_code.should == "USD"
+      result.subscription.status_history.first.plan_id.should == SpecHelper::TriallessPlan[:id]
     end
 
     it "returns a transaction with billing period populated" do
@@ -1467,6 +1468,139 @@ describe Braintree::Subscription do
 
         collection.should include(matching_subscription)
         collection.should_not include(non_matching_subscription)
+      end
+    end
+
+    context "created_at" do
+      before(:each) do
+        @subscription = Braintree::Subscription.create(
+          :payment_method_token => @credit_card.token,
+          :plan_id => SpecHelper::TriallessPlan[:id]
+        ).subscription
+        @created_at = @subscription.created_at
+      end
+
+      it "searches on created_at in UTC using between" do
+        @created_at.should be_utc
+
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at.between(
+            @created_at - 60,
+            @created_at + 60
+          )
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
+      end
+
+      it "searches on created_at in UTC using geq" do
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at >= @created_at - 1
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
+      end
+
+      it "searches on created_at in UTC using leq" do
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at <= @created_at + 1
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
+      end
+
+      it "searches on created_at in UTC and finds nothing" do
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at.between(
+            @created_at + 300,
+            @created_at + 400
+          )
+        end
+
+        collection.maximum_size.should == 0
+      end
+
+      it "searches on created_at in UTC using exact time" do
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at.is @created_at
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
+      end
+
+      it "searches on created_at in local time using between" do
+        now = Time.now
+
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at.between(
+            now - 60,
+            now + 60
+          )
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
+      end
+
+      it "searches on created_at in local time using geq" do
+        now = Time.now
+
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at >= now - 60
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
+      end
+
+      it "searches on created_at in local time using leq" do
+        now = Time.now
+
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at <= now + 60
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
+      end
+
+      it "searches on created_at in local time and finds nothing" do
+        now = Time.now
+
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at.between(
+            now + 300,
+            now + 400
+          )
+        end
+
+        collection.maximum_size.should == 0
+      end
+
+      it "searches on created_at with dates" do
+        collection = Braintree::Subscription.search do |search|
+          search.id.is @subscription.id
+          search.created_at.between(
+            Date.today - 1,
+            Date.today + 1
+          )
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == @subscription.id
       end
     end
 

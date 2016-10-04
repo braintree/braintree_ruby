@@ -165,6 +165,7 @@ describe Braintree::Customer do
           :cvv => "100"
         }
       )
+
       result.success?.should == true
       result.customer.first_name.should == "Mike"
       result.customer.last_name.should == "Jones"
@@ -172,6 +173,24 @@ describe Braintree::Customer do
       result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
       result.customer.credit_cards[0].expiration_date.should == "05/2010"
       result.customer.credit_cards[0].unique_number_identifier.should =~ /\A\w{32}\z/
+    end
+
+    it "can create a customer and a paypal account at the same time" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :paypal_account => {
+          :email => "other@example.com",
+          :billing_agreement_id => "B-123456",
+          :options => {:make_default => true}
+        }
+      )
+
+      result.success?.should == true
+      result.customer.first_name.should == "Mike"
+      result.customer.last_name.should == "Jones"
+      result.customer.paypal_accounts[0].billing_agreement_id.should == "B-123456"
+      result.customer.paypal_accounts[0].email.should == "other@example.com"
     end
 
     it "verifies the card if credit_card[options][verify_card]=true" do
@@ -923,6 +942,27 @@ describe Braintree::Customer do
       result.customer.first_name.should == "Mr. Joe"
       result.customer.last_name.should == "Super Cool"
       result.customer.custom_fields[:store_me].should == "a value"
+    end
+
+    it "does not update customer with duplicate payment method if fail_on_payment_method option set" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => 4111111111111111,
+          :expiration_date => "05/2010",
+        }
+      )
+      result = Braintree::Customer.update(
+        customer.id,
+        :credit_card => {
+          :number => 4111111111111111,
+          :expiration_date => "05/2010",
+          :options=> {
+            :fail_on_duplicate_payment_method => true
+          }
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Duplicate card exists in the vault."
     end
 
     it "updates the default payment method" do

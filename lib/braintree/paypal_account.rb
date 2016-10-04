@@ -18,6 +18,10 @@ module Braintree
       self.new(*args)
     end
 
+    def self.create(attributes)
+      Configuration.gateway.paypal_account.create(attributes)
+    end
+
     def self.find(token)
       Configuration.gateway.paypal_account.find(token)
     end

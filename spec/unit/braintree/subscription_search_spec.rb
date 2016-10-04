@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 module Braintree
   describe SubscriptionSearch do
     context "status" do
-      it "allows Active, Canceled and PastDue" do
+      it "allows Active, Canceled, Expired, and PastDue" do
         search = SubscriptionSearch.new
 
         lambda do
@@ -113,6 +113,13 @@ module Braintree
       it "is a range node" do
         search = SubscriptionSearch.new
         search.billing_cycles_remaining.should be_kind_of(Braintree::AdvancedSearch::RangeNode)
+      end
+    end
+
+    context "created_at" do
+      it "is a range node" do
+        search = SubscriptionSearch.new
+        search.created_at.should be_kind_of(Braintree::AdvancedSearch::RangeNode)
       end
     end
 

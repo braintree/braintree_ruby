@@ -266,6 +266,7 @@ module Braintree
       CannotBeVoided = "91504"
       CannotCancelRelease = "91562"
       CannotCloneCredit = "91543"
+      CannotCloneMarketplaceTransaction = "915137"
       CannotCloneTransactionWithPayPalAccount = "91573"
       CannotCloneTransactionWithVaultCreditCard = "91540"
       CannotCloneUnsuccessfulTransaction = "91542"
