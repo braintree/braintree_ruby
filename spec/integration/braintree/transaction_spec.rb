@@ -2121,7 +2121,6 @@ describe Braintree::Transaction do
         result.transaction.id.should =~ /^\w{6,}$/
         result.transaction.type.should == "sale"
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.processor_authorization_code.should_not be_nil
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
         result.transaction.us_bank_account_details.routing_number.should == "123456789"
         result.transaction.us_bank_account_details.last_4.should == "1234"
@@ -2145,7 +2144,6 @@ describe Braintree::Transaction do
         result.transaction.id.should =~ /^\w{6,}$/
         result.transaction.type.should == "sale"
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.processor_authorization_code.should_not be_nil
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
         result.transaction.us_bank_account_details.routing_number.should == "123456789"
         result.transaction.us_bank_account_details.last_4.should == "1234"
@@ -2166,7 +2164,6 @@ describe Braintree::Transaction do
         result.transaction.id.should =~ /^\w{6,}$/
         result.transaction.type.should == "sale"
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.processor_authorization_code.should_not be_nil
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
         result.transaction.us_bank_account_details.routing_number.should == "123456789"
         result.transaction.us_bank_account_details.last_4.should == "1234"
