@@ -166,6 +166,44 @@ describe Braintree::WebhookNotification do
       end
     end
 
+    context "us bank account transactions" do
+      it "builds a sample notification for a settlement webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::TransactionSettled,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::TransactionSettled
+
+        notification.transaction.status.should == "settled"
+        notification.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
+        notification.transaction.us_bank_account_details.account_type.should == "checking"
+        notification.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+        notification.transaction.us_bank_account_details.routing_number.should == "123456789"
+        notification.transaction.us_bank_account_details.last_4.should == "1234"
+      end
+
+      it "builds a sample notification for a settlement declined webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::TransactionSettlementDeclined,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::TransactionSettlementDeclined
+
+        notification.transaction.status.should == "settlement_declined"
+        notification.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
+        notification.transaction.us_bank_account_details.account_type.should == "checking"
+        notification.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+        notification.transaction.us_bank_account_details.routing_number.should == "123456789"
+        notification.transaction.us_bank_account_details.last_4.should == "1234"
+      end
+    end
+
     context "merchant account" do
       it "builds a sample notification for a merchant account approved webhook" do
         sample_notification = Braintree::WebhookTesting.sample_notification(

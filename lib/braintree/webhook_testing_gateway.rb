@@ -47,6 +47,10 @@ module Braintree
         _merchant_account_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionDisbursed
         _transaction_disbursed_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::TransactionSettled
+        _transaction_settled_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::TransactionSettlementDeclined
+        _transaction_settlement_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::DisbursementException
         _disbursement_exception_sample_xml(id)
       when Braintree::WebhookNotification::Kind::Disbursement
@@ -184,6 +188,48 @@ module Braintree
           <disbursement-details>
             <disbursement-date type="date">2013-07-09</disbursement-date>
           </disbursement-details>
+        </transaction>
+      XML
+    end
+
+    def _transaction_settled_sample_xml(id)
+      <<-XML
+        <transaction>
+          <id>#{id}</id>
+          <status>settled</status>
+          <type>sale</type>
+          <currency-iso-code>USD</currency-iso-code>
+          <amount>100.00</amount>
+          <merchant-account-id>ogaotkivejpfayqfeaimuktty</merchant-account-id>
+          <payment-instrument-type>us_bank_account</payment-instrument-type>
+          <us-bank-account>
+            <routing-number>123456789</routing-number>
+            <last-4>1234</last-4>
+            <account-type>checking</account-type>
+            <account-description>PayPal Checking - 1234</account-description>
+            <account-holder-name>Dan Schulman</account-holder-name>
+          </us-bank-account>
+        </transaction>
+      XML
+    end
+
+    def _transaction_settlement_declined_sample_xml(id)
+      <<-XML
+        <transaction>
+          <id>#{id}</id>
+          <status>settlement_declined</status>
+          <type>sale</type>
+          <currency-iso-code>USD</currency-iso-code>
+          <amount>100.00</amount>
+          <merchant-account-id>ogaotkivejpfayqfeaimuktty</merchant-account-id>
+          <payment-instrument-type>us_bank_account</payment-instrument-type>
+          <us-bank-account>
+            <routing-number>123456789</routing-number>
+            <last-4>1234</last-4>
+            <account-type>checking</account-type>
+            <account-description>PayPal Checking - 1234</account-description>
+            <account-holder-name>Dan Schulman</account-holder-name>
+          </us-bank-account>
         </transaction>
       XML
     end
