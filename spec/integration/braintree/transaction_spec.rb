@@ -2115,7 +2115,7 @@ describe Braintree::Transaction do
           :payment_method_nonce => valid_nonce,
           :options => {
             :submit_for_settlement => true,
-          },
+          }
         )
         result.success?.should == true
         result.transaction.id.should =~ /^\w{6,}$/
@@ -2138,7 +2138,7 @@ describe Braintree::Transaction do
           :options => {
             :submit_for_settlement => true,
             :store_in_vault => true,
-          },
+          }
         )
         result.success?.should == true
         result.transaction.id.should =~ /^\w{6,}$/
@@ -2158,7 +2158,7 @@ describe Braintree::Transaction do
           :payment_method_token=> result.transaction.us_bank_account_details.token,
           :options => {
             :submit_for_settlement => true,
-          },
+          }
         )
         result.success?.should == true
         result.transaction.id.should =~ /^\w{6,}$/
@@ -2180,7 +2180,7 @@ describe Braintree::Transaction do
           :payment_method_nonce => invalid_nonce,
           :options => {
             :submit_for_settlement => true,
-          },
+          }
         )
         result.success?.should == false
         result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown
