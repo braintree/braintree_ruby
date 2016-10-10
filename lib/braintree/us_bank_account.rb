@@ -22,9 +22,7 @@ module Braintree
     end
 
     def self.sale(token, transaction_attributes)
-      Configuration.gateway.transaction
-        .sale(transaction_attributes
-          .merge(
+      Configuration.gateway.transaction.sale(transaction_attributes.merge(
             :payment_method_token => token,
             :options => { :submit_for_settlement => true }
           )

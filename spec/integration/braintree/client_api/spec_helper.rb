@@ -61,10 +61,14 @@ def generate_valid_us_bank_account_nonce
   out.strip
 end
 
+def sample(arr)
+  6.times.map { arr[rand(arr.length)] }.join
+end
+
 def generate_invalid_us_bank_account_nonce
-  nonce_characters = "bcdfghjkmnpqrstvwxyz23456789".chars
+  nonce_characters = "bcdfghjkmnpqrstvwxyz23456789".chars.to_a
   nonce = "tokenusbankacct_"
-  nonce += 4.times.map { nonce_characters.sample(6).join }.join("_")
+  nonce += 4.times.map { sample(nonce_characters) }.join("_")
   nonce += "_xxx"
 end
 
