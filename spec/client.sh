@@ -27,6 +27,6 @@ output=`curl -s -H "Content-type: application/json"\
   -d "$params"\
   -XPost "https://atmosphere-qa-us-west-2.dev.cosmos.braintreepayments.com/tokens"`
 
-token=`echo $output | jq -r '.data.id'`
+token=$(echo $output | ruby -e 'require "json";input=JSON.parse(STDIN.read);puts(input["data"]["id"])')
 echo $token
 
