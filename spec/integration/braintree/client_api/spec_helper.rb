@@ -56,8 +56,11 @@ def nonce_for_paypal_account(paypal_account_details)
   body["paypalAccounts"][0]["nonce"]
 end
 
-def generate_valid_us_bank_account_nonce
-  out = `./spec/client.sh`
+def generate_valid_us_bank_account_nonce()
+  raw_client_token = Braintree::ClientToken.generate
+  client_token = decode_client_token(raw_client_token)
+  url = client_token["braintree_api"]["url"]
+  out = `./spec/client.sh #{url}/tokens`
   out.strip
 end
 
