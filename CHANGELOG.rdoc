@@ -1,3 +1,6 @@
+== 2.68.1
+* Fix compatibility with new gateway endpoint
+
 == 2.68.0
 * Add 'UsBankAccount' payment method
 
