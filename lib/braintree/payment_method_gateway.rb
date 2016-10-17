@@ -76,15 +76,21 @@ module Braintree
       _do_update(:put, "/payment_methods/any/#{token}", :payment_method => attributes)
     end
 
-    def grant(token, allow_vaulting)
+    def grant(token, options = {})
       raise ArgumentError if token.nil? || token.to_s.strip == ""
+      if  options.class == Hash
+        grant_options = options
+      elsif [true, false].include?(options)
+        grant_options = { :allow_vaulting => options }
+      else
+        raise ArgumentError
+      end
 
       _do_create(
         "/payment_methods/grant",
         :payment_method => {
           :shared_payment_method_token => token,
-          :allow_vaulting => allow_vaulting
-        }
+        }.merge(grant_options)
       )
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"

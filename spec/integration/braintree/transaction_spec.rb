@@ -4564,7 +4564,12 @@ describe Braintree::Transaction do
         :customer_id => @customer.id,
         :cardholder_name => "Adam Davis",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
+        :expiration_date => "05/2009",
+        :billing_address => {
+          :first_name => "Adam",
+          :last_name => "Davis",
+          :postal_code => "95131"
+        }
       ).credit_card
 
       oauth_gateway = Braintree::Gateway.new(
@@ -4584,7 +4589,7 @@ describe Braintree::Transaction do
     end
 
     it "oauth app details are returned on transaction created via nonce granting" do
-      grant_result = @granting_gateway.credit_card.grant(@credit_card.token, false)
+      grant_result = @granting_gateway.payment_method.grant(@credit_card.token, false)
 
       result = Braintree::Transaction.sale(
         :payment_method_nonce => grant_result.payment_method_nonce.nonce,
@@ -4593,7 +4598,21 @@ describe Braintree::Transaction do
       result.transaction.facilitator_details.should_not == nil
       result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+      result.transaction.billing_details.postal_code == nil
     end
+
+    it "billing postal code is returned on transaction created via nonce granting when specified in the grant request" do
+      grant_result = @granting_gateway.payment_method.grant(@credit_card.token, :allow_vaulting => false, :include_billing_postal_code => true)
+
+      result = Braintree::Transaction.sale(
+        :payment_method_nonce => grant_result.payment_method_nonce.nonce,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+
+      result.transaction.billing_details.postal_code == "95131"
+   end
+
+
 
     it "allows transactions to be created with a shared payment method, customer, billing and shipping addresses" do
       result = @granting_gateway.transaction.sale(
