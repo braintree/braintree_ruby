@@ -139,6 +139,13 @@ describe Braintree::Configuration do
         Braintree::Configuration.environment
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.environment needs to be set")
     end
+
+    it "raises an exception if it is an empty string" do
+      Braintree::Configuration.instance_variable_set(:@environment, "")
+      expect do
+        Braintree::Configuration.environment
+      end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.environment needs to be set")
+    end
   end
 
   describe "self.gateway" do
@@ -200,6 +207,13 @@ describe Braintree::Configuration do
         Braintree::Configuration.merchant_id
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.merchant_id needs to be set")
     end
+
+    it "raises an exception if it is an empty string" do
+      Braintree::Configuration.instance_variable_set(:@merchant_id, "")
+      expect do
+        Braintree::Configuration.merchant_id
+      end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.merchant_id needs to be set")
+    end
   end
 
   describe "self.public_key" do
@@ -209,11 +223,25 @@ describe Braintree::Configuration do
         Braintree::Configuration.public_key
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.public_key needs to be set")
     end
+
+    it "raises an exception if it is an empty string" do
+      Braintree::Configuration.instance_variable_set(:@public_key, "")
+      expect do
+        Braintree::Configuration.public_key
+      end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.public_key needs to be set")
+    end
   end
 
   describe "self.private_key" do
     it "raises an exception if it hasn't been set yet" do
       Braintree::Configuration.instance_variable_set(:@private_key, nil)
+      expect do
+        Braintree::Configuration.private_key
+      end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.private_key needs to be set")
+    end
+
+    it "raises an exception if it is an empty string" do
+      Braintree::Configuration.instance_variable_set(:@private_key, "")
       expect do
         Braintree::Configuration.private_key
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.private_key needs to be set")
