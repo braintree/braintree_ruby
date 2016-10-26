@@ -497,6 +497,7 @@ describe Braintree::PaymentMethod do
         us_bank_account.account_type.should == "checking"
         us_bank_account.account_description.should == "PayPal Checking - 1234"
         us_bank_account.account_holder_name.should == "Dan Schulman"
+        us_bank_account.bank_name.should == "UNKNOWN"
       end
 
       it "does not creates a payment method from an invalid us bank account nonce" do

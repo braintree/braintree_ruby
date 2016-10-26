@@ -2120,6 +2120,7 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.id.should =~ /^\w{6,}$/
         result.transaction.type.should == "sale"
+        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::UsBankAccount
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
         result.transaction.us_bank_account_details.routing_number.should == "123456789"
@@ -2127,6 +2128,7 @@ describe Braintree::Transaction do
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
       end
 
       it "return successful result for vaulting and transacting on vaulted token" do
