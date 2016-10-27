@@ -47,7 +47,7 @@ module Braintree
       attributes.each do |attribute|
         (class << self; self; end).send(:define_method, attribute) do
           attribute_value = instance_variable_get("@#{attribute}")
-          raise ConfigurationError.new("Braintree::Configuration.#{attribute.to_s} needs to be set") if attribute_value.nil? || attribute_value.empty?
+          raise ConfigurationError.new("Braintree::Configuration.#{attribute.to_s} needs to be set") if attribute_value.nil? || attribute_value.to_s.empty?
           attribute_value
         end
       end
