@@ -215,8 +215,12 @@ module Braintree
     def _fetch_transactions(search, ids) # :nodoc:
       search.ids.in ids
       response = @config.http.post("#{@config.base_merchant_path}/transactions/advanced_search", {:search => search.to_hash})
-      attributes = response[:credit_card_transactions]
-      Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| Transaction._new(@gateway, attrs) }
+      if response.has_key?(:credit_card_transactions)
+        attributes = response[:credit_card_transactions]
+        Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| Transaction._new(@gateway, attrs) }
+      else
+        raise DownForMaintenanceError
+      end
     end
   end
 end
