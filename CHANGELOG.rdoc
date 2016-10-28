@@ -1,3 +1,6 @@
+== 2.68.2
+* Bugfix: allow Customer#payment_methods to return UsBankAccounts
+
 == 2.68.1
 * Fix compatibility with new gateway endpoint
 
