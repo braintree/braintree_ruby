@@ -20,6 +20,7 @@ describe Braintree::UsBankAccount do
       us_bank_account.account_type.should == "checking"
       us_bank_account.account_description.should == "PayPal Checking - 1234"
       us_bank_account.account_holder_name.should == "Dan Schulman"
+      us_bank_account.bank_name.should == "UNKNOWN"
     end
 
     it "raises if the payment method token is not found" do
@@ -51,6 +52,7 @@ describe Braintree::UsBankAccount do
       us_bank_account.account_type.should == "checking"
       us_bank_account.account_description.should == "PayPal Checking - 1234"
       us_bank_account.account_holder_name.should == "Dan Schulman"
+      us_bank_account.bank_name.should == "UNKNOWN"
     end
   end
 
@@ -75,6 +77,7 @@ describe Braintree::UsBankAccount do
       us_bank_account.account_type.should == "checking"
       us_bank_account.account_description.should == "PayPal Checking - 1234"
       us_bank_account.account_holder_name.should == "Dan Schulman"
+      us_bank_account.bank_name.should == "UNKNOWN"
     end
 
     it "does not creates a transaction using a us bank account and returns raises an exception" do

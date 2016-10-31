@@ -40,7 +40,7 @@ describe Braintree::PaymentMethod do
   describe "self.grant" do
     it "raises error if passed empty string" do
       expect do
-        Braintree::PaymentMethod.grant("", false)
+        Braintree::PaymentMethod.grant("")
       end.to raise_error(ArgumentError)
     end
 
@@ -59,9 +59,24 @@ describe Braintree::PaymentMethod do
     it "does not raise an error if token does not respond to strip" do
       Braintree::Http.stub(:new).and_return double.as_null_object
       expect do
-        Braintree::PaymentMethod.grant(8675309, false)
+        Braintree::PaymentMethod.grant(8675309, :allow_vaulting => false)
       end.to_not raise_error
     end
+
+    it "accepts all options as hash map" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      expect do
+        Braintree::PaymentMethod.grant("$dummyToken", :allow_vaulting => false, :include_billing_postal_code => true)
+      end.to_not raise_error
+    end
+
+    it "accepts only token as parameter" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      expect do
+        Braintree::PaymentMethod.grant("$dummyToken")
+      end.to_not raise_error
+    end
+
   end
 
   describe "self.revoke" do

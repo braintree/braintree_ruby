@@ -898,6 +898,26 @@ describe Braintree::Customer do
       venmo_account.username.should_not be_nil
     end
 
+    it "returns associated us bank accounts" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => generate_valid_us_bank_account_nonce
+      )
+      result.should be_success
+
+      found_customer = Braintree::Customer.find(result.customer.id)
+      found_customer.us_bank_accounts.size.should == 1
+      found_customer.payment_methods.size.should == 1
+
+      us_bank_account = found_customer.us_bank_accounts.first
+      us_bank_account.should be_a(Braintree::UsBankAccount)
+      us_bank_account.routing_number.should == "123456789"
+      us_bank_account.last_4.should == "1234"
+      us_bank_account.account_type.should == "checking"
+      us_bank_account.account_description.should == "PayPal Checking - 1234"
+      us_bank_account.account_holder_name.should == "Dan Schulman"
+      us_bank_account.bank_name.should == "UNKNOWN"
+    end
+
     it "works for a blank customer" do
       created_customer = Braintree::Customer.create!
       found_customer = Braintree::Customer.find(created_customer.id)
