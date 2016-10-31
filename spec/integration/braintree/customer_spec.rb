@@ -900,7 +900,7 @@ describe Braintree::Customer do
 
     it "returns associated us bank accounts" do
       result = Braintree::Customer.create(
-        :payment_method_nonce => generate_valid_us_bank_account_nonce,
+        :payment_method_nonce => generate_valid_us_bank_account_nonce
       )
       result.should be_success
 
