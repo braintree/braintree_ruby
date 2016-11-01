@@ -60,6 +60,7 @@ def generate_valid_us_bank_account_nonce()
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
   url = client_token["braintree_api"]["url"] + "/tokens"
+  token = client_token["braintree_api"]["access_token"]
   payload = {
     :type => "us_bank_account",
     :billing_address => {
@@ -86,7 +87,7 @@ def generate_valid_us_bank_account_nonce()
     request = Net::HTTP::Post.new(uri.path)
     request["Content-Type"] = "application/json"
     request["Braintree-Version"] = "2015-11-01"
-    request["Authorization"] = "Bearer integratexxxxxx_xxxxxx_xxxxxx_xxxxxx_xx1"
+    request["Authorization"] = "Bearer #{token}"
     request.body = payload.to_json
     http.request(request)
   end
