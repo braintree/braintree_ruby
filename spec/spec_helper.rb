@@ -107,6 +107,20 @@ unless defined?(SPEC_HELPER_LOADED)
       response[:three_d_secure_verification][:three_d_secure_token]
     end
 
+    def self.create_merchant(params={})
+      gateway = Braintree::Gateway.new(
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+
+      gateway.merchant.create({
+        :email => "name@email.com",
+        :country_code_alpha3 => "GBR",
+        :payment_methods => ["credit_card", "paypal"],
+      }.merge!(params))
+    end
+
     def self.stub_time_dot_now(desired_time)
       Time.class_eval do
         class << self

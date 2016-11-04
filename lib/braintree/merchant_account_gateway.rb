@@ -25,6 +25,10 @@ module Braintree
       _do_update "/merchant_accounts/#{merchant_account_id}/update_via_api", :merchant_account => attributes
     end
 
+    def create_for_currency(params)
+      _create_for_currency(params)
+    end
+
     def _do_create(path, params=nil) # :nodoc:
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:api_error_response]
@@ -40,6 +44,20 @@ module Braintree
         ErrorResult.new(@gateway, response[:api_error_response])
       else
         SuccessfulResult.new(:merchant_account => MerchantAccount._new(@gateway, response[:merchant_account]))
+      end
+    end
+
+    def _create_for_currency(params)
+      response = @config.http.post("#{@config.base_merchant_path}/merchant_accounts/create_for_currency", :merchant_account => params)
+
+      if response.has_key?(:response) && response[:response][:merchant_account]
+        Braintree::SuccessfulResult.new(
+          :merchant_account => MerchantAccount._new(@gateway, response[:response][:merchant_account]),
+        )
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :merchant or :api_error_response"
       end
     end
 
