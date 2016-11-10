@@ -3929,6 +3929,7 @@ describe Braintree::Transaction do
         transaction.paypal_details.payer_id.should_not be_nil
         transaction.paypal_details.payer_first_name.should_not be_nil
         transaction.paypal_details.payer_last_name.should_not be_nil
+        transaction.paypal_details.payer_status.should_not be_nil
         transaction.paypal_details.seller_protection_status.should_not be_nil
         transaction.paypal_details.capture_id.should_not be_nil
         transaction.paypal_details.refund_id.should_not be_nil
