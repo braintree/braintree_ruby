@@ -2123,12 +2123,12 @@ describe Braintree::Transaction do
         result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::UsBankAccount
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
         result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
       end
@@ -2149,12 +2149,12 @@ describe Braintree::Transaction do
         result.transaction.type.should == "sale"
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
         result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
 
@@ -2172,12 +2172,12 @@ describe Braintree::Transaction do
         result.transaction.type.should == "sale"
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
         result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
       end

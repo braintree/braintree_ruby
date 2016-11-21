@@ -492,12 +492,12 @@ describe Braintree::PaymentMethod do
         result.should be_success
         us_bank_account = result.payment_method
         us_bank_account.should be_a(Braintree::UsBankAccount)
-        us_bank_account.routing_number.should == "123456789"
+        us_bank_account.routing_number.should == "021000021"
         us_bank_account.last_4.should == "1234"
         us_bank_account.account_type.should == "checking"
         us_bank_account.account_description.should == "PayPal Checking - 1234"
         us_bank_account.account_holder_name.should == "Dan Schulman"
-        us_bank_account.bank_name.should == "UNKNOWN"
+        us_bank_account.bank_name.should =~ /CHASE/
         us_bank_account.default.should == true
         us_bank_account.ach_mandate.text.should == "cl mandate text"
         us_bank_account.ach_mandate.accepted_at.should be_a Time
