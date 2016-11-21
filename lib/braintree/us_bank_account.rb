@@ -2,11 +2,16 @@ module Braintree
   class UsBankAccount
     include BaseModule
 
-    attr_reader :routing_number, :last_4, :account_type, :account_description, :account_holder_name, :token, :image_url, :bank_name
+    attr_reader :routing_number, :last_4, :account_type, :account_description, :account_holder_name, :token, :image_url, :bank_name, :ach_mandate, :default
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
+      @ach_mandate = attributes[:ach_mandate] ? AchMandate.new(attributes[:ach_mandate]) : nil
+    end
+
+    def default?
+      @default
     end
 
     class << self

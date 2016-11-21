@@ -75,7 +75,7 @@ def generate_valid_us_bank_account_nonce()
     :account_holder_name => "Dan Schulman",
     :account_description => "PayPal Checking - 1234",
     :ach_mandate => {
-      :text => ""
+      :text => "cl mandate text"
     }
   }
 
