@@ -31,6 +31,7 @@ describe Braintree::PaymentMethodNonce do
       result.should be_success
       result.payment_method_nonce.should_not be_nil
       result.payment_method_nonce.nonce.should_not be_nil
+      result.payment_method_nonce.details.should_not be_nil
     end
 
     it "correctly raises and exception for a non existent token" do
@@ -49,6 +50,8 @@ describe Braintree::PaymentMethodNonce do
       result.should be_success
       nonce.nonce.should == "fake-valid-nonce"
       nonce.type.should == "CreditCard"
+      nonce.details.fetch(:last_two).should == "81"
+      nonce.details.fetch(:card_type).should == "Visa"
     end
 
     it "returns null 3ds_info if there isn't any" do

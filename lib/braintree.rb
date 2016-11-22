@@ -21,6 +21,7 @@ require "braintree/base_module"
 require "braintree/modification"
 
 require "braintree/account_updater_daily_report"
+require "braintree/ach_mandate"
 require "braintree/add_on"
 require "braintree/add_on_gateway"
 require "braintree/address"
