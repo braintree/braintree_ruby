@@ -2129,6 +2129,8 @@ describe Braintree::Transaction do
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
         result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
+        result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
       end
 
       it "return successful result for vaulting and transacting on vaulted token" do
@@ -2152,6 +2154,9 @@ describe Braintree::Transaction do
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
+        result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2172,6 +2177,9 @@ describe Braintree::Transaction do
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
+        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
+        result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
       end
 
       it "returns failure for token that doesn't exist" do
