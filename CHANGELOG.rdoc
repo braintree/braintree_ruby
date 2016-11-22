@@ -1,3 +1,7 @@
+== 2.69.0
+* Add `default?` support for `UsBankAccount`
+* Add `ach_mandate` data to `UsBankAccount` and `UsBankAccountDetails`
+
 == 2.68.2
 * Bugfix: allow Customer#payment_methods to return UsBankAccounts
 
