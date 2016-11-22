@@ -7,7 +7,7 @@ module Braintree
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
-      @ach_mandate = attributes[:ach_mandate] ? AchMandate.new(attributes[:ach_mandate]) : nil
+      @ach_mandate = AchMandate.new(attributes[:ach_mandate]) if attributes[:ach_mandate]
     end
 
     def default?
