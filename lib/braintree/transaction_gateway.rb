@@ -170,6 +170,7 @@ module Braintree
           :store_shipping_address_in_vault,
           :venmo_sdk_session,
           :payee_email,
+          :skip_advanced_fraud_checking,
           :skip_avs,
           :skip_cvv,
           {:paypal => [:custom_field, :payee_email, :description, {:supplementary_data => :_any_key_}]},

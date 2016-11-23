@@ -219,6 +219,6 @@ RSpec.configure do |config|
   end
 
   config.mock_with :rspec do |mock|
-    mock.syntax = :should
+    mock.syntax = [:should, :expect]
   end
 end
