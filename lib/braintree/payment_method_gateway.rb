@@ -43,9 +43,11 @@ module Braintree
         raise UnexpectedError, "expected :payment_method or :api_error_response"
       end
     end
-
-    def delete(token)
-      @config.http.delete("#{@config.base_merchant_path}/payment_methods/any/#{token}")
+    
+    def delete(token, options = {})
+      Util.verify_keys(PaymentMethodGateway._delete_signature, options)
+      query_param = "?" + Util.hash_to_query_string(options) if not options.empty?
+      @config.http.delete("#{@config.base_merchant_path}/payment_methods/any/#{token}#{query_param}")
       SuccessfulResult.new
     end
 
@@ -134,6 +136,10 @@ module Braintree
 
     def self._update_signature # :nodoc:
       _signature(:update)
+    end
+        
+    def self._delete_signature # :nodoc:
+      [:revoke_all_grants]
     end
 
     def self._signature(type) # :nodoc:

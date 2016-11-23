@@ -902,7 +902,7 @@ describe Braintree::PaymentMethod do
       paypal_account = Braintree::PaymentMethod.find(paypal_account_token)
       paypal_account.should be_a(Braintree::PayPalAccount)
 
-      result = Braintree::PaymentMethod.delete(paypal_account_token)
+      result = Braintree::PaymentMethod.delete(paypal_account_token, {:revoke_all_grants => false})
       result.success?.should == true
 
       expect do
