@@ -1,3 +1,6 @@
+== 2.69.1
+* Bugfix: Allow PaymentMethod.find(token) to return `UsBankAccount`
+
 == 2.69.0
 * Add `default?` support for `UsBankAccount`
 * Add `ach_mandate` data to `UsBankAccount` and `UsBankAccountDetails`
