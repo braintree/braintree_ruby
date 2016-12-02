@@ -146,7 +146,7 @@ describe Braintree::MerchantAccount do
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "JPY",
+        :currency => "JPY"
       )
       result.should be_success
       result.merchant_account.currency_iso_code.should == "JPY"
@@ -162,12 +162,12 @@ describe Braintree::MerchantAccount do
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "USD",
+        :currency => "USD"
       )
       result.should be_success
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "USD",
+        :currency => "USD"
       )
       result.should_not be_success
 
@@ -185,7 +185,7 @@ describe Braintree::MerchantAccount do
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => nil,
+        :currency => nil
       )
       result.should_not be_success
 
@@ -209,7 +209,7 @@ describe Braintree::MerchantAccount do
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "FAKE_CURRENCY",
+        :currency => "FAKE_CURRENCY"
       )
       result.should_not be_success
 
@@ -229,7 +229,7 @@ describe Braintree::MerchantAccount do
       merchant = result.merchant
       result = gateway.merchant_account.create_for_currency(
         :currency => "USD",
-        :id => merchant.merchant_accounts.first.id,
+        :id => merchant.merchant_accounts.first.id
       )
       result.should_not be_success
 

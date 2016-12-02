@@ -66,7 +66,7 @@ describe Braintree::MerchantGateway do
           :email => "name@email.com",
           :country_code_alpha3 => "USA",
           :payment_methods => ["credit_card", "paypal"],
-          :currencies => ["GBP", "USD"],
+          :currencies => ["GBP", "USD"]
         )
 
         merchant = result.merchant
@@ -101,7 +101,7 @@ describe Braintree::MerchantGateway do
           :email => "name@email.com",
           :country_code_alpha3 => "GBR",
           :payment_methods => ["credit_card", "paypal"],
-          :currencies => ["GBP", "USD"],
+          :currencies => ["GBP", "USD"]
         )
 
         merchant = result.merchant
