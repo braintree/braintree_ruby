@@ -52,7 +52,7 @@ module Braintree
 
       if response.has_key?(:response) && response[:response][:merchant_account]
         Braintree::SuccessfulResult.new(
-          :merchant_account => MerchantAccount._new(@gateway, response[:response][:merchant_account]),
+          :merchant_account => MerchantAccount._new(@gateway, response[:response][:merchant_account])
         )
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
