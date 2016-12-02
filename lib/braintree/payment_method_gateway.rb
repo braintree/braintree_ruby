@@ -58,6 +58,8 @@ module Braintree
         PayPalAccount._new(@gateway, response[:paypal_account])
       elsif response[:coinbase_account]
         SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
+      elsif response.has_key?(:us_bank_account)
+        UsBankAccount._new(@gateway, response[:us_bank_account])
       elsif response.has_key?(:europe_bank_account)
         EuropeBankAccount._new(@gateway, response[:europe_bank_account])
       elsif response.has_key?(:apple_pay_card)
