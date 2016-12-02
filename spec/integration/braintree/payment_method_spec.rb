@@ -501,6 +501,8 @@ describe Braintree::PaymentMethod do
         us_bank_account.default.should == true
         us_bank_account.ach_mandate.text.should == "cl mandate text"
         us_bank_account.ach_mandate.accepted_at.should be_a Time
+
+        Braintree::PaymentMethod.find(us_bank_account.token).should be_a(Braintree::UsBankAccount)
       end
 
       it "does not creates a payment method from an invalid us bank account nonce" do
