@@ -27,6 +27,33 @@ describe Braintree::PaymentMethod do
     end
   end
 
+  describe "delete" do
+    let(:http_stub) { double('http_stub').as_null_object }
+    it "accepts revoke_all_grants option with value true" do
+      Braintree::Http.stub(:new).and_return http_stub
+      http_stub.should_receive(:delete).with("/merchants/integration_merchant_id/payment_methods/any/some_token?revoke_all_grants=true")
+      Braintree::PaymentMethod.delete("some_token", {:revoke_all_grants => true})
+    end
+
+    it "accepts revoke_all_grants option with value false" do
+      Braintree::Http.stub(:new).and_return http_stub
+      http_stub.should_receive(:delete).with("/merchants/integration_merchant_id/payment_methods/any/some_token?revoke_all_grants=false")
+      Braintree::PaymentMethod.delete("some_token", {:revoke_all_grants => false})
+    end
+
+    it "throws error when an invalid param is used for options" do
+      expect do
+        Braintree::PaymentMethod.delete("some_token", {:invalid_key => false})
+      end.to raise_error(ArgumentError)
+    end
+
+    it "accepts just the token, revoke_all_grants is optional" do
+      Braintree::Http.stub(:new).and_return http_stub
+      http_stub.should_receive(:delete).with("/merchants/integration_merchant_id/payment_methods/any/some_token")
+      Braintree::PaymentMethod.delete("some_token")
+    end
+  end
+
   describe "timestamps" do
     it "exposes created_at and updated_at" do
       now = Time.now

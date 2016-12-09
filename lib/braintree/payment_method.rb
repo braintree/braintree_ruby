@@ -14,8 +14,8 @@ module Braintree
       Configuration.gateway.payment_method.update(token, attributes)
     end
 
-    def self.delete(token)
-      Configuration.gateway.payment_method.delete(token)
+    def self.delete(token, options = {})
+      Configuration.gateway.payment_method.delete(token, options)
     end
 
     def self.grant(token, options = {})
