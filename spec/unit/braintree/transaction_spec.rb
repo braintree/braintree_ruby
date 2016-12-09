@@ -296,4 +296,65 @@ describe Braintree::Transaction do
       transaction.refunded?.should == false
     end
   end
+
+  describe "sale" do
+    let(:mock_response) { {:transaction => {}}}
+    let(:http_stub) { double('http_stub').as_null_object }
+
+    RSpec::Matchers.define :skip_advanced_fraud_check_value_is do |value|
+        match { |params| params[:transaction][:options][:skip_advanced_fraud_checking] == value }
+    end
+
+    it "accepts skip_advanced_fraud_checking options with value true" do
+      Braintree::Http.stub(:new).and_return http_stub
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(true))
+        .and_return(mock_response)
+
+      Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :skip_advanced_fraud_checking => true
+        }
+      )
+    end
+
+    it "accepts skip_advanced_fraud_checking options with value false" do
+      Braintree::Http.stub(:new).and_return http_stub
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(false))
+        .and_return(mock_response)
+
+      Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :skip_advanced_fraud_checking => false
+        }
+      )
+    end
+
+    it "doesn't include skip_advanced_fraud_checking in params if its not specified" do
+      Braintree::Http.stub(:new).and_return http_stub
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(nil))
+        .and_return(mock_response)
+
+      Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :submit_for_settlement => false
+        }
+      )
+    end
+  end
+
 end

@@ -2651,6 +2651,21 @@ describe Braintree::Transaction do
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
 
+    it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :skip_advanced_fraud_checking => true
+        }
+      )
+      result.success?.should == true
+      result.transaction.risk_data.id.should be_nil
+    end
+
     it "works with Apple Pay params" do
       params = {
         :amount => "3.12",
