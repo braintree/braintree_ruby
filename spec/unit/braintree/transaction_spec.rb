@@ -307,8 +307,7 @@ describe Braintree::Transaction do
 
     it "accepts skip_advanced_fraud_checking options with value true" do
       Braintree::Http.stub(:new).and_return http_stub
-      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(true))
-        .and_return(mock_response)
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(true)).and_return(mock_response)
 
       Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -324,8 +323,7 @@ describe Braintree::Transaction do
 
     it "accepts skip_advanced_fraud_checking options with value false" do
       Braintree::Http.stub(:new).and_return http_stub
-      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(false))
-        .and_return(mock_response)
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(false)).and_return(mock_response)
 
       Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -341,8 +339,7 @@ describe Braintree::Transaction do
 
     it "doesn't include skip_advanced_fraud_checking in params if its not specified" do
       Braintree::Http.stub(:new).and_return http_stub
-      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(nil))
-        .and_return(mock_response)
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(nil)).and_return(mock_response)
 
       Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
