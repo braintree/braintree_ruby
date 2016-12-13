@@ -3,7 +3,7 @@ module Braintree
     class IdealPaymentDetails # :nodoc:
       include BaseModule
 
-      attr_reader :ideal_payment_id, :masked_iban, :bic, :image_url
+      attr_reader :ideal_payment_id, :ideal_transaction_id, :masked_iban, :bic, :image_url
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

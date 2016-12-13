@@ -176,6 +176,7 @@ describe Braintree::Transaction do
         :gateway,
         :ideal_payment => {
           :ideal_payment_id => "idealpayment_abc_123",
+          :ideal_transaction_id => "1150000008857321",
           :masked_iban => "12************7890",
           :bic => "RABONL2U",
           :image_url => "http://www.example.com/ideal.png"
@@ -183,6 +184,7 @@ describe Braintree::Transaction do
       )
 
       transaction.ideal_payment_details.ideal_payment_id.should == "idealpayment_abc_123"
+      transaction.ideal_payment_details.ideal_transaction_id.should == "1150000008857321"
       transaction.ideal_payment_details.masked_iban.should == "12************7890"
       transaction.ideal_payment_details.bic.should == "RABONL2U"
       transaction.ideal_payment_details.image_url.should == "http://www.example.com/ideal.png"
