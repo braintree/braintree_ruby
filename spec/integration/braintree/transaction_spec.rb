@@ -2196,6 +2196,34 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown
       end
     end
+
+    context "ideal payment nonce" do
+      let!(:valid_nonce) { generate_valid_ideal_payment_nonce }
+
+      it "returns a successful result for tansacting on a us bank account nonce" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :order_id => "BT-RUBY-ORDER-ID",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::IdealMerchantAccountId,
+          :payment_method_nonce => valid_nonce,
+          :options => {
+            :submit_for_settlement => true,
+          }
+        )
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6,}$/
+        result.transaction.type.should == "sale"
+        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::IdealPayment
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.status.should == Braintree::Transaction::Status::Settled
+        result.transaction.ideal_payment_details.ideal_payment_id.should =~ /^idealpayment_\w{6,}$/
+        result.transaction.ideal_payment_details.ideal_transaction_id.should =~ /^\d{16,}$/
+        result.transaction.ideal_payment_details.image_url.should start_with("https://")
+        result.transaction.ideal_payment_details.masked_iban.should_not be_empty
+        result.transaction.ideal_payment_details.bic.should_not be_empty
+      end
+    end
   end
 
   describe "self.create!" do
