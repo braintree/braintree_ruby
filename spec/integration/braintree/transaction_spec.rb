@@ -2198,9 +2198,8 @@ describe Braintree::Transaction do
     end
 
     context "ideal payment nonce" do
-      let!(:valid_nonce) { generate_valid_ideal_payment_nonce }
-
       it "returns a successful result for tansacting on an ideal payment nonce" do
+        valid_nonce = generate_valid_ideal_payment_nonce
         result = Braintree::Transaction.create(
           :type => "sale",
           :order_id => SpecHelper::DefaultOrderId,
@@ -2222,6 +2221,26 @@ describe Braintree::Transaction do
         result.transaction.ideal_payment_details.image_url.should start_with("https://")
         result.transaction.ideal_payment_details.masked_iban.should_not be_empty
         result.transaction.ideal_payment_details.bic.should_not be_empty
+      end
+
+      it "returns a failure if ideal payment is not complete" do
+        ExpiredPaymentAmount = "3.00"
+
+        not_complete_nonce = generate_valid_ideal_payment_nonce(ExpiredPaymentAmount)
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :order_id => SpecHelper::DefaultOrderId,
+          :amount => ExpiredPaymentAmount,
+          :merchant_account_id => SpecHelper::IdealMerchantAccountId,
+          :payment_method_nonce => not_complete_nonce,
+          :options => {
+            :submit_for_settlement => true,
+          }
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:ideal_payment)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
       end
     end
   end

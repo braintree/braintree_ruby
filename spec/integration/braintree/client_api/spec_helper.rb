@@ -84,7 +84,7 @@ def generate_valid_us_bank_account_nonce()
   json["data"]["id"]
 end
 
-def generate_valid_ideal_payment_nonce()
+def generate_valid_ideal_payment_nonce(amount = Braintree::Test::TransactionAmounts::Authorize)
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
 
@@ -93,7 +93,7 @@ def generate_valid_ideal_payment_nonce()
   payload = {
     :issuer => "RABONL2U",
     :order_id => SpecHelper::DefaultOrderId,
-    :amount => Braintree::Test::TransactionAmounts::Authorize,
+    :amount => amount,
     :currency => "EUR",
     :redirect_url => "https://braintree-api.com",
   }
