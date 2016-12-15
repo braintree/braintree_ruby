@@ -82,6 +82,8 @@ unless defined?(SPEC_HELPER_LOADED)
     Discount11 = "discount_11"
     Discount15 = "discount_15"
 
+    DefaultOrderId = "ABC123"
+
     TestMerchantConfig = Braintree::Configuration.new(
                                                       :logger => Logger.new("/dev/null"),
                                                       :environment => Braintree::Configuration.environment,

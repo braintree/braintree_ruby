@@ -59,6 +59,7 @@ end
 def generate_valid_us_bank_account_nonce()
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
+
   url = client_token["braintree_api"]["url"] + "/tokens"
   token = client_token["braintree_api"]["access_token"]
   payload = {
@@ -79,50 +80,25 @@ def generate_valid_us_bank_account_nonce()
     }
   }
 
-  uri = URI::parse(url)
-  connection = Net::HTTP.new(uri.host, uri.port)
-  connection.use_ssl = true
-  connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
-  resp = connection.start do |http|
-    request = Net::HTTP::Post.new(uri.path)
-    request["Content-Type"] = "application/json"
-    request["Braintree-Version"] = "2015-11-01"
-    request["Authorization"] = "Bearer #{token}"
-    request.body = payload.to_json
-    http.request(request)
-  end
-
-  json = JSON.parse(resp.body)
+  json = _cosmos_post(token, url, payload)
   json["data"]["id"]
 end
 
 def generate_valid_ideal_payment_nonce()
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
-  url = client_token["braintree_api"]["url"] + "/ideal-payments"
+
   token = client_token["braintree_api"]["access_token"]
+  url = client_token["braintree_api"]["url"] + "/ideal-payments"
   payload = {
     :issuer => "RABONL2U",
-    :order_id => "BT-RUBY-ORDER-ID",
+    :order_id => SpecHelper::DefaultOrderId,
     :amount => Braintree::Test::TransactionAmounts::Authorize,
     :currency => "EUR",
     :redirect_url => "https://braintree-api.com",
   }
 
-  uri = URI::parse(url)
-  connection = Net::HTTP.new(uri.host, uri.port)
-  connection.use_ssl = true
-  connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
-  resp = connection.start do |http|
-    request = Net::HTTP::Post.new(uri.path)
-    request["Content-Type"] = "application/json"
-    request["Braintree-Version"] = "2015-11-01"
-    request["Authorization"] = "Bearer #{token}"
-    request.body = payload.to_json
-    http.request(request)
-  end
-
-  json = JSON.parse(resp.body)
+  json = _cosmos_post(token, url, payload)
   json["data"]["id"]
 end
 
@@ -135,6 +111,23 @@ def generate_invalid_us_bank_account_nonce
   nonce = "tokenusbankacct_"
   nonce += 4.times.map { sample(nonce_characters) }.join("_")
   nonce += "_xxx"
+end
+
+def _cosmos_post(token, url, payload)
+  uri = URI::parse(url)
+  connection = Net::HTTP.new(uri.host, uri.port)
+  connection.use_ssl = true
+  connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
+  resp = connection.start do |http|
+    request = Net::HTTP::Post.new(uri.path)
+    request["Content-Type"] = "application/json"
+    request["Braintree-Version"] = "2015-11-01"
+    request["Authorization"] = "Bearer #{token}"
+    request.body = payload.to_json
+    http.request(request)
+  end
+
+  JSON.parse(resp.body)
 end
 
 class ClientApiHttp

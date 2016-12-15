@@ -2200,10 +2200,10 @@ describe Braintree::Transaction do
     context "ideal payment nonce" do
       let!(:valid_nonce) { generate_valid_ideal_payment_nonce }
 
-      it "returns a successful result for tansacting on a us bank account nonce" do
+      it "returns a successful result for tansacting on an ideal payment nonce" do
         result = Braintree::Transaction.create(
           :type => "sale",
-          :order_id => "BT-RUBY-ORDER-ID",
+          :order_id => SpecHelper::DefaultOrderId,
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :merchant_account_id => SpecHelper::IdealMerchantAccountId,
           :payment_method_nonce => valid_nonce,
