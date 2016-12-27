@@ -88,6 +88,38 @@ describe Braintree::Http do
       end
     end
 
+    describe "ssl_version" do
+      it "causes failed requests to sandbox with incompatible SSL version" do
+        begin
+          original_env = Braintree::Configuration.environment
+          Braintree::Configuration.environment = :sandbox
+          Braintree::Configuration.ssl_version = :TLSv1
+          Braintree::Configuration.stub(:base_merchant_path).and_return("/")
+
+          expect do
+            Braintree::Configuration.instantiate.http._http_do(Net::HTTP::Get, "/login")
+          end.to raise_error(Braintree::SSLCertificateError)
+        ensure
+          Braintree::Configuration.environment = original_env
+        end
+      end
+
+      it "results in successful requests to sandbox with up-to-date SSL version" do
+        begin
+          original_env = Braintree::Configuration.environment
+          Braintree::Configuration.environment = :sandbox
+          Braintree::Configuration.ssl_version = :TLSv1_2
+          Braintree::Configuration.stub(:base_merchant_path).and_return("/")
+
+          expect do
+            Braintree::Configuration.instantiate.http._http_do(Net::HTTP::Get, "/login")
+          end.to_not raise_error
+        ensure
+          Braintree::Configuration.environment = original_env
+        end
+      end
+    end
+
     describe "ssl verification" do
       it "rejects when the certificate isn't verified by our certificate authority (self-signed)" do
         begin

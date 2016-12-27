@@ -17,7 +17,8 @@ module Braintree
       :proxy_address,
       :proxy_port,
       :proxy_user,
-      :proxy_pass
+      :proxy_pass,
+      :ssl_version
     ]
 
     WRITABLE_ATTRIBUTES = [
@@ -33,7 +34,8 @@ module Braintree
       :proxy_address,
       :proxy_port,
       :proxy_user,
-      :proxy_pass
+      :proxy_pass,
+      :ssl_version
     ]
 
     class << self
@@ -81,7 +83,8 @@ module Braintree
         :proxy_address => proxy_address,
         :proxy_port => proxy_port,
         :proxy_user => proxy_user,
-        :proxy_pass => proxy_pass
+        :proxy_pass => proxy_pass,
+        :ssl_version => ssl_version
       )
     end
 

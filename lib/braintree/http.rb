@@ -76,6 +76,7 @@ module Braintree
       connection.read_timeout = @config.http_read_timeout
       if @config.ssl?
         connection.use_ssl = true
+        connection.ssl_version = @config.ssl_version if @config.ssl_version
         connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
         connection.ca_file = @config.ca_file
         connection.verify_callback = proc { |preverify_ok, ssl_context| _verify_ssl_certificate(preverify_ok, ssl_context) }
