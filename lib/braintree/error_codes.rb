@@ -290,6 +290,8 @@ module Braintree
       CustomerDoesNotHaveCreditCard = "91511"
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
+      IdealPaymentNotComplete = "815141"
+      IdealPaymentAlreadyConsumed = "815142"
       MerchantAccountDoesNotMatch3DSecureMerchantAccount = "91584"
       MerchantAccountDoesNotSupportMOTO = "91558"
       MerchantAccountDoesNotSupportRefunds = "91547"
@@ -401,6 +403,12 @@ module Braintree
       InconsistentCountry = "93612"
       PaymentMethodsAreInvalid = "93613"
       PaymentMethodsAreNotAllowed = "93615"
+      MerchantAccountExistsForCurrency = "93616"
+      CurrencyIsRequired = "93617"
+      CurrencyIsInvalid = "93618"
+      NoMerchantAccounts = "93619"
+      MerchantAccountExistsForId = "93620"
+      MerchantAccountNotAuthOnboarded = "93621"
     end
 
     module MerchantAccount

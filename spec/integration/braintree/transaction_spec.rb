@@ -2123,12 +2123,12 @@ describe Braintree::Transaction do
         result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::UsBankAccount
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
         result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
       end
@@ -2149,12 +2149,12 @@ describe Braintree::Transaction do
         result.transaction.type.should == "sale"
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
         result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
 
@@ -2172,12 +2172,12 @@ describe Braintree::Transaction do
         result.transaction.type.should == "sale"
         result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "123456789"
+        result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
         result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should == "UNKNOWN"
+        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
         result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
       end
@@ -2194,6 +2194,53 @@ describe Braintree::Transaction do
         )
         result.success?.should == false
         result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown
+      end
+    end
+
+    context "ideal payment nonce" do
+      it "returns a successful result for tansacting on an ideal payment nonce" do
+        valid_ideal_payment_id = generate_valid_ideal_payment_nonce
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :order_id => SpecHelper::DefaultOrderId,
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::IdealMerchantAccountId,
+          :payment_method_nonce => valid_ideal_payment_id,
+          :options => {
+            :submit_for_settlement => true,
+          }
+        )
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6,}$/
+        result.transaction.type.should == "sale"
+        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::IdealPayment
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.status.should == Braintree::Transaction::Status::Settled
+        result.transaction.ideal_payment_details.ideal_payment_id.should =~ /^idealpayment_\w{6,}$/
+        result.transaction.ideal_payment_details.ideal_transaction_id.should =~ /^\d{16,}$/
+        result.transaction.ideal_payment_details.image_url.should start_with("https://")
+        result.transaction.ideal_payment_details.masked_iban.should_not be_empty
+        result.transaction.ideal_payment_details.bic.should_not be_empty
+      end
+
+      it "returns a failure if ideal payment is not complete" do
+        expired_payment_amount = "3.00"
+
+        incomplete_payment_id = generate_valid_ideal_payment_nonce(expired_payment_amount)
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :order_id => SpecHelper::DefaultOrderId,
+          :amount => expired_payment_amount,
+          :merchant_account_id => SpecHelper::IdealMerchantAccountId,
+          :payment_method_nonce => incomplete_payment_id,
+          :options => {
+            :submit_for_settlement => true,
+          }
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:ideal_payment)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
       end
     end
   end
@@ -2649,6 +2696,21 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.params.should == {:transaction => {:type => 'sale', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
+    end
+
+    it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :skip_advanced_fraud_checking => true
+        }
+      )
+      result.success?.should == true
+      result.transaction.risk_data.id.should be_nil
     end
 
     it "works with Apple Pay params" do
@@ -3937,6 +3999,7 @@ describe Braintree::Transaction do
         transaction.paypal_details.payer_id.should_not be_nil
         transaction.paypal_details.payer_first_name.should_not be_nil
         transaction.paypal_details.payer_last_name.should_not be_nil
+        transaction.paypal_details.payer_status.should_not be_nil
         transaction.paypal_details.seller_protection_status.should_not be_nil
         transaction.paypal_details.capture_id.should_not be_nil
         transaction.paypal_details.refund_id.should_not be_nil

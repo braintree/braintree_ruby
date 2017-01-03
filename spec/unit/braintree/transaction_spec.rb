@@ -171,6 +171,25 @@ describe Braintree::Transaction do
       transaction.three_d_secure_info.liability_shift_possible.should == true
     end
 
+    it "sets up ideal_payment_details" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :ideal_payment => {
+          :ideal_payment_id => "idealpayment_abc_123",
+          :ideal_transaction_id => "1150000008857321",
+          :masked_iban => "12************7890",
+          :bic => "RABONL2U",
+          :image_url => "http://www.example.com/ideal.png"
+        }
+      )
+
+      transaction.ideal_payment_details.ideal_payment_id.should == "idealpayment_abc_123"
+      transaction.ideal_payment_details.ideal_transaction_id.should == "1150000008857321"
+      transaction.ideal_payment_details.masked_iban.should == "12************7890"
+      transaction.ideal_payment_details.bic.should == "RABONL2U"
+      transaction.ideal_payment_details.image_url.should == "http://www.example.com/ideal.png"
+    end
+
     it "sets up history attributes in status_history" do
       time = Time.utc(2010,1,14)
       transaction = Braintree::Transaction._new(
@@ -279,4 +298,62 @@ describe Braintree::Transaction do
       transaction.refunded?.should == false
     end
   end
+
+  describe "sale" do
+    let(:mock_response) { {:transaction => {}}}
+    let(:http_stub) { double('http_stub').as_null_object }
+
+    RSpec::Matchers.define :skip_advanced_fraud_check_value_is do |value|
+        match { |params| params[:transaction][:options][:skip_advanced_fraud_checking] == value }
+    end
+
+    it "accepts skip_advanced_fraud_checking options with value true" do
+      Braintree::Http.stub(:new).and_return http_stub
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(true)).and_return(mock_response)
+
+      Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :skip_advanced_fraud_checking => true
+        }
+      )
+    end
+
+    it "accepts skip_advanced_fraud_checking options with value false" do
+      Braintree::Http.stub(:new).and_return http_stub
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(false)).and_return(mock_response)
+
+      Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :skip_advanced_fraud_checking => false
+        }
+      )
+    end
+
+    it "doesn't include skip_advanced_fraud_checking in params if its not specified" do
+      Braintree::Http.stub(:new).and_return http_stub
+      expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(nil)).and_return(mock_response)
+
+      Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :submit_for_settlement => false
+        }
+      )
+    end
+  end
+
 end

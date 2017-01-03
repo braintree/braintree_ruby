@@ -60,6 +60,10 @@ module Braintree
       UsBankAccountGateway.new(self)
     end
 
+    def ideal_payment
+      IdealPaymentGateway.new(self)
+    end
+
     def merchant
       MerchantGateway.new(self)
     end

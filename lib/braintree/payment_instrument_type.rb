@@ -8,5 +8,6 @@ module Braintree
     AndroidPayCard = 'android_pay_card'
     VenmoAccount = 'venmo_account'
     UsBankAccount = 'us_bank_account'
+    IdealPayment = 'ideal_payment'
   end
 end

@@ -59,6 +59,7 @@ end
 def generate_valid_us_bank_account_nonce()
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
+
   url = client_token["braintree_api"]["url"] + "/tokens"
   token = client_token["braintree_api"]["access_token"]
   payload = {
@@ -70,7 +71,7 @@ def generate_valid_us_bank_account_nonce()
       :postal_code => "94112"
     },
     :account_type => "checking",
-    :routing_number => "123456789",
+    :routing_number => "021000021",
     :account_number => "567891234",
     :account_holder_name => "Dan Schulman",
     :account_description => "PayPal Checking - 1234",
@@ -79,6 +80,40 @@ def generate_valid_us_bank_account_nonce()
     }
   }
 
+  json = _cosmos_post(token, url, payload)
+  json["data"]["id"]
+end
+
+def generate_valid_ideal_payment_nonce(amount = Braintree::Test::TransactionAmounts::Authorize)
+  raw_client_token = Braintree::ClientToken.generate
+  client_token = decode_client_token(raw_client_token)
+
+  token = client_token["braintree_api"]["access_token"]
+  url = client_token["braintree_api"]["url"] + "/ideal-payments"
+  payload = {
+    :issuer => "RABONL2U",
+    :order_id => SpecHelper::DefaultOrderId,
+    :amount => amount,
+    :currency => "EUR",
+    :redirect_url => "https://braintree-api.com",
+  }
+
+  json = _cosmos_post(token, url, payload)
+  json["data"]["id"]
+end
+
+def sample(arr)
+  6.times.map { arr[rand(arr.length)] }.join
+end
+
+def generate_invalid_us_bank_account_nonce
+  nonce_characters = "bcdfghjkmnpqrstvwxyz23456789".chars.to_a
+  nonce = "tokenusbankacct_"
+  nonce += 4.times.map { sample(nonce_characters) }.join("_")
+  nonce += "_xxx"
+end
+
+def _cosmos_post(token, url, payload)
   uri = URI::parse(url)
   connection = Net::HTTP.new(uri.host, uri.port)
   connection.use_ssl = true
@@ -92,19 +127,7 @@ def generate_valid_us_bank_account_nonce()
     http.request(request)
   end
 
-  json = JSON.parse(resp.body)
-  json["data"]["id"]
-end
-
-def sample(arr)
-  6.times.map { arr[rand(arr.length)] }.join
-end
-
-def generate_invalid_us_bank_account_nonce
-  nonce_characters = "bcdfghjkmnpqrstvwxyz23456789".chars.to_a
-  nonce = "tokenusbankacct_"
-  nonce += 4.times.map { sample(nonce_characters) }.join("_")
-  nonce += "_xxx"
+  JSON.parse(resp.body)
 end
 
 class ClientApiHttp

@@ -1,3 +1,9 @@
+== 2.70.0
+* Bugfix: Update UsBank tests to use legal routing numbers
+* Add option `skip_advanced_fraud_check` for transaction flows
+* Add IdealPayment class with `sale` and `find` methods
+* Add payer_status accessor to paypal_details object
+
 == 2.69.1
 * Bugfix: Allow PaymentMethod.find(token) to return `UsBankAccount`
 

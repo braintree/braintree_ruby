@@ -90,4 +90,4 @@ your system. To run unit tests use rake: <tt>rake test:unit</tt>.
 
 == License
 
-See the [LICENSE](LICENSE) file for more info.
+See the LICENSE[https://github.com/braintree/braintree_ruby/blob/master/LICENSE] file for more info.
