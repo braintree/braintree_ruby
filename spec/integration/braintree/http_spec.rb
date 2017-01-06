@@ -101,6 +101,7 @@ describe Braintree::Http do
           end.to raise_error(Braintree::SSLCertificateError)
         ensure
           Braintree::Configuration.environment = original_env
+          Braintree::Configuration.ssl_version = nil
         end
       end
 
@@ -116,6 +117,7 @@ describe Braintree::Http do
           end.to_not raise_error
         ensure
           Braintree::Configuration.environment = original_env
+          Braintree::Configuration.ssl_version = nil
         end
       end
     end
