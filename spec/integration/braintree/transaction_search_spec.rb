@@ -1334,4 +1334,42 @@ describe Braintree::Transaction, "search" do
       end
     end
   end
+
+  context "pagination" do
+    it "is not affected by new results on the server" do
+      cardholder_name = "Tom Smith #{rand(1_000_000)}"
+      5.times do |index|
+        Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+            :cardholder_name => "#{cardholder_name} #{index}"
+          }
+        )
+      end
+
+      collection = Braintree::Transaction.search do |search|
+        search.credit_card_cardholder_name.starts_with cardholder_name
+      end
+
+      count_before_new_data = collection.instance_variable_get(:@ids).count
+
+      new_cardholder_name = "#{cardholder_name} shouldn't be included"
+      Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+            :cardholder_name => new_cardholder_name,
+          }
+        )
+
+      transactions = collection.to_a
+      expect(transactions.count).to eq(count_before_new_data)
+
+      cardholder_names = transactions.map { |transaction| transaction.credit_card_details.cardholder_name }
+      expect(cardholder_names).to_not include(new_cardholder_name)
+    end
+  end
 end
