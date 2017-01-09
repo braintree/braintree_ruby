@@ -1,15 +1,15 @@
 == 2.70.0
 * Bugfix: Update UsBank tests to use legal routing numbers
-* Add option `skip_advanced_fraud_check` for transaction flows
-* Add IdealPayment class with `sale` and `find` methods
+* Add option +skip_advanced_fraud_check+ for transaction flows
+* Add IdealPayment class with +sale+ and +find+ methods
 * Add payer_status accessor to paypal_details object
 
 == 2.69.1
-* Bugfix: Allow PaymentMethod.find(token) to return `UsBankAccount`
+* Bugfix: Allow PaymentMethod.find(token) to return +UsBankAccount+
 
 == 2.69.0
-* Add `default?` support for `UsBankAccount`
-* Add `ach_mandate` data to `UsBankAccount` and `UsBankAccountDetails`
+* Add +default?+ support for +UsBankAccount+
+* Add +ach_mandate+ data to +UsBankAccount+ and +UsBankAccountDetails+
 
 == 2.68.2
 * Bugfix: allow Customer#payment_methods to return UsBankAccounts
@@ -51,9 +51,9 @@
 * Fix compatibility in specs with Ruby 1.8.7
 
 == 2.61.0
-* Add transaction `UpdateDetails`
+* Add transaction +UpdateDetails+
 * Support for Too Many Requests response codes
-* Add `default?` method to MerchantAccount
+* Add +default?+ method to MerchantAccount
 
 == 2.60.0
 * Allow Coinbase account to be updated
@@ -69,7 +69,7 @@
 
 == 2.57.0
 * Add Verification#create
-* Add options to `submit_for_settlement` transaction flows
+* Add options to +submit_for_settlement+ transaction flows
 * Upgrade libxml-ruby version to 2.8.0
 * Update https certificate bundle
 
@@ -112,8 +112,8 @@
 == 2.49.0
 * Remove Amex Pay with Points response from Transaction.sale response
 * Add expired? method to Apple Pay card
-* Add customer_id property to `AndroidPayCard`, `ApplePayCard`, `CoinbaseAccount`, `EuropeBankAccount`, `PaypalAccount`, and `UnknownPaymentMethod`
-* Add new error `ProcessorDoesNotSupportAuths`
+* Add customer_id property to +AndroidPayCard+, +ApplePayCard+, +CoinbaseAccount+, +EuropeBankAccount+, +PaypalAccount+, and +UnknownPaymentMethod+
+* Add new error +ProcessorDoesNotSupportAuths+
 
 == 2.48.1
 * Fix issue in TestTransaction spec
