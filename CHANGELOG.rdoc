@@ -1,3 +1,7 @@
+== 2.71.0
+* Allow optional configuration of SSL version
+* Add functionality to list all merchant accounts for a merchant with `merchant_account.all`
+
 == 2.70.0
 * Bugfix: Update UsBank tests to use legal routing numbers
 * Add option +skip_advanced_fraud_check+ for transaction flows
