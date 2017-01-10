@@ -6,6 +6,18 @@ module Braintree
       @config.assert_has_access_token_or_keys
     end
 
+    def all
+      pc = PaginatedCollection.new { |page| _fetch_merchant_accounts(page) }
+      SuccessfulResult.new(:merchant_accounts => pc)
+    end
+
+    def _fetch_merchant_accounts(page_number)
+      response = @config.http.get("#{@config.base_merchant_path}/merchant_accounts?page=#{page_number}")
+      body = response[:merchant_accounts]
+      merchant_accounts = Util.extract_attribute_as_array(body, :merchant_account).map { |merchant_account| MerchantAccount._new(@gateway, merchant_account) }
+      PaginatedResult.new(body[:total_items], body[:page_size], merchant_accounts)
+    end
+
     def create(attributes)
       signature = MerchantAccountGateway._detect_signature(attributes)
       Util.verify_keys(signature, attributes)

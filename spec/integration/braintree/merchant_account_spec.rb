@@ -60,6 +60,61 @@ VALID_APPLICATION_PARAMS = {
 }
 
 describe Braintree::MerchantAccount do
+  describe "all" do
+    it "returns all merchant accounts" do
+      gateway = Braintree::Gateway.new(
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+
+      code = Braintree::OAuthTestHelper.create_grant(gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "read_write"
+      })
+
+      result = gateway.oauth.create_token_from_code(
+        :code => code,
+        :scope => "read_write"
+      )
+
+      gateway = Braintree::Gateway.new(
+        :access_token => result.credentials.access_token,
+        :logger => Logger.new("/dev/null")
+      )
+
+      result = gateway.merchant_account.all
+      result.should be_success
+      result.merchant_accounts.count.should > 20
+    end
+
+    it "returns merchant account with correct attributes" do
+      gateway = Braintree::Gateway.new(
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+
+      result = gateway.merchant.create(
+        :email => "name@email.com",
+        :country_code_alpha3 => "USA",
+        :payment_methods => ["credit_card", "paypal"]
+      )
+
+      gateway = Braintree::Gateway.new(
+        :access_token => result.credentials.access_token,
+        :logger => Logger.new("/dev/null")
+      )
+
+      result = gateway.merchant_account.all
+      result.should be_success
+      result.merchant_accounts.count.should == 1
+      result.merchant_accounts.first.currency_iso_code.should == "USD"
+      result.merchant_accounts.first.status.should == "active"
+      result.merchant_accounts.first.default.should == true
+    end
+  end
+
   describe "create" do
     it "accepts the deprecated parameters" do
       result = Braintree::MerchantAccount.create(DEPRECATED_APPLICATION_PARAMS)

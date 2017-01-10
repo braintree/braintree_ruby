@@ -78,6 +78,14 @@ describe Braintree::Configuration do
       config.proxy_user.should == 'user'
       config.proxy_pass.should == 'test'
     end
+
+    it "accepts ssl version" do
+      config = Braintree::Configuration.new(
+        :ssl_version => :TLSv1_2
+      )
+
+      config.ssl_version.should == :TLSv1_2
+    end
   end
 
   describe "base_merchant_path" do
@@ -161,6 +169,13 @@ describe Braintree::Configuration do
       gateway.config.proxy_port.should == 8080
       gateway.config.proxy_user.should == "user"
       gateway.config.proxy_pass.should == "test"
+    end
+
+    it "sets the ssl version" do
+      Braintree::Configuration.ssl_version = :TLSv1_2
+      gateway = Braintree::Configuration.gateway
+
+      gateway.config.ssl_version.should == :TLSv1_2
     end
   end
 
@@ -289,7 +304,6 @@ describe Braintree::Configuration do
       Braintree::Configuration.environment = :sandbox
       Braintree::Configuration.instantiate.protocol.should == "https"
     end
-
   end
 
   describe "server" do
