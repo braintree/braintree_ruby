@@ -2126,7 +2126,6 @@ describe Braintree::Transaction do
         result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
-        result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
         result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
@@ -2152,7 +2151,6 @@ describe Braintree::Transaction do
         result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
-        result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
         result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
@@ -2175,7 +2173,6 @@ describe Braintree::Transaction do
         result.transaction.us_bank_account_details.routing_number.should == "021000021"
         result.transaction.us_bank_account_details.last_4.should == "1234"
         result.transaction.us_bank_account_details.account_type.should == "checking"
-        result.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
         result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
         result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
