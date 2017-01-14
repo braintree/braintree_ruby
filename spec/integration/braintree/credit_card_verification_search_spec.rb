@@ -150,4 +150,44 @@ describe Braintree::CreditCardVerification, "search" do
       collection.first.id.should == verification.id
     end
   end
+
+  context "pagination" do
+    it "is not affected by new results on the server" do
+      cardholder_name = "Tom Smith #{rand(1_000_000)}"
+      5.times do |index|
+        Braintree::Customer.create(
+          :credit_card => {
+            :cardholder_name => "#{cardholder_name} #{index}",
+            :expiration_date => "05/2012",
+            :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+            :options => {
+              :verify_card => true
+            }
+          })
+      end
+
+      collection = Braintree::CreditCardVerification.search do |search|
+        search.credit_card_cardholder_name.starts_with cardholder_name
+      end
+
+      count_before_new_data = collection.instance_variable_get(:@ids).count
+
+      new_cardholder_name = "#{cardholder_name} shouldn't be included"
+      Braintree::Customer.create(
+        :credit_card => {
+          :cardholder_name => new_cardholder_name,
+          :expiration_date => "05/2012",
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
+          :options => {
+            :verify_card => true
+          }
+        })
+
+      verifications = collection.to_a
+      expect(verifications.count).to eq(count_before_new_data)
+
+      cardholder_names = verifications.map { |verification| verification.credit_card[:cardholder_name] }
+      expect(cardholder_names).to_not include(new_cardholder_name)
+    end
+  end
 end

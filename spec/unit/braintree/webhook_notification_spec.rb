@@ -178,7 +178,6 @@ describe Braintree::WebhookNotification do
         notification.kind.should == Braintree::WebhookNotification::Kind::TransactionSettled
 
         notification.transaction.status.should == "settled"
-        notification.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         notification.transaction.us_bank_account_details.account_type.should == "checking"
         notification.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
         notification.transaction.us_bank_account_details.routing_number.should == "123456789"
@@ -196,7 +195,6 @@ describe Braintree::WebhookNotification do
         notification.kind.should == Braintree::WebhookNotification::Kind::TransactionSettlementDeclined
 
         notification.transaction.status.should == "settlement_declined"
-        notification.transaction.us_bank_account_details.account_description.should == "PayPal Checking - 1234"
         notification.transaction.us_bank_account_details.account_type.should == "checking"
         notification.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
         notification.transaction.us_bank_account_details.routing_number.should == "123456789"
