@@ -291,7 +291,6 @@ module Braintree
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
       IdealPaymentNotComplete = "815141"
-      IdealPaymentAlreadyConsumed = "815142"
       MerchantAccountDoesNotMatch3DSecureMerchantAccount = "91584"
       MerchantAccountDoesNotSupportMOTO = "91558"
       MerchantAccountDoesNotSupportRefunds = "91547"
