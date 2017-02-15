@@ -2237,7 +2237,7 @@ describe Braintree::Transaction do
         )
 
         result.success?.should == false
-        result.errors.for(:transaction).on(:ideal_payment)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
+        result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
       end
     end
   end
