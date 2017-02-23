@@ -1804,7 +1804,6 @@ describe Braintree::Transaction do
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:xid)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureXidIsRequired
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is invalid" do
