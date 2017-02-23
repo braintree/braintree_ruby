@@ -43,7 +43,7 @@ module Braintree
         raise UnexpectedError, "expected :payment_method or :api_error_response"
       end
     end
-    
+
     def delete(token, options = {})
       Util.verify_keys(PaymentMethodGateway._delete_signature, options)
       query_param = "?" + Util.hash_to_query_string(options) if not options.empty?
@@ -137,14 +137,18 @@ module Braintree
     def self._update_signature # :nodoc:
       _signature(:update)
     end
-        
+
     def self._delete_signature # :nodoc:
       [:revoke_all_grants]
     end
 
     def self._signature(type) # :nodoc:
       billing_address_params = AddressGateway._shared_signature
-      options = [:make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session, :verification_amount]
+      options = [
+        :make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session,
+        :verification_amount,
+        :paypal => [:payee_email],
+      ]
       signature = [
         :billing_address_id, :cardholder_name, :cvv, :device_session_id, :expiration_date,
         :expiration_month, :expiration_year, :number, :token, :venmo_sdk_payment_method_code,
