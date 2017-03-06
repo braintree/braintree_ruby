@@ -162,12 +162,14 @@ describe Braintree::ClientToken do
     end
 
     it "can pass merchant_account_id" do
+      merchant_account_id = SpecHelper::NonDefaultMerchantAccountId
+
       raw_client_token = Braintree::ClientToken.generate(
-        :merchant_account_id => "my_merchant_account"
+        :merchant_account_id => merchant_account_id
       )
       client_token = decode_client_token(raw_client_token)
 
-      client_token["merchantAccountId"].should == "my_merchant_account"
+      client_token["merchantAccountId"].should == merchant_account_id
     end
 
     context "paypal" do
