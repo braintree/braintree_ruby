@@ -1,4 +1,4 @@
-= Braintree Ruby SDK
+= Braintree Ruby library
 
 The Braintree gem provides integration access to the Braintree Gateway.
 
