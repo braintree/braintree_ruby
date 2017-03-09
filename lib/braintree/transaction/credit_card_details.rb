@@ -5,7 +5,8 @@ module Braintree
 
       attr_reader :bin, :card_type, :cardholder_name, :customer_location, :expiration_month,
         :expiration_year, :last_4, :token, :prepaid, :healthcare, :durbin_regulated, :debit,
-        :commercial, :payroll, :product_id, :country_of_issuance, :issuing_bank, :image_url
+        :commercial, :payroll, :product_id, :country_of_issuance, :issuing_bank, :image_url,
+        :unique_number_identifier
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

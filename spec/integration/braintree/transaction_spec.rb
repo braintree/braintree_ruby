@@ -840,6 +840,7 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.credit_card_details.masked_number.should == "401288******1881"
         result.transaction.vault_credit_card.masked_number.should == "401288******1881"
+        result.transaction.credit_card_details.unique_number_identifier.should_not be_nil
       end
     end
 
@@ -1091,6 +1092,7 @@ describe Braintree::Transaction do
           result.success?.should == true
           result.transaction.vault_customer.last_name.should == "Doe"
           result.transaction.vault_credit_card.masked_number.should == "401288******1881"
+          result.transaction.credit_card_details.unique_number_identifier.should_not be_nil
         end
 
         it "does not store vault records when true and transaction fails" do
@@ -2613,6 +2615,22 @@ describe Braintree::Transaction do
       shipping_address.country_name.should == "United States of America"
     end
 
+    it "stores a unique number identifier in the vault" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :options => { :store_in_vault => true }
+      )
+
+      result.success?.should == true
+
+      transaction = result.transaction
+      transaction.credit_card_details.unique_number_identifier.should_not be_nil
+    end
+
     it "submits for settlement if given transaction[options][submit_for_settlement]" do
       result = Braintree::Transaction.sale(
         :amount => "100",
@@ -3879,6 +3897,24 @@ describe Braintree::Transaction do
       created_transaction = result.transaction
       found_transaction = Braintree::Transaction.find(created_transaction.id)
       found_transaction.should == created_transaction
+    end
+
+    it "finds the vaulted transaction with the given id" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => { :store_in_vault => true }
+      )
+      result.success?.should == true
+      created_transaction = result.transaction
+      found_transaction = Braintree::Transaction.find(created_transaction.id)
+      found_transaction.should == created_transaction
+
+      found_transaction.credit_card_details.unique_number_identifier.should_not be_nil
     end
 
     it "raises a NotFoundError exception if transaction cannot be found" do
