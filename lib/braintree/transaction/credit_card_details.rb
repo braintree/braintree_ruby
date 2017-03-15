@@ -3,9 +3,10 @@ module Braintree
     class CreditCardDetails # :nodoc:
       include BaseModule
 
-      attr_reader :bin, :card_type, :cardholder_name, :customer_location, :expiration_month,
-        :expiration_year, :last_4, :token, :prepaid, :healthcare, :durbin_regulated, :debit,
-        :commercial, :payroll, :product_id, :country_of_issuance, :issuing_bank, :image_url
+      attr_reader :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance,
+        :customer_location, :debit, :durbin_regulated, :expiration_month, :expiration_year,
+        :healthcare, :image_url, :issuing_bank, :last_4, :payroll, :prepaid, :product_id,
+        :token, :unique_number_identifier
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
@@ -17,7 +18,7 @@ module Braintree
 
       def inspect
         attr_order = [:token, :bin, :last_4, :card_type, :expiration_date, :cardholder_name, :customer_location, :prepaid,
-        :healthcare, :durbin_regulated, :debit, :commercial, :payroll, :product_id, :country_of_issuance, :issuing_bank, :image_url]
+        :healthcare, :durbin_regulated, :debit, :commercial, :payroll, :product_id, :country_of_issuance, :issuing_bank, :image_url, :unique_number_identifier]
         formatted_attrs = attr_order.map do |attr|
           "#{attr}: #{send(attr).inspect}"
         end
