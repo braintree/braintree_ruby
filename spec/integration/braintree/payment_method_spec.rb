@@ -246,7 +246,7 @@ describe Braintree::PaymentMethod do
     it "respects verify_card and verification_merchant_account_id when included outside of the nonce" do
       nonce = nonce_for_new_payment_method(
         :credit_card => {
-          :number => "4000111111111115",
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
           :expiration_month => "11",
           :expiration_year => "2099",
         }
@@ -271,7 +271,7 @@ describe Braintree::PaymentMethod do
     it "respects verification amount when included outside of the nonce" do
       nonce = nonce_for_new_payment_method(
         :credit_card => {
-          :number => "4000111111111115",
+          :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
           :expiration_month => "11",
           :expiration_year => "2099",
         }
@@ -290,6 +290,7 @@ describe Braintree::PaymentMethod do
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result.credit_card_verification.processor_response_code.should == "2000"
       result.credit_card_verification.processor_response_text.should == "Do Not Honor"
+      result.credit_card_verification.amount.should == BigDecimal.new("100.00")
     end
 
     it "respects fail_on_duplicate_payment_method when included outside of the nonce" do
@@ -1127,6 +1128,7 @@ describe Braintree::PaymentMethod do
         update_result.success?.should == false
         update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
         update_result.credit_card_verification.gateway_rejection_reason.should be_nil
+        update_result.credit_card_verification.amount.should == BigDecimal("2.34")
       end
 
       it "can update the billing address" do

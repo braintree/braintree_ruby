@@ -77,6 +77,10 @@ module Braintree
       end
     end
 
+    def self.inspect_amount(amount)
+      amount ? "amount: #{amount.to_s("F").inspect}" : "amount: nil"
+    end
+
     def self.verify_keys(valid_keys, hash)
       flattened_valid_keys = _flatten_valid_keys(valid_keys)
       invalid_keys = _flatten_hash_keys(hash) - flattened_valid_keys

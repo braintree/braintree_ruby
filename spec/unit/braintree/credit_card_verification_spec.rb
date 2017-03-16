@@ -5,6 +5,8 @@ describe Braintree::CreditCardVerification do
     it "is better than the default inspect" do
       verification = Braintree::CreditCardVerification._new(
         :status => "verified",
+        :amount => "12.45",
+        :currency_iso_code => "USD",
         :avs_error_response_code => "I",
         :avs_postal_code_response_code => "I",
         :avs_street_address_response_code => "I",
@@ -14,7 +16,7 @@ describe Braintree::CreditCardVerification do
         :merchant_account_id => "some_id"
       )
 
-      verification.inspect.should == %(#<Braintree::CreditCardVerification status: "verified", processor_response_code: "2000", processor_response_text: "Do Not Honor", cvv_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", merchant_account_id: "some_id", gateway_rejection_reason: nil, id: nil, credit_card: nil, billing: nil, created_at: nil>)
+      verification.inspect.should == %(#<Braintree::CreditCardVerification status: "verified", processor_response_code: "2000", processor_response_text: "Do Not Honor", amount: "12.45", currency_iso_code: "USD", cvv_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", merchant_account_id: "some_id", gateway_rejection_reason: nil, id: nil, credit_card: nil, billing: nil, created_at: nil>)
     end
 
     it "has a status" do
@@ -31,6 +33,11 @@ describe Braintree::CreditCardVerification do
 
       verification.status.should == Braintree::CreditCardVerification::Status::Verified
     end
+  end
+
+  it "accepts amount as either a String or BigDecimal" do
+    Braintree::CreditCardVerification._new(:amount => "12.34").amount.should == BigDecimal.new("12.34")
+    Braintree::CreditCardVerification._new(:amount => BigDecimal.new("12.34")).amount.should == BigDecimal.new("12.34")
   end
 
   describe "self.create" do

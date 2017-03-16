@@ -284,7 +284,7 @@ module Braintree
       order = first + (self.class._attributes - first)
       nice_attributes = order.map do |attr|
         if attr == :amount
-          self.amount ? "amount: #{self.amount.to_s("F").inspect}" : "amount: nil"
+          Util.inspect_amount(self.amount)
         else
           "#{attr}: #{send(attr).inspect}"
         end
