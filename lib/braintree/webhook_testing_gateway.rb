@@ -59,6 +59,10 @@ module Braintree
         _subscription_charged_successfully(id)
       when Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport
         _account_updater_daily_report_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::IdealPaymentComplete
+        _ideal_payment_complete_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::IdealPaymentFailed
+        _ideal_payment_failed_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -353,6 +357,58 @@ module Braintree
           <report-date type="date">2016-01-14</report-date>
           <report-url>link-to-csv-report</report-url>
         </account-updater-daily-report>
+      XML
+    end
+
+    def _ideal_payment_complete_sample_xml(id)
+
+      <<-XML
+        <ideal-payment>
+          <id>#{id}</id>
+          <status>COMPLETE</status>
+          <issuer>ABCISSUER</issuer>
+          <order-id>ORDERABC</order-id>
+          <currency>EUR</currency>
+          <amount>10.00</amount>
+          <created-at>2016-11-29T23:27:34.547Z</created-at>
+          <iban-bank-account>
+            <created-at>2016-11-29T23:27:36.386Z</created-at>
+            <description>DESCRIPTION ABC</description>
+            <bic>XXXXNLXX</bic>
+            <iban-country>11</iban-country>
+            <iban-account-number-last-4>0000</iban-account-number-last-4>
+            <masked-iban>NL************0000</masked-iban>
+            <account-holder-name>Account Holder</account-holder-name>
+          </iban-bank-account>
+          <approval-url>https://example.com</approval-url>
+          <ideal-transaction-id>1234567890</ideal-transaction-id>
+        </ideal-payment>
+      XML
+    end
+
+    def _ideal_payment_failed_sample_xml(id)
+
+      <<-XML
+        <ideal-payment>
+          <id>#{id}</id>
+          <status>FAILED</status>
+          <issuer>ABCISSUER</issuer>
+          <order-id>ORDERABC</order-id>
+          <currency>EUR</currency>
+          <amount>10.00</amount>
+          <created-at>2016-11-29T23:27:34.547Z</created-at>
+          <iban-bank-account>
+            <created-at>2016-11-29T23:27:36.386Z</created-at>
+            <description>DESCRIPTION ABC</description>
+            <bic>XXXXNLXX</bic>
+            <iban-country>11</iban-country>
+            <iban-account-number-last-4>0000</iban-account-number-last-4>
+            <masked-iban>NL************0000</masked-iban>
+            <account-holder-name>Account Holder</account-holder-name>
+          </iban-bank-account>
+          <approval-url>https://example.com</approval-url>
+          <ideal-transaction-id>1234567890</ideal-transaction-id>
+        </ideal-payment>
       XML
     end
   end
