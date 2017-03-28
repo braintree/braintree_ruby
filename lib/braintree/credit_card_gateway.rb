@@ -103,6 +103,7 @@ module Braintree
       when :create
         signature << :customer_id
       when :update
+        options << :fail_on_duplicate_payment_method
         billing_address_params << {:options => [:update_existing]}
       else
         raise ArgumentError
