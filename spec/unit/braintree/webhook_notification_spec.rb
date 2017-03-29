@@ -243,11 +243,6 @@ describe Braintree::WebhookNotification do
         ideal_payment.amount.should == "10.00"
         ideal_payment.approval_url.should == "https://example.com"
         ideal_payment.ideal_transaction_id.should == "1234567890"
-        ideal_payment.iban_bank_account.description.should == "DESCRIPTION ABC"
-        ideal_payment.iban_bank_account.bic.should == "XXXXNLXX"
-        ideal_payment.iban_bank_account.iban_country.should == "11"
-        ideal_payment.iban_bank_account.iban_account_number_last_4.should == "0000"
-        ideal_payment.iban_bank_account.masked_iban.should == "NL************0000"
       end
     end
 

@@ -7,7 +7,7 @@ module Braintree
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
-      @iban_bank_account = IbanBankAccount.new(attributes[:iban_bank_account])
+      @iban_bank_account = IbanBankAccount.new(attributes[:iban_bank_account]) if attributes[:iban_bank_account]
     end
 
     class << self
