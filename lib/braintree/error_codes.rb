@@ -257,6 +257,7 @@ module Braintree
     module Transaction
       AmountCannotBeNegative = "81501"
       AmountDoesNotMatch3DSecureAmount = "91585"
+      AmountDoesNotMatchIdealPaymentAmount = "915144"
       AmountFormatIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsRequired = "81502"
@@ -291,13 +292,15 @@ module Braintree
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
       IdealPaymentNotComplete = "815141"
-      IdealPaymentAlreadyConsumed = "815142"
       MerchantAccountDoesNotMatch3DSecureMerchantAccount = "91584"
+      MerchantAccountDoesNotMatchIdealPaymentMerchantAccount = "915143"
       MerchantAccountDoesNotSupportMOTO = "91558"
       MerchantAccountDoesNotSupportRefunds = "91547"
       MerchantAccountIdIsInvalid = "91513"
       MerchantAccountIsSuspended = "91514"
       OrderIdIsTooLong = "91501"
+      OrderIdIsRequiredWithIdealPayment = "91502"
+      OrderIdDoesNotMatchIdealPaymentOrderId = "91503"
       PayPalAuthExpired = "91579"
       PayPalNotEnabled = "91576"
       PayPalVaultRecordMissingData = "91583"

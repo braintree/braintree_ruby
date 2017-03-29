@@ -32,9 +32,12 @@ module Braintree
       PartnerMerchantDeclined = "partner_merchant_declined"
 
       AccountUpdaterDailyReport = "account_updater_daily_report"
+
+      IdealPaymentComplete = "ideal_payment_complete"
+      IdealPaymentFailed = "ideal_payment_failed"
     end
 
-    attr_reader :subscription, :kind, :timestamp, :transaction, :partner_merchant, :disbursement, :dispute, :account_updater_daily_report
+    attr_reader :subscription, :kind, :timestamp, :transaction, :partner_merchant, :disbursement, :dispute, :account_updater_daily_report, :ideal_payment
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -55,6 +58,7 @@ module Braintree
       @disbursement = Disbursement._new(gateway, @subject[:disbursement]) if @subject.has_key?(:disbursement)
       @dispute = Dispute._new(@subject[:dispute]) if @subject.has_key?(:dispute)
       @account_updater_daily_report = AccountUpdaterDailyReport._new(@subject[:account_updater_daily_report]) if @subject.has_key?(:account_updater_daily_report)
+      @ideal_payment = Braintree::IdealPayment._new(gateway, @subject[:ideal_payment]) if @subject.has_key?(:ideal_payment)
     end
 
     def merchant_account

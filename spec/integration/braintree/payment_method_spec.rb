@@ -1085,6 +1085,24 @@ describe Braintree::PaymentMethod do
         update_result.credit_card_verification.gateway_rejection_reason.should be_nil
       end
 
+      it "accepts a custom verification amount" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Card Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2020"
+        )
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :payment_method_nonce => Braintree::Test::Nonce::ProcessorDeclinedMasterCard,
+          :options => {:verify_card => true, :verification_amount => "2.34"}
+        )
+        update_result.success?.should == false
+        update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+        update_result.credit_card_verification.gateway_rejection_reason.should be_nil
+      end
+
       it "can update the billing address" do
         customer = Braintree::Customer.create!
         credit_card = Braintree::CreditCard.create!(

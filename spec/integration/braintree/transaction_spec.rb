@@ -840,6 +840,7 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.credit_card_details.masked_number.should == "401288******1881"
         result.transaction.vault_credit_card.masked_number.should == "401288******1881"
+        result.transaction.credit_card_details.unique_number_identifier.should_not be_nil
       end
     end
 
@@ -1091,6 +1092,7 @@ describe Braintree::Transaction do
           result.success?.should == true
           result.transaction.vault_customer.last_name.should == "Doe"
           result.transaction.vault_credit_card.masked_number.should == "401288******1881"
+          result.transaction.credit_card_details.unique_number_identifier.should_not be_nil
         end
 
         it "does not store vault records when true and transaction fails" do
@@ -1804,7 +1806,6 @@ describe Braintree::Transaction do
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:xid)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureXidIsRequired
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is invalid" do
@@ -2237,7 +2238,7 @@ describe Braintree::Transaction do
         )
 
         result.success?.should == false
-        result.errors.for(:transaction).on(:ideal_payment)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
+        result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
       end
     end
   end
@@ -2612,6 +2613,22 @@ describe Braintree::Transaction do
       shipping_address.region.should == "IL"
       shipping_address.postal_code.should == "60622"
       shipping_address.country_name.should == "United States of America"
+    end
+
+    it "stores a unique number identifier in the vault" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :options => { :store_in_vault => true }
+      )
+
+      result.success?.should == true
+
+      transaction = result.transaction
+      transaction.credit_card_details.unique_number_identifier.should_not be_nil
     end
 
     it "submits for settlement if given transaction[options][submit_for_settlement]" do
@@ -3882,6 +3899,24 @@ describe Braintree::Transaction do
       found_transaction.should == created_transaction
     end
 
+    it "finds the vaulted transaction with the given id" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => { :store_in_vault => true }
+      )
+      result.success?.should == true
+      created_transaction = result.transaction
+      found_transaction = Braintree::Transaction.find(created_transaction.id)
+      found_transaction.should == created_transaction
+
+      found_transaction.credit_card_details.unique_number_identifier.should_not be_nil
+    end
+
     it "raises a NotFoundError exception if transaction cannot be found" do
       expect do
         Braintree::Transaction.find("invalid-id")
@@ -4519,7 +4554,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.paypal_details.payer_email.should == "payer@example.com"
       result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-      result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
+      result.transaction.paypal_details.authorization_id.should match(/AUTH-\w+/)
       result.transaction.paypal_details.image_url.should_not be_nil
     end
 
@@ -4535,7 +4570,7 @@ describe Braintree::Transaction do
       result.transaction.paypal_details.token.should_not be_nil
       result.transaction.paypal_details.payer_email.should == "payer@example.com"
       result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-      result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
+      result.transaction.paypal_details.authorization_id.should match(/AUTH-\w+/)
     end
 
     it "can create a transaction from a vaulted paypal account" do
@@ -4559,7 +4594,7 @@ describe Braintree::Transaction do
       result.transaction.paypal_details.token.should == payment_method_token
       result.transaction.paypal_details.payer_email.should == "payer@example.com"
       result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-      result.transaction.paypal_details.authorization_id.should match(/SALE-\w+/)
+      result.transaction.paypal_details.authorization_id.should match(/AUTH-\w+/)
     end
 
     context "validation failure" do
