@@ -534,6 +534,32 @@ describe Braintree::PaymentMethod do
         found_paypal_account.should_not be_nil
       end
 
+      it "creates a limited use payment method from a paypal account nonce for a paypal intent==order payment" do
+        nonce = nonce_for_paypal_account(
+          :intent => "order",
+          :payment_token => "fake-payment-token",
+          :payer_id => "fake-payer-id",
+        )
+        customer = Braintree::Customer.create.customer
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :paypal => {
+              :payee_email => "payee@example.com",
+            },
+          },
+        )
+
+        result.should be_success
+        result.payment_method.should be_a(Braintree::PayPalAccount)
+        result.payment_method.image_url.should_not be_nil
+        token = result.payment_method.token
+
+        found_paypal_account = Braintree::PayPalAccount.find(token)
+        found_paypal_account.should_not be_nil
+      end
+
       it "does not create a payment method from an unvalidated onetime paypal account nonce" do
         customer = Braintree::Customer.create.customer
         nonce = nonce_for_paypal_account(:access_token => "PAYPAL_ACCESS_TOKEN")

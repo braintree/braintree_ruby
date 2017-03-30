@@ -1473,6 +1473,64 @@ describe Braintree::Customer do
       end
     end
 
+    context "limited use" do
+      it "creates a customer with payment_method_nonce and options->paypal->payee_email" do
+        paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+        nonce = nonce_for_paypal_account(
+          :consent_code => "PAYPAL_CONSENT_CODE",
+          :token => paypal_account_token,
+          :options => {
+            :make_default => true
+          }
+        )
+
+        result = Braintree::Customer.create(
+          :payment_method_nonce => nonce,
+          :options => {
+            :paypal => {
+              :payee_email => "payee@example.com",
+            },
+          },
+        )
+
+        result.should be_success
+      end
+
+      it "updates a customer with payment_method_nonce and options->paypal->payee_email" do
+        customer = Braintree::Customer.create!(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2015",
+            :options => {
+              :make_default => true
+            }
+          }
+        )
+
+        paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+        nonce = nonce_for_paypal_account(
+          :consent_code => "PAYPAL_CONSENT_CODE",
+          :token => paypal_account_token,
+          :options => {
+            :make_default => true
+          }
+        )
+
+        result = Braintree::Customer.update(
+          customer.id,
+          :payment_method_nonce => nonce,
+          :options => {
+            :paypal => {
+              :payee_email => "payee@example.com",
+            },
+          },
+        )
+
+        result.should be_success
+        result.customer.default_payment_method.token.should == paypal_account_token
+      end
+    end
+
     context "onetime" do
       it "does not create a customer with a onetime paypal account" do
         result = Braintree::Customer.create(

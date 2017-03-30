@@ -123,6 +123,7 @@ describe Braintree::Customer do
           :billing_agreement_id,
           {:options => [:make_default]},
         ]},
+        {:options => [:paypal => [:payee_email]]},
         {:custom_fields => :_any_key_}
       ]
     end
@@ -181,6 +182,7 @@ describe Braintree::Customer do
             {:options => [:update_existing]}
           ]}
         ]},
+        {:options => [:paypal => [:payee_email]]},
         {:custom_fields => :_any_key_}
       ]
     end
