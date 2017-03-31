@@ -124,6 +124,8 @@ module Braintree
     attr_reader :three_d_secure_info
     attr_reader :us_bank_account_details
     attr_reader :ideal_payment_details
+    attr_reader :visa_checkout_card_details
+    attr_reader :masterpass_card_details
 
     def self.create(attributes)
       Configuration.gateway.transaction.create(attributes)
@@ -271,6 +273,8 @@ module Braintree
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
       @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
       @ideal_payment_details = IdealPaymentDetails.new(attributes[:ideal_payment]) if attributes[:ideal_payment]
+      @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
+      @masterpass_card_details = MasterpassCardDetails.new(attributes[:masterpass_card])
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.

@@ -45,6 +45,14 @@ module Braintree
       PayPalFuturePaymentRefreshToken = "fake-paypal-future-refresh-token-nonce"
       SEPA = "fake-sepa-bank-account-nonce"
       GatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce"
+      MasterpassAmEx = "fake-masterpass-amex-nonce"
+      MasterpassDiscover = "fake-masterpass-discover-nonce"
+      MasterpassMasterCard = "fake-masterpass-mastercard-nonce"
+      MasterpassVisa = "fake-masterpass-visa-nonce"
+      VisaCheckoutAmEx = "fake-visa-checkout-amex-nonce"
+      VisaCheckoutDiscover = "fake-visa-checkout-discover-nonce"
+      VisaCheckoutMasterCard = "fake-visa-checkout-mastercard-nonce"
+      VisaCheckoutVisa = "fake-visa-checkout-visa-nonce"
 
       def self.const_missing(const_name)
         if const_name == :AndroidPay

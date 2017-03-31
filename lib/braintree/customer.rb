@@ -4,7 +4,8 @@ module Braintree
 
     attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
       :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards, :coinbase_accounts,
-      :android_pay_cards, :amex_express_checkout_cards, :venmo_accounts, :us_bank_accounts
+      :android_pay_cards, :amex_express_checkout_cards, :venmo_accounts, :us_bank_accounts, :visa_checkout_cards,
+      :masterpass_cards
 
     def self.all
       Configuration.gateway.customer.all
@@ -95,6 +96,8 @@ module Braintree
       @amex_express_checkout_cards = (@amex_express_checkout_cards || []).map { |pm| AmexExpressCheckoutCard._new gateway, pm }
       @venmo_accounts = (@venmo_accounts || []).map { |pm| VenmoAccount._new gateway, pm }
       @us_bank_accounts = (@us_bank_accounts || []).map { |pm| UsBankAccount._new gateway, pm }
+      @visa_checkout_cards = (@visa_checkout_cards|| []).map { |pm| VisaCheckoutCard._new gateway, pm }
+      @masterpass_cards = (@masterpass_cards|| []).map { |pm| MasterpassCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
     end
@@ -133,7 +136,8 @@ module Braintree
         @android_pay_cards +
         @amex_express_checkout_cards +
         @venmo_accounts +
-        @us_bank_accounts
+        @us_bank_accounts +
+        @visa_checkout_cards
     end
 
     def inspect # :nodoc:

@@ -31,6 +31,10 @@ module Braintree
         SuccessfulResult.new(:payment_method => AmexExpressCheckoutCard._new(@gateway, response[:amex_express_checkout_card]))
       elsif response[:venmo_account]
         SuccessfulResult.new(:payment_method => VenmoAccount._new(@gateway, response[:venmo_account]))
+      elsif response[:visa_checkout_card]
+        SuccessfulResult.new(:payment_method => VisaCheckoutCard._new(@gateway, response[:visa_checkout_card]))
+      elsif response[:masterpass_card]
+        SuccessfulResult.new(:payment_method => MasterpassCard._new(@gateway, response[:masterpass_card]))
       elsif response[:payment_method_nonce]
         SuccessfulResult.new(:payment_method_nonce => PaymentMethodNonce._new(@gateway, response[:payment_method_nonce]))
       elsif response[:success]
