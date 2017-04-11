@@ -84,8 +84,13 @@ def generate_valid_us_bank_account_nonce()
 end
 
 def generate_valid_ideal_payment_nonce(amount = Braintree::Test::TransactionAmounts::Authorize)
-  raw_client_token = Braintree::ClientToken.generate
+  raw_client_token = Braintree::ClientToken.generate(:merchant_account_id => "ideal_merchant_account")
   client_token = decode_client_token(raw_client_token)
+  client = ClientApiHttp.new(
+    Braintree::Configuration.instantiate,
+    :authorization_fingerprint => client_token["authorizationFingerprint"],
+  )
+  config = JSON.parse(client.get_configuration.body)
 
   token = client_token["braintree_api"]["access_token"]
   url = client_token["braintree_api"]["url"] + "/ideal-payments"
@@ -95,6 +100,7 @@ def generate_valid_ideal_payment_nonce(amount = Braintree::Test::TransactionAmou
     :amount => amount,
     :currency => "EUR",
     :redirect_url => "https://braintree-api.com",
+    :route_id => config["ideal"]["routeId"]
   }
 
   json = _cosmos_post(token, url, payload)
@@ -181,6 +187,15 @@ class ClientApiHttp
     else
       true
     end
+  end
+
+  def get_configuration
+    encoded_fingerprint = Braintree::Util.url_encode(@options[:authorization_fingerprint])
+    url = "/merchants/#{@config.merchant_id}/client_api/v1/configuration"
+    url += "?authorizationFingerprint=#{encoded_fingerprint}"
+    url += "&configVersion=3"
+
+    get(url)
   end
 
   def get_payment_methods
