@@ -58,6 +58,40 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_within(10).of(Time.now.utc)
     end
 
+    context "auth" do
+      it "builds a sample notification for a status transitioned webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::ConnectedMerchantStatusTransitioned,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::ConnectedMerchantStatusTransitioned
+
+        status_transitioned = notification.connected_merchant_status_transitioned
+        status_transitioned.merchant_public_id.should == "my_id"
+        status_transitioned.oauth_application_client_id.should == "oauth_application_client_id"
+        status_transitioned.status.should == "new_status"
+      end
+
+      it "builds a sample notification for a paypal status changed webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::ConnectedMerchantPayPalStatusChanged,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::ConnectedMerchantPayPalStatusChanged
+
+        paypal_status_changed = notification.connected_merchant_paypal_status_changed
+        paypal_status_changed.merchant_public_id.should == "my_id"
+        paypal_status_changed.oauth_application_client_id.should == "oauth_application_client_id"
+        paypal_status_changed.action.should == "link"
+      end
+    end
+
     context "disputes" do
       it "builds a sample notification for a dispute opened webhook" do
         sample_notification = Braintree::WebhookTesting.sample_notification(

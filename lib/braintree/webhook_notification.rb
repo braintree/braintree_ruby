@@ -35,9 +35,22 @@ module Braintree
 
       IdealPaymentComplete = "ideal_payment_complete"
       IdealPaymentFailed = "ideal_payment_failed"
+
+      ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
+      ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
     end
 
-    attr_reader :subscription, :kind, :timestamp, :transaction, :partner_merchant, :disbursement, :dispute, :account_updater_daily_report, :ideal_payment
+    attr_reader :subscription
+    attr_reader :kind
+    attr_reader :timestamp
+    attr_reader :transaction
+    attr_reader :partner_merchant
+    attr_reader :disbursement
+    attr_reader :dispute
+    attr_reader :account_updater_daily_report
+    attr_reader :ideal_payment
+    attr_reader :connected_merchant_status_transitioned
+    attr_reader :connected_merchant_paypal_status_changed
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -59,6 +72,8 @@ module Braintree
       @dispute = Dispute._new(@subject[:dispute]) if @subject.has_key?(:dispute)
       @account_updater_daily_report = AccountUpdaterDailyReport._new(@subject[:account_updater_daily_report]) if @subject.has_key?(:account_updater_daily_report)
       @ideal_payment = Braintree::IdealPayment._new(gateway, @subject[:ideal_payment]) if @subject.has_key?(:ideal_payment)
+      @connected_merchant_status_transitioned = ConnectedMerchantStatusTransitioned._new(@subject[:connected_merchant_status_transitioned]) if @subject.has_key?(:connected_merchant_status_transitioned)
+      @connected_merchant_paypal_status_changed = ConnectedMerchantPayPalStatusChanged._new(@subject[:connected_merchant_paypal_status_changed]) if @subject.has_key?(:connected_merchant_paypal_status_changed)
     end
 
     def merchant_account
