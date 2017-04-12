@@ -59,6 +59,10 @@ module Braintree
         _subscription_charged_successfully(id)
       when Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport
         _account_updater_daily_report_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::ConnectedMerchantStatusTransitioned
+        _auth_status_transitioned_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::ConnectedMerchantPayPalStatusChanged
+        _auth_paypal_status_changed_sample_xml(id)
       when Braintree::WebhookNotification::Kind::IdealPaymentComplete
         _ideal_payment_complete_sample_xml(id)
       when Braintree::WebhookNotification::Kind::IdealPaymentFailed
@@ -358,6 +362,26 @@ module Braintree
           <report-url>link-to-csv-report</report-url>
         </account-updater-daily-report>
       XML
+    end
+
+    def _auth_status_transitioned_sample_xml(id)
+      <<-XML
+        <connected-merchant-status-transitioned>
+          <merchant-public-id>#{id}</merchant-public-id>
+          <status>new_status</status>
+          <oauth-application-client-id>oauth_application_client_id</oauth-application-client-id>
+        </connected-merchant-status-transitioned>
+      XML
+    end
+
+    def _auth_paypal_status_changed_sample_xml(id)
+      <<-XML
+        <connected-merchant-paypal-status-changed>
+          <oauth-application-client-id>oauth_application_client_id</oauth-application-client-id>
+          <merchant-public-id>#{id}</merchant-public-id>
+          <action>link</action>
+        </connected-merchant-paypal-status-changed>
+        XML
     end
 
     def _ideal_payment_complete_sample_xml(id)
