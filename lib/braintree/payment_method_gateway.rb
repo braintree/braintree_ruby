@@ -151,7 +151,13 @@ module Braintree
       options = [
         :make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session,
         :verification_amount,
-        :paypal => [:payee_email],
+        :paypal => [
+          :payee_email,
+          :order_id,
+          :custom_field,
+          :description,
+          :amount,
+        ],
       ]
       signature = [
         :billing_address_id, :cardholder_name, :cvv, :device_session_id, :expiration_date,
