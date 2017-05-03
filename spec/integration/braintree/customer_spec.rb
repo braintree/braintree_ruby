@@ -1474,7 +1474,7 @@ describe Braintree::Customer do
     end
 
     context "limited use" do
-      it "creates a customer with payment_method_nonce and options->paypal->payee_email" do
+      it "creates a customer with payment_method_nonce and paypal options" do
         paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
         nonce = nonce_for_paypal_account(
           :consent_code => "PAYPAL_CONSENT_CODE",
@@ -1489,6 +1489,10 @@ describe Braintree::Customer do
           :options => {
             :paypal => {
               :payee_email => "payee@example.com",
+              :order_id => "merchant-order-id",
+              :custom_field => "custom merchant field",
+              :description => "merchant description",
+              :amount => "1.23",
             },
           },
         )
@@ -1496,7 +1500,7 @@ describe Braintree::Customer do
         result.should be_success
       end
 
-      it "updates a customer with payment_method_nonce and options->paypal->payee_email" do
+      it "updates a customer with payment_method_nonce and paypal options" do
         customer = Braintree::Customer.create!(
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
@@ -1522,6 +1526,10 @@ describe Braintree::Customer do
           :options => {
             :paypal => {
               :payee_email => "payee@example.com",
+              :order_id => "merchant-order-id",
+              :custom_field => "custom merchant field",
+              :description => "merchant description",
+              :amount => "1.23",
             },
           },
         )
