@@ -10,6 +10,7 @@ module Braintree
       Discover = "Discover"
       JCB = "JCB"
       Laser = "Laser"
+      UK_Maestro = "UK Maestro"
       Maestro = "Maestro"
       MasterCard = "MasterCard"
       Solo = "Solo"
