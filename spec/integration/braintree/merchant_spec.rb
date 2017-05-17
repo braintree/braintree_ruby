@@ -52,6 +52,32 @@ describe Braintree::MerchantGateway do
       errors[0].code.should == Braintree::ErrorCodes::Merchant::PaymentMethodsAreInvalid
     end
 
+    context "credentials" do
+      around(:each) do |example|
+        old_merchant_id_value = Braintree::Configuration.merchant_id
+        example.run
+        Braintree::Configuration.merchant_id = old_merchant_id_value
+      end
+
+      it "allows using a merchant_id passed in through Gateway" do
+        Braintree::Configuration.merchant_id = nil
+
+        gateway = Braintree::Gateway.new(
+          :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+          :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
+          :merchant_id => "integration_merchant_id",
+          :logger => Logger.new("/dev/null"),
+        )
+        result = gateway.merchant.create(
+          :email => "name@email.com",
+          :country_code_alpha3 => "USA",
+          :payment_methods => ["credit_card", "paypal"]
+        )
+
+        result.should be_success
+      end
+    end
+
     context "multiple currencies" do
       before(:each) do
         @gateway = Braintree::Gateway.new(

@@ -4,9 +4,9 @@ module Braintree
 
     attr_reader :id, :email, :company_name, :country_code_alpha2, :country_code_alpha3, :country_code_numeric, :country_name, :merchant_accounts
 
-    def initialize(attributes) # :nodoc:
+    def initialize(gateway, attributes) # :nodoc:
       @merchant_accounts = attributes.delete(:merchant_accounts).map do |merchant_account|
-        MerchantAccount._new(Configuration.gateway, merchant_account)
+        MerchantAccount._new(gateway, merchant_account)
       end
 
       set_instance_variables_from_hash(attributes)
