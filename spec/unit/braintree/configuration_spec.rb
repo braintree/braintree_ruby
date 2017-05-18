@@ -332,6 +332,13 @@ describe Braintree::Configuration do
       Braintree::Configuration.endpoint = "custom-endpoint"
       Braintree::Configuration.instantiate.server.should == "custom-endpoint.braintreegateway.com"
     end
+
+    it "is GATEWAY_SERVER environment variable if set for development" do
+      Braintree::Configuration.environment = :development
+      stub_const("ENV", {"GATEWAY_SERVER" => "example.com"}) 
+
+      Braintree::Configuration.instantiate.server.should == "example.com"
+    end
   end
 
   describe "auth_url" do
@@ -369,6 +376,16 @@ describe Braintree::Configuration do
 
     it "returns true for sandbox" do
       Braintree::Configuration.environment = :sandbox
+      Braintree::Configuration.instantiate.ssl?.should == true
+    end
+
+    it "is true if GATEWAY_SSL environment variable is true or 1 and is set for development" do
+      Braintree::Configuration.environment = :development
+
+      stub_const("ENV", {"GATEWAY_SSL" => "true"}) 
+      Braintree::Configuration.instantiate.ssl?.should == true
+
+      stub_const("ENV", {"GATEWAY_SSL" => "1"}) 
       Braintree::Configuration.instantiate.ssl?.should == true
     end
   end
