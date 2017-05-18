@@ -218,6 +218,24 @@ module Braintree
       response = @config.http.post("#{@config.base_merchant_path}/transactions/advanced_search", {:search => search.to_hash})
       attributes = response[:credit_card_transactions]
       Util.extract_attribute_as_array(attributes, :transaction).map { |attrs| Transaction._new(@gateway, attrs) }
+
+    rescue Braintree::UnexpectedError
+      if $!.to_s =~ /Unprocessable entity/ && ids.size > 1
+        # Act under the belief that this is a server-side timeout, not a real invalid
+        # request. In that case, we can work around this client-side by requesting
+        # fewer IDs -- say, by splitting the request in half -- and trying again.
+        #
+        # Yes, this is recursive.
+        #
+        # https://en.wikipedia.org/wiki/The_Sorcerer's_Apprentice
+        brooms = [[], []]
+        ids.each_with_index { |id,i|
+          brooms[i % 2] << id
+        }
+        _fetch_transactions(search, brooms[0]) + _fetch_transactions(search, brooms[1])
+      else
+        raise
+      end
     end
   end
 end
