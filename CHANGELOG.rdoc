@@ -1,3 +1,6 @@
+== 2.76.0
+* Pass configured gateway to Merchant#_new instead of using global gateway (thanks @cwalsh!)
+
 == 2.75.0
 * Add support for additional PayPal options when vaulting a PayPal Order
 
