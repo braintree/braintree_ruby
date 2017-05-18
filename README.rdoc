@@ -28,6 +28,8 @@ Or add to your Gemfile:
   Braintree::Configuration.public_key = "your_public_key"
   Braintree::Configuration.private_key = "your_private_key"
 
+  You receive the above mentioned merchant id, public key, and private key upon signing up for Braintree. Signing up for a sandbox account is easy, free, and automatic, and you can do that right * here [https://www.braintreepayments.com/get-started].
+
   result = Braintree::Transaction.sale(
     :amount => "1000.00",
     :payment_method_nonce => nonce_from_the_client,
