@@ -391,6 +391,16 @@ module Braintree
       return_object_or_raise(:transaction) { void }
     end
 
+    def declined_due_hard_error?
+      hard_errors = [
+        (2004..2008).to_a, (2010..2015).to_a, (2017..2020).to_a,
+        (2022..2024).to_a, (2027..2032).to_a, (2036..2039).to_a, 2041, 2043, 2044,
+        2045, 2047, 2049, 2051, 2053, 2055, 2056, 2058, 2059, 2060, 2061, (2063..2091).to_a
+      ].flatten
+
+      hard_errors.include?(processor_response_code.to_i)
+    end
+
     class << self
       protected :new
       def _new(*args) # :nodoc:
