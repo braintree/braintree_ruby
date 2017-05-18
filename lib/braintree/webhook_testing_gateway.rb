@@ -163,26 +163,25 @@ module Braintree
       <<-XML
           <api-error-response>
               <message>Credit score is too low</message>
-              <errors>
-                  <errors type="array"/>
-                      <merchant-account>
-                          <errors type="array">
-                              <error>
-                                  <code>82621</code>
-                                  <message>Credit score is too low</message>
-                                  <attribute type="symbol">base</attribute>
-                              </error>
-                          </errors>
-                      </merchant-account>
-                  </errors>
+              <errors type="array"/>
                   <merchant-account>
-                      <id>#{id}</id>
-                      <status>suspended</status>
-                      <master-merchant-account>
-                          <id>master_ma_for_#{id}</id>
-                          <status>suspended</status>
-                      </master-merchant-account>
+                      <errors type="array">
+                          <error>
+                              <code>82621</code>
+                              <message>Credit score is too low</message>
+                              <attribute type="symbol">base</attribute>
+                          </error>
+                      </errors>
                   </merchant-account>
+              </errors>
+              <merchant-account>
+                  <id>#{id}</id>
+                  <status>suspended</status>
+                  <master-merchant-account>
+                      <id>master_ma_for_#{id}</id>
+                      <status>suspended</status>
+                  </master-merchant-account>
+              </merchant-account>
           </api-error-response>
       XML
     end
