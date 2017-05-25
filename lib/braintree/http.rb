@@ -126,8 +126,8 @@ module Braintree
 
     def _format_and_sanitize_body_for_log(input_xml)
       formatted_xml = input_xml.gsub(/^/, "[Braintree] ")
-      formatted_xml = formatted_xml.gsub(/<number>(.{6}).+?(.{4})<\/number>/, '<number>\1******\2</number>')
-      formatted_xml = formatted_xml.gsub(/<cvv>.+?<\/cvv>/, '<cvv>***</cvv>')
+      formatted_xml = formatted_xml.gsub(/<number>(.{6}).+?(.{4})<\/number>/m, '<number>\1******\2</number>')
+      formatted_xml = formatted_xml.gsub(/<cvv>.+?<\/cvv>/m, '<cvv>***</cvv>')
       formatted_xml
     end
 
