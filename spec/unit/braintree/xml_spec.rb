@@ -99,6 +99,13 @@ describe Braintree::Xml do
       verify_to_xml_and_back hash
     end
 
+		context "Integer" do
+			it "works for integers" do
+				hash = { :root => {:foo => 1 } }
+				Braintree::Xml.hash_to_xml(hash).should include("<foo type=\"integer\">1</foo>")
+			end
+		end
+
 		context "BigDecimal" do
 			it "works for BigDecimals" do
 				hash = {:root => {:foo => BigDecimal.new("123.45")}}
