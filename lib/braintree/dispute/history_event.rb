@@ -1,13 +1,13 @@
 module Braintree
   class Dispute
-    class TransactionDetails # :nodoc:
+    class HistoryEvent # :nodoc:
       include BaseModule
 
-      attr_reader :amount, :id
+      attr_reader :status
+      attr_reader :timestamp
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
-        @amount = Util.to_big_decimal(amount)
       end
     end
   end

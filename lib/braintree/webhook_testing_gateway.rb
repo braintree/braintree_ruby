@@ -244,19 +244,39 @@ module Braintree
 
       <<-XML
         <dispute>
-          <amount>250.00</amount>
-          <currency-iso-code>USD</currency-iso-code>
-          <received-date type="date">2014-03-01</received-date>
-          <reply-by-date type="date">2014-03-21</reply-by-date>
-          <kind>chargeback</kind>
-          <status>open</status>
-          <reason>fraud</reason>
           <id>#{id}</id>
+          <amount-disputed>100.00</amount-disputed>
+          <amount-won>95.00</amount-won>
+          <case-number>CASE-12345</case-number>
+          <created-at type="datetime">2017-06-16T20:44:41Z</created-at>
+          <currency-iso-code>USD</currency-iso-code>
+          <forwarded-comments nil="true"/>
+          <kind>chargeback</kind>
+          <merchant-account-id>ytnlulaloidoqwvzxjrdqputg</merchant-account-id>
+          <reason>fraud</reason>
+          <reason-code nil="true"/>
+          <reason-description nil="true"/>
+          <received-date type="date">2016-02-15</received-date>
+          <reference-number>REF-9876</reference-number>
+          <reply-by-date type="date">2016-02-22</reply-by-date>
+          <status>open</status>
+          <updated-at type="datetime">2017-06-16T20:44:41Z</updated-at>
+          <original-dispute-id>9qde5qgp</original-dispute-id>
+          <status-history type="array">
+            <status-history>
+              <status>open</status>
+              <timestamp type="datetime">2017-06-16T20:44:41Z</timestamp>
+            </status-history>
+          </status-history>
+          <evidence type="array"/>
           <transaction>
             <id>#{id}</id>
-            <amount>250.00</amount>
+            <amount>100.00</amount>
+            <created-at>2017-06-21T20:44:41Z</created-at>
+            <order-id nil="true"/>
+            <purchase-order-number nil="true"/>
+            <payment-instrument-subtype>Visa</payment-instrument-subtype>
           </transaction>
-          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end
@@ -265,19 +285,58 @@ module Braintree
 
       <<-XML
         <dispute>
-          <amount>250.00</amount>
-          <currency-iso-code>USD</currency-iso-code>
-          <received-date type="date">2014-03-01</received-date>
-          <reply-by-date type="date">2014-03-21</reply-by-date>
-          <kind>chargeback</kind>
-          <status>lost</status>
-          <reason>fraud</reason>
           <id>#{id}</id>
+          <amount-disputed>100.00</amount-disputed>
+          <amount-won>95.00</amount-won>
+          <case-number>CASE-12345</case-number>
+          <created-at type="datetime">2017-06-16T20:44:41Z</created-at>
+          <currency-iso-code>USD</currency-iso-code>
+          <forwarded-comments nil="true"/>
+          <kind>chargeback</kind>
+          <merchant-account-id>ytnlulaloidoqwvzxjrdqputg</merchant-account-id>
+          <reason>fraud</reason>
+          <reason-code nil="true"/>
+          <reason-description nil="true"/>
+          <received-date type="date">2016-02-15</received-date>
+          <reference-number>REF-9876</reference-number>
+          <reply-by-date type="date">2016-02-22</reply-by-date>
+          <status>lost</status>
+          <updated-at type="datetime">2017-06-21T20:44:41Z</updated-at>
+          <original-dispute-id>9qde5qgp</original-dispute-id>
+          <status-history type="array">
+            <status-history>
+              <status>open</status>
+              <timestamp type="datetime">2017-06-16T20:44:41Z</timestamp>
+            </status-history>
+            <status-history>
+              <status>lost</status>
+              <timestamp type="datetime">2017-06-25T20:50:55Z</timestamp>
+            </status-history>
+          </status-history>
+          <evidence type="array">
+            <evidence>
+              <id>rxtngk9j5j93tsrq</id>
+              <comments nil="true"/>
+              <created-at type="datetime">2017-06-21T20:44:42Z</created-at>
+              <sent-to-processor-at nil="true"/>
+              <url>s3.amazonaws.com/foo.jpg</url>
+            </evidence>
+            <evidence>
+              <id>88cfb8dd</id>
+              <comments>text evidence</comments>
+              <created-at type="datetime">2017-06-21T20:44:42Z</created-at>
+              <sent-to-processor-at nil="true"/>
+              <url nil="true"/>
+            </evidence>
+          </evidence>
           <transaction>
             <id>#{id}</id>
-            <amount>250.00</amount>
+            <amount>100.00</amount>
+            <created-at>2017-06-21T20:44:41Z</created-at>
+            <order-id nil="true"/>
+            <purchase-order-number nil="true"/>
+            <payment-instrument-subtype>Visa</payment-instrument-subtype>
           </transaction>
-          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end
@@ -286,20 +345,58 @@ module Braintree
 
       <<-XML
         <dispute>
-          <amount>250.00</amount>
-          <currency-iso-code>USD</currency-iso-code>
-          <received-date type="date">2014-03-01</received-date>
-          <reply-by-date type="date">2014-03-21</reply-by-date>
-          <kind>chargeback</kind>
-          <status>won</status>
-          <reason>fraud</reason>
           <id>#{id}</id>
+          <amount-disputed>100.00</amount-disputed>
+          <amount-won>95.00</amount-won>
+          <case-number>CASE-12345</case-number>
+          <created-at type="datetime">2017-06-16T20:44:41Z</created-at>
+          <currency-iso-code>USD</currency-iso-code>
+          <forwarded-comments nil="true"/>
+          <kind>chargeback</kind>
+          <merchant-account-id>ytnlulaloidoqwvzxjrdqputg</merchant-account-id>
+          <reason>fraud</reason>
+          <reason-code nil="true"/>
+          <reason-description nil="true"/>
+          <received-date type="date">2016-02-15</received-date>
+          <reference-number>REF-9876</reference-number>
+          <reply-by-date type="date">2016-02-22</reply-by-date>
+          <status>won</status>
+          <updated-at type="datetime">2017-06-21T20:44:41Z</updated-at>
+          <original-dispute-id>9qde5qgp</original-dispute-id>
+          <status-history type="array">
+            <status-history>
+              <status>open</status>
+              <timestamp type="datetime">2017-06-16T20:44:41Z</timestamp>
+            </status-history>
+            <status-history>
+              <status>won</status>
+              <timestamp type="datetime">2017-06-25T20:50:55Z</timestamp>
+            </status-history>
+          </status-history>
+          <evidence type="array">
+            <evidence>
+              <id>rxtngk9j5j93tsrq</id>
+              <comments nil="true"/>
+              <created-at type="datetime">2017-06-21T20:44:42Z</created-at>
+              <sent-to-processor-at nil="true"/>
+              <url>s3.amazonaws.com/foo.jpg</url>
+            </evidence>
+            <evidence>
+              <id>88cfb8dd</id>
+              <comments>text evidence</comments>
+              <created-at type="datetime">2017-06-21T20:44:42Z</created-at>
+              <sent-to-processor-at nil="true"/>
+              <url nil="true"/>
+            </evidence>
+          </evidence>
           <transaction>
             <id>#{id}</id>
-            <amount>250.00</amount>
+            <amount>100.00</amount>
+            <created-at>2017-06-21T20:44:41Z</created-at>
+            <order-id nil="true"/>
+            <purchase-order-number nil="true"/>
+            <payment-instrument-subtype>Visa</payment-instrument-subtype>
           </transaction>
-          <date-opened type=\"date\">2014-03-21</date-opened>
-          <date-won type=\"date\">2014-03-22</date-won>
         </dispute>
       XML
     end
