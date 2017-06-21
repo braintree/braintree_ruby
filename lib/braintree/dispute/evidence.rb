@@ -3,7 +3,7 @@ module Braintree
     class Evidence # :nodoc:
       include BaseModule
 
-      attr_reader :comments
+      attr_reader :comment
       attr_reader :created_at
       attr_reader :id
       attr_reader :sent_to_processor_at

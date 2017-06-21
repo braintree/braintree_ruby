@@ -13,14 +13,14 @@ describe Braintree::Dispute do
       :updated_at => Time.utc(2009, 3, 9, 10, 50, 39),
       :evidence => [
         {
-          comments: nil,
+          comment: nil,
           created_at: Time.utc(2009, 3, 10, 12, 5, 20),
           id: "evidence1",
           sent_to_processor_at: nil,
           url: "url_of_file_evidence",
         },
         {
-          comments: "text evidence",
+          comment: "text evidence",
           created_at: Time.utc(2009, 3, 10, 12, 5, 21),
           id: "evidence2",
           sent_to_processor_at: "2009-03-13",
@@ -43,6 +43,28 @@ describe Braintree::Dispute do
         :payment_instrument_subtype => "Visa",
       }
     }
+  end
+
+  describe "self.find" do
+    it "raises an exception if the id is blank" do
+      expect do
+        Braintree::Dispute.find("  ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the id is nil" do
+      expect do
+        Braintree::Dispute.find(nil)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "does not raise an exception if the id is a fixnum" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      Braintree::Dispute.stub(:_new).and_return nil
+      expect do
+        Braintree::Dispute.find(8675309)
+      end.to_not raise_error
+    end
   end
 
   describe "initialize" do
@@ -90,14 +112,14 @@ describe Braintree::Dispute do
 
       dispute.evidence.length.should ==2
       evidence1 = dispute.evidence.first
-      evidence1.comments.should == nil
+      evidence1.comment.should == nil
       evidence1.created_at.should == Time.utc(2009, 3, 10, 12, 5, 20)
       evidence1.id.should == "evidence1"
       evidence1.sent_to_processor_at.should == nil
       evidence1.url.should == "url_of_file_evidence"
 
       evidence2 = dispute.evidence.last
-      evidence2.comments.should == "text evidence"
+      evidence2.comment.should == "text evidence"
       evidence2.created_at.should == Time.utc(2009, 3, 10, 12, 5, 21)
       evidence2.id.should == "evidence2"
       evidence2.sent_to_processor_at.should == Date.new(2009, 3, 13)

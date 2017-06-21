@@ -25,6 +25,9 @@ module Braintree
     attr_reader :updated_at
 
     module Status
+      Accepted = "accepted"
+      Disputed = "disputed"
+      Expired = "expired"
       Open = "open"
       Lost = "lost"
       Won = "won"
@@ -55,6 +58,10 @@ module Braintree
       def _new(*args) # :nodoc:
         self.new *args
       end
+    end
+
+    def self.find(dispute_id)
+      Configuration.gateway.dispute.find(dispute_id)
     end
 
     def initialize(attributes) # :nodoc:
