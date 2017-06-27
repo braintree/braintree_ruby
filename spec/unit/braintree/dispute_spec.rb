@@ -4,9 +4,12 @@ describe Braintree::Dispute do
   let(:attributes) do
     {
       :id => "open_dispute",
+      :amount => "31.00",
       :amount_disputed => "500.00",
       :amount_won => "0.00",
       :created_at => Time.utc(2009, 3, 9, 10, 50, 39),
+      :date_opened => "2009-03-09",
+      :date_won => "2009-04-15",
       :original_dispute_id => "original_dispute_id",
       :received_date => "2009-03-09",
       :reply_by_date => nil,
@@ -75,17 +78,36 @@ describe Braintree::Dispute do
       dispute.amount_won.should == 0.0
     end
 
-    it "handles nil reply_by_date" do
-      dispute = Braintree::Dispute._new(attributes)
+    [
+      :reply_by_date,
+      :amount,
+      :date_opened,
+      :date_won,
+      :status_history,
+    ].each do |field|
+      it "handles nil #{field}" do
+        attributes.delete(field)
 
-      dispute.reply_by_date.should == nil
+        dispute = Braintree::Dispute._new(attributes)
+
+        dispute.send(field).should == nil
+      end
     end
 
-    it "converts reply_by_date, received_date from String to Date" do
+    it "converts date_opened, date_won, reply_by_date, received_date from String to Date" do
       dispute = Braintree::Dispute._new(attributes.merge(:reply_by_date => "2009-03-14"))
 
+      dispute.date_opened.should == Date.new(2009, 3, 9)
+      dispute.date_won.should == Date.new(2009, 4, 15)
       dispute.received_date.should == Date.new(2009, 3, 9)
       dispute.reply_by_date.should == Date.new(2009, 3, 14)
+    end
+
+    it "converts transaction hash into a Dispute::TransactionDetails object first" do
+      dispute = Braintree::Dispute._new(attributes)
+
+      dispute.transaction_details.id.should == "open_disputed_transaction"
+      dispute.transaction_details.amount.should == 31.00
     end
 
     it "converts transaction hash into a Dispute::Transaction object" do
@@ -132,6 +154,14 @@ describe Braintree::Dispute do
       dispute = Braintree::Dispute._new(attributes)
 
       dispute.evidence.should == nil
+    end
+
+    it "sets the older webhook fields for backwards compatibility" do
+      dispute = Braintree::Dispute._new(attributes)
+
+      dispute.amount.should == 31.00
+      dispute.date_opened.should == Date.new(2009, 3, 9)
+      dispute.date_won.should == Date.new(2009, 4, 15)
     end
   end
 

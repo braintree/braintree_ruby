@@ -2,11 +2,14 @@ module Braintree
   class Dispute # :nodoc:
     include BaseModule
 
+    attr_reader :amount
     attr_reader :amount_disputed
     attr_reader :amount_won
     attr_reader :case_number
     attr_reader :created_at
     attr_reader :currency_iso_code
+    attr_reader :date_opened
+    attr_reader :date_won
     attr_reader :evidence
     attr_reader :forwarded_comments
     attr_reader :id
@@ -22,6 +25,7 @@ module Braintree
     attr_reader :status
     attr_reader :status_history
     attr_reader :transaction
+    attr_reader :transaction_details
     attr_reader :updated_at
 
     module Status
@@ -66,8 +70,11 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
+      @date_opened = Date.parse(date_opened) unless date_opened.nil?
+      @date_won = Date.parse(date_won) unless date_won.nil?
       @received_date = Date.parse(received_date)
       @reply_by_date = Date.parse(reply_by_date) unless reply_by_date.nil?
+      @amount = Util.to_big_decimal(amount)
       @amount_disputed = Util.to_big_decimal(amount_disputed)
       @amount_won = Util.to_big_decimal(amount_won)
 
@@ -75,11 +82,12 @@ module Braintree
         Braintree::Dispute::Evidence.new(record)
       end unless evidence.nil?
 
-      @transaction = Braintree::Dispute::Transaction.new(transaction)
+      @transaction_details = TransactionDetails.new(transaction)
+      @transaction = Transaction.new(transaction)
 
       @status_history = status_history.map do |event|
         Braintree::Dispute::HistoryEvent.new(event)
-      end
+      end unless status_history.nil?
     end
 
     # Returns true if +other+ is a Dispute with the same id

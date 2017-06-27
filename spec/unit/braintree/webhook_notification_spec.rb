@@ -93,52 +93,85 @@ describe Braintree::WebhookNotification do
     end
 
     context "disputes" do
-      it "builds a sample notification for a dispute opened webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::DisputeOpened,
-          "my_id"
-        )
+      let(:dispute_id) { "my_id" }
 
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      shared_examples "dispute webhooks" do
+        it "builds a sample notification for a dispute opened webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeOpened,
+            dispute_id
+          )
 
-        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeOpened
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
-        dispute = notification.dispute
-        dispute.status.should == Braintree::Dispute::Status::Open
-        dispute.id.should == "my_id"
-        dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeOpened
+
+          dispute = notification.dispute
+          dispute.status.should == Braintree::Dispute::Status::Open
+          dispute.id.should == dispute_id
+          dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        end
+
+        it "builds a sample notification for a dispute lost webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeLost,
+            dispute_id
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeLost
+
+          dispute = notification.dispute
+          dispute.status.should == Braintree::Dispute::Status::Lost
+          dispute.id.should == dispute_id
+          dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        end
+
+        it "builds a sample notification for a dispute won webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeWon,
+            dispute_id
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeWon
+
+          dispute = notification.dispute
+          dispute.status.should == Braintree::Dispute::Status::Won
+          dispute.id.should == dispute_id
+          dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        end
+
+        it "is compatible with the previous dispute won webhook interface" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeWon,
+            dispute_id
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeWon
+
+          dispute = notification.dispute
+          dispute.amount.should == 100.00
+          dispute.id.should == dispute_id
+          dispute.date_opened.should == Date.new(2014, 3, 21)
+          dispute.date_won.should == Date.new(2014, 3, 22)
+          dispute.transaction_details.amount.should == 100.00
+          dispute.transaction_details.id.should == dispute_id
+        end
       end
 
-      it "builds a sample notification for a dispute lost webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::DisputeLost,
-          "my_id"
-        )
+      context "older webhooks" do
+        let(:dispute_id) { "legacy_dispute_id" }
 
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-
-        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeLost
-
-        dispute = notification.dispute
-        dispute.status.should == Braintree::Dispute::Status::Lost
-        dispute.id.should == "my_id"
-        dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        include_examples "dispute webhooks"
       end
 
-      it "builds a sample notification for a dispute won webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::DisputeWon,
-          "my_id"
-        )
-
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-
-        notification.kind.should == Braintree::WebhookNotification::Kind::DisputeWon
-
-        dispute = notification.dispute
-        dispute.status.should == Braintree::Dispute::Status::Won
-        dispute.id.should == "my_id"
-        dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+      context "newer webhooks" do
+        include_examples "dispute webhooks"
       end
     end
 

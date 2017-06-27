@@ -241,10 +241,95 @@ module Braintree
     end
 
     def _dispute_opened_sample_xml(id)
+      if id == "legacy_dispute_id"
+        _old_dispute_opened_sample_xml(id)
+      else
+        _new_dispute_opened_sample_xml(id)
+      end
+    end
 
+    def _dispute_lost_sample_xml(id)
+      if id == "legacy_dispute_id"
+        _old_dispute_lost_sample_xml(id)
+      else
+        _new_dispute_lost_sample_xml(id)
+      end
+    end
+
+    def _dispute_won_sample_xml(id)
+      if id == "legacy_dispute_id"
+        _old_dispute_won_sample_xml(id)
+      else
+        _new_dispute_won_sample_xml(id)
+      end
+    end
+
+    def _old_dispute_opened_sample_xml(id)
+      <<-XML
+        <dispute>
+          <amount>100.00</amount>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <kind>chargeback</kind>
+          <status>open</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
+    end
+
+    def _old_dispute_lost_sample_xml(id)
+      <<-XML
+        <dispute>
+          <amount>100.00</amount>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <kind>chargeback</kind>
+          <status>lost</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
+    end
+
+    def _old_dispute_won_sample_xml(id)
+      <<-XML
+        <dispute>
+          <amount>100.00</amount>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <kind>chargeback</kind>
+          <status>won</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+          <date-won type=\"date\">2014-03-22</date-won>
+        </dispute>
+      XML
+    end
+
+    def _new_dispute_opened_sample_xml(id)
       <<-XML
         <dispute>
           <id>#{id}</id>
+          <amount>100.00</amount>
           <amount-disputed>100.00</amount-disputed>
           <amount-won>95.00</amount-won>
           <case-number>CASE-12345</case-number>
@@ -277,15 +362,16 @@ module Braintree
             <purchase-order-number nil="true"/>
             <payment-instrument-subtype>Visa</payment-instrument-subtype>
           </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end
 
-    def _dispute_lost_sample_xml(id)
-
+    def _new_dispute_lost_sample_xml(id)
       <<-XML
         <dispute>
           <id>#{id}</id>
+          <amount>100.00</amount>
           <amount-disputed>100.00</amount-disputed>
           <amount-won>95.00</amount-won>
           <case-number>CASE-12345</case-number>
@@ -337,15 +423,16 @@ module Braintree
             <purchase-order-number nil="true"/>
             <payment-instrument-subtype>Visa</payment-instrument-subtype>
           </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end
 
-    def _dispute_won_sample_xml(id)
-
+    def _new_dispute_won_sample_xml(id)
       <<-XML
         <dispute>
           <id>#{id}</id>
+          <amount>100.00</amount>
           <amount-disputed>100.00</amount-disputed>
           <amount-won>95.00</amount-won>
           <case-number>CASE-12345</case-number>
@@ -397,6 +484,8 @@ module Braintree
             <purchase-order-number nil="true"/>
             <payment-instrument-subtype>Visa</payment-instrument-subtype>
           </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+          <date-won type=\"date\">2014-03-22</date-won>
         </dispute>
       XML
     end
