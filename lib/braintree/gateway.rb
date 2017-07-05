@@ -20,6 +20,10 @@ module Braintree
       AddressGateway.new(self)
     end
 
+    def apple_pay
+      ApplePayGateway.new(self)
+    end
+
     def client_token
       ClientTokenGateway.new(self)
     end
