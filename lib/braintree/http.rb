@@ -5,9 +5,10 @@ module Braintree
       @config = config
     end
 
-    def delete(path)
+    def delete(_path, query_params={})
+      path = _path + _build_query_string(query_params)
       response = _http_do Net::HTTP::Delete, path
-      if response.code.to_i == 200
+      if response.code.to_i == 200 || response.code.to_i == 204
         true
       else
         Util.raise_exception_for_status_code(response.code)
@@ -113,8 +114,11 @@ module Braintree
     end
 
     def _body(response)
-      if response.header["Content-Encoding"] == "gzip"
+      content_encoding = response.header["Content-Encoding"]
+      if content_encoding == "gzip"
         Zlib::GzipReader.new(StringIO.new(response.body)).read
+      elsif content_encoding.nil?
+        ""
       else
         raise UnexpectedError, "expected a gzipped response"
       end

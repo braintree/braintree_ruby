@@ -17,5 +17,13 @@ module Braintree
     def self.register_domain(domain)
       Configuration.gateway.apple_pay.register_domain(domain)
     end
+
+    def self.unregister_domain(domain)
+      Configuration.gateway.apple_pay.unregister_domain(domain)
+    end
+
+    def self.registered_domains
+      Configuration.gateway.apple_pay.registered_domains
+    end
   end
 end
