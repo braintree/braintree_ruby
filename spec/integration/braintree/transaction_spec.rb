@@ -123,7 +123,7 @@ describe Braintree::Transaction do
 
   describe "self.create" do
     describe "risk data" do
-      it "returns decision and id" do
+      it "returns decision, device_data_captured and id" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => 1_00,
@@ -135,6 +135,7 @@ describe Braintree::Transaction do
         result.transaction.risk_data.should be_a(Braintree::RiskData)
         result.transaction.risk_data.should respond_to(:id)
         result.transaction.risk_data.should respond_to(:decision)
+        result.transaction.risk_data.should respond_to(:device_data_captured)
       end
     end
 

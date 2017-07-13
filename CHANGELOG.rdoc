@@ -1,5 +1,6 @@
 == 2.78.0
 * Support `eci_indicator` for Transaction#sale with raw Apple Pay parameters
+* Add `device_data_captured` field to `risk_data`
 
 == 2.77.0
 * Add `AuthorizationAdjustment` class and `authorization_adjustments` to Transaction

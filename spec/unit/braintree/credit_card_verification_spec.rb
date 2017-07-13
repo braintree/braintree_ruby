@@ -105,9 +105,15 @@ describe Braintree::CreditCardVerification do
 
   describe "risk_data" do
     it "initializes a RiskData object" do
-      verification = Braintree::CreditCardVerification._new(:risk_data => {:id => "123", :decision => "WOO YOU WON $1000 dollars" })
+      verification = Braintree::CreditCardVerification._new(:risk_data => {
+        :id => "123",
+        :decision => "WOO YOU WON $1000 dollars",
+        :device_data_captured => true
+      })
+
       verification.risk_data.id.should == "123"
       verification.risk_data.decision.should == "WOO YOU WON $1000 dollars"
+      verification.risk_data.device_data_captured.should == true
     end
 
     it "handles a nil risk_data" do
