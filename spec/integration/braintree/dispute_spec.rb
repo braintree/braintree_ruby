@@ -45,6 +45,41 @@ describe Braintree::Dispute do
     end
   end
 
+  describe "self.add_text_evidence" do
+    it "creates text evidence for the dispute" do
+      result = Braintree::Dispute.add_text_evidence("open_dispute", "text evidence")
+
+      result.success?.should == true
+      result.evidence.comment.should == "text evidence"
+      result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
+      result.evidence.id.should =~ /^\w{16,}$/
+      result.evidence.sent_to_processor_at.should == nil
+      result.evidence.url.should == nil
+    end
+
+    it "returns a NotFoundError if the dispute doesn't exist" do
+      expect do
+        Braintree::Dispute.add_text_evidence("unknown_dispute_id", "text evidence")
+      end.to raise_error(Braintree::NotFoundError)
+    end
+
+    it "returns an error response if the dispute is not in open status" do
+      result = Braintree::Dispute.add_text_evidence("wells_dispute", "text evidence")
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceToOpenDispute
+      result.errors.for(:dispute)[0].message.should == "Evidence can only be attached to disputes that are in an Open state"
+    end
+
+    it "returns the new evidence record in subsequent dispute finds" do
+      result = Braintree::Dispute.add_text_evidence("open_dispute", "text evidence")
+      dispute = Braintree::Dispute.find("open_dispute")
+
+      expected_evidence = dispute.evidence.find { |e| e.id == result.evidence.id }
+      expected_evidence.should_not == nil
+      expected_evidence.comment.should == "text evidence"
+    end
+  end
+
   describe "self.finalize" do
     it "changes the dispute status to disputed" do
       result = Braintree::Dispute.finalize(dispute.id)

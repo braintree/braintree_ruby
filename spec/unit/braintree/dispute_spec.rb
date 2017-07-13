@@ -78,6 +78,46 @@ describe Braintree::Dispute do
     end
   end
 
+  describe "self.add_text_evidence" do
+    it "raises an exception if the id is blank" do
+      expect do
+        Braintree::Dispute.add_text_evidence("  ", "text evidence")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the id is nil" do
+      expect do
+        Braintree::Dispute.add_text_evidence(nil, "text evidence")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the id contains invalid characters" do
+      expect do
+        Braintree::Dispute.add_text_evidence("@#$%", "text evidence")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "does not raise an exception if the id is a fixnum" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      Braintree::Dispute.stub(:_new).and_return nil
+      expect do
+        Braintree::Dispute.add_text_evidence(8675309, "text evidence")
+      end.to_not raise_error
+    end
+
+    it "raises an exception if the content is blank" do
+      expect do
+        Braintree::Dispute.add_text_evidence("dispute_id", " ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the content is nil" do
+      expect do
+        Braintree::Dispute.add_text_evidence("dispute_id", nil)
+      end.to raise_error(ArgumentError)
+    end
+  end
+
   describe "initialize" do
     it "converts string amount_dispute and amount_won" do
       dispute = Braintree::Dispute._new(attributes)

@@ -74,6 +74,10 @@ module Braintree
       Configuration.gateway.dispute.accept(dispute_id)
     end
 
+    def self.add_text_evidence(dispute_id, content)
+      Configuration.gateway.dispute.add_text_evidence(dispute_id, content)
+    end
+
     def self.finalize(dispute_id)
       Configuration.gateway.dispute.finalize(dispute_id)
     end

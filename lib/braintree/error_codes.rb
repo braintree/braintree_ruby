@@ -146,16 +146,18 @@ module Braintree
       UrlFormatIsInvalid = "92206"
     end
 
+    module Dispute
+      CanOnlyAddEvidenceToOpenDispute = "95701"
+      CanOnlyRemoveEvidenceFromOpenDispute = "95702"
+      CanOnlyAcceptOpenDispute = "95704"
+      CanOnlyFinalizeOpenDispute = "95705"
+    end
+
     module DocumentUpload
       KindIsInvalid = "84901"
       FileIsTooLarge = "84902"
       FileTypeIsInvalid = "84903"
       FileIsMalformedOrEncrypted = "84904"
-    end
-
-    module Dispute
-      CanOnlyAcceptOpenDispute = "95704"
-      CanOnlyFinalizeOpenDispute = "95705"
     end
 
     module PayPalAccount
