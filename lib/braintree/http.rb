@@ -5,7 +5,7 @@ module Braintree
       @config = config
     end
 
-    def delete(_path, query_params={})
+    def delete(_path, query_params = {})
       path = _path + _build_query_string(query_params)
       response = _http_do Net::HTTP::Delete, path
       if response.code.to_i == 200 || response.code.to_i == 204
@@ -15,7 +15,7 @@ module Braintree
       end
     end
 
-    def get(_path, query_params={})
+    def get(_path, query_params = {})
       path = _path + _build_query_string(query_params)
       response = _http_do Net::HTTP::Get, path
       if response.code.to_i == 200 || response.code.to_i == 422
