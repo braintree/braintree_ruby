@@ -135,4 +135,34 @@ describe Braintree::Dispute do
       end.to raise_error(Braintree::NotFoundError, 'dispute with id "invalid-id" not found')
     end
   end
+
+  describe "self.remove_evidence" do
+    let(:dispute) { Braintree::Dispute.find("open_dispute") }
+    let(:evidence) { Braintree::Dispute.add_text_evidence("open_dispute", "text evidence").evidence }
+
+    it "removes evidence from the dispute" do
+      result = Braintree::Dispute.remove_evidence(dispute.id, evidence.id)
+
+      result.success?.should == true
+    end
+
+    it "returns a NotFoundError if the dispute doesn't exist" do
+      expect do
+        Braintree::Dispute.remove_evidence("unknown_dispute_id", evidence.id)
+      end.to raise_error(Braintree::NotFoundError, "evidence with id #{evidence.id} for dispute with id unknown_dispute_id not found")
+    end
+
+    it "returns a NotFoundError if the dispute doesn't exist" do
+      expect do
+        Braintree::Dispute.remove_evidence(dispute.id, "unknown_evidence_id")
+      end.to raise_error(Braintree::NotFoundError, "evidence with id unknown_evidence_id for dispute with id #{dispute.id} not found")
+    end
+
+    it "returns an error response if the dispute is not in open status" do
+      result = Braintree::Dispute.remove_evidence("wells_dispute", "wells_evidence")
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyRemoveEvidenceFromOpenDispute
+      result.errors.for(:dispute)[0].message.should == "Evidence can only be removed from disputes that are in an Open state"
+    end
+  end
 end

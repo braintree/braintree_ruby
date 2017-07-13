@@ -36,7 +36,7 @@ module Braintree
         raise "expected :evidence or :api_error_response"
       end
     rescue NotFoundError
-      raise NotFoundError, "dispute with id #{dispute_id.inspect} not found"
+      raise NotFoundError, "dispute with id #{dispute_id} not found"
     end
 
     def finalize(dispute_id)
@@ -59,7 +59,24 @@ module Braintree
       response = @config.http.get("#{@config.base_merchant_path}/disputes/#{dispute_id}")
       Dispute._new(response[:dispute])
     rescue NotFoundError
-      raise NotFoundError, "dispute with id #{dispute_id.inspect} not found"
+      raise NotFoundError, "dispute with id #{dispute_id} not found"
+    end
+
+    def remove_evidence(dispute_id, evidence_id)
+      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
+      raise ArgumentError, "evidence_id contains invalid characters" unless evidence_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "evidence_id cannot be blank" if evidence_id.nil? || evidence_id.to_s.strip == ""
+
+      response = @config.http.delete("#{@config.base_merchant_path}/disputes/#{dispute_id}/evidence/#{evidence_id}")
+
+      if response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        SuccessfulResult.new
+      end
+    rescue NotFoundError
+      raise NotFoundError, "evidence with id #{evidence_id} for dispute with id #{dispute_id} not found"
     end
 
     def search(&block)

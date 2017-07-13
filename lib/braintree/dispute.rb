@@ -86,6 +86,10 @@ module Braintree
       Configuration.gateway.dispute.find(dispute_id)
     end
 
+    def self.remove_evidence(dispute_id, evidence_id)
+      Configuration.gateway.dispute.remove_evidence(dispute_id, evidence_id)
+    end
+
     def self.search(&block)
       Configuration.gateway.dispute.search(&block)
     end

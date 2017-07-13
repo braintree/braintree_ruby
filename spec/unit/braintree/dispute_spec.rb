@@ -118,6 +118,44 @@ describe Braintree::Dispute do
     end
   end
 
+  describe "self.remove_evidence" do
+    it "raises an exception if the dispute_id is blank" do
+      expect do
+        Braintree::Dispute.remove_evidence("  ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the dispute_id is nil" do
+      expect do
+        Braintree::Dispute.remove_evidence(nil)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the content is blank" do
+      expect do
+        Braintree::Dispute.remove_evidence("dispute_id", " ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the content is nil" do
+      expect do
+        Braintree::Dispute.remove_evidence("dispute_id", nil)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the dispute_id contains invalid characters" do
+      expect do
+        Braintree::Dispute.remove_evidence("@#$%", "evidence_id")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the evidence_id contains invalid characters" do
+      expect do
+        Braintree::Dispute.remove_evidence("dispute_id", "@#$%")
+      end.to raise_error(ArgumentError)
+    end
+  end
+
   describe "initialize" do
     it "converts string amount_dispute and amount_won" do
       dispute = Braintree::Dispute._new(attributes)
