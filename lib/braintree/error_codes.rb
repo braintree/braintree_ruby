@@ -146,6 +146,13 @@ module Braintree
       UrlFormatIsInvalid = "92206"
     end
 
+    module DocumentUpload
+      KindIsInvalid = "84901"
+      FileIsTooLarge = "84902"
+      FileTypeIsInvalid = "84903"
+      FileIsMalformedOrEncrypted = "84904"
+    end
+
     module PayPalAccount
       AuthExpired = "92911"
       CannotHaveBothAccessTokenAndConsentCode = "82903"
