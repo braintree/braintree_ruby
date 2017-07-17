@@ -10,7 +10,7 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
-    attr_reader :card_type, :created_at, :customer_id, :default, :expiration_month,
+    attr_reader :bin, :card_type, :created_at, :customer_id, :default, :expiration_month,
       :expiration_year, :expired, :image_url, :last_4, :payment_instrument_name,
       :source_description, :subscriptions, :token, :updated_at
 
