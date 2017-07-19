@@ -32,6 +32,7 @@ describe Braintree::Dispute do
 
     it "returns an error response if the dispute is not in open status" do
       result = Braintree::Dispute.accept("wells_dispute")
+
       result.success?.should == false
       result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAcceptOpenDispute
       result.errors.for(:dispute)[0].message.should == "Disputes can only be accepted when they are in an Open state"
@@ -40,6 +41,31 @@ describe Braintree::Dispute do
     it "raises a NotFound exception if the dispute cannot be found" do
       expect do
         Braintree::Dispute.accept("invalid-id")
+      end.to raise_error(Braintree::NotFoundError, 'dispute with id invalid-id not found')
+    end
+  end
+
+  describe "self.finalize" do
+    it "changes the dispute status to disputed" do
+      result = Braintree::Dispute.finalize(dispute.id)
+
+      result.success?.should == true
+
+      refreshed_dispute = Braintree::Dispute.find(dispute.id)
+      refreshed_dispute.status.should == Braintree::Dispute::Status::Disputed
+    end
+
+    it "returns an error response if the dispute is not in open status" do
+      result = Braintree::Dispute.finalize("wells_dispute")
+
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyFinalizeOpenDispute
+      result.errors.for(:dispute)[0].message.should == "Disputes can only be finalized when they are in an Open state"
+    end
+
+    it "raises a NotFound exception if the dispute cannot be found" do
+      expect do
+        Braintree::Dispute.finalize("invalid-id")
       end.to raise_error(Braintree::NotFoundError, 'dispute with id invalid-id not found')
     end
   end

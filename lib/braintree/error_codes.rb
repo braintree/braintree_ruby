@@ -155,6 +155,7 @@ module Braintree
 
     module Dispute
       CanOnlyAcceptOpenDispute = "95704"
+      CanOnlyFinalizeOpenDispute = "95705"
     end
 
     module PayPalAccount

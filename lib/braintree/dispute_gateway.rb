@@ -23,6 +23,15 @@ module Braintree
     def finalize(dispute_id)
       raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
+
+      response = @config.http.put("#{@config.base_merchant_path}/disputes/#{dispute_id}/finalize")
+      if response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        SuccessfulResult.new
+      end
+    rescue NotFoundError
+      raise NotFoundError, "dispute with id #{dispute_id} not found"
     end
 
     def find(dispute_id)
