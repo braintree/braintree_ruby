@@ -3,6 +3,47 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Dispute do
+  let(:transaction) do
+    result = Braintree::Transaction.sale(
+      :amount => '10.00',
+      :credit_card => {
+        :expiration_date => '01/2020',
+        :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback
+      },
+      :options => {
+        :submit_for_settlement => true
+      }
+    )
+
+    result.transaction
+  end
+
+  let(:dispute) { transaction.disputes.first }
+
+  describe "self.accept" do
+    it "changes the dispute status to accepted" do
+      result = Braintree::Dispute.accept(dispute.id)
+
+      result.success?.should == true
+
+      refreshed_dispute = Braintree::Dispute.find(dispute.id)
+      refreshed_dispute.status.should == Braintree::Dispute::Status::Accepted
+    end
+
+    it "returns an error response if the dispute is not in open status" do
+      result = Braintree::Dispute.accept("wells_dispute")
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAcceptOpenDispute
+      result.errors.for(:dispute)[0].message.should == "Disputes can only be accepted when they are in an Open state"
+    end
+
+    it "raises a NotFound exception if the dispute cannot be found" do
+      expect do
+        Braintree::Dispute.accept("invalid-id")
+      end.to raise_error(Braintree::NotFoundError, 'dispute with id invalid-id not found')
+    end
+  end
+
   describe "self.find" do
     it "finds the dispute with the given id" do
       dispute = Braintree::Dispute.find("open_dispute")

@@ -153,6 +153,10 @@ module Braintree
       FileIsMalformedOrEncrypted = "84904"
     end
 
+    module Dispute
+      CanOnlyAcceptOpenDispute = "95704"
+    end
+
     module PayPalAccount
       AuthExpired = "92911"
       CannotHaveBothAccessTokenAndConsentCode = "82903"

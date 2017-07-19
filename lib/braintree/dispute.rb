@@ -70,6 +70,14 @@ module Braintree
       end
     end
 
+    def self.accept(dispute_id)
+      Configuration.gateway.dispute.accept(dispute_id)
+    end
+
+    def self.finalize(dispute_id)
+      Configuration.gateway.dispute.finalize(dispute_id)
+    end
+
     def self.find(dispute_id)
       Configuration.gateway.dispute.find(dispute_id)
     end

@@ -48,25 +48,33 @@ describe Braintree::Dispute do
     }
   end
 
-  describe "self.find" do
-    it "raises an exception if the id is blank" do
-      expect do
-        Braintree::Dispute.find("  ")
-      end.to raise_error(ArgumentError)
-    end
+  [
+    :accept,
+    :finalize,
+    :find
+  ].each do |method_name|
+    describe "self.#{method_name}" do
+      it "raises an exception if the id is blank" do
+        expect do
+          Braintree::Dispute.public_send(method_name, "  ")
+        end.to raise_error(ArgumentError)
+      end
 
-    it "raises an exception if the id is nil" do
-      expect do
-        Braintree::Dispute.find(nil)
-      end.to raise_error(ArgumentError)
-    end
+      it "raises an exception if the id is nil" do
+        expect do
+          Braintree::Dispute.public_send(method_name, nil)
+        end.to raise_error(ArgumentError)
+      end
 
-    it "does not raise an exception if the id is a fixnum" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
-      Braintree::Dispute.stub(:_new).and_return nil
-      expect do
-        Braintree::Dispute.find(8675309)
-      end.to_not raise_error
+      it "does not raise an exception if the id is a fixnum" do
+        Braintree::Http.stub(:new).and_return double.as_null_object
+        Braintree::Dispute.stub(:_new).and_return nil
+        Braintree::ErrorResult.stub(:new).and_return nil
+
+        expect do
+          Braintree::Dispute.public_send(method_name, 8675309)
+        end.to_not raise_error
+      end
     end
   end
 
