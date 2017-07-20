@@ -8,24 +8,27 @@ describe "Coinbase" do
     end
   end
 
-  it "works for transaction#create" do
+  it "is no longer supported with transaction#create" do
     result = Braintree::Transaction.sale(:payment_method_nonce => Braintree::Test::Nonce::Coinbase, :amount => "0.02")
-    result.should be_success
-    assert_valid_coinbase_attrs(result.transaction.coinbase_details)
+    result.should_not be_success
+
+    result.errors.for(:transaction).first.code.should == Braintree::ErrorCodes::PaymentMethod::PaymentMethodNoLongerSupported
   end
 
-  it "works for vaulting" do
+  it "is no longer supported for vaulting" do
     customer = Braintree::Customer.create!
-    vaulted = Braintree::PaymentMethod.create(:customer_id => customer.id, :payment_method_nonce => Braintree::Test::Nonce::Coinbase).payment_method
-    assert_valid_coinbase_attrs(vaulted)
+    result = Braintree::PaymentMethod.create(:customer_id => customer.id, :payment_method_nonce => Braintree::Test::Nonce::Coinbase)
+    result.should_not be_success
 
-    found = Braintree::PaymentMethod.find(vaulted.token).payment_method
-    assert_valid_coinbase_attrs(found)
+    result.errors.for(:coinbase_account).first.code.should == Braintree::ErrorCodes::PaymentMethod::PaymentMethodNoLongerSupported
   end
 
-  it "is returned on Customers" do
-    customer = Braintree::Customer.create!(:payment_method_nonce => Braintree::Test::Nonce::Coinbase)
-    customer.payment_methods.should == customer.coinbase_accounts
-    assert_valid_coinbase_attrs(customer.coinbase_accounts[0])
+  it "is no longer supported when creating a Customer with a Coinbase payment method nonce" do
+    expect do
+      Braintree::Customer.create!(:payment_method_nonce => Braintree::Test::Nonce::Coinbase)
+    end.to raise_error { |error|
+      error.should be_a(Braintree::ValidationsFailed)
+      error.error_result.errors.for(:coinbase_account).first.code.should == Braintree::ErrorCodes::PaymentMethod::PaymentMethodNoLongerSupported
+    }
   end
 end
