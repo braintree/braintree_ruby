@@ -1,5 +1,6 @@
 == Unreleased
 * Add AuthorizationAdjustment class and `authorization_adjustments` to Transaction
+* Add Braintree::Dispute.find method
 
 == 2.76.0
 * Pass configured gateway to Merchant#_new instead of using global gateway (thanks @cwalsh!)
