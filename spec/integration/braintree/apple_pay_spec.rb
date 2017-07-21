@@ -44,6 +44,16 @@ describe Braintree::ApplePayGateway do
       @gateway.apple_pay.registered_domains.apple_pay_options.domains.should be_empty
     end
 
+    it "unregisters an apple pay domain with scheme in url" do
+      domain = "http://example.org"
+      result = @gateway.apple_pay.register_domain(domain)
+      result.should be_success
+
+      result = @gateway.apple_pay.unregister_domain(domain)
+      result.should be_success
+      @gateway.apple_pay.registered_domains.apple_pay_options.domains.should be_empty
+    end
+
     it "does not fail when unregistering a non-registered domain" do
       result = @gateway.apple_pay.unregister_domain("unregistered.com")
       result.should be_success
