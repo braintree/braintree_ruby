@@ -1,19 +1,19 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::DisputeSearch do
-	it "overrides previous 'is' with new 'is' for the same field" do
-		search = Braintree::DisputeSearch.new
-		search.id.is "dispute1"
-		search.id.is "dispute2"
-		search.to_hash.should == {:id => {:is => "dispute2"}}
-	end
+  it "overrides previous 'is' with new 'is' for the same field" do
+    search = Braintree::DisputeSearch.new
+    search.id.is "dispute1"
+    search.id.is "dispute2"
+    search.to_hash.should == {:id => {:is => "dispute2"}}
+  end
 
-	it "overrides previous 'in' with new 'in' for the same field" do
-		search = Braintree::DisputeSearch.new
-		search.status.in Braintree::Dispute::Status::Open
-		search.status.in Braintree::Dispute::Status::Won
-		search.to_hash.should == {:status => [Braintree::Dispute::Status::Won]}
-	end
+  it "overrides previous 'in' with new 'in' for the same field" do
+    search = Braintree::DisputeSearch.new
+    search.status.in Braintree::Dispute::Status::Open
+    search.status.in Braintree::Dispute::Status::Won
+    search.to_hash.should == {:status => [Braintree::Dispute::Status::Won]}
+  end
 
   [
     :amount_disputed,

@@ -19,8 +19,8 @@ module Braintree
       search = DisputeSearch.new
       block.call(search) if block
 
-      pc = PaginatedCollection.new { |page| _fetch_disputes(search, page) }
-      SuccessfulResult.new(:disputes => pc)
+      paginated_results = PaginatedCollection.new { |page| _fetch_disputes(search, page) }
+      SuccessfulResult.new(:disputes => paginated_results)
     end
 
     def _fetch_disputes(search, page)
