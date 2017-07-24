@@ -21,7 +21,7 @@ module Braintree
     def _do_create(path, params, file) # :nodoc:
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params, file)
       if response[:document_upload]
-        SuccessfulResult.new(:document_upload => DocumentUpload._new(@gateway, response[:document_upload]))
+        SuccessfulResult.new(:document_upload => DocumentUpload._new(response[:document_upload]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       else

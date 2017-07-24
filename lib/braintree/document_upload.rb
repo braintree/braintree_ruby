@@ -14,8 +14,7 @@ module Braintree
       Configuration.gateway.document_upload.create(attributes)
     end
 
-    def initialize(gateway, attributes) # :nodoc:
-      @gateway = gateway
+    def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
     end
 
