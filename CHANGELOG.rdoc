@@ -1,4 +1,6 @@
-## Unreleased
+== Unreleased
+* Add AuthorizationAdjustment class and `authorization_adjustments` to Transaction
+* Add Braintree::Dispute.find method
 * Add document upload support
 
 == 2.76.0
