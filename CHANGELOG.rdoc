@@ -1,6 +1,7 @@
 == Unreleased
-* Add AuthorizationAdjustment class and `authorization_adjustments` to Transaction
+* Add `AuthorizationAdjustment` class and `authorization_adjustments` to Transaction
 * Add Braintree::Dispute.find method
+* Coinbase is no longer a supported payment method. `PaymentMethodNoLongerSupported` will be returned for Coinbase operations.
 
 == 2.76.0
 * Pass configured gateway to Merchant#_new instead of using global gateway (thanks @cwalsh!)

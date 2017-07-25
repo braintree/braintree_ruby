@@ -549,6 +549,7 @@ module Braintree
       PaymentMethodNonceUnknown = "93108"
       PaymentMethodNonceLocked = "93109"
       CannotForwardPaymentMethodType = "93107"
+      PaymentMethodNoLongerSupported = "93117"
     end
 
     module AuthorizationFingerprint
