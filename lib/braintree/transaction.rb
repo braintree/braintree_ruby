@@ -120,6 +120,7 @@ module Braintree
     attr_reader :add_ons, :discounts
     attr_reader :payment_instrument_type
     attr_reader :risk_data
+    attr_reader :facilitated_details
     attr_reader :facilitator_details
     attr_reader :three_d_secure_info
     attr_reader :us_bank_account_details
@@ -270,6 +271,7 @@ module Braintree
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
       @payment_instrument_type = attributes[:payment_instrument_type]
       @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
+      @facilitated_details = FacilitatedDetails.new(attributes[:facilitated_details]) if attributes[:facilitated_details]
       @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
       @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
