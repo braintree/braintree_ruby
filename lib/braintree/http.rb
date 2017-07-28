@@ -10,7 +10,9 @@ module Braintree
     def delete(_path, query_params = {})
       path = _path + _build_query_string(query_params)
       response = _http_do Net::HTTP::Delete, path
-      if response.code.to_i == 200 || response.code.to_i == 204 || response.code.to_i == 422
+      if response.code.to_i == 200 || response.code.to_i == 204
+        true
+      elsif response.code.to_i == 422
         Xml.hash_from_xml(_body(response))
       else
         Util.raise_exception_for_status_code(response.code)

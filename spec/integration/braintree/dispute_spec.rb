@@ -47,7 +47,7 @@ describe Braintree::Dispute do
 
   describe "self.add_text_evidence" do
     it "creates text evidence for the dispute" do
-      result = Braintree::Dispute.add_text_evidence("open_dispute", "text evidence")
+      result = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence")
 
       result.success?.should == true
       result.evidence.comment.should == "text evidence"
@@ -64,17 +64,19 @@ describe Braintree::Dispute do
     end
 
     it "returns an error response if the dispute is not in open status" do
-      result = Braintree::Dispute.add_text_evidence("wells_dispute", "text evidence")
+      Braintree::Dispute.accept(dispute.id)
+
+      result = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence")
       result.success?.should == false
       result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceToOpenDispute
       result.errors.for(:dispute)[0].message.should == "Evidence can only be attached to disputes that are in an Open state"
     end
 
     it "returns the new evidence record in subsequent dispute finds" do
-      result = Braintree::Dispute.add_text_evidence("open_dispute", "text evidence")
-      dispute = Braintree::Dispute.find("open_dispute")
+      result = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence")
+      refreshed_dispute = Braintree::Dispute.find(dispute.id)
 
-      expected_evidence = dispute.evidence.find { |e| e.id == result.evidence.id }
+      expected_evidence = refreshed_dispute.evidence.find { |e| e.id == result.evidence.id }
       expected_evidence.should_not == nil
       expected_evidence.comment.should == "text evidence"
     end
@@ -132,13 +134,12 @@ describe Braintree::Dispute do
     it "raises a NotFoundError exception if the dispute cannot be found" do
       expect do
         Braintree::Dispute.find("invalid-id")
-      end.to raise_error(Braintree::NotFoundError, 'dispute with id "invalid-id" not found')
+      end.to raise_error(Braintree::NotFoundError, "dispute with id invalid-id not found")
     end
   end
 
   describe "self.remove_evidence" do
-    let(:dispute) { Braintree::Dispute.find("open_dispute") }
-    let(:evidence) { Braintree::Dispute.add_text_evidence("open_dispute", "text evidence").evidence }
+    let(:evidence) { Braintree::Dispute.add_text_evidence(dispute.id, "text evidence").evidence }
 
     it "removes evidence from the dispute" do
       result = Braintree::Dispute.remove_evidence(dispute.id, evidence.id)
@@ -159,7 +160,10 @@ describe Braintree::Dispute do
     end
 
     it "returns an error response if the dispute is not in open status" do
-      result = Braintree::Dispute.remove_evidence("wells_dispute", "wells_evidence")
+      evidence = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence").evidence
+      Braintree::Dispute.accept(dispute.id)
+
+      result = Braintree::Dispute.remove_evidence(dispute.id, evidence.id)
       result.success?.should == false
       result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyRemoveEvidenceFromOpenDispute
       result.errors.for(:dispute)[0].message.should == "Evidence can only be removed from disputes that are in an Open state"

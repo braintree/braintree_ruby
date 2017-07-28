@@ -70,7 +70,7 @@ module Braintree
 
       response = @config.http.delete("#{@config.base_merchant_path}/disputes/#{dispute_id}/evidence/#{evidence_id}")
 
-      if response[:api_error_response]
+      if response.respond_to?(:to_hash) && response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       else
         SuccessfulResult.new
