@@ -209,6 +209,23 @@ describe Braintree::Transaction do
       transaction.status_history[1].user.should == "curly"
     end
 
+    it "sets up authorization_adjustments" do
+      timestamp = Time.utc(2010,1,14)
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :authorization_adjustments => [
+          { :timestamp => timestamp, :amount => "12.00", :success => true },
+          { :timestamp => timestamp, :amount => "12.34", :success => false },
+        ])
+      transaction.authorization_adjustments.size.should == 2
+      transaction.authorization_adjustments[0].amount.should == "12.00"
+      transaction.authorization_adjustments[0].success.should == true
+      transaction.authorization_adjustments[0].timestamp.should == timestamp
+      transaction.authorization_adjustments[1].amount.should == "12.34"
+      transaction.authorization_adjustments[1].success.should == false
+      transaction.authorization_adjustments[1].timestamp.should == timestamp
+    end
+
     it "handles receiving custom as an empty string" do
       transaction = Braintree::Transaction._new(
         :gateway,

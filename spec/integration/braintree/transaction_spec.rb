@@ -4329,6 +4329,19 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "authorization_adjustments" do
+    it "includes authorization adjustments on found transactions" do
+      found_transaction = Braintree::Transaction.find("authadjustmenttransaction")
+
+      found_transaction.authorization_adjustments.count.should == 1
+
+      authorization_adjustment = found_transaction.authorization_adjustments.first
+      authorization_adjustment.amount.should == "-20.00"
+      authorization_adjustment.success.should == true
+      authorization_adjustment.timestamp.should be_a Time
+    end
+  end
+
   describe "vault_credit_card" do
     it "returns the Braintree::CreditCard if the transaction credit card is stored in the vault" do
       customer = Braintree::Customer.create!(

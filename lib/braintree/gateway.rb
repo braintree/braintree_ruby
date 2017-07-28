@@ -40,6 +40,10 @@ module Braintree
       DiscountGateway.new(self)
     end
 
+    def dispute
+      DisputeGateway.new(self)
+    end
+
     def oauth
       OAuthGateway.new(self)
     end
