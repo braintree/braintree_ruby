@@ -54,6 +54,12 @@ module Braintree
         All = [Success, IneligibleCard, InsufficientPoints]
       end
 
+      module Disputes
+        Chargeback = "4023898493988028"
+
+        Numbers = [Chargeback]
+      end
+
       All = AmExes + Discovers + MasterCards + Visas + AmexPayWithPoints::All
     end
 
