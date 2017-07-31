@@ -35,6 +35,8 @@ module Braintree
       Open = "open"
       Lost = "lost"
       Won = "won"
+
+      All = constants.map { |c| const_get(c) }
     end
 
     module Reason
@@ -49,12 +51,16 @@ module Braintree
       ProductUnsatisfactory = "product_unsatisfactory"
       TransactionAmountDiffers = "transaction_amount_differs"
       Retrieval = "retrieval"
+
+      All = constants.map { |c| const_get(c) }
     end
 
     module Kind
       Chargeback = "chargeback"
       PreArbitration = "pre_arbitration"
       Retrieval = "retrieval"
+
+      All = constants.map { |c| const_get(c) }
     end
 
     class << self
@@ -66,6 +72,10 @@ module Braintree
 
     def self.find(dispute_id)
       Configuration.gateway.dispute.find(dispute_id)
+    end
+
+    def self.search(&block)
+      Configuration.gateway.dispute.search(&block)
     end
 
     def initialize(attributes) # :nodoc:
