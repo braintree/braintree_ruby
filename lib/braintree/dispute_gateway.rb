@@ -20,6 +20,26 @@ module Braintree
       raise NotFoundError, "dispute with id #{dispute_id} not found"
     end
 
+    def add_file_evidence(dispute_id, document_upload_id)
+      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
+      raise ArgumentError, "document_upload_id contains invalid characters" unless document_upload_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "document_upload_id cannot be blank" if document_upload_id.nil? || dispute_id.to_s.strip == ""
+
+      params = {document_upload_id: document_upload_id}
+      response = @config.http.post("#{@config.base_merchant_path}/disputes/#{dispute_id}/evidence", params)
+
+      if response[:evidence]
+        SuccessfulResult.new(:evidence => Dispute::Evidence.new(response[:evidence]))
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise "expected :evidence or :api_error_response"
+      end
+    rescue NotFoundError
+      raise NotFoundError, "dispute with id #{dispute_id} not found"
+    end
+
     def add_text_evidence(dispute_id, content)
       raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""

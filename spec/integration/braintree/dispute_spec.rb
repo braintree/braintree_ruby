@@ -45,6 +45,60 @@ describe Braintree::Dispute do
     end
   end
 
+  describe "self.add_file_evidence" do
+    let(:document_upload) do
+      file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
+      response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
+      document_upload = response.document_upload
+    end
+
+    it "creates text evidence for the dispute" do
+      result = Braintree::Dispute.add_file_evidence(dispute.id, document_upload.id)
+
+      result.success?.should == true
+      result.evidence.comment.should be_nil
+      result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
+      result.evidence.id.should =~ /^\w{16,}$/
+      result.evidence.sent_to_processor_at.should == nil
+      result.evidence.url.should include("bt_logo.png")
+    end
+
+    it "returns a NotFoundError if the dispute doesn't exist" do
+      expect do
+        Braintree::Dispute.add_file_evidence("unknown_dispute_id", "b51927a6-4ed7-4a32-8404-df8ef892e1a3")
+      end.to raise_error(Braintree::NotFoundError)
+    end
+
+    it "returns an error response if the dispute is not in open status" do
+      Braintree::Dispute.accept(dispute.id)
+
+      result = Braintree::Dispute.add_file_evidence(dispute.id, document_upload.id)
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceToOpenDispute
+      result.errors.for(:dispute)[0].message.should == "Evidence can only be attached to disputes that are in an Open state"
+    end
+
+    it "returns the new evidence record in subsequent dispute finds" do
+      result = Braintree::Dispute.add_file_evidence(dispute.id, document_upload.id)
+      refreshed_dispute = Braintree::Dispute.find(dispute.id)
+
+      expected_evidence = refreshed_dispute.evidence.find { |e| e.id == result.evidence.id }
+      expected_evidence.should_not == nil
+      expected_evidence.comment.should be_nil
+      expected_evidence.url.should include("bt_logo.png")
+    end
+
+    it "returns an error response if the document upload is not an evidence document" do
+      file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
+      identity_doc = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::IdentityDocument, :file => file}).document_upload
+
+      result = Braintree::Dispute.add_file_evidence(dispute.id, identity_doc.id)
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceDocumentToDispute
+      result.errors.for(:dispute)[0].message.should == "A document with kind other than Braintree::DocumentUpload::Kind::EvidenceDocument cannot be added to the dispute"
+    end
+  end
+
   describe "self.add_text_evidence" do
     it "creates text evidence for the dispute" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence")

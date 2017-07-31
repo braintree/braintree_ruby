@@ -78,6 +78,60 @@ describe Braintree::Dispute do
     end
   end
 
+  describe "self.add_file_evidence" do
+    it "raises an exception if the dispute_id is blank" do
+      expect do
+        Braintree::Dispute.add_file_evidence("  ", "doc_upload_id")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the dispute_id is nil" do
+      expect do
+        Braintree::Dispute.add_file_evidence(nil, "doc_upload_id")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the dispute_id contains invalid characters" do
+      expect do
+        Braintree::Dispute.add_file_evidence("@#$%", "doc_upload_id")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "does not raise an exception if the dispute_id is a fixnum" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      Braintree::Dispute.stub(:_new).and_return nil
+      expect do
+        Braintree::Dispute.add_file_evidence(8675309, "doc_upload_id")
+      end.to_not raise_error
+    end
+
+    it "raises an exception if the document_upload_id is blank" do
+      expect do
+        Braintree::Dispute.add_file_evidence("dispute_id", "  ")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the document_upload_id is nil" do
+      expect do
+        Braintree::Dispute.add_file_evidence("dispute_id", nil)
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises an exception if the document_upload_id contains invalid characters" do
+      expect do
+        Braintree::Dispute.add_file_evidence("dispute_id", "@#$%")
+      end.to raise_error(ArgumentError)
+    end
+
+    it "does not raise an exception if the document_upload_id is a fixnum" do
+      Braintree::Http.stub(:new).and_return double.as_null_object
+      Braintree::Dispute.stub(:_new).and_return nil
+      expect do
+        Braintree::Dispute.add_file_evidence("dispute_id", 8675309)
+      end.to_not raise_error
+    end
+  end
+
   describe "self.add_text_evidence" do
     it "raises an exception if the id is blank" do
       expect do
