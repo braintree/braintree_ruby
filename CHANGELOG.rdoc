@@ -3,6 +3,8 @@
 * Add document upload support
 * Add Braintree::Dispute.find method
 * Add Braintree::Dispute.search method
+* Add Braintree::Dispute.accept method
+* Add Braintree::Dispute.finalize method
 * Coinbase is no longer a supported payment method. `PaymentMethodNoLongerSupported` will be returned for Coinbase operations.
 * Add Braintree::ApplePay for web domain registration
 
