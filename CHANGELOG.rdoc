@@ -1,5 +1,6 @@
 == Unreleased
 * Add `AuthorizationAdjustment` class and `authorization_adjustments` to Transaction
+* Add document upload support
 * Add Braintree::Dispute.find method
 * Add Braintree::Dispute.search method
 * Coinbase is no longer a supported payment method. `PaymentMethodNoLongerSupported` will be returned for Coinbase operations.

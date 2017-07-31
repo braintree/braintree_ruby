@@ -1,6 +1,8 @@
 module Braintree
   class Http # :nodoc:
 
+    LINE_FEED = "\r\n"
+
     def initialize(config)
       @config = config
     end
@@ -25,8 +27,12 @@ module Braintree
       end
     end
 
-    def post(path, params = nil)
-      response = _http_do Net::HTTP::Post, path, _build_xml(params)
+    def post(path, params = nil, file = nil)
+      body = params
+      if !file
+        body = _build_xml(params)
+      end
+      response = _http_do Net::HTTP::Post, path, body, file
       if response.code.to_i == 200 || response.code.to_i == 201 || response.code.to_i == 422
         Xml.hash_from_xml(_body(response))
       else
@@ -59,7 +65,7 @@ module Braintree
       end
     end
 
-    def _http_do(http_verb, path, body = nil)
+    def _http_do(http_verb, path, body = nil, file = nil)
       if @config.proxy_address
         connection = Net::HTTP.new(
           @config.server,
@@ -97,9 +103,22 @@ module Braintree
         end
         @config.logger.debug "[Braintree] [#{_current_time}] #{request.method} #{path}"
         if body
-          request["Content-Type"] = "application/xml"
-          request.body = body
-          @config.logger.debug _format_and_sanitize_body_for_log(body)
+          if file
+            boundary = DateTime.now.strftime("%Q")
+            request["Content-Type"] = "multipart/form-data; boundary=#{boundary}"
+
+            form_params = []
+            body.each do |k, v|
+              form_params.push(_add_form_field(k, v))
+            end
+            form_params.push(_add_file_part("file", file))
+            request.body = form_params.collect {|p| "--" + boundary + "#{LINE_FEED}" + p}.join("") + "--" + boundary + "--"
+            @config.logger.debug _format_and_sanitize_body_for_log(_build_xml(body))
+          else
+            request["Content-Type"] = "application/xml"
+            request.body = body
+            @config.logger.debug _format_and_sanitize_body_for_log(body)
+          end
         end
         response = http.request(request)
         @config.logger.info "[Braintree] [#{_current_time}] #{request.method} #{path} #{response.code}"
@@ -111,6 +130,29 @@ module Braintree
       end
     rescue OpenSSL::SSL::SSLError
       raise Braintree::SSLCertificateError
+    end
+
+    def _add_form_field(key, value)
+      return "Content-Disposition: form-data; name=\"#{key}\"#{LINE_FEED}#{LINE_FEED}#{value}#{LINE_FEED}"
+    end
+
+    def _add_file_part(key, file)
+      mime_type = _mime_type_for_file_name(file.path)
+      return "Content-Disposition: form-data; name=\"#{key}\"; filename=\"#{file.path}\"#{LINE_FEED}" +
+          "Content-Type: #{mime_type}#{LINE_FEED}#{LINE_FEED}#{file.read}#{LINE_FEED}"
+    end
+
+    def _mime_type_for_file_name(filename)
+      file_extension = File.extname(filename).strip.downcase[1..-1]
+      if file_extension == "jpeg" || file_extension == "jpg"
+        return "image/jpeg"
+      elsif file_extension == "png"
+        return "image/png"
+      elsif file_extension == "pdf"
+        return "application/pdf"
+      else
+        return "application/octet-stream"
+      end
     end
 
     def _body(response)

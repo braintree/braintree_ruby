@@ -44,6 +44,10 @@ module Braintree
       DisputeGateway.new(self)
     end
 
+    def document_upload
+      DocumentUploadGateway.new(self)
+    end
+
     def oauth
       OAuthGateway.new(self)
     end
