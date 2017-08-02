@@ -1,5 +1,6 @@
 == Unreleased
 * Add `options` -> `paypal` -> `description` for creating and updating subscriptions
+* Add support for upgrading a PayPal future payment refresh token to a billing agreement
 
 == 2.78.0
 * Support `eci_indicator` for Transaction#sale with raw Apple Pay parameters
