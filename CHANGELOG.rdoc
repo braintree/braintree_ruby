@@ -1,3 +1,6 @@
+== Unreleased
+* Add `options` -> `paypal` -> `description` for creating and updating subscriptions
+
 == 2.78.0
 * Support `eci_indicator` for Transaction#sale with raw Apple Pay parameters
 * Add `device_data_captured` field to `risk_data`
