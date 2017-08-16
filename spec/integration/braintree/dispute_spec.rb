@@ -87,16 +87,6 @@ describe Braintree::Dispute do
       expected_evidence.comment.should be_nil
       expected_evidence.url.should include("bt_logo.png")
     end
-
-    it "returns an error response if the document upload is not an evidence document" do
-      file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
-      identity_doc = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::IdentityDocument, :file => file}).document_upload
-
-      result = Braintree::Dispute.add_file_evidence(dispute.id, identity_doc.id)
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceDocumentToDispute
-      result.errors.for(:dispute)[0].message.should == "A document with kind other than Braintree::DocumentUpload::Kind::EvidenceDocument cannot be added to the dispute"
-    end
   end
 
   describe "self.add_text_evidence" do

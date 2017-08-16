@@ -72,7 +72,7 @@ describe Braintree::Http do
     it "posts multipart for file uploads" do
       config = Braintree::Configuration.instantiate
       file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
-      response = config.http.post("#{config.base_merchant_path}/document_uploads", {"document_upload[kind]" => "identity_document"}, file)
+      response = config.http.post("#{config.base_merchant_path}/document_uploads", {"document_upload[kind]" => "evidence_document"}, file)
       response[:document_upload][:content_type].should == "image/png"
       response[:document_upload][:id].should_not be_nil
     end
