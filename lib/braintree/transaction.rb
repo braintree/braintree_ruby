@@ -120,12 +120,14 @@ module Braintree
     attr_reader :add_ons, :discounts
     attr_reader :payment_instrument_type
     attr_reader :risk_data
+    attr_reader :facilitated_details
     attr_reader :facilitator_details
     attr_reader :three_d_secure_info
     attr_reader :us_bank_account_details
     attr_reader :ideal_payment_details
     attr_reader :visa_checkout_card_details
     attr_reader :masterpass_card_details
+    attr_reader :authorization_adjustments
 
     def self.create(attributes)
       Configuration.gateway.transaction.create(attributes)
@@ -269,12 +271,14 @@ module Braintree
       discounts.map! { |attrs| Discount._new(attrs) } if discounts
       @payment_instrument_type = attributes[:payment_instrument_type]
       @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
+      @facilitated_details = FacilitatedDetails.new(attributes[:facilitated_details]) if attributes[:facilitated_details]
       @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
       @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
       @ideal_payment_details = IdealPaymentDetails.new(attributes[:ideal_payment]) if attributes[:ideal_payment]
       @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
       @masterpass_card_details = MasterpassCardDetails.new(attributes[:masterpass_card])
+      authorization_adjustments.map! { |attrs| AuthorizationAdjustment._new(attrs) } if authorization_adjustments
     end
 
     # True if <tt>other</tt> is a Braintree::Transaction with the same id.

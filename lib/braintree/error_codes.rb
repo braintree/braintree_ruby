@@ -146,6 +146,21 @@ module Braintree
       UrlFormatIsInvalid = "92206"
     end
 
+    module Dispute
+      CanOnlyAddEvidenceToOpenDispute = "95701"
+      CanOnlyRemoveEvidenceFromOpenDispute = "95702"
+      CanOnlyAddEvidenceDocumentToDispute = "95703"
+      CanOnlyAcceptOpenDispute = "95704"
+      CanOnlyFinalizeOpenDispute = "95705"
+    end
+
+    module DocumentUpload
+      KindIsInvalid = "84901"
+      FileIsTooLarge = "84902"
+      FileTypeIsInvalid = "84903"
+      FileIsMalformedOrEncrypted = "84904"
+    end
+
     module PayPalAccount
       AuthExpired = "92911"
       CannotHaveBothAccessTokenAndConsentCode = "82903"
@@ -292,6 +307,7 @@ module Braintree
       CustomerIdIsInvalid = "91510"
       HasAlreadyBeenRefunded = "91512"
       IdealPaymentNotComplete = "815141"
+      IdealPaymentsCannotBeVaulted = "915150"
       MerchantAccountDoesNotMatch3DSecureMerchantAccount = "91584"
       MerchantAccountDoesNotMatchIdealPaymentMerchantAccount = "915143"
       MerchantAccountDoesNotSupportMOTO = "91558"
@@ -548,6 +564,7 @@ module Braintree
       PaymentMethodNonceUnknown = "93108"
       PaymentMethodNonceLocked = "93109"
       CannotForwardPaymentMethodType = "93107"
+      PaymentMethodNoLongerSupported = "93117"
     end
 
     module AuthorizationFingerprint

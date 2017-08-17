@@ -39,6 +39,27 @@ END
       Braintree::Http.new(:config)._format_and_sanitize_body_for_log(input_xml).should == expected_xml
     end
 
+    it "sanitizes credit card number and cvv with newlines" do
+      input_xml = <<-END
+<customer>
+  <first-name>Joe</first-name>
+  <last-name>Doe</last-name>
+  <number>123456000\n0001234</number>
+  <cvv>1\n23</cvv>
+</customer>
+      END
+
+      expected_xml = <<-END
+[Braintree] <customer>
+[Braintree]   <first-name>Joe</first-name>
+[Braintree]   <last-name>Doe</last-name>
+[Braintree]   <number>123456******1234</number>
+[Braintree]   <cvv>***</cvv>
+[Braintree] </customer>
+END
+      Braintree::Http.new(:config)._format_and_sanitize_body_for_log(input_xml).should == expected_xml
+    end
+
     it "connects when proxy address is specified" do
       config = Braintree::Configuration.new(
         :proxy_address => "localhost",

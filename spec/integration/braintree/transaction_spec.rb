@@ -4329,6 +4329,19 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "authorization_adjustments" do
+    it "includes authorization adjustments on found transactions" do
+      found_transaction = Braintree::Transaction.find("authadjustmenttransaction")
+
+      found_transaction.authorization_adjustments.count.should == 1
+
+      authorization_adjustment = found_transaction.authorization_adjustments.first
+      authorization_adjustment.amount.should == "-20.00"
+      authorization_adjustment.success.should == true
+      authorization_adjustment.timestamp.should be_a Time
+    end
+  end
+
   describe "vault_credit_card" do
     it "returns the Braintree::CreditCard if the transaction credit card is stored in the vault" do
       customer = Braintree::Customer.create!(
@@ -4700,6 +4713,9 @@ describe Braintree::Transaction do
         :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
+      result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
+      result.transaction.facilitated_details.merchant_name.should == "14ladders"
+      result.transaction.facilitated_details.payment_method_nonce.should == grant_result.payment_method_nonce.nonce
       result.transaction.facilitator_details.should_not == nil
       result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
@@ -4715,9 +4731,7 @@ describe Braintree::Transaction do
       )
 
       result.transaction.billing_details.postal_code == "95131"
-   end
-
-
+    end
 
     it "allows transactions to be created with a shared payment method, customer, billing and shipping addresses" do
       result = @granting_gateway.transaction.sale(
@@ -4732,11 +4746,14 @@ describe Braintree::Transaction do
       result.transaction.billing_details.first_name.should == @address.first_name
     end
 
-    it "oauth app details are returned on transaction created via a shared_payment_method_token" do
+    it "facilitated details are returned on transaction created via a shared_payment_method_token" do
       result = @granting_gateway.transaction.sale(
         :shared_payment_method_token => @credit_card.token,
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
+      result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
+      result.transaction.facilitated_details.merchant_name.should == "14ladders"
+      result.transaction.facilitated_details.payment_method_nonce.should == nil
       result.transaction.facilitator_details.should_not == nil
       result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"

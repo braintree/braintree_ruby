@@ -20,6 +20,10 @@ module Braintree
       AddressGateway.new(self)
     end
 
+    def apple_pay
+      ApplePayGateway.new(self)
+    end
+
     def client_token
       ClientTokenGateway.new(self)
     end
@@ -34,6 +38,14 @@ module Braintree
 
     def discount
       DiscountGateway.new(self)
+    end
+
+    def dispute
+      DisputeGateway.new(self)
+    end
+
+    def document_upload
+      DocumentUploadGateway.new(self)
     end
 
     def oauth
