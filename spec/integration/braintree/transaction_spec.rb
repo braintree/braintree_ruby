@@ -2736,6 +2736,7 @@ describe Braintree::Transaction do
           :cryptogram => "AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==",
           :expiration_month => "10",
           :expiration_year => "14",
+          :eci_indicator => "07",
         }
       }
       result = Braintree::Transaction.sale(params)
