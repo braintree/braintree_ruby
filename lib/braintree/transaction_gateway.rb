@@ -73,11 +73,14 @@ module Braintree
       _handle_transaction_response(response)
     end
 
-    def retry_subscription_charge(subscription_id, amount=nil)
+    def retry_subscription_charge(subscription_id, amount=nil, submit_for_settlement=false)
       attributes = {
         :amount => amount,
         :subscription_id => subscription_id,
-        :type => Transaction::Type::Sale
+        :type => Transaction::Type::Sale,
+        :options => {
+          :submit_for_settlement => submit_for_settlement
+        }
       }
       _do_create "/transactions", :transaction => attributes
     end

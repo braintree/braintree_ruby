@@ -1653,5 +1653,41 @@ describe Braintree::Subscription do
       transaction.type.should == Braintree::Transaction::Type::Sale
       transaction.status.should == Braintree::Transaction::Status::Authorized
     end
+
+    it "is successful with subscription id and submit_for_settlement" do
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+      SpecHelper.make_past_due(subscription)
+
+      result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize, true)
+
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.processor_authorization_code.should_not be_nil
+      transaction.type.should == Braintree::Transaction::Type::Sale
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+    end
+
+    it "is successful with subscription id, amount and submit_for_settlement" do
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+      SpecHelper.make_past_due(subscription)
+
+      result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize, true)
+
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.processor_authorization_code.should_not be_nil
+      transaction.type.should == Braintree::Transaction::Type::Sale
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+    end
   end
 end

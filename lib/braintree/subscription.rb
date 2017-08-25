@@ -54,8 +54,8 @@ module Braintree
       Configuration.gateway.subscription.find(id)
     end
 
-    def self.retry_charge(subscription_id, amount=nil)
-      Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount)
+    def self.retry_charge(subscription_id, amount=nil, submit_for_settlement=false)
+      Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount, submit_for_settlement)
     end
 
     def self.search(&block)
