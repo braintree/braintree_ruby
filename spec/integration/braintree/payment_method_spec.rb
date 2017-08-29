@@ -85,6 +85,7 @@ describe Braintree::PaymentMethod do
       apple_pay_card = result.payment_method
       apple_pay_card.should be_a(Braintree::ApplePayCard)
       apple_pay_card.should_not be_nil
+      apple_pay_card.bin.should_not be_nil
       apple_pay_card.token.should == token
       apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
       apple_pay_card.payment_instrument_name.should == "AmEx 41002"

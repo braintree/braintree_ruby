@@ -19,6 +19,7 @@
 * Add Braintree::ApplePay for web domain registration
 * Add facilitated details to Transaction if present
 * Add submit_for_settlement to Braintree::Subscription.retry_charge
+* Add `bin` to `ApplePayCard`
 
 == 2.76.0
 * Pass configured gateway to Merchant#_new instead of using global gateway (thanks @cwalsh!)
