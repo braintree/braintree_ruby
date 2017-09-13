@@ -1944,7 +1944,7 @@ describe Braintree::Transaction do
             }
           )
           result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::Settling
+          result.transaction.status.should == Braintree::Transaction::Status::Settled
         end
       end
 
