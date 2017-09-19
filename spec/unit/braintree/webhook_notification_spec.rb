@@ -367,16 +367,16 @@ describe Braintree::WebhookNotification do
 
   context "account_updater_daily_report" do
     it "builds a sample notification for an account_updater_daily_report webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport,
-          "my_id"
-        )
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport,
+        "my_id"
+      )
 
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
 
-        notification.kind.should == Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport
-        notification.account_updater_daily_report.report_url.should == "link-to-csv-report"
-        notification.account_updater_daily_report.report_date.should == Date.parse("2016-01-14")
+      notification.kind.should == Braintree::WebhookNotification::Kind::AccountUpdaterDailyReport
+      notification.account_updater_daily_report.report_url.should == "link-to-csv-report"
+      notification.account_updater_daily_report.report_date.should == Date.parse("2016-01-14")
     end
   end
 
