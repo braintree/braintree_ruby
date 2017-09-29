@@ -6,13 +6,13 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settled" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
         :options => {
         :submit_for_settlement => true
       }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settle(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::Settled
@@ -22,13 +22,13 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settlement_confirmed" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
         :options => {
           :submit_for_settlement => true
         }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settlement_confirm(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementConfirmed
@@ -38,13 +38,13 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settlement_declined" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
         :options => {
           :submit_for_settlement => true
         }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settlement_decline(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementDeclined
@@ -54,13 +54,13 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settlement_pending" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
         :options => {
           :submit_for_settlement => true
         }
       )
       sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      sale_result.transaction.status.should == Braintree::Transaction::Status::Settling
 
       settle_result = Braintree::TestTransaction.settlement_pending(sale_result.transaction.id)
       settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
@@ -70,7 +70,7 @@ describe Braintree::TestTransaction do
     it "returns a validation error when invalid transition is specified" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
       )
       sale_result.success?.should == true
 
@@ -110,7 +110,7 @@ describe Braintree::TestTransaction do
 
           sale_result = transaction_gateway.sale(
             :amount => "100",
-            :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
           )
           testing_gateway.settle(sale_result.transaction.id)
         end

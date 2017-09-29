@@ -1,7 +1,6 @@
 == Unreleased
 * Add `options` -> `paypal` -> `description` for creating and updating subscriptions
 * Add support for upgrading a PayPal future payment refresh token to a billing agreement
-* Fix spec to expect PayPal transaction to settle immediately after successful capture
 * Add GrantedPaymentInstrumentUpdate webhook support
 
 == 2.78.0

@@ -1944,7 +1944,7 @@ describe Braintree::Transaction do
             }
           )
           result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::Settled
+          result.transaction.status.should == Braintree::Transaction::Status::Settling
         end
       end
 
@@ -4621,6 +4621,38 @@ describe Braintree::Transaction do
         )
         result.should_not be_success
         result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount
+      end
+    end
+
+    context "inline capture" do
+      it "includes processor_settlement_response_code and processor_settlement_response_text for settlement declined transactions" do
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :options => { :submit_for_settlement => true }
+        )
+
+        result.should be_success
+        Braintree::Configuration.gateway.testing.settlement_decline(result.transaction.id)
+
+        settlement_declined_transaction = Braintree::Transaction.find(result.transaction.id)
+        settlement_declined_transaction.processor_settlement_response_code.should == "4001"
+        settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Declined"
+      end
+
+      it "includes processor_settlement_response_code and processor_settlement_response_text for settlement pending transactions" do
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :options => { :submit_for_settlement => true }
+        )
+
+        result.should be_success
+        Braintree::Configuration.gateway.testing.settlement_pending(result.transaction.id)
+
+        settlement_declined_transaction = Braintree::Transaction.find(result.transaction.id)
+        settlement_declined_transaction.processor_settlement_response_code.should == "4002"
+        settlement_declined_transaction.processor_settlement_response_text.should == "Settlement Pending"
       end
     end
   end
