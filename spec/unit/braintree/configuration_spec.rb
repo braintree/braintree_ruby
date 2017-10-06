@@ -307,9 +307,18 @@ describe Braintree::Configuration do
   end
 
   describe "server" do
-    it "is localhost for development" do
+    it "is localhost or GATEWAY_HOST environment variable for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.instantiate.server.should == "localhost"
+      old_gateway_url = ENV['GATEWAY_HOST']
+      begin
+        ENV['GATEWAY_HOST'] = nil
+        Braintree::Configuration.instantiate.server.should == "localhost"
+
+        ENV['GATEWAY_HOST'] = 'gateway'
+        Braintree::Configuration.instantiate.server.should == 'gateway'
+      ensure
+        ENV['GATEWAY_HOST'] = old_gateway_url
+      end
     end
 
     it "is api.braintreegateway.com for production" do

@@ -201,7 +201,7 @@ module Braintree
     def server # :nodoc:
       case @environment
       when :development, :integration
-        "localhost"
+        ENV['GATEWAY_HOST'] || "localhost"
       when :production
         "#{endpoint}.braintreegateway.com"
       when :qa
