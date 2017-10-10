@@ -113,6 +113,7 @@ describe "OAuth" do
         :scope => "read_write",
         :state => "baz_state",
         :landing_page => "signup",
+        :login_only => false,
         :user => {
           :country => "USA",
           :email => "foo@example.com",
@@ -159,6 +160,7 @@ describe "OAuth" do
       query["scope"].should == ["read_write"]
       query["state"].should == ["baz_state"]
       query["landing_page"].should == ["signup"]
+      query["login_only"].should == ["false"]
 
       query["user[country]"].should == ["USA"]
       query["business[name]"].should == ["14 Ladders"]
