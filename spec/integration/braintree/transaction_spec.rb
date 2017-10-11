@@ -124,18 +124,34 @@ describe Braintree::Transaction do
   describe "self.create" do
     describe "risk data" do
       it "returns decision, device_data_captured and id" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => 1_00,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-            :expiration_date => "05/2009"
-          }
-        )
-        result.transaction.risk_data.should be_a(Braintree::RiskData)
-        result.transaction.risk_data.should respond_to(:id)
-        result.transaction.risk_data.should respond_to(:decision)
-        result.transaction.risk_data.should respond_to(:device_data_captured)
+        old_merchant = Braintree::Configuration.merchant_id
+        old_public_key = Braintree::Configuration.public_key
+        old_private_key = Braintree::Configuration.private_key
+
+        begin
+          Braintree::Configuration.merchant_id = "advanced_fraud_integration_merchant_id"
+          Braintree::Configuration.public_key = "advanced_fraud_integration_public_key"
+          Braintree::Configuration.private_key = "advanced_fraud_integration_private_key"
+
+         result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => 1_00,
+            :device_session_id => "abc123",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+              :expiration_date => "05/2009"
+            }
+          )
+          result.transaction.risk_data.should be_a(Braintree::RiskData)
+          result.transaction.risk_data.id.should_not be_nil
+          result.transaction.risk_data.decision.should == "Approve"
+          result.transaction.risk_data.device_data_captured.should == false
+
+        ensure
+          Braintree::Configuration.merchant_id = old_merchant
+          Braintree::Configuration.public_key = old_public_key
+          Braintree::Configuration.private_key = old_private_key
+        end
       end
     end
 
@@ -605,16 +621,31 @@ describe Braintree::Transaction do
       end
 
       it "exposes the fraud gateway rejection reason" do
-        result = Braintree::Transaction.sale(
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Fraud,
-            :expiration_date => "05/2017",
-            :cvv => "333"
-          }
-        )
-        result.success?.should == false
-        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
+        old_merchant = Braintree::Configuration.merchant_id
+        old_public_key = Braintree::Configuration.public_key
+        old_private_key = Braintree::Configuration.private_key
+
+        begin
+          Braintree::Configuration.merchant_id = "advanced_fraud_integration_merchant_id"
+          Braintree::Configuration.public_key = "advanced_fraud_integration_public_key"
+          Braintree::Configuration.private_key = "advanced_fraud_integration_private_key"
+
+
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Fraud,
+              :expiration_date => "05/2017",
+              :cvv => "333"
+            }
+          )
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
+        ensure
+          Braintree::Configuration.merchant_id = old_merchant
+          Braintree::Configuration.public_key = old_public_key
+          Braintree::Configuration.private_key = old_private_key
+        end
       end
     end
 
@@ -2714,18 +2745,32 @@ describe Braintree::Transaction do
     end
 
     it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
-      result = Braintree::Transaction.sale(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
-        },
-        :options => {
-          :skip_advanced_fraud_checking => true
-        }
-      )
-      result.success?.should == true
-      result.transaction.risk_data.id.should be_nil
+      old_merchant = Braintree::Configuration.merchant_id
+      old_public_key = Braintree::Configuration.public_key
+      old_private_key = Braintree::Configuration.private_key
+
+      begin
+        Braintree::Configuration.merchant_id = "advanced_fraud_integration_merchant_id"
+        Braintree::Configuration.public_key = "advanced_fraud_integration_public_key"
+        Braintree::Configuration.private_key = "advanced_fraud_integration_private_key"
+
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :options => {
+            :skip_advanced_fraud_checking => true
+          }
+        )
+        result.success?.should == true
+        result.transaction.risk_data.id.should be_nil
+      ensure
+        Braintree::Configuration.merchant_id = old_merchant
+        Braintree::Configuration.public_key = old_public_key
+        Braintree::Configuration.private_key = old_private_key
+      end
     end
 
     it "works with Apple Pay params" do
