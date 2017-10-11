@@ -148,6 +148,7 @@ module Braintree
 
     def self._signature(type) # :nodoc:
       billing_address_params = AddressGateway._shared_signature
+      paypal_options_shipping_signature = AddressGateway._shared_signature
       options = [
         :make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session,
         :verification_amount,
@@ -157,6 +158,7 @@ module Braintree
           :custom_field,
           :description,
           :amount,
+          {:shipping => paypal_options_shipping_signature}
         ],
       ]
       signature = [
