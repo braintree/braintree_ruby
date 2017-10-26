@@ -6,6 +6,7 @@ describe Braintree do
     braintree_file = "#{lib_dir}/braintree.rb"
     File.exist?(braintree_file).should == true
     output = `ruby -r rubygems -I #{lib_dir} -e 'load #{braintree_file.inspect}; load #{braintree_file.inspect}' 2>&1`
+    output = output.gsub(/^.*warning: constant ::Fixnum is deprecated.*\n/, "")
     output.should == ""
   end
 end
