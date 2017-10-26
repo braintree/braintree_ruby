@@ -2,6 +2,7 @@
 * Add `options` -> `paypal` -> `description` for creating and updating subscriptions
 * Add support for upgrading a PayPal future payment refresh token to a billing agreement
 * Add GrantedPaymentInstrumentUpdate webhook support
+* Add `options` -> `paypal` -> `shipping` for creating & updating customers as well as creating payment methods
 
 == 2.78.0
 * Support `eci_indicator` for Transaction#sale with raw Apple Pay parameters
