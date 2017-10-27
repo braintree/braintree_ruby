@@ -6,6 +6,7 @@ module Braintree
       XML_TYPE_NAMES = {
         "Fixnum"     => "integer",
         "Bignum"     => "integer",
+        "Integer"    => "integer",
         "TrueClass"  => "boolean",
         "FalseClass" => "boolean",
         "Date"       => "datetime",
