@@ -4627,14 +4627,14 @@ describe Braintree::Transaction do
 
   context "shared payment method" do
     before(:each) do
-      partner_merchant_gateway = Braintree::Gateway.new(
+      @partner_merchant_gateway = Braintree::Gateway.new(
         :merchant_id => "integration_merchant_public_id",
         :public_key => "oauth_app_partner_user_public_key",
         :private_key => "oauth_app_partner_user_private_key",
         :environment => Braintree::Configuration.environment,
         :logger => Logger.new("/dev/null")
       )
-      @customer = partner_merchant_gateway.customer.create(
+      @customer = @partner_merchant_gateway.customer.create(
         :first_name => "Joe",
         :last_name => "Brown",
         :company => "ExampleCo",
@@ -4643,12 +4643,12 @@ describe Braintree::Transaction do
         :fax => "614.555.5678",
         :website => "www.example.com"
       ).customer
-      @address = partner_merchant_gateway.address.create(
+      @address = @partner_merchant_gateway.address.create(
         :customer_id => @customer.id,
         :first_name => "Testy",
         :last_name => "McTesterson"
       ).address
-      @credit_card = partner_merchant_gateway.credit_card.create(
+      @credit_card = @partner_merchant_gateway.credit_card.create(
         :customer_id => @customer.id,
         :cardholder_name => "Adam Davis",
         :number => Braintree::Test::CreditCardNumbers::Visa,
@@ -4674,6 +4674,7 @@ describe Braintree::Transaction do
         :access_token => access_token,
         :logger => Logger.new("/dev/null")
       )
+
     end
 
     it "oauth app details are returned on transaction created via nonce granting" do
@@ -4719,6 +4720,23 @@ describe Braintree::Transaction do
     it "facilitated details are returned on transaction created via a shared_payment_method_token" do
       result = @granting_gateway.transaction.sale(
         :shared_payment_method_token => @credit_card.token,
+        :amount => Braintree::Test::TransactionAmounts::Authorize
+      )
+      result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
+      result.transaction.facilitated_details.merchant_name.should == "14ladders"
+      result.transaction.facilitated_details.payment_method_nonce.should == nil
+      result.transaction.facilitator_details.should_not == nil
+      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
+      result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+    end
+
+    it "facilitated details are returned on transaction created via a shared_payment_method_nonce" do
+      shared_nonce = @partner_merchant_gateway.payment_method_nonce.create(
+        @credit_card.token
+      ).payment_method_nonce.nonce
+
+      result = @granting_gateway.transaction.sale(
+        :shared_payment_method_nonce => shared_nonce,
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
       result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
