@@ -138,34 +138,19 @@ describe Braintree::CreditCard do
     end
 
     it "returns risk data on verification on credit_card create" do
-      old_merchant = Braintree::Configuration.merchant_id
-      old_public_key = Braintree::Configuration.public_key
-      old_private_key = Braintree::Configuration.private_key
-
-      begin
-        Braintree::Configuration.merchant_id = "advanced_fraud_integration_merchant_id"
-        Braintree::Configuration.public_key = "advanced_fraud_integration_public_key"
-        Braintree::Configuration.private_key = "advanced_fraud_integration_private_key"
-
-        customer = Braintree::Customer.create!
-        credit_card = Braintree::CreditCard.create!(
-          :cardholder_name => "Original Holder",
-          :customer_id => customer.id,
-          :device_session_id => "abc123",
-          :cvv => "123",
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2020",
-          :options => {:verify_card => true}
-        )
-        verification = credit_card.verification
-        verification.risk_data.id.should_not be_nil
-        verification.risk_data.decision.should == "Approve"
-        verification.risk_data.device_data_captured.should == false
-      ensure
-        Braintree::Configuration.merchant_id = old_merchant
-        Braintree::Configuration.public_key = old_public_key
-        Braintree::Configuration.private_key = old_private_key
-      end
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :cvv => "123",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2020",
+        :options => {:verify_card => true}
+      )
+      verification = credit_card.verification
+      verification.risk_data.should respond_to(:id)
+      verification.risk_data.should respond_to(:decision)
+      verification.risk_data.should respond_to(:device_data_captured)
     end
 
     it "exposes the gateway rejection reason on verification" do

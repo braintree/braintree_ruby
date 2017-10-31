@@ -113,6 +113,33 @@ describe Braintree::MerchantAccount do
       result.merchant_accounts.first.status.should == "active"
       result.merchant_accounts.first.default.should == true
     end
+
+    it "returns all merchant accounts for read_only scoped grants" do
+      gateway = Braintree::Gateway.new(
+        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
+        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
+        :logger => Logger.new("/dev/null")
+      )
+
+      code = Braintree::OAuthTestHelper.create_grant(gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "read_only"
+      })
+
+      result = gateway.oauth.create_token_from_code(
+        :code => code,
+        :scope => "read_only"
+      )
+
+      gateway = Braintree::Gateway.new(
+        :access_token => result.credentials.access_token,
+        :logger => Logger.new("/dev/null")
+      )
+
+      result = gateway.merchant_account.all
+      result.should be_success
+      result.merchant_accounts.count.should > 20
+    end
   end
 
   describe "create" do
