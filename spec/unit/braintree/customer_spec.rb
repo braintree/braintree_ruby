@@ -123,7 +123,29 @@ describe Braintree::Customer do
           :billing_agreement_id,
           {:options => [:make_default]},
         ]},
-        {:options => [:paypal => [:payee_email, :order_id, :custom_field, :description, :amount]]},
+        {:options =>
+          [:paypal => [
+            :payee_email,
+            :order_id,
+            :custom_field,
+            :description,
+            :amount,
+            {:shipping => [
+              :company,
+              :country_code_alpha2,
+              :country_code_alpha3,
+              :country_code_numeric,
+              :country_name,
+              :extended_address,
+              :first_name,
+              :last_name,
+              :locality,
+              :postal_code,
+              :region,
+              :street_address,
+            ]}
+          ]]
+        },
         {:custom_fields => :_any_key_}
       ]
     end
@@ -182,7 +204,29 @@ describe Braintree::Customer do
             {:options => [:update_existing]}
           ]}
         ]},
-        {:options => [:paypal => [:payee_email, :order_id, :custom_field, :description, :amount]]},
+        {:options =>
+          [:paypal => [
+            :payee_email,
+            :order_id,
+            :custom_field,
+            :description,
+            :amount,
+            {:shipping => [
+              :company,
+              :country_code_alpha2,
+              :country_code_alpha3,
+              :country_code_numeric,
+              :country_name,
+              :extended_address,
+              :first_name,
+              :last_name,
+              :locality,
+              :postal_code,
+              :region,
+              :street_address,
+            ]}
+          ]]
+        },
         {:custom_fields => :_any_key_}
       ]
     end

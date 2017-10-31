@@ -553,6 +553,15 @@ describe Braintree::PaymentMethod do
               :custom_field => "custom merchant field",
               :description => "merchant description",
               :amount => "1.23",
+              :shipping => {
+                :first_name => "first",
+                :last_name => "last",
+                :locality => "Austin",
+                :postal_code => "78729",
+                :street_address => "7700 W Parmer Ln",
+                :country_name => "US",
+                :region => "TX",
+              },
             },
           },
         )
