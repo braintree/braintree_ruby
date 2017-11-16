@@ -1,14 +1,19 @@
-== Unreleased
+== 2.79.0
+* Add `device_data_captured` field to `risk_data`
+* Add submit_for_settlement to Braintree::Subscription.retry_charge
 * Add `options` -> `paypal` -> `description` for creating and updating subscriptions
+* Add `bin` to `ApplePayCard`
 * Add support for upgrading a PayPal future payment refresh token to a billing agreement
 * Fix spec to expect PayPal transaction to settle immediately after successful capture
 * Add GrantedPaymentInstrumentUpdate webhook support
 * Add `options` -> `paypal` -> `shipping` for creating & updating customers as well as creating payment methods
 * Add ability to create a transaction from a shared nonce
+* Add ruby 2.4 compatibility for the XML Generator (thanks @kinkade!)
+* Add README note for supression of logs (thanks @badosu!)
+* Allow `VenmoAccount` to be returned from `PaymentMethod.find` (thanks @NickMele!)
 
 == 2.78.0
 * Support `eci_indicator` for Transaction#sale with raw Apple Pay parameters
-* Add `device_data_captured` field to `risk_data`
 
 == 2.77.0
 * Add `AuthorizationAdjustment` class and `authorization_adjustments` to Transaction
@@ -23,8 +28,6 @@
 * Coinbase is no longer a supported payment method. `PaymentMethodNoLongerSupported` will be returned for Coinbase operations.
 * Add Braintree::ApplePay for web domain registration
 * Add facilitated details to Transaction if present
-* Add submit_for_settlement to Braintree::Subscription.retry_charge
-* Add `bin` to `ApplePayCard`
 
 == 2.76.0
 * Pass configured gateway to Merchant#_new instead of using global gateway (thanks @cwalsh!)
