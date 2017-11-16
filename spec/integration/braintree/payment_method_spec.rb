@@ -837,6 +837,30 @@ describe Braintree::PaymentMethod do
       end
     end
 
+    context "venmo accounts" do
+      it "finds the payment method with the given token" do
+        customer = Braintree::Customer.create!
+        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
+          :customer_id => customer.id,
+          :token => payment_method_token
+        )
+        result.should be_success
+
+        venmo_account = Braintree::PaymentMethod.find(payment_method_token)
+        venmo_account.should be_a(Braintree::VenmoAccount)
+        venmo_account.should_not be_nil
+        venmo_account.token.should == payment_method_token
+        venmo_account.default.should == true
+        venmo_account.image_url.should =~ /venmo/
+        venmo_account.username.should == 'venmojoe'
+        venmo_account.venmo_user_id.should == 'Venmo-Joe-1'
+        venmo_account.source_description.should == "Venmo Account: venmojoe"
+        venmo_account.customer_id.should == customer.id
+      end
+    end
+
     context "android pay cards" do
       it "finds the proxy card payment method with the given token" do
         customer = Braintree::Customer.create!
