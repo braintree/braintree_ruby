@@ -38,6 +38,8 @@ module Braintree
 
       ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
       ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
+
+      GrantedPaymentInstrumentUpdate = "granted_payment_instrument_update"
     end
 
     attr_reader :subscription
@@ -51,6 +53,7 @@ module Braintree
     attr_reader :ideal_payment
     attr_reader :connected_merchant_status_transitioned
     attr_reader :connected_merchant_paypal_status_changed
+    attr_reader :granted_payment_instrument_update
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)
@@ -74,6 +77,7 @@ module Braintree
       @ideal_payment = Braintree::IdealPayment._new(gateway, @subject[:ideal_payment]) if @subject.has_key?(:ideal_payment)
       @connected_merchant_status_transitioned = ConnectedMerchantStatusTransitioned._new(@subject[:connected_merchant_status_transitioned]) if @subject.has_key?(:connected_merchant_status_transitioned)
       @connected_merchant_paypal_status_changed = ConnectedMerchantPayPalStatusChanged._new(@subject[:connected_merchant_paypal_status_changed]) if @subject.has_key?(:connected_merchant_paypal_status_changed)
+      @granted_payment_instrument_update = GrantedPaymentInstrumentUpdate._new(@subject[:granted_payment_instrument_update]) if @subject.has_key?(:granted_payment_instrument_update)
     end
 
     def merchant_account

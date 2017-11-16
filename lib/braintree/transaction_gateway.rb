@@ -73,11 +73,14 @@ module Braintree
       _handle_transaction_response(response)
     end
 
-    def retry_subscription_charge(subscription_id, amount=nil)
+    def retry_subscription_charge(subscription_id, amount=nil, submit_for_settlement=false)
       attributes = {
         :amount => amount,
         :subscription_id => subscription_id,
-        :type => Transaction::Type::Sale
+        :type => Transaction::Type::Sale,
+        :options => {
+          :submit_for_settlement => submit_for_settlement
+        }
       }
       _do_create "/transactions", :transaction => attributes
     end
@@ -144,7 +147,7 @@ module Braintree
         :purchase_order_number, :recurring, :transaction_source, :shipping_address_id, :type, :tax_amount, :tax_exempt,
         :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data, :fraud_merchant_id,
         :billing_address_id, :payment_method_nonce, :three_d_secure_token,
-        :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id,
+        :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id, :shared_payment_method_nonce,
         {:risk_data => [:customer_browser, :customer_ip]},
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},

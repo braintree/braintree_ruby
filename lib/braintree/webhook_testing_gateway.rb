@@ -67,6 +67,8 @@ module Braintree
         _ideal_payment_complete_sample_xml(id)
       when Braintree::WebhookNotification::Kind::IdealPaymentFailed
         _ideal_payment_failed_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::GrantedPaymentInstrumentUpdate
+        _granted_payment_instrument_update_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -601,6 +603,26 @@ module Braintree
           <approval-url>https://example.com</approval-url>
           <ideal-transaction-id>1234567890</ideal-transaction-id>
         </ideal-payment>
+      XML
+    end
+
+    def _granted_payment_instrument_update_sample_xml(id)
+
+      <<-XML
+        <granted-payment-instrument-update>
+          <grant-owner-merchant-id>vczo7jqrpwrsi2px</grant-owner-merchant-id>
+          <grant-recipient-merchant-id>cf0i8wgarszuy6hc</grant-recipient-merchant-id>
+          <payment-method-nonce>
+            <nonce>ee257d98-de40-47e8-96b3-a6954ea7a9a4</nonce>
+            <consumed type="boolean">false</consumed>
+            <locked type="boolean">false</locked>
+          </payment-method-nonce>
+          <token>abc123z</token>
+          <updated-fields type="array">
+            <item>expiration-month</item>
+            <item>expiration-year</item>
+          </updated-fields>
+        </granted-payment-instrument-update>
       XML
     end
   end

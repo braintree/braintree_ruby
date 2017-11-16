@@ -34,6 +34,7 @@ module Braintree
     attr_reader :number_of_billing_cycles, :billing_day_of_month
     attr_reader :add_ons, :discounts
     attr_reader :descriptor
+    attr_reader :description
     attr_reader :current_billing_cycle
     attr_reader :updated_at, :created_at
     attr_reader :status_history
@@ -54,8 +55,8 @@ module Braintree
       Configuration.gateway.subscription.find(id)
     end
 
-    def self.retry_charge(subscription_id, amount=nil)
-      Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount)
+    def self.retry_charge(subscription_id, amount=nil, submit_for_settlement=false)
+      Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount, submit_for_settlement)
     end
 
     def self.search(&block)

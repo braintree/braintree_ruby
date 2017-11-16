@@ -113,6 +113,31 @@ describe Braintree::Subscription do
         transaction.paypal_details.payer_email.should == "payer@example.com"
       end
 
+      it "creates a subscription when given a paypal description" do
+        customer = Braintree::Customer.create!
+        payment_method_result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :customer_id => customer.id
+        )
+
+        result = Braintree::Subscription.create(
+          :payment_method_token => payment_method_result.payment_method.token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+          :options => {
+            :paypal => {
+              :description => "A great product",
+            },
+          },
+        )
+
+        result.should be_success
+        subscription = result.subscription
+        subscription.description.should == "A great product"
+        transaction = subscription.transactions[0]
+        transaction.paypal_details.payer_email.should == "payer@example.com"
+        transaction.paypal_details.description.should == "A great product"
+      end
+
       it "returns an error if the payment_method_nonce hasn't been vaulted" do
         customer = Braintree::Customer.create!
         result = Braintree::Subscription.create(
@@ -747,7 +772,7 @@ describe Braintree::Subscription do
       result.subscription.payment_method_token.should_not == @credit_card.token
     end
 
-    it "allows chaning the descriptors" do
+    it "allows changing the descriptors" do
       result = Braintree::Subscription.update(@subscription.id,
         :descriptor => {
           :name => 'aaa*1234',
@@ -760,6 +785,31 @@ describe Braintree::Subscription do
       result.subscription.descriptor.name.should == 'aaa*1234'
       result.subscription.descriptor.phone.should == '3334443333'
       result.subscription.descriptor.url.should == 'ebay.com'
+    end
+
+    it "allows changing the paypal description" do
+      customer = Braintree::Customer.create!
+      payment_method = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :customer_id => customer.id
+      ).payment_method
+
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => payment_method.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+
+      result = Braintree::Subscription.update(
+        subscription.id,
+        :options => {
+          :paypal => {
+            :description => 'A great product',
+          },
+        },
+      )
+
+      result.success?.should == true
+      result.subscription.description.should == 'A great product'
     end
 
     context "when successful" do
@@ -1652,6 +1702,42 @@ describe Braintree::Subscription do
       transaction.processor_authorization_code.should_not be_nil
       transaction.type.should == Braintree::Transaction::Type::Sale
       transaction.status.should == Braintree::Transaction::Status::Authorized
+    end
+
+    it "is successful with subscription id and submit_for_settlement" do
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+      SpecHelper.make_past_due(subscription)
+
+      result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize, true)
+
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.processor_authorization_code.should_not be_nil
+      transaction.type.should == Braintree::Transaction::Type::Sale
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+    end
+
+    it "is successful with subscription id, amount and submit_for_settlement" do
+      subscription = Braintree::Subscription.create(
+        :payment_method_token => @credit_card.token,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      ).subscription
+      SpecHelper.make_past_due(subscription)
+
+      result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize, true)
+
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.processor_authorization_code.should_not be_nil
+      transaction.type.should == Braintree::Transaction::Type::Sale
+      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
     end
   end
 end

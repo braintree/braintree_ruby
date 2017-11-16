@@ -40,7 +40,7 @@ describe Braintree::AddOn do
 
       expect do
         gateway.add_on.all
-      end.to raise_error(Braintree::ConfigurationError, /public_key and private_key are required/)
+      end.to raise_error(Braintree::ConfigurationError, /access_token or public_key and private_key are required/)
     end
   end
 end

@@ -150,6 +150,7 @@ describe Braintree::CreditCard do
       verification = credit_card.verification
       verification.risk_data.should respond_to(:id)
       verification.risk_data.should respond_to(:decision)
+      verification.risk_data.should respond_to(:device_data_captured)
     end
 
     it "exposes the gateway rejection reason on verification" do
