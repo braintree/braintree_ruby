@@ -72,6 +72,8 @@ module Braintree
         ApplePayCard._new(@gateway, response[:apple_pay_card])
       elsif response.has_key?(:android_pay_card)
         AndroidPayCard._new(@gateway, response[:android_pay_card])
+      elsif response.has_key?(:venmo_account)
+        VenmoAccount._new(@gateway, response[:venmo_account])
       else
         UnknownPaymentMethod._new(@gateway, response)
       end

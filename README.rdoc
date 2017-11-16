@@ -88,6 +88,15 @@ The unit specs can be run by anyone on any system, but the integration specs are
 server of our gateway code.  These integration specs are not meant for public consumption and will likely fail if run on
 your system. To run unit tests use rake: <tt>rake test:unit</tt>.
 
+== Suppress Braintree Logs
+
+To suppress logs from Braintree on environments where they are considered noise
+(e.g. test) use the following configuration:
+
+  logger = Logger.new("/dev/null")
+  logger.level = Logger::INFO
+  Braintree::Configuration.logger = logger
+
 == License
 
 See the LICENSE[https://github.com/braintree/braintree_ruby/blob/master/LICENSE] file for more info.
