@@ -146,6 +146,7 @@ module Braintree
         :amount, :customer_id, :merchant_account_id, :order_id, :channel, :payment_method_token,
         :purchase_order_number, :recurring, :transaction_source, :shipping_address_id, :type, :tax_amount, :tax_exempt,
         :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data, :fraud_merchant_id,
+        :shipping_amount, :discount_amount, :ships_from_postal_code,
         :billing_address_id, :payment_method_nonce, :three_d_secure_token,
         :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id, :shared_payment_method_nonce,
         {:risk_data => [:customer_browser, :customer_ip]},
