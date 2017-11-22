@@ -1,3 +1,7 @@
+== 2.80.0
+* Add `bin_data` to Payment Method Nonce
+* Add support for including level 3 summary fields to transaction create and transaction response
+
 == 2.79.0
 * Add `device_data_captured` field to `risk_data`
 * Add submit_for_settlement to Braintree::Subscription.retry_charge
