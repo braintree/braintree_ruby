@@ -71,6 +71,106 @@ describe Braintree::PaymentMethodNonce do
       nonce.three_d_secure_info.should be_nil
     end
 
+    it "returns bin_data with commercial set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-commercial-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.commercial.should == Braintree::CreditCard::Commercial::Yes
+    end
+
+    it "returns bin_data with country_of_issuance set to CAN" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-country-of-issuance-cad-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.country_of_issuance.should == "CAN"
+    end
+
+    it "returns bin_data with debit set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-debit-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.debit.should == Braintree::CreditCard::Debit::Yes
+    end
+
+    it "returns bin_data with durbin_regulated set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-durbin-regulated-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
+    end
+
+    it "returns bin_data with healthcare set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-healthcare-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.healthcare.should == Braintree::CreditCard::Healthcare::Yes
+      nonce.bin_data.product_id.should == "J3"
+    end
+
+    it "returns bin_data with issuing_bank set to Network Only" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-issuing-bank-network-only-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.issuing_bank.should == "NETWORK ONLY"
+    end
+
+    it "returns bin_data with payroll set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-payroll-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.payroll.should == Braintree::CreditCard::Payroll::Yes
+      nonce.bin_data.product_id.should == "MSA"
+    end
+
+    it "returns bin_data with prepaid set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-prepaid-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+    end
+
+    it "returns bin_data with unknown indicators" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-unknown-indicators-nonce")
+
+      nonce = result.payment_method_nonce
+
+      result.should be_success
+      nonce.bin_data.should_not be_nil
+      nonce.bin_data.commercial.should == Braintree::CreditCard::Commercial::Unknown
+      nonce.bin_data.country_of_issuance.should == Braintree::CreditCard::CountryOfIssuance::Unknown
+      nonce.bin_data.debit.should == Braintree::CreditCard::Debit::Unknown
+      nonce.bin_data.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Unknown
+      nonce.bin_data.healthcare.should == Braintree::CreditCard::Healthcare::Unknown
+      nonce.bin_data.issuing_bank.should == Braintree::CreditCard::IssuingBank::Unknown
+      nonce.bin_data.payroll.should == Braintree::CreditCard::Payroll::Unknown
+      nonce.bin_data.prepaid.should == Braintree::CreditCard::Prepaid::Unknown
+      nonce.bin_data.product_id.should == Braintree::CreditCard::ProductId::Unknown
+    end
+
     it "correctly raises and exception for a non existent token" do
       expect do
         Braintree::PaymentMethodNonce.find("not_a_nonce")

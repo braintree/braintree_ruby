@@ -114,6 +114,9 @@ module Braintree
     attr_reader :subscription_id
     attr_reader :tax_amount
     attr_reader :tax_exempt
+    attr_reader :shipping_amount
+    attr_reader :discount_amount
+    attr_reader :ships_from_postal_code
     # Will either be "sale" or "credit"
     attr_reader :type
     attr_reader :updated_at

@@ -2242,6 +2242,40 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
       end
     end
+
+    context "level 3 summary data" do
+      it "accepts level 3 summary data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :shipping_amount => "1.00",
+          :discount_amount => "2.00",
+          :ships_from_postal_code => "12345",
+        )
+
+        result.success?.should == true
+        result.transaction.shipping_amount.should == "1.00"
+        result.transaction.discount_amount.should == "2.00"
+        result.transaction.ships_from_postal_code.should == "12345"
+      end
+
+      it "handles validation errors on summary data" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :shipping_amount => "1a00",
+          :discount_amount => "-2.00",
+          :ships_from_postal_code => "1$345",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountFormatIsInvalid
+        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountCannotBeNegative
+        result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters
+      end
+    end
   end
 
   describe "self.create!" do
