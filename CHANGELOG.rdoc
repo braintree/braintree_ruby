@@ -1,5 +1,6 @@
 == Unreleased
 * Fix spec to expect PayPal transactions to move to settling rather than settled
+* Fix permissions issue where SDK could not be loaded in some environments
 
 == 2.80.0
 * Add `bin_data` to Payment Method Nonce
