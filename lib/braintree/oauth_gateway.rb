@@ -42,8 +42,8 @@ module Braintree
       end
     end
 
-    def connect_url(params)
-      params[:client_id] = @config.client_id
+    def connect_url(raw_params)
+      params = raw_params.merge({:client_id => @config.client_id})
       user_params = _sub_query(params, :user)
       business_params = _sub_query(params, :business)
       payment_methods = _sub_array_query(params, :payment_methods)
@@ -53,8 +53,7 @@ module Braintree
         concat(payment_methods)
 
       query_string = query.map { |k, v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join("&")
-      url = "#{@config.base_url}/oauth/connect?#{query_string}"
-      "#{url}&signature=#{_compute_signature(url)}&algorithm=SHA256"
+      "#{@config.base_url}/oauth/connect?#{query_string}"
     end
 
     def _sub_query(params, root)
@@ -69,11 +68,6 @@ module Braintree
       sub_params.map do |value|
         ["#{root}[]", value]
       end
-    end
-
-    def _compute_signature(url)
-      key_digest = OpenSSL::Digest::SHA256.digest(@config.client_secret)
-      OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, key_digest, url)
     end
   end
 end
