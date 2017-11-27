@@ -193,9 +193,6 @@ describe "OAuth" do
       query["business[fulfillment_completed_in]"].should == ["7"]
       query["business[currency]"].should == ["USD"]
       query["business[website]"].should == ["http://example.com"]
-
-      query["signature"][0].length.should == 64
-      query["algorithm"].should == ["SHA256"]
     end
 
     it "builds the query string with multiple payment_methods" do
@@ -216,19 +213,13 @@ describe "OAuth" do
       query["payment_methods[]"].should include("paypal")
       query["payment_methods[]"].should include("credit_card")
     end
-  end
 
-  describe "_compute_signature" do
-    it "computes the correct signature" do
-      @gateway = Braintree::Gateway.new(
-        :client_id => "client_id$development$integration_client_id",
-        :client_secret => "client_secret$development$integration_client_secret",
-        :logger => Logger.new("/dev/null")
-      )
-      url = "http://localhost:3000/oauth/connect?business%5Bname%5D=We+Like+Spaces&client_id=client_id%24development%24integration_client_id"
-      signature = @gateway.oauth._compute_signature(url)
+    it "doesn't mutate the options" do
+      params = {:payment_methods => ["credit_card"]}
 
-      signature.should == "a36bcf10dd982e2e47e0d6a2cb930aea47ade73f954b7d59c58dae6167894d41"
+      @gateway.oauth.connect_url(params)
+
+      params.should == {:payment_methods => ["credit_card"]}
     end
   end
 end
