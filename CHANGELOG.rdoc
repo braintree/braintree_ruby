@@ -1,3 +1,6 @@
+== Unreleased
+* Fix spec to expect PayPal transactions to move to settling rather than settled
+
 == 2.80.0
 * Add `bin_data` to Payment Method Nonce
 * Add support for including level 3 summary fields to transaction create and transaction response
