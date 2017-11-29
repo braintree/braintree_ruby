@@ -310,6 +310,8 @@ module Braintree
       FinalAuthSubmitForSettlementForDifferentAmount = "95601"
       HasAlreadyBeenRefunded = "91512"
       IdealPaymentNotComplete = "815141"
+      TooManyLineItems = "915157"
+      LineItemsExpected = "915158"
       DiscountAmountFormatIsInvalid = "915159"
       DiscountAmountCannotBeNegative = "915160"
       DiscountAmountIsTooLarge = "915161"
@@ -416,6 +418,30 @@ module Braintree
           LodgingCheckOutDateIsInvalid = "93413"
         end
       end
+    end
+
+    module TransactionLineItem
+      CommodityCodeIsTooLong = "95801"
+      DescriptionIsRequired = "95802"
+      DescriptionIsTooLong = "95803"
+      DiscountAmountFormatIsInvalid = "95804"
+      DiscountAmountIsTooLarge = "95805"
+      DiscountAmountMustBeGreaterThanZero = "95806"
+      KindIsInvalid = "95807"
+      KindIsRequired = "95808"
+      ProductCodeIsTooLong = "95809"
+      QuantityFormatIsInvalid = "95810"
+      QuantityIsRequired = "95811"
+      QuantityIsTooLarge = "95812"
+      TotalAmountFormatIsInvalid = "95813"
+      TotalAmountIsRequired = "95814"
+      TotalAmountIsTooLarge = "95815"
+      TotalAmountMustBeGreaterThanZero = "95816"
+      UnitAmountFormatIsInvalid = "95817"
+      UnitAmountIsRequired = "95818"
+      UnitAmountIsTooLarge = "95819"
+      UnitAmountMustBeGreaterThanZero = "95820"
+      UnitOfMeasureIsTooLong = "95821"
     end
 
     module Merchant

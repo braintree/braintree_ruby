@@ -2243,6 +2243,171 @@ describe Braintree::Transaction do
       end
     end
 
+    context "line items" do
+      it "allows creation with empty line items" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [],
+        )
+        result.success?.should == true
+      end
+
+      it "allows creation with single line item" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "45.15",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.0232",
+              :description => "Description #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == true
+      end
+
+      it "allows creation with multiple line items" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.0232",
+              :description => "Description #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "2.02",
+              :description => "Description #2",
+              :kind => "credit",
+              :unit_amount => "5",
+              :unit_of_measure => "gallon",
+              :total_amount => "10.1",
+            },
+          ],
+        )
+        result.success?.should == true
+      end
+
+      it "handles validation errors on line items" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "2.02",
+              :description => "Description #2",
+              :kind => "credit",
+              :unit_amount => "5",
+              :unit_of_measure => "gallon",
+              :total_amount => "10.1",
+            },
+            {
+              :quantity => "1.02322",
+              :description => "Description #1",
+              :kind => "sale",
+              :unit_amount => "45.01232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::KindIsInvalid
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountFormatIsInvalid
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::QuantityFormatIsInvalid
+      end
+
+      it "handles validation errors on line items structure" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => {
+            :quantity => "2.02",
+            :description => "Description #2",
+            :kind => "credit",
+            :unit_amount => "5",
+            :unit_of_measure => "gallon",
+            :total_amount => "10.1",
+          },
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:line_items)[0].code.should == Braintree::ErrorCodes::Transaction::LineItemsExpected
+      end
+
+      it "handles invalid arguments on line items structure" do
+        expect do
+          Braintree::Transaction.create(
+            :type => "sale",
+            :amount => "35.05",
+            :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+            :line_items => [
+              {
+                :quantity => "2.02",
+                :description => "Description #1",
+                :kind => "credit",
+                :unit_amount => "5",
+                :unit_of_measure => "gallon",
+                :total_amount => "10.1",
+              },
+              ['Description #2'],
+              {
+                :quantity => "2.02",
+                :description => "Description #3",
+                :kind => "credit",
+                :unit_amount => "5",
+                :unit_of_measure => "gallon",
+                :total_amount => "10.1",
+              },
+            ],
+          )
+        end.to raise_error(ArgumentError)
+      end
+
+      it "handles validation errors on too many line items" do
+        line_items = 250.times.map do |i|
+          {
+            :quantity => "2.02",
+            :description => "Line item ##{i}",
+            :kind => "credit",
+            :unit_amount => "5",
+            :unit_of_measure => "gallon",
+            :total_amount => "10.1",
+          }
+        end
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => line_items,
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:line_items)[0].code.should == Braintree::ErrorCodes::Transaction::TooManyLineItems
+      end
+    end
+    
     context "level 3 summary data" do
       it "accepts level 3 summary data" do
         result = Braintree::Transaction.create(

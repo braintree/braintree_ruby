@@ -149,6 +149,7 @@ module Braintree
         :shipping_amount, :discount_amount, :ships_from_postal_code,
         :billing_address_id, :payment_method_nonce, :three_d_secure_token,
         :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id, :shared_payment_method_nonce,
+        {:line_items => [:quantity, :description, :kind, :unit_amount, :total_amount, :discount_amount, :unit_of_measure, :product_code, :commodity_code]},
         {:risk_data => [:customer_browser, :customer_ip]},
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
