@@ -180,6 +180,10 @@ module Braintree
       Configuration.gateway.transaction.find(id)
     end
 
+    def self.line_items(id)
+      Configuration.gateway.transaction_line_item.find_all(id)
+    end
+
     def self.hold_in_escrow(id)
       Configuration.gateway.transaction.hold_in_escrow(id)
     end
@@ -301,6 +305,10 @@ module Braintree
         end
       end
       "#<#{self.class} #{nice_attributes.join(', ')}>"
+    end
+
+    def line_items
+      @gateway.transaction_line_item.find_all(id)
     end
 
     # Deprecated. Use Braintree::Transaction.refund

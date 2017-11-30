@@ -104,6 +104,10 @@ module Braintree
       TransactionGateway.new(self)
     end
 
+    def transaction_line_item
+      TransactionLineItemGateway.new(self)
+    end
+
     def testing
       TestingGateway.new(self)
     end

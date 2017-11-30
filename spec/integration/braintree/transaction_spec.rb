@@ -2244,7 +2244,7 @@ describe Braintree::Transaction do
     end
 
     context "line items" do
-      it "allows creation with empty line items" do
+      it "allows creation with empty line items and returns none" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => "35.05",
@@ -2252,9 +2252,10 @@ describe Braintree::Transaction do
           :line_items => [],
         )
         result.success?.should == true
+        result.transaction.line_items.should == []
       end
 
-      it "allows creation with single line item" do
+      it "allows creation with single line item and returns it" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => "45.15",
@@ -2274,9 +2275,20 @@ describe Braintree::Transaction do
           ],
         )
         result.success?.should == true
+        result.transaction.line_items.length.should == 1
+        line_item = result.transaction.line_items[0]
+        line_item.quantity.should == BigDecimal.new("1.0232")
+        line_item.description.should == "Description #1"
+        line_item.kind.should == "debit"
+        line_item.unit_amount.should == BigDecimal.new("45.1232")
+        line_item.unit_of_measure.should == "gallon"
+        line_item.discount_amount.should == BigDecimal.new("1.02")
+        line_item.total_amount.should == BigDecimal.new("45.15")
+        line_item.product_code.should == "23434"
+        line_item.commodity_code.should == "9SAASSD8724"
       end
 
-      it "allows creation with multiple line items" do
+      it "allows creation with multiple line items and returns them" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => "35.05",
@@ -2304,6 +2316,27 @@ describe Braintree::Transaction do
           ],
         )
         result.success?.should == true
+        result.transaction.line_items.length.should == 2
+        line_item_1 = result.transaction.line_items.find { |line_item| line_item.description == "Description #1" }
+        line_item_1.quantity.should == BigDecimal.new("1.0232")
+        line_item_1.description.should == "Description #1"
+        line_item_1.kind.should == "debit"
+        line_item_1.unit_amount.should == BigDecimal.new("45.1232")
+        line_item_1.unit_of_measure.should == "gallon"
+        line_item_1.discount_amount.should == BigDecimal.new("1.02")
+        line_item_1.total_amount.should == BigDecimal.new("45.15")
+        line_item_1.product_code.should == "23434"
+        line_item_1.commodity_code.should == "9SAASSD8724"
+        line_item_2 = result.transaction.line_items.find { |line_item| line_item.description == "Description #2" }
+        line_item_2.quantity.should == BigDecimal.new("2.02")
+        line_item_2.description.should == "Description #2"
+        line_item_2.kind.should == "credit"
+        line_item_2.unit_amount.should == BigDecimal.new("5")
+        line_item_2.unit_of_measure.should == "gallon"
+        line_item_2.total_amount.should == BigDecimal.new("10.1")
+        line_item_2.discount_amount.should == nil
+        line_item_2.product_code.should == nil
+        line_item_2.commodity_code.should == nil
       end
 
       it "handles validation errors on line items" do
