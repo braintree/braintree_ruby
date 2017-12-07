@@ -2263,7 +2263,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.0232",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :total_amount => "45.15",
@@ -2274,7 +2274,7 @@ describe Braintree::Transaction do
         result.transaction.line_items.length.should == 1
         line_item = result.transaction.line_items[0]
         line_item.quantity.should == BigDecimal.new("1.0232")
-        line_item.description.should == "Description #1"
+        line_item.name.should == "Name #1"
         line_item.kind.should == "debit"
         line_item.unit_amount.should == BigDecimal.new("45.1232")
         line_item.total_amount.should == BigDecimal.new("45.15")
@@ -2288,14 +2288,17 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.0232",
+              :name => "Name #1",
               :description => "Description #1",
               :kind => "debit",
               :unit_amount => "45.1232",
+              :unit_tax_amount => "1.23",
               :unit_of_measure => "gallon",
               :discount_amount => "1.02",
               :total_amount => "45.15",
               :product_code => "23434",
               :commodity_code => "9SAASSD8724",
+              :url => "https://example.com/products/23434",
             },
           ],
         )
@@ -2303,14 +2306,17 @@ describe Braintree::Transaction do
         result.transaction.line_items.length.should == 1
         line_item = result.transaction.line_items[0]
         line_item.quantity.should == BigDecimal.new("1.0232")
+        line_item.name.should == "Name #1"
         line_item.description.should == "Description #1"
         line_item.kind.should == "debit"
         line_item.unit_amount.should == BigDecimal.new("45.1232")
+        line_item.unit_tax_amount.should == BigDecimal.new("1.23")
         line_item.unit_of_measure.should == "gallon"
         line_item.discount_amount.should == BigDecimal.new("1.02")
         line_item.total_amount.should == BigDecimal.new("45.15")
         line_item.product_code.should == "23434"
         line_item.commodity_code.should == "9SAASSD8724"
+        line_item.url.should == "https://example.com/products/23434"
       end
 
       it "allows creation with multiple line items and returns them" do
@@ -2321,7 +2327,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.0232",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2332,7 +2338,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "2.02",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "5",
               :unit_of_measure => "gallon",
@@ -2342,9 +2348,9 @@ describe Braintree::Transaction do
         )
         result.success?.should == true
         result.transaction.line_items.length.should == 2
-        line_item_1 = result.transaction.line_items.find { |line_item| line_item.description == "Description #1" }
+        line_item_1 = result.transaction.line_items.find { |line_item| line_item.name == "Name #1" }
         line_item_1.quantity.should == BigDecimal.new("1.0232")
-        line_item_1.description.should == "Description #1"
+        line_item_1.name.should == "Name #1"
         line_item_1.kind.should == "debit"
         line_item_1.unit_amount.should == BigDecimal.new("45.1232")
         line_item_1.unit_of_measure.should == "gallon"
@@ -2352,9 +2358,9 @@ describe Braintree::Transaction do
         line_item_1.total_amount.should == BigDecimal.new("45.15")
         line_item_1.product_code.should == "23434"
         line_item_1.commodity_code.should == "9SAASSD8724"
-        line_item_2 = result.transaction.line_items.find { |line_item| line_item.description == "Description #2" }
+        line_item_2 = result.transaction.line_items.find { |line_item| line_item.name == "Name #2" }
         line_item_2.quantity.should == BigDecimal.new("2.02")
-        line_item_2.description.should == "Description #2"
+        line_item_2.name.should == "Name #2"
         line_item_2.kind.should == "credit"
         line_item_2.unit_amount.should == BigDecimal.new("5")
         line_item_2.unit_of_measure.should == "gallon"
@@ -2372,7 +2378,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2383,7 +2389,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2398,39 +2404,6 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:line_items).for(:index_1).on(:commodity_code)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::CommodityCodeIsTooLong
       end
 
-      it "handles validation error description is required" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => "35.05",
-          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
-          :line_items => [
-            {
-              :quantity => "1.2322",
-              :description => "Description #1",
-              :kind => "debit",
-              :unit_amount => "45.1232",
-              :unit_of_measure => "gallon",
-              :discount_amount => "1.02",
-              :total_amount => "45.15",
-              :product_code => "23434",
-              :commodity_code => "9SAASSD8724",
-            },
-            {
-              :quantity => "1.2322",
-              :kind => "credit",
-              :unit_amount => "45.1232",
-              :unit_of_measure => "gallon",
-              :discount_amount => "1.02",
-              :total_amount => "45.15",
-              :product_code => "23434",
-              :commodity_code => "9SAASSD8724",
-            },
-          ],
-        )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:description)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DescriptionIsRequired
-      end
-
       it "handles validation error description is too long" do
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2439,7 +2412,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2450,6 +2423,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
+              :name => "Name #2",
               :description => "123456789012345678901234567890123456",
               :kind => "credit",
               :unit_amount => "45.1232",
@@ -2473,7 +2447,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2484,7 +2458,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2507,7 +2481,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2518,7 +2492,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2541,7 +2515,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2552,7 +2526,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2575,7 +2549,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2586,7 +2560,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "sale",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2609,7 +2583,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2620,7 +2594,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
               :discount_amount => "1.02",
@@ -2634,7 +2608,7 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::KindIsRequired
       end
 
-      it "handles validation error product code is too long" do
+      it "handles validation error name is required" do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => "35.05",
@@ -2642,7 +2616,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2653,7 +2627,74 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::NameIsRequired
+      end
+
+      it "handles validation error name is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "X"*36,
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::NameIsTooLong
+      end
+
+      it "handles validation error product code is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2676,7 +2717,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2687,7 +2728,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1,2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2710,7 +2751,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2720,7 +2761,7 @@ describe Braintree::Transaction do
               :commodity_code => "9SAASSD8724",
             },
             {
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2743,7 +2784,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2754,7 +2795,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "2147483648",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2777,7 +2818,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2788,7 +2829,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2811,7 +2852,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2822,7 +2863,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2844,7 +2885,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2855,7 +2896,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2878,7 +2919,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2889,7 +2930,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2912,7 +2953,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2923,7 +2964,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.01232",
               :unit_of_measure => "gallon",
@@ -2946,7 +2987,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2957,7 +2998,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_of_measure => "gallon",
               :discount_amount => "1.02",
@@ -2978,7 +3019,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -2989,7 +3030,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "2147483648",
               :unit_of_measure => "gallon",
@@ -3012,7 +3053,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -3023,7 +3064,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "-2",
               :unit_of_measure => "gallon",
@@ -3046,7 +3087,7 @@ describe Braintree::Transaction do
           :line_items => [
             {
               :quantity => "1.2322",
-              :description => "Description #1",
+              :name => "Name #1",
               :kind => "debit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
@@ -3057,7 +3098,7 @@ describe Braintree::Transaction do
             },
             {
               :quantity => "1.2322",
-              :description => "Description #2",
+              :name => "Name #2",
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "1234567890123",
@@ -3072,6 +3113,113 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_of_measure)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitOfMeasureIsTooLong
       end
 
+      it "handles validation error unit tax amount format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_tax_amount => "2.34",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.0122",
+              :unit_tax_amount => "2.012",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountFormatIsInvalid
+      end
+
+      it "handles validation error unit tax amount is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_tax_amount => "1.23",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.0122",
+              :unit_tax_amount => "2147483648",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountIsTooLarge
+      end
+
+      it "handles validation error unit tax amount must be greater than zero" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.0122",
+              :unit_tax_amount => "-1.23",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountMustBeGreaterThanZero
+      end
+
       it "handles validation errors on line items structure" do
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -3079,7 +3227,7 @@ describe Braintree::Transaction do
           :payment_method_nonce => Braintree::Test::Nonce::Transactable,
           :line_items => {
             :quantity => "2.02",
-            :description => "Description #2",
+            :name => "Name #2",
             :kind => "credit",
             :unit_amount => "5",
             :unit_of_measure => "gallon",
@@ -3099,16 +3247,16 @@ describe Braintree::Transaction do
             :line_items => [
               {
                 :quantity => "2.02",
-                :description => "Description #1",
+                :name => "Name #1",
                 :kind => "credit",
                 :unit_amount => "5",
                 :unit_of_measure => "gallon",
                 :total_amount => "10.1",
               },
-              ['Description #2'],
+              ['Name #2'],
               {
                 :quantity => "2.02",
-                :description => "Description #3",
+                :name => "Name #3",
                 :kind => "credit",
                 :unit_amount => "5",
                 :unit_of_measure => "gallon",
@@ -3123,7 +3271,7 @@ describe Braintree::Transaction do
         line_items = 250.times.map do |i|
           {
             :quantity => "2.02",
-            :description => "Line item ##{i}",
+            :name => "Line item ##{i}",
             :kind => "credit",
             :unit_amount => "5",
             :unit_of_measure => "gallon",

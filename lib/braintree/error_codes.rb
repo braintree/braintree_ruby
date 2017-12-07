@@ -422,13 +422,14 @@ module Braintree
 
     module TransactionLineItem
       CommodityCodeIsTooLong = "95801"
-      DescriptionIsRequired = "95802"
       DescriptionIsTooLong = "95803"
       DiscountAmountFormatIsInvalid = "95804"
       DiscountAmountIsTooLarge = "95805"
       DiscountAmountMustBeGreaterThanZero = "95806"
       KindIsInvalid = "95807"
       KindIsRequired = "95808"
+      NameIsRequired = "95822"
+      NameIsTooLong = "95823"
       ProductCodeIsTooLong = "95809"
       QuantityFormatIsInvalid = "95810"
       QuantityIsRequired = "95811"
@@ -442,6 +443,9 @@ module Braintree
       UnitAmountIsTooLarge = "95819"
       UnitAmountMustBeGreaterThanZero = "95820"
       UnitOfMeasureIsTooLong = "95821"
+      UnitTaxAmountFormatIsInvalid = "95824"
+      UnitTaxAmountIsTooLarge = "95825"
+      UnitTaxAmountMustBeGreaterThanZero = "95826"
     end
 
     module Merchant
