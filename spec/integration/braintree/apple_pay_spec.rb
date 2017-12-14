@@ -36,57 +36,28 @@ describe Braintree::ApplePayGateway do
   describe "unregister_domain" do
     it "unregisters an apple pay domain" do
       domain = "example.org"
-      result = @gateway.apple_pay.register_domain(domain)
-      result.should be_success
-
       result = @gateway.apple_pay.unregister_domain(domain)
       result.should be_success
-      @gateway.apple_pay.registered_domains.apple_pay_options.domains.should be_empty
     end
 
     it "unregisters an apple pay domain with scheme in url" do
       domain = "http://example.org"
-      result = @gateway.apple_pay.register_domain(domain)
-      result.should be_success
-
       result = @gateway.apple_pay.unregister_domain(domain)
-      result.should be_success
-      @gateway.apple_pay.registered_domains.apple_pay_options.domains.should be_empty
-    end
-
-    it "does not fail when unregistering a non-registered domain" do
-      result = @gateway.apple_pay.unregister_domain("unregistered.com")
       result.should be_success
     end
 
     it "escapes the unregistered domain query parameter" do
       domain = "ex&mple.org"
-      result = @gateway.apple_pay.register_domain(domain)
-      result.should be_success
-      @gateway.apple_pay.registered_domains.apple_pay_options.domains.should_not be_empty
-
       result = @gateway.apple_pay.unregister_domain(domain)
       result.should be_success
-      @gateway.apple_pay.registered_domains.apple_pay_options.domains.should be_empty
     end
   end
 
   describe "registered_domains" do
-    it "returns registered domains" do
-      result = @gateway.apple_pay.register_domain("www.example.com")
-      result.should be_success
-      result = @gateway.apple_pay.register_domain("www.example.org")
-      result.should be_success
-
+    it "returns stubbed registered domains" do
       result = @gateway.apple_pay.registered_domains
       result.should be_success
-      result.apple_pay_options.domains.should =~ ["www.example.org", "www.example.com"]
-    end
-
-    it "returns an empty list if no domains are registered" do
-      result = @gateway.apple_pay.registered_domains
-      result.should be_success
-      result.apple_pay_options.domains.should == []
+      result.apple_pay_options.domains.should == ["www.example.com"]
     end
   end
 end
