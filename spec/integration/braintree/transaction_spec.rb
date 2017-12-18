@@ -2424,7 +2424,7 @@ describe Braintree::Transaction do
             {
               :quantity => "1.2322",
               :name => "Name #2",
-              :description => "123456789012345678901234567890123456",
+              :description => "X" * 128,
               :kind => "credit",
               :unit_amount => "45.1232",
               :unit_of_measure => "gallon",
