@@ -3,4 +3,4 @@
 # Checklist
 
 - [ ] Added changelog entry
-- [ ] Ran unit tests (`rake`)
+- [ ] Ran unit tests (`rake test:unit`)
