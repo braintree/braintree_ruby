@@ -1,7 +1,14 @@
 module Braintree
   class ErrorResult
 
-    attr_reader :credit_card_verification, :merchant_account, :transaction, :subscription, :errors, :params, :message, :verification
+    attr_reader :credit_card_verification
+    attr_reader :errors
+    attr_reader :merchant_account
+    attr_reader :message
+    attr_reader :params
+    attr_reader :subscription
+    attr_reader :transaction
+    attr_reader :verification
 
     def initialize(gateway, data) # :nodoc:
       @gateway = gateway

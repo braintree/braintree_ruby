@@ -2,9 +2,7 @@ module Braintree
   class AuthorizationAdjustment # :nodoc:
     include BaseModule
 
-    attr_reader :amount
-    attr_reader :success
-    attr_reader :timestamp
+    attr_reader :amount, :success, :timestamp
 
     class << self
       protected :new

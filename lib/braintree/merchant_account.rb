@@ -18,9 +18,14 @@ module Braintree
       include Braintree::MerchantAccount::FundingDestination
     end
 
-    attr_reader :status, :id, :master_merchant_account,
-      :individual_details, :business_details, :funding_details,
-      :currency_iso_code, :default
+    attr_reader :business_details
+    attr_reader :currency_iso_code
+    attr_reader :default
+    attr_reader :funding_details
+    attr_reader :id
+    attr_reader :individual_details
+    attr_reader :master_merchant_account
+    attr_reader :status
 
     alias_method :default?, :default
 

@@ -68,69 +68,70 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
-    attr_reader :avs_error_response_code, :avs_postal_code_response_code, :avs_street_address_response_code
-    attr_reader :amount, :created_at, :credit_card_details, :customer_details, :subscription_details, :service_fee_amount, :id
+    attr_reader :add_ons
+    attr_reader :additional_processor_response          # The raw response from the processor.
+    attr_reader :amex_express_checkout_details
+    attr_reader :amount
+    attr_reader :android_pay_details
+    attr_reader :apple_pay_details
+    attr_reader :authorization_adjustments
+    attr_reader :authorized_transaction_id
+    attr_reader :avs_error_response_code
+    attr_reader :avs_postal_code_response_code
+    attr_reader :avs_street_address_response_code
+    attr_reader :billing_details, :shipping_details
+    attr_reader :channel
+    attr_reader :coinbase_details
+    attr_reader :created_at
+    attr_reader :credit_card_details
     attr_reader :currency_iso_code
     attr_reader :custom_fields
+    attr_reader :customer_details
     attr_reader :cvv_response_code
-    attr_reader :disbursement_details
-    attr_reader :disputes
     attr_reader :descriptor
+    attr_reader :disbursement_details
+    attr_reader :discount_amount
+    attr_reader :discounts
+    attr_reader :disputes
     attr_reader :escrow_status
+    attr_reader :facilitated_details
+    attr_reader :facilitator_details
     attr_reader :gateway_rejection_reason
+    attr_reader :id
+    attr_reader :ideal_payment_details
+    attr_reader :masterpass_card_details
     attr_reader :merchant_account_id
     attr_reader :order_id
-    attr_reader :channel
-    attr_reader :billing_details, :shipping_details
+    attr_reader :partial_settlement_transaction_ids
+    attr_reader :payment_instrument_type
     attr_reader :paypal_details
-    attr_reader :apple_pay_details
-    attr_reader :android_pay_details
-    attr_reader :amex_express_checkout_details
-    attr_reader :venmo_account_details
-    attr_reader :coinbase_details
     attr_reader :plan_id
-    # The authorization code from the processor.
-    attr_reader :processor_authorization_code
-    # The response code from the processor.
-    attr_reader :processor_response_code
-    # The response text from the processor.
-    attr_reader :processor_response_text
-    # The raw response from the processor.
-    attr_reader :additional_processor_response
-    # The settlement response code from the processor.
-    attr_reader :processor_settlement_response_code
-    # The settlement response text from the processor.
-    attr_reader :processor_settlement_response_text
-    attr_reader :voice_referral_number
+    attr_reader :processor_authorization_code           # Authorization code from the processor.
+    attr_reader :processor_response_code                # Response code from the processor.
+    attr_reader :processor_response_text                # Response text from the processor.
+    attr_reader :processor_settlement_response_code     # Settlement response code from the processor.
+    attr_reader :processor_settlement_response_text     # Settlement response text from the processor.
     attr_reader :purchase_order_number
     attr_reader :recurring
     attr_reader :refund_ids, :refunded_transaction_id
+    attr_reader :risk_data
+    attr_reader :service_fee_amount
     attr_reader :settlement_batch_id
-    attr_reader :authorized_transaction_id
-    attr_reader :partial_settlement_transaction_ids
-    # See Transaction::Status
-    attr_reader :status
+    attr_reader :shipping_amount
+    attr_reader :ships_from_postal_code
+    attr_reader :status                                 # See Transaction::Status
     attr_reader :status_history
+    attr_reader :subscription_details
     attr_reader :subscription_id
     attr_reader :tax_amount
     attr_reader :tax_exempt
-    attr_reader :shipping_amount
-    attr_reader :discount_amount
-    attr_reader :ships_from_postal_code
-    # Will either be "sale" or "credit"
-    attr_reader :type
-    attr_reader :updated_at
-    attr_reader :add_ons, :discounts
-    attr_reader :payment_instrument_type
-    attr_reader :risk_data
-    attr_reader :facilitated_details
-    attr_reader :facilitator_details
     attr_reader :three_d_secure_info
+    attr_reader :type                                   # Will either be "sale" or "credit"
+    attr_reader :updated_at
     attr_reader :us_bank_account_details
-    attr_reader :ideal_payment_details
+    attr_reader :venmo_account_details
     attr_reader :visa_checkout_card_details
-    attr_reader :masterpass_card_details
-    attr_reader :authorization_adjustments
+    attr_reader :voice_referral_number
 
     def self.create(attributes)
       Configuration.gateway.transaction.create(attributes)

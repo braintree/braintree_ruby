@@ -2,7 +2,15 @@ module Braintree
   class IdealPayment
     include BaseModule
 
-    attr_reader :id, :ideal_transaction_id, :currency, :amount, :status, :order_id, :issuer, :approval_url, :iban_bank_account
+    attr_reader :amount
+    attr_reader :approval_url
+    attr_reader :currency
+    attr_reader :iban_bank_account
+    attr_reader :id
+    attr_reader :ideal_transaction_id
+    attr_reader :issuer
+    attr_reader :order_id
+    attr_reader :status
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
@@ -36,7 +44,12 @@ module Braintree
 
     class IbanBankAccount
       include BaseModule
-      attr_reader :account_holder_name, :bic, :masked_iban, :iban_account_number_last_4, :iban_country, :description
+      attr_reader :account_holder_name
+      attr_reader :bic
+      attr_reader :description
+      attr_reader :iban_account_number_last_4
+      attr_reader :iban_country
+      attr_reader :masked_iban
 
       def initialize(attributes) # :nodoc:
         set_instance_variables_from_hash(attributes)

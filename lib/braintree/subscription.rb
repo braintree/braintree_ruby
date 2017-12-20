@@ -24,20 +24,35 @@ module Braintree
       Month = "month"
     end
 
-    attr_reader :days_past_due, :price, :plan_id, :id, :status, :payment_method_token, :merchant_account_id
-    attr_reader :first_billing_date, :next_billing_date, :billing_period_start_date, :billing_period_end_date
-    attr_reader :paid_through_date, :balance
-    attr_reader :trial_period, :trial_duration, :trial_duration_unit
-    attr_reader :failure_count
-    attr_reader :transactions
-    attr_reader :next_billing_period_amount
-    attr_reader :number_of_billing_cycles, :billing_day_of_month
-    attr_reader :add_ons, :discounts
-    attr_reader :descriptor
-    attr_reader :description
+    attr_reader :add_ons
+    attr_reader :balance
+    attr_reader :billing_day_of_month
+    attr_reader :billing_period_end_date
+    attr_reader :billing_period_start_date
+    attr_reader :created_at
     attr_reader :current_billing_cycle
-    attr_reader :updated_at, :created_at
+    attr_reader :days_past_due
+    attr_reader :description
+    attr_reader :descriptor
+    attr_reader :discounts
+    attr_reader :failure_count
+    attr_reader :first_billing_date
+    attr_reader :id
+    attr_reader :merchant_account_id
+    attr_reader :next_billing_date
+    attr_reader :next_billing_period_amount
+    attr_reader :number_of_billing_cycles
+    attr_reader :paid_through_date
+    attr_reader :payment_method_token
+    attr_reader :plan_id
+    attr_reader :price
+    attr_reader :status
     attr_reader :status_history
+    attr_reader :transactions
+    attr_reader :trial_duration
+    attr_reader :trial_duration_unit
+    attr_reader :trial_period
+    attr_reader :updated_at
 
     def self.cancel(subscription_id)
       Configuration.gateway.subscription.cancel(subscription_id)

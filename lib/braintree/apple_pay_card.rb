@@ -10,9 +10,21 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
-    attr_reader :bin, :card_type, :created_at, :customer_id, :default, :expiration_month,
-      :expiration_year, :expired, :image_url, :last_4, :payment_instrument_name,
-      :source_description, :subscriptions, :token, :updated_at
+    attr_reader :bin
+    attr_reader :card_type
+    attr_reader :created_at
+    attr_reader :customer_id
+    attr_reader :default
+    attr_reader :expiration_month
+    attr_reader :expiration_year
+    attr_reader :expired
+    attr_reader :image_url
+    attr_reader :last_4
+    attr_reader :payment_instrument_name
+    attr_reader :source_description
+    attr_reader :subscriptions
+    attr_reader :token
+    attr_reader :updated_at
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway

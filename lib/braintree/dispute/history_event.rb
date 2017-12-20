@@ -3,8 +3,7 @@ module Braintree
     class HistoryEvent # :nodoc:
       include BaseModule
 
-      attr_reader :status
-      attr_reader :timestamp
+      attr_reader :status, :timestamp
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

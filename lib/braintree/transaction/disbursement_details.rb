@@ -3,7 +3,11 @@ module Braintree
     class DisbursementDetails # :nodoc:
       include BaseModule
 
-      attr_reader :disbursement_date, :settlement_amount, :settlement_currency_iso_code, :settlement_currency_exchange_rate, :success
+      attr_reader :disbursement_date
+      attr_reader :settlement_amount
+      attr_reader :settlement_currency_exchange_rate
+      attr_reader :settlement_currency_iso_code
+      attr_reader :success
 
       alias_method :success?, :success
 

@@ -1,6 +1,7 @@
 module Braintree
   class SettlementBatchSummary
     include BaseModule
+    
     attr_reader :records
 
     def self.generate(settlement_date, group_by_custom_field = nil)
