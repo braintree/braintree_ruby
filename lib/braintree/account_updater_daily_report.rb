@@ -2,8 +2,8 @@ module Braintree
   class AccountUpdaterDailyReport # :nodoc:
     include BaseModule
 
-    attr_reader :report_url
     attr_reader :report_date
+    attr_reader :report_url
 
     class << self
       protected :new

@@ -2,10 +2,28 @@ module Braintree
   class Customer
     include BaseModule
 
-    attr_reader :addresses, :company, :created_at, :credit_cards, :email, :fax, :first_name, :id, :last_name,
-      :phone, :updated_at, :website, :custom_fields, :paypal_accounts, :apple_pay_cards, :coinbase_accounts,
-      :android_pay_cards, :amex_express_checkout_cards, :venmo_accounts, :us_bank_accounts, :visa_checkout_cards,
-      :masterpass_cards
+    attr_reader :addresses
+    attr_reader :amex_express_checkout_cards
+    attr_reader :android_pay_cards
+    attr_reader :apple_pay_cards
+    attr_reader :coinbase_accounts
+    attr_reader :company
+    attr_reader :created_at
+    attr_reader :credit_cards
+    attr_reader :custom_fields
+    attr_reader :email
+    attr_reader :fax
+    attr_reader :first_name
+    attr_reader :id
+    attr_reader :last_name
+    attr_reader :masterpass_cards
+    attr_reader :paypal_accounts
+    attr_reader :phone
+    attr_reader :updated_at
+    attr_reader :us_bank_accounts
+    attr_reader :venmo_accounts
+    attr_reader :visa_checkout_cards
+    attr_reader :website
 
     def self.all
       Configuration.gateway.customer.all

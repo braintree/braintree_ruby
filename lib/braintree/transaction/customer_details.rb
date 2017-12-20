@@ -3,7 +3,14 @@ module Braintree
     class CustomerDetails # :nodoc:
       include BaseModule
 
-      attr_reader :company, :email, :fax, :first_name, :id, :last_name, :phone, :website
+      attr_reader :company
+      attr_reader :email
+      attr_reader :fax
+      attr_reader :first_name
+      attr_reader :id
+      attr_reader :last_name
+      attr_reader :phone
+      attr_reader :website
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

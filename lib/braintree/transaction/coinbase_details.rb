@@ -3,7 +3,10 @@ module Braintree
     class CoinbaseDetails
       include BaseModule
 
-      attr_reader :user_id, :user_name, :user_email, :token
+      attr_reader :user_id
+      attr_reader :user_email
+      attr_reader :user_name
+      attr_reader :token
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

@@ -3,10 +3,24 @@ module Braintree
     class MasterpassCardDetails # :nodoc:
       include BaseModule
 
-      attr_reader :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance,
-        :customer_location, :debit, :durbin_regulated, :expiration_month, :expiration_year,
-        :healthcare, :image_url, :issuing_bank, :last_4, :payroll, :prepaid, :product_id,
-        :token
+      attr_reader :bin
+      attr_reader :card_type
+      attr_reader :cardholder_name
+      attr_reader :commercial
+      attr_reader :country_of_issuance
+      attr_reader :customer_location
+      attr_reader :debit
+      attr_reader :durbin_regulated
+      attr_reader :expiration_month
+      attr_reader :expiration_year
+      attr_reader :healthcare
+      attr_reader :image_url
+      attr_reader :issuing_bank
+      attr_reader :last_4
+      attr_reader :payroll
+      attr_reader :prepaid
+      attr_reader :product_id
+      attr_reader :token
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

@@ -7,7 +7,9 @@ module Braintree
       Consumer = 'consumer'
     end
 
-    attr_reader :token, :image_url, :customer_id
+    attr_reader :customer_id
+    attr_reader :image_url
+    attr_reader :token
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway

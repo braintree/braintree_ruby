@@ -3,7 +3,8 @@ module Braintree
     class TransactionDetails # :nodoc:
       include BaseModule
 
-      attr_reader :amount, :id
+      attr_reader :amount
+      attr_reader :id
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?

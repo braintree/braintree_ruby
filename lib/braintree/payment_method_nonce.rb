@@ -10,7 +10,11 @@ module Braintree
       Configuration.gateway.payment_method_nonce.find(payment_method_nonce)
     end
 
-    attr_reader :nonce, :three_d_secure_info, :type, :details, :bin_data
+    attr_reader :bin_data
+    attr_reader :details
+    attr_reader :nonce
+    attr_reader :three_d_secure_info
+    attr_reader :type
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway

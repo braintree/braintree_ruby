@@ -42,18 +42,18 @@ module Braintree
       GrantedPaymentInstrumentUpdate = "granted_payment_instrument_update"
     end
 
-    attr_reader :subscription
-    attr_reader :kind
-    attr_reader :timestamp
-    attr_reader :transaction
-    attr_reader :partner_merchant
+    attr_reader :account_updater_daily_report
+    attr_reader :connected_merchant_paypal_status_changed
+    attr_reader :connected_merchant_status_transitioned
     attr_reader :disbursement
     attr_reader :dispute
-    attr_reader :account_updater_daily_report
-    attr_reader :ideal_payment
-    attr_reader :connected_merchant_status_transitioned
-    attr_reader :connected_merchant_paypal_status_changed
     attr_reader :granted_payment_instrument_update
+    attr_reader :ideal_payment
+    attr_reader :kind
+    attr_reader :partner_merchant
+    attr_reader :subscription
+    attr_reader :timestamp
+    attr_reader :transaction
 
     def self.parse(signature, payload)
       Configuration.gateway.webhook_notification.parse(signature, payload)

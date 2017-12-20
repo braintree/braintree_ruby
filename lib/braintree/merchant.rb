@@ -2,7 +2,14 @@ module Braintree
   class Merchant
     include BaseModule # :nodoc:
 
-    attr_reader :id, :email, :company_name, :country_code_alpha2, :country_code_alpha3, :country_code_numeric, :country_name, :merchant_accounts
+    attr_reader :company_name
+    attr_reader :country_code_alpha2
+    attr_reader :country_code_alpha3
+    attr_reader :country_code_numeric
+    attr_reader :country_name
+    attr_reader :email
+    attr_reader :id
+    attr_reader :merchant_accounts
 
     def initialize(gateway, attributes) # :nodoc:
       @merchant_accounts = attributes.delete(:merchant_accounts).map do |merchant_account|

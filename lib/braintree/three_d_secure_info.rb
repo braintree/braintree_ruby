@@ -2,7 +2,11 @@ module Braintree
   class ThreeDSecureInfo # :nodoc:
     include BaseModule
 
-    attr_reader :enrolled, :liability_shifted, :liability_shift_possible, :status
+    attr_reader :enrolled
+    attr_reader :liability_shifted
+    attr_reader :liability_shift_possible
+    attr_reader :status
+
     alias_method :liability_shifted?, :liability_shifted
     alias_method :liability_shift_possible?, :liability_shift_possible
 

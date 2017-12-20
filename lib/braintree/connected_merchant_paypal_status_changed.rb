@@ -2,7 +2,9 @@ module Braintree
   class ConnectedMerchantPayPalStatusChanged
     include BaseModule
 
-    attr_reader :merchant_public_id, :action, :oauth_application_client_id
+    attr_reader :action
+    attr_reader :merchant_public_id
+    attr_reader :oauth_application_client_id
 
     def initialize(attributes)
       set_instance_variables_from_hash(attributes)

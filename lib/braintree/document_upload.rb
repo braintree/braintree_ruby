@@ -8,7 +8,11 @@ module Braintree
       PayoutInvoiceDocument     = "payout_invoice_document"
     end
 
-    attr_reader :id, :kind, :content_type, :name, :size
+    attr_reader :content_type
+    attr_reader :id
+    attr_reader :kind
+    attr_reader :name
+    attr_reader :size
 
     def self.create(attributes)
       Configuration.gateway.document_upload.create(attributes)

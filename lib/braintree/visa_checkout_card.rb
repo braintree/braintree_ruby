@@ -2,12 +2,32 @@ module Braintree
   class VisaCheckoutCard
     include BaseModule # :nodoc:
 
-    attr_reader :billing_address, :bin, :card_type, :cardholder_name,
-      :commercial, :country_of_issuance, :created_at, :customer_id,
-      :customer_location, :debit, :durbin_regulated, :expiration_month,
-      :expiration_year, :healthcare, :issuing_bank, :last_4, :payroll,
-      :prepaid, :product_id, :subscriptions, :token, :unique_number_identifier,
-      :updated_at, :image_url, :verification, :call_id
+    attr_reader :billing_address
+    attr_reader :bin
+    attr_reader :call_id
+    attr_reader :card_type
+    attr_reader :cardholder_name
+    attr_reader :commercial
+    attr_reader :country_of_issuance
+    attr_reader :created_at
+    attr_reader :customer_id
+    attr_reader :customer_location
+    attr_reader :debit
+    attr_reader :durbin_regulated
+    attr_reader :expiration_month
+    attr_reader :expiration_year
+    attr_reader :healthcare
+    attr_reader :image_url
+    attr_reader :issuing_bank
+    attr_reader :last_4
+    attr_reader :payroll
+    attr_reader :prepaid
+    attr_reader :product_id
+    attr_reader :subscriptions
+    attr_reader :token
+    attr_reader :unique_number_identifier
+    attr_reader :updated_at
+    attr_reader :verification
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway

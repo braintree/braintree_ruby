@@ -1,6 +1,10 @@
 module Braintree
   class CredentialsParser
-    attr_reader :client_id, :client_secret, :access_token, :environment, :merchant_id
+    attr_reader :access_token
+    attr_reader :client_id
+    attr_reader :client_secret
+    attr_reader :environment
+    attr_reader :merchant_id
 
     def parse_client_credentials(client_id, client_secret)
       raise ConfigurationError.new("Missing client_id when constructing Braintree::Gateway") if client_id.nil?
