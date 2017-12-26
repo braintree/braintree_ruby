@@ -2,8 +2,16 @@ module Braintree
   class VenmoAccount
     include BaseModule # :nodoc:
 
-    attr_reader :customer_id, :username, :venmo_user_id, :token, :source_description, :subscriptions,
-      :image_url, :default, :updated_at, :created_at
+    attr_reader :created_at
+    attr_reader :customer_id
+    attr_reader :default
+    attr_reader :image_url
+    attr_reader :source_description
+    attr_reader :subscriptions
+    attr_reader :token
+    attr_reader :updated_at
+    attr_reader :username
+    attr_reader :venmo_user_id
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
@@ -24,4 +32,3 @@ module Braintree
     end
   end
 end
-

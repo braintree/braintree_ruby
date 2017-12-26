@@ -2,8 +2,20 @@ module Braintree
   class AmexExpressCheckoutCard
     include BaseModule # :nodoc:
 
-    attr_reader :bin, :card_member_expiry_date, :card_member_number, :card_type, :created_at, :customer_id, :default,
-      :expiration_month, :expiration_year, :image_url, :source_description, :subscriptions, :token, :updated_at
+    attr_reader :bin
+    attr_reader :card_member_expiry_date
+    attr_reader :card_member_number
+    attr_reader :card_type
+    attr_reader :created_at
+    attr_reader :customer_id
+    attr_reader :default
+    attr_reader :expiration_month
+    attr_reader :expiration_year
+    attr_reader :image_url
+    attr_reader :source_description
+    attr_reader :subscriptions
+    attr_reader :token
+    attr_reader :updated_at
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway

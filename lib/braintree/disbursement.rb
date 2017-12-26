@@ -2,7 +2,15 @@ module Braintree
   class Disbursement
     include BaseModule
 
-    attr_reader :id, :amount, :exception_message, :disbursement_date, :follow_up_action, :merchant_account, :transaction_ids, :retry, :success
+    attr_reader :amount
+    attr_reader :disbursement_date
+    attr_reader :exception_message
+    attr_reader :follow_up_action
+    attr_reader :id
+    attr_reader :merchant_account
+    attr_reader :retry
+    attr_reader :success
+    attr_reader :transaction_ids
 
     alias_method :success?, :success
 

@@ -2,9 +2,22 @@ module Braintree
   class Address
     include BaseModule # :nodoc:
 
-    attr_reader :company, :country_name, :created_at, :customer_id, :extended_address, :first_name, :id,
-      :last_name, :locality, :postal_code, :region, :street_address, :updated_at,
-      :country_code_alpha2, :country_code_alpha3, :country_code_numeric
+    attr_reader :company
+    attr_reader :country_code_alpha2
+    attr_reader :country_code_alpha3
+    attr_reader :country_code_numeric
+    attr_reader :country_name
+    attr_reader :created_at
+    attr_reader :customer_id
+    attr_reader :extended_address
+    attr_reader :first_name
+    attr_reader :id
+    attr_reader :last_name
+    attr_reader :locality
+    attr_reader :postal_code
+    attr_reader :region
+    attr_reader :street_address
+    attr_reader :updated_at
 
     def self.create(attributes)
       Configuration.gateway.address.create(attributes)
