@@ -1,6 +1,7 @@
 module Braintree
   class Customer
     include BaseModule
+    include Braintree::Util::IdEquality
 
     attr_reader :addresses
     attr_reader :amex_express_checkout_cards
@@ -199,12 +200,6 @@ module Braintree
     def update!(attributes)
       warn "[DEPRECATED] update! as an instance method is deprecated. Please use Customer.update!"
       return_object_or_raise(:customer) { update(attributes) }
-    end
-
-    # Returns true if +other+ is a Customer with the same id
-    def ==(other)
-      return false unless other.is_a?(Customer)
-      id == other.id
     end
 
     class << self

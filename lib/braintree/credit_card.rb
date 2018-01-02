@@ -1,6 +1,7 @@
 module Braintree
   class CreditCard
     include BaseModule # :nodoc:
+    include Braintree::Util::TokenEquality
 
     module CardType
       AmEx = "American Express"
@@ -235,12 +236,6 @@ module Braintree
     # Returns true if the card is associated with Venmo SDK
     def venmo_sdk?
       @venmo_sdk
-    end
-
-    # Returns true if +other+ is a +CreditCard+ with the same token.
-    def ==(other)
-      return false unless other.is_a?(CreditCard)
-      token == other.token
     end
 
     class << self

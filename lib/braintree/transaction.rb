@@ -1,6 +1,7 @@
 module Braintree
   class Transaction
     include BaseModule
+    include Braintree::Util::IdEquality
 
     module CreatedUsing
       FullInformation = 'full_information'
@@ -285,12 +286,6 @@ module Braintree
       @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
       @masterpass_card_details = MasterpassCardDetails.new(attributes[:masterpass_card])
       authorization_adjustments.map! { |attrs| AuthorizationAdjustment._new(attrs) } if authorization_adjustments
-    end
-
-    # True if <tt>other</tt> is a Braintree::Transaction with the same id.
-    def ==(other)
-      return false unless other.is_a?(Transaction)
-      id == other.id
     end
 
     def inspect # :nodoc:

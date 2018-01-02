@@ -1,6 +1,7 @@
 module Braintree
   class DocumentUpload
     include BaseModule
+    include Braintree::Util::IdEquality
 
     module Kind
       IdentityDocument          = "identity_document"
@@ -20,12 +21,6 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
-    end
-
-    # True if <tt>other</tt> has the same id.
-    def ==(other)
-      return false unless other.is_a?(DocumentUpload)
-      id == other.id
     end
 
     class << self

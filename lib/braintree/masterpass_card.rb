@@ -1,6 +1,7 @@
 module Braintree
   class MasterpassCard
     include BaseModule # :nodoc:
+    include Braintree::Util::TokenEquality
 
     attr_reader :billing_address
     attr_reader :bin
@@ -52,11 +53,6 @@ module Braintree
 
     def expired?
       @expired
-    end
-
-    def ==(other)
-      return false unless other.is_a?(MasterpassCard)
-      token == other.token
     end
 
     def inspect # :nodoc:

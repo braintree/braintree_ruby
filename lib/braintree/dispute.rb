@@ -1,6 +1,7 @@
 module Braintree
   class Dispute # :nodoc:
     include BaseModule
+    include Braintree::Util::IdEquality
 
     attr_reader :amount
     attr_reader :amount_disputed
@@ -118,12 +119,6 @@ module Braintree
       @status_history = status_history.map do |event|
         Braintree::Dispute::HistoryEvent.new(event)
       end unless status_history.nil?
-    end
-
-    # Returns true if +other+ is a Dispute with the same id
-    def ==(other)
-      return false unless other.is_a?(Dispute)
-      id == other.id
     end
   end
 end

@@ -1,6 +1,7 @@
 module Braintree
   class Subscription
     include BaseModule
+    include Braintree::Util::IdEquality
 
     module Source
       Api          = "api"
@@ -105,12 +106,6 @@ module Braintree
 
     def never_expires?
       @never_expires
-    end
-
-    # True if <tt>other</tt> has the same id.
-    def ==(other)
-      return false unless other.is_a?(Subscription)
-      id == other.id
     end
 
     class << self

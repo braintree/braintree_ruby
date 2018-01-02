@@ -137,5 +137,19 @@ module Braintree
         end
       end
     end
+
+    module IdEquality
+      def ==(other) # :nodoc:
+        return false unless other.is_a?(self.class)
+        id == other.id
+      end
+    end
+
+    module TokenEquality
+      def ==(other) # :nodoc:
+        return false unless other.is_a?(self.class)
+        token == other.token
+      end
+    end
   end
 end
