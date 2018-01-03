@@ -1,6 +1,7 @@
 module Braintree
   class CreditCardVerification
     include BaseModule
+    include Braintree::Util::IdEquality
 
     module Status
       Failed = 'failed'
@@ -83,11 +84,6 @@ module Braintree
     def self.create(attributes)
       Util.verify_keys(CreditCardVerificationGateway._create_signature, attributes)
       Configuration.gateway.verification.create(attributes)
-    end
-
-    def ==(other)
-      return false unless other.is_a?(CreditCardVerification)
-      id == other.id
     end
   end
 end

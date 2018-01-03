@@ -1,6 +1,7 @@
 module Braintree
   class VisaCheckoutCard
     include BaseModule # :nodoc:
+    include Braintree::Util::TokenEquality
 
     attr_reader :billing_address
     attr_reader :bin
@@ -66,11 +67,6 @@ module Braintree
 
     def masked_number
       "#{bin}******#{last_4}"
-    end
-
-    def ==(other)
-      return false unless other.is_a?(VisaCheckoutCard)
-      token == other.token
     end
 
     class << self
