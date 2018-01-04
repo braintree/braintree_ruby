@@ -2243,6 +2243,1052 @@ describe Braintree::Transaction do
       end
     end
 
+    context "line items" do
+      it "allows creation with empty line items and returns none" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [],
+        )
+        result.success?.should == true
+        result.transaction.line_items.should == []
+      end
+
+      it "allows creation with single line item with minimal fields and returns it" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "45.15",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.0232",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :total_amount => "45.15",
+            },
+          ],
+        )
+        result.success?.should == true
+        result.transaction.line_items.length.should == 1
+        line_item = result.transaction.line_items[0]
+        line_item.quantity.should == BigDecimal.new("1.0232")
+        line_item.name.should == "Name #1"
+        line_item.kind.should == "debit"
+        line_item.unit_amount.should == BigDecimal.new("45.1232")
+        line_item.total_amount.should == BigDecimal.new("45.15")
+      end
+
+      it "allows creation with single line item and returns it" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "45.15",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.0232",
+              :name => "Name #1",
+              :description => "Description #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_tax_amount => "1.23",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+              :url => "https://example.com/products/23434",
+            },
+          ],
+        )
+        result.success?.should == true
+        result.transaction.line_items.length.should == 1
+        line_item = result.transaction.line_items[0]
+        line_item.quantity.should == BigDecimal.new("1.0232")
+        line_item.name.should == "Name #1"
+        line_item.description.should == "Description #1"
+        line_item.kind.should == "debit"
+        line_item.unit_amount.should == BigDecimal.new("45.1232")
+        line_item.unit_tax_amount.should == BigDecimal.new("1.23")
+        line_item.unit_of_measure.should == "gallon"
+        line_item.discount_amount.should == BigDecimal.new("1.02")
+        line_item.total_amount.should == BigDecimal.new("45.15")
+        line_item.product_code.should == "23434"
+        line_item.commodity_code.should == "9SAASSD8724"
+        line_item.url.should == "https://example.com/products/23434"
+      end
+
+      it "allows creation with multiple line items and returns them" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.0232",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "2.02",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "5",
+              :unit_of_measure => "gallon",
+              :total_amount => "10.1",
+            },
+          ],
+        )
+        result.success?.should == true
+        result.transaction.line_items.length.should == 2
+        line_item_1 = result.transaction.line_items.find { |line_item| line_item.name == "Name #1" }
+        line_item_1.quantity.should == BigDecimal.new("1.0232")
+        line_item_1.name.should == "Name #1"
+        line_item_1.kind.should == "debit"
+        line_item_1.unit_amount.should == BigDecimal.new("45.1232")
+        line_item_1.unit_of_measure.should == "gallon"
+        line_item_1.discount_amount.should == BigDecimal.new("1.02")
+        line_item_1.total_amount.should == BigDecimal.new("45.15")
+        line_item_1.product_code.should == "23434"
+        line_item_1.commodity_code.should == "9SAASSD8724"
+        line_item_2 = result.transaction.line_items.find { |line_item| line_item.name == "Name #2" }
+        line_item_2.quantity.should == BigDecimal.new("2.02")
+        line_item_2.name.should == "Name #2"
+        line_item_2.kind.should == "credit"
+        line_item_2.unit_amount.should == BigDecimal.new("5")
+        line_item_2.unit_of_measure.should == "gallon"
+        line_item_2.total_amount.should == BigDecimal.new("10.1")
+        line_item_2.discount_amount.should == nil
+        line_item_2.product_code.should == nil
+        line_item_2.commodity_code.should == nil
+      end
+
+      it "handles validation error commodity code is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "1234567890123",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:commodity_code)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::CommodityCodeIsTooLong
+      end
+
+      it "handles validation error description is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :description => "X" * 128,
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:description)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DescriptionIsTooLong
+      end
+
+      it "handles validation error discount amount format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "$1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DiscountAmountFormatIsInvalid
+      end
+
+      it "handles validation error discount amount is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "2147483648",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DiscountAmountIsTooLarge
+      end
+
+      it "handles validation error discount amount must be greater than zero" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "-2",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DiscountAmountMustBeGreaterThanZero
+      end
+
+      it "handles validation error kind is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "sale",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::KindIsInvalid
+      end
+
+      it "handles validation error kind is required" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::KindIsRequired
+      end
+
+      it "handles validation error name is required" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::NameIsRequired
+      end
+
+      it "handles validation error name is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "X"*36,
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::NameIsTooLong
+      end
+
+      it "handles validation error product code is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "1234567890123",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:product_code)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::ProductCodeIsTooLong
+      end
+
+      it "handles validation error quantity format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1,2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::QuantityFormatIsInvalid
+      end
+
+      it "handles validation error quantity is required" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::QuantityIsRequired
+      end
+
+      it "handles validation error quantity is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "2147483648",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::QuantityIsTooLarge
+      end
+
+      it "handles validation error total amount format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "$45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountFormatIsInvalid
+      end
+
+      it "handles validation error total amount is required" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountIsRequired
+      end
+
+      it "handles validation error total amount is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "2147483648",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountIsTooLarge
+      end
+
+      it "handles validation error total amount must be greater than zero" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "-2",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountMustBeGreaterThanZero
+      end
+
+      it "handles validation error unit amount format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.01232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountFormatIsInvalid
+      end
+
+      it "handles validation error unit amount is required" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountIsRequired
+      end
+
+      it "handles validation error unit amount is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "2147483648",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountIsTooLarge
+      end
+
+      it "handles validation error unit amount must be greater than zero" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "-2",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountMustBeGreaterThanZero
+      end
+
+      it "handles validation error unit of measure is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "1234567890123",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_of_measure)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitOfMeasureIsTooLong
+      end
+
+      it "handles validation error unit tax amount format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_tax_amount => "2.34",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.0122",
+              :unit_tax_amount => "2.012",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountFormatIsInvalid
+      end
+
+      it "handles validation error unit tax amount is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_tax_amount => "1.23",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.0122",
+              :unit_tax_amount => "2147483648",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountIsTooLarge
+      end
+
+      it "handles validation error unit tax amount must be greater than zero" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => [
+            {
+              :quantity => "1.2322",
+              :name => "Name #1",
+              :kind => "debit",
+              :unit_amount => "45.1232",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+            {
+              :quantity => "1.2322",
+              :name => "Name #2",
+              :kind => "credit",
+              :unit_amount => "45.0122",
+              :unit_tax_amount => "-1.23",
+              :unit_of_measure => "gallon",
+              :discount_amount => "1.02",
+              :total_amount => "45.15",
+              :product_code => "23434",
+              :commodity_code => "9SAASSD8724",
+            },
+          ],
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountMustBeGreaterThanZero
+      end
+
+      it "handles validation errors on line items structure" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => {
+            :quantity => "2.02",
+            :name => "Name #2",
+            :kind => "credit",
+            :unit_amount => "5",
+            :unit_of_measure => "gallon",
+            :total_amount => "10.1",
+          },
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:line_items)[0].code.should == Braintree::ErrorCodes::Transaction::LineItemsExpected
+      end
+
+      it "handles invalid arguments on line items structure" do
+        expect do
+          Braintree::Transaction.create(
+            :type => "sale",
+            :amount => "35.05",
+            :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+            :line_items => [
+              {
+                :quantity => "2.02",
+                :name => "Name #1",
+                :kind => "credit",
+                :unit_amount => "5",
+                :unit_of_measure => "gallon",
+                :total_amount => "10.1",
+              },
+              ['Name #2'],
+              {
+                :quantity => "2.02",
+                :name => "Name #3",
+                :kind => "credit",
+                :unit_amount => "5",
+                :unit_of_measure => "gallon",
+                :total_amount => "10.1",
+              },
+            ],
+          )
+        end.to raise_error(ArgumentError)
+      end
+
+      it "handles validation errors on too many line items" do
+        line_items = 250.times.map do |i|
+          {
+            :quantity => "2.02",
+            :name => "Line item ##{i}",
+            :kind => "credit",
+            :unit_amount => "5",
+            :unit_of_measure => "gallon",
+            :total_amount => "10.1",
+          }
+        end
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => "35.05",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :line_items => line_items,
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).on(:line_items)[0].code.should == Braintree::ErrorCodes::Transaction::TooManyLineItems
+      end
+    end
+    
     context "level 3 summary data" do
       it "accepts level 3 summary data" do
         result = Braintree::Transaction.create(
@@ -2273,6 +3319,102 @@ describe Braintree::Transaction do
         result.success?.should == false
         result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountFormatIsInvalid
         result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountCannotBeNegative
+        result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters
+      end
+
+      it "handles validation error discount amount format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :discount_amount => "2.001",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountFormatIsInvalid
+      end
+
+      it "handles validation error discount amount cannot be negative" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :discount_amount => "-2",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountCannotBeNegative
+      end
+
+      it "handles validation error discount amount is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :discount_amount => "2147483648",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountIsTooLarge
+      end
+
+      it "handles validation error shipping amount format is invalid" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :shipping_amount => "2.001",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountFormatIsInvalid
+      end
+
+      it "handles validation error shipping amount cannot be negative" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :shipping_amount => "-2",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountCannotBeNegative
+      end
+
+      it "handles validation error shipping amount is too large" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :shipping_amount => "2147483648",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountIsTooLarge
+      end
+
+      it "handles validation error ships from postal code is too long" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :ships_from_postal_code => "1234567890",
+        )
+
+        result.success?.should == false
+        result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeIsTooLong
+      end
+
+      it "handles validation error ships from postal code invalid characters" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :amount => "10.00",
+          :ships_from_postal_code => "12345%78",
+        )
+
+        result.success?.should == false
         result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters
       end
     end

@@ -28,12 +28,14 @@ gem 'braintree'
 require "rubygems"
 require "braintree"
 
-Braintree::Configuration.environment = :sandbox
-Braintree::Configuration.merchant_id = "your_merchant_id"
-Braintree::Configuration.public_key = "your_public_key"
-Braintree::Configuration.private_key = "your_private_key"
+gateway = Braintree::Gateway.new(
+  :environment => :sandbox,
+  :merchant_id => "your_merchant_id",
+  :public_key => "your_public_key",
+  :private_key => "your_private_key",
+)
 
-result = Braintree::Transaction.sale(
+result = gateway.transaction.sale(
   :amount => "1000.00",
   :payment_method_nonce => nonce_from_the_client,
   :options => {
@@ -56,14 +58,14 @@ You retrieve your `merchant_id`, `public_key`, and `private_key` when [signing u
 
 ## Bang Methods
 
-Most methods have a bang and a non-bang version (e.g. `Braintree::Customer.create` and `Braintree::Customer.create!`).
+Most methods have a bang and a non-bang version (e.g. `gateway.customer.create` and `gateway.customer.create!`).
 The non-bang version will either return a `SuccessfulResult` or an `ErrorResult`. The bang version will either return
 the created or updated resource, or it will raise a `ValidationsFailed` exception.
 
 Example of using non-bang method:
 
 ```ruby
-result = Braintree::Customer.create(:first_name => "Josh")
+result = gateway.customer.create(:first_name => "Josh")
 if result.success?
   puts "Created customer #{result.customer.id}"
 else
@@ -78,7 +80,7 @@ Example of using bang method:
 
 ```ruby
 begin
-  customer = Braintree::Customer.create!(:first_name => "Josh")
+  customer = gateway.customer.create!(:first_name => "Josh")
   puts "Created customer #{customer.id}"
 rescue Braintree::ValidationsFailed
   puts "Validations failed"
@@ -106,7 +108,7 @@ To suppress logs from Braintree on environments where they are considered noise
 ```ruby
 logger = Logger.new("/dev/null")
 logger.level = Logger::INFO
-Braintree::Configuration.logger = logger
+gateway.config.logger = logger
 ```
 
 ## License

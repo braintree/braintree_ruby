@@ -1,3 +1,7 @@
+# 2.81.0
+* Add support for line_items
+* Update README to use instance methods
+
 # 2.80.1
 * Fix spec to expect PayPal transactions to move to settling rather than settled
 * Fix permissions issue where SDK could not be loaded in some environments

@@ -18,7 +18,7 @@ describe Braintree::Http do
     it "raises an AuthorizationError if authorization fails" do
       expect do
         config = Braintree::Configuration.instantiate
-        config.http.get("#{config.base_merchant_path}/users")
+        config.http.get("#{config.base_merchant_path}/downloads")
       end.to raise_error(Braintree::AuthorizationError)
     end
   end
