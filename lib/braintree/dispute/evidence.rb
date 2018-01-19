@@ -3,14 +3,19 @@ module Braintree
     class Evidence # :nodoc:
       include BaseModule
 
-      attr_reader :comment
-      attr_reader :created_at
-      attr_reader :id
-      attr_reader :sent_to_processor_at
-      attr_reader :url
+      attr_reader :comment,
+        :created_at,
+        :id,
+        :sent_to_processor_at,
+        :url,
+        :tag,
+        :sequence_number
 
       def initialize(attributes)
-        set_instance_variables_from_hash attributes unless attributes.nil?
+        unless attributes.nil?
+          @tag = attributes.delete(:category)
+          set_instance_variables_from_hash attributes
+        end
         @sent_to_processor_at = Date.parse(sent_to_processor_at) unless sent_to_processor_at.nil?
       end
     end

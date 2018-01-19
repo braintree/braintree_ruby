@@ -99,6 +99,8 @@ describe Braintree::Dispute do
       result.evidence.id.should =~ /^\w{16,}$/
       result.evidence.sent_to_processor_at.should == nil
       result.evidence.url.should == nil
+      result.evidence.tag.should == nil
+      result.evidence.sequence_number.should == nil
     end
 
     it "returns a NotFoundError if the dispute doesn't exist" do
@@ -123,6 +125,18 @@ describe Braintree::Dispute do
       expected_evidence = refreshed_dispute.evidence.find { |e| e.id == result.evidence.id }
       expected_evidence.should_not == nil
       expected_evidence.comment.should == "text evidence"
+    end
+
+    it "creates text evidence for the dispute with optional parameters" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, { content: "123456789", tag: "REFUND_ID", sequence_number: 7 })
+
+      result.success?.should == true
+      result.evidence.comment.should == "123456789"
+      result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
+      result.evidence.id.should =~ /^\w{16,}$/
+      result.evidence.sent_to_processor_at.should == nil
+      result.evidence.tag.should == "REFUND_ID"
+      result.evidence.sequence_number.should == 7
     end
   end
 

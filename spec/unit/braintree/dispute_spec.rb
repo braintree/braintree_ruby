@@ -170,6 +170,32 @@ describe Braintree::Dispute do
         Braintree::Dispute.add_text_evidence("dispute_id", nil)
       end.to raise_error(ArgumentError)
     end
+
+    describe "with optional params" do
+      it "does not raise an exception if the optional parameters are valid" do
+        expect do
+          Braintree::Dispute.add_text_evidence("dispute_id", nil, { tag: "", sequence_number: 3 })
+        end.to raise_error
+      end
+
+      it "raises an exception if the optional params contain invalid keys" do
+        expect do
+          Braintree::Dispute.add_text_evidence("dispute_id", nil, { random_param: "" })
+        end.to raise_error(ArgumentError)
+      end
+
+      it "raises an exception if sequence_number is provided and not an integer" do
+        expect do
+          Braintree::Dispute.add_text_evidence("dispute_id", nil, { sequence_number: "abc" })
+        end.to raise_error(ArgumentError)
+      end
+
+      it "raises an exception if the param tag is not a string" do
+        expect do
+          Braintree::Dispute.add_text_evidence("dispute_id", nil, { tag: 3 })
+        end.to raise_error(ArgumentError)
+      end
+    end
   end
 
   describe "self.remove_evidence" do

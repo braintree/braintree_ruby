@@ -94,6 +94,14 @@ Otherwise, we recommend using the non-bang methods.
 
 * [Documentation](https://developers.braintreepayments.com/ruby/sdk/server/overview)
 
+## Developing (Docker)
+
+The `Makefile` and `Dockerfile` will build an image containing the dependencies and drop you to a terminal where you can run tests.
+
+```
+make
+```
+
 ## Tests
 
 The unit specs can be run by anyone on any system, but the integration specs are meant to be run against a local development

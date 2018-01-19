@@ -40,13 +40,27 @@ module Braintree
       raise NotFoundError, "dispute with id #{dispute_id} not found"
     end
 
-    def add_text_evidence(dispute_id, content)
+    def add_text_evidence(dispute_id, content_or_request)
       raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
-      raise ArgumentError, "content cannot be blank" if content.nil? || content.to_s.strip == ""
+      raise ArgumentError, "content_or_request cannot be blank" if content_or_request.nil?
 
-      params = {comments: content}
-      response = @config.http.post("#{@config.base_merchant_path}/disputes/#{dispute_id}/evidence", params)
+      request = content_or_request.is_a?(String) ? { content: content_or_request } : content_or_request
+
+      raise ArgumentError, "content cannot be blank" if request[:content].nil? || request[:content].to_s.strip == ""
+      raise ArgumentError, "request can only contain the keys [:content, :tag, :sequence_number]" if (request.keys - [:content, :tag, :sequence_number]).any?
+      raise ArgumentError, "sequence_number must be an integer" if request[:sequence_number] && request[:sequence_number].to_s.match(/\D/)
+      raise ArgumentError, "tag must be a string" if request[:tag] && !request[:tag].is_a?(String)
+
+      params_for_http_post = {
+        evidence: {
+          comments: request[:content]
+        }.tap do |evidence_params|
+          evidence_params[:category] = request[:tag] if request[:tag]
+          evidence_params[:sequence_number] = request[:sequence_number] if request[:sequence_number]
+        end
+      }
+      response = @config.http.post("#{@config.base_merchant_path}/disputes/#{dispute_id}/evidence", params_for_http_post)
 
       if response[:evidence]
         SuccessfulResult.new(:evidence => Dispute::Evidence.new(response[:evidence]))
