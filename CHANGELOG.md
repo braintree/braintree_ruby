@@ -1,3 +1,10 @@
+## 2.83.0
+* Add support for `tax_amount` field on transaction `line_items`
+* Add support for `source_merchant_id` on webhooks
+* Deprecated `DiscountAmountMustBeGreaterThanZero` error in favor of `DiscountAmountCannotBeNegative`.
+* Deprecated `UnitTaxAmountMustBeGreaterThanZero` error in favor of `UnitTaxAmountCannotBeNegative`.
+* Add `find_all` static method to `TransactionLineItem` class
+
 ## 2.82.0
 * Add support for tagged evidence in DisputeGateway#add_text_evidence (Beta release)
 * Update https certificate bundle
@@ -440,7 +447,7 @@ anywhere in params string
 
 * Added ability to perform multiple partial refunds on Transactions
 * Deprecated Transaction refund_id in favor of refund_ids
-* Added Braintree::Address::CountryNames, a list of the country names/codes that the gateway accepts (thanks r38y[http://github.com/r38y])
+* Added Braintree::Address::CountryNames, a list of the country names/codes that the gateway accepts (thanks r38y[https://github.com/r38y])
 * Added revert_subscription_on_proration_failure flag to Subscription update that specifies how a Subscription should react to a failed proration charge
 * Deprecated Subscription next_bill_amount in favor of next_billing_period_amount
 * Added new fields to Subscription:
@@ -481,7 +488,7 @@ anywhere in params string
 # 2.4.0
 
 * Added unified message to result objects
-* Added ability to specify country using country_name, country_code_alpha2, country_code_alpha3, or country_code_numeric (see ISO_3166-1[http://en.wikipedia.org/wiki/ISO_3166-1])
+* Added ability to specify country using country_name, country_code_alpha2, country_code_alpha3, or country_code_numeric (see ISO_3166-1[https://en.wikipedia.org/wiki/ISO_3166-1])
 * Added gateway_rejection_reason to Transaction and Verification
 * Added delete as a class method on CreditCard (in addition to the existing instance method)
 * Allow searching with Date objects (in addition to DateTime and Time objects)
@@ -520,7 +527,7 @@ anywhere in params string
 
 * Updated success? on transaction responses to return false on declined transactions
 * Search results now include Enumerable and will automatically paginate data
-* Added credit_card[cardholder_name] to allowed transaction params and CreditCardDetails (thanks chrismcc[http://github.com/chrismcc])
+* Added credit_card[cardholder_name] to allowed transaction params and CreditCardDetails (thanks chrismcc[https://github.com/chrismcc])
 
 # 1.2.1
 
@@ -554,7 +561,7 @@ anywhere in params string
 
 # 1.1.1
 
-* Added explicit require for date to fix missing initialize (thanks jherdman[http://github.com/jherdman])
+* Added explicit require for date to fix missing initialize (thanks jherdman[https://github.com/jherdman])
 * Allow Transaction price and Subscription amount as BigDecimals (as well as Strings)
 * Ruby 1.9 bug fixes (thanks Leo Shemesh)
 

@@ -6,18 +6,23 @@ module Braintree
       @config.assert_has_access_token_or_keys
     end
 
-    def sample_notification(kind, id)
-      payload = Base64.encode64(_sample_xml(kind, id))
+    def sample_notification(kind, id, source_merchant_id=nil)
+      payload = Base64.encode64(_sample_xml(kind, id, source_merchant_id))
       signature_string = "#{@config.public_key}|#{Braintree::Digest.hexdigest(@config.private_key, payload)}"
 
       return {:bt_signature => signature_string, :bt_payload => payload}
     end
 
-    def _sample_xml(kind, data)
+    def _sample_xml(kind, data, source_merchant_id=nil)
+      unless source_merchant_id.nil?
+        source_merchant_xml = "<source-merchant-id>#{source_merchant_id}</source-merchant-id>"
+      end
+
       <<-XML
         <notification>
           <timestamp type="datetime">#{Time.now.utc.iso8601}</timestamp>
           <kind>#{kind}</kind>
+          #{source_merchant_xml}
           <subject>
             #{_subject_sample_xml(kind, data)}
           </subject>

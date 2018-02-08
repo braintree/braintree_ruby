@@ -1395,14 +1395,14 @@ describe Braintree::PaymentMethod do
 
   context "payment method grant and revoke" do
     before(:each) do
-      partner_merchant_gateway = Braintree::Gateway.new(
+      @partner_merchant_gateway = Braintree::Gateway.new(
         :merchant_id => "integration_merchant_public_id",
         :public_key => "oauth_app_partner_user_public_key",
         :private_key => "oauth_app_partner_user_private_key",
         :environment => Braintree::Configuration.environment,
         :logger => Logger.new("/dev/null")
       )
-      customer = partner_merchant_gateway.customer.create(
+      customer = @partner_merchant_gateway.customer.create(
         :first_name => "Joe",
         :last_name => "Brown",
         :company => "ExampleCo",
@@ -1411,19 +1411,19 @@ describe Braintree::PaymentMethod do
         :fax => "614.555.5678",
         :website => "www.example.com"
       ).customer
-      @credit_card = partner_merchant_gateway.credit_card.create(
+      @credit_card = @partner_merchant_gateway.credit_card.create(
         :customer_id => customer.id,
         :cardholder_name => "Adam Davis",
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009"
       ).credit_card
 
-      oauth_gateway = Braintree::Gateway.new(
+      @oauth_gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null")
       )
-      access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
+      access_token = Braintree::OAuthTestHelper.create_token(@oauth_gateway, {
         :merchant_public_id => "integration_merchant_id",
         :scope => "grant_payment_method"
       }).credentials.access_token
@@ -1528,6 +1528,60 @@ describe Braintree::PaymentMethod do
           :payment_method_nonce => grant_result.payment_method_nonce.nonce
         )
         result.should_not be_success
+      end
+
+      it "revokes grants upon deletion if :revoke_all_grants is true" do
+        customer_result = @partner_merchant_gateway.customer.create()
+        token = @partner_merchant_gateway.payment_method.create({
+          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+          :customer_id => customer_result.customer.id
+        }).payment_method.token
+
+        code = Braintree::OAuthTestHelper.create_grant(@oauth_gateway, {
+          :merchant_public_id => "integration_merchant_id",
+          :scope => "grant_payment_method"
+        })
+        access_token_result = @oauth_gateway.oauth.create_token_from_code({
+          :code => code,
+          :scope => "grant_payment_method"
+        }).credentials
+
+        access_token_gateway = Braintree::Gateway.new({
+          :access_token => access_token_result.access_token
+        })
+
+        grant_result = access_token_gateway.payment_method.grant(token, {
+          :allow_vaulting => true,
+          :include_billing_postal_code => true,
+        })
+
+        grant_result.should be_success
+
+        delete_result = @partner_merchant_gateway.payment_method.delete(token, {
+          :revoke_all_grants => true
+        })
+
+        delete_result.should be_success
+
+        new_customer_result = Braintree::Customer.create({
+          :first_name => "Joe",
+          :last_name => "Brown",
+          :company => "ExampleCo",
+          :email => "joe@example.com",
+          :phone => "312.555.1234",
+          :fax => "614.555.5678",
+          :website => "www.example.com"
+        })
+
+        # Revocations don't happen immediately so we add this.
+        sleep(6)
+
+        token_request = Braintree::PaymentMethod.create({
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
+          :customer_id => new_customer_result.customer.id
+        })
+
+        token_request.should_not be_success
       end
     end
   end

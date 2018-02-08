@@ -51,6 +51,7 @@ module Braintree
     attr_reader :ideal_payment
     attr_reader :kind
     attr_reader :partner_merchant
+    attr_reader :source_merchant_id
     attr_reader :subscription
     attr_reader :timestamp
     attr_reader :transaction

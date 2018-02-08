@@ -7,6 +7,8 @@ module Braintree
     end
 
     def parse(signature_string, payload)
+      raise InvalidSignature, 'signature cannot be nil' if signature_string.nil?
+      raise InvalidSignature, 'payload cannot be nil' if payload.nil?
       if payload =~ /[^A-Za-z0-9+=\/\n]/
         raise InvalidSignature, "payload contains illegal characters"
       end

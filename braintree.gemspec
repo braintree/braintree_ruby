@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.license = "MIT"
   s.author = "Braintree"
   s.email = "code@getbraintree.com"
-  s.homepage = "http://www.braintreepayments.com/"
+  s.homepage = "https://www.braintreepayments.com/"
   s.rubyforge_project = "braintree"
   s.has_rdoc = false
   s.files = Dir.glob ["README.rdoc", "LICENSE", "lib/**/*.{rb,crt}", "spec/**/*", "*.gemspec"]
