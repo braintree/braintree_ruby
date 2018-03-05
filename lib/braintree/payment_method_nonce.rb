@@ -2,12 +2,16 @@ module Braintree
   class PaymentMethodNonce
     include BaseModule # :nodoc:
 
-    def self.create(payment_method_token)
-      Configuration.gateway.payment_method_nonce.create(payment_method_token)
+    def self.create(*args)
+      Configuration.gateway.payment_method_nonce.create(*args)
     end
 
-    def self.find(payment_method_nonce)
-      Configuration.gateway.payment_method_nonce.find(payment_method_nonce)
+    def self.create!(*args)
+      Configuration.gateway.payment_method_nonce.create!(*args)
+    end
+
+    def self.find(*args)
+      Configuration.gateway.payment_method_nonce.find(*args)
     end
 
     attr_reader :bin_data

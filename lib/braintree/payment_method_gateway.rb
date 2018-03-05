@@ -1,5 +1,7 @@
 module Braintree
   class PaymentMethodGateway # :nodoc:
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -9,6 +11,10 @@ module Braintree
     def create(attributes)
       Util.verify_keys(PaymentMethodGateway._create_signature, attributes)
       _do_create("/payment_methods", :payment_method => attributes)
+    end
+
+    def create!(*args)
+      return_object_or_raise(:payment_method) { create(*args) }
     end
 
     def _do_create(path, params=nil) # :nodoc:
@@ -84,6 +90,10 @@ module Braintree
     def update(token, attributes)
       Util.verify_keys(PaymentMethodGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/any/#{token}", :payment_method => attributes)
+    end
+
+    def update!(*args)
+      return_object_or_raise(:payment_method) { update(*args) }
     end
 
     def grant(token, options = {})

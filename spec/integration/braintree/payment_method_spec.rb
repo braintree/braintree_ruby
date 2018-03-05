@@ -117,10 +117,10 @@ describe Braintree::PaymentMethod do
       android_pay_card.expiration_year.to_i.should > 0
       android_pay_card.default.should == true
       android_pay_card.image_url.should =~ /android_pay/
-      android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Visa
+      android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Discover
       android_pay_card.source_card_last_4.should == "1111"
       android_pay_card.google_transaction_id.should == "google_transaction_id"
-      android_pay_card.source_description.should == "Visa 1111"
+      android_pay_card.source_description.should == "Discover 1111"
       android_pay_card.customer_id.should == customer.id
     end
 
@@ -696,41 +696,6 @@ describe Braintree::PaymentMethod do
       end
     end
 
-    context "SEPA" do
-      it "returns the SEPA bank account behind the nonce" do
-        config = Braintree::Configuration.instantiate
-        customer = Braintree::Customer.create.customer
-        raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id, :sepa_mandate_type => Braintree::EuropeBankAccount::MandateType::Business)
-        client_token = decode_client_token(raw_client_token)
-        authorization_fingerprint = client_token["authorizationFingerprint"]
-        http = ClientApiHttp.new(
-          config,
-          :authorization_fingerprint => authorization_fingerprint
-        )
-
-        nonce = http.create_europe_bank_account_nonce(
-          :accountHolderName => "Bob Holder",
-          :iban => "DE89370400440532013000",
-          :bic => "DEUTDEFF",
-          :locale => "en-US",
-          :billingAddress =>  {
-            :region => "Hesse",
-            :country_name => "Germany"
-          }
-        )
-        nonce.should_not == nil
-        result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => nonce,
-          :customer_id => customer.id
-        )
-
-        result.should be_success
-        result.payment_method.token.should_not == nil
-        result.payment_method.image_url.should_not be_nil
-        result.payment_method.customer_id.should == customer.id
-      end
-    end
-
     context "Unknown payment methods" do
       it "creates an unknown payment method from a nonce" do
         customer = Braintree::Customer.create.customer
@@ -747,6 +712,41 @@ describe Braintree::PaymentMethod do
         payment_method.token.should == token
         payment_method.should be_a Braintree::UnknownPaymentMethod
       end
+    end
+  end
+
+  describe "self.create!" do
+    it "creates a payment method from a vaulted credit card nonce" do
+      config = Braintree::Configuration.instantiate
+      customer = Braintree::Customer.create.customer
+      raw_client_token = Braintree::ClientToken.generate(:customer_id => customer.id)
+      client_token = decode_client_token(raw_client_token)
+      authorization_fingerprint = client_token["authorizationFingerprint"]
+      http = ClientApiHttp.new(
+        config,
+        :authorization_fingerprint => authorization_fingerprint,
+        :shared_customer_identifier => "fake_identifier",
+        :shared_customer_identifier_type => "testing"
+      )
+
+      response = http.create_credit_card(
+        :number => 4111111111111111,
+        :expirationMonth => 12,
+        :expirationYear => 2020
+      )
+      response.code.should == "201"
+
+      nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
+      payment_method = Braintree::PaymentMethod.create!(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id
+      )
+
+      payment_method.should be_a(Braintree::CreditCard)
+      token = payment_method.token
+
+      found_credit_card = Braintree::CreditCard.find(token)
+      found_credit_card.should_not be_nil
     end
   end
 
@@ -882,10 +882,10 @@ describe Braintree::PaymentMethod do
         android_pay_card.expiration_year.to_i.should > 0
         android_pay_card.default.should == true
         android_pay_card.image_url.should =~ /android_pay/
-        android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Visa
+        android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Discover
         android_pay_card.source_card_last_4.should == "1111"
         android_pay_card.google_transaction_id.should == "google_transaction_id"
-        android_pay_card.source_description.should == "Visa 1111"
+        android_pay_card.source_description.should == "Discover 1111"
         android_pay_card.customer_id.should == customer.id
       end
 
@@ -1393,6 +1393,30 @@ describe Braintree::PaymentMethod do
     end
   end
 
+  describe "self.update!" do
+    it "updates the credit card" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :cvv => "123",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+      payment_method = Braintree::PaymentMethod.update!(credit_card.token,
+        :cardholder_name => "New Holder",
+        :cvv => "456",
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "06/2013"
+      )
+      payment_method.should == credit_card
+      payment_method.cardholder_name.should == "New Holder"
+      payment_method.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
+      payment_method.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
+      payment_method.expiration_date.should == "06/2013"
+    end
+  end
+
   context "payment method grant and revoke" do
     before(:each) do
       @partner_merchant_gateway = Braintree::Gateway.new(
@@ -1528,60 +1552,6 @@ describe Braintree::PaymentMethod do
           :payment_method_nonce => grant_result.payment_method_nonce.nonce
         )
         result.should_not be_success
-      end
-
-      it "revokes grants upon deletion if :revoke_all_grants is true" do
-        customer_result = @partner_merchant_gateway.customer.create()
-        token = @partner_merchant_gateway.payment_method.create({
-          :payment_method_nonce => Braintree::Test::Nonce::Transactable,
-          :customer_id => customer_result.customer.id
-        }).payment_method.token
-
-        code = Braintree::OAuthTestHelper.create_grant(@oauth_gateway, {
-          :merchant_public_id => "integration_merchant_id",
-          :scope => "grant_payment_method"
-        })
-        access_token_result = @oauth_gateway.oauth.create_token_from_code({
-          :code => code,
-          :scope => "grant_payment_method"
-        }).credentials
-
-        access_token_gateway = Braintree::Gateway.new({
-          :access_token => access_token_result.access_token
-        })
-
-        grant_result = access_token_gateway.payment_method.grant(token, {
-          :allow_vaulting => true,
-          :include_billing_postal_code => true,
-        })
-
-        grant_result.should be_success
-
-        delete_result = @partner_merchant_gateway.payment_method.delete(token, {
-          :revoke_all_grants => true
-        })
-
-        delete_result.should be_success
-
-        new_customer_result = Braintree::Customer.create({
-          :first_name => "Joe",
-          :last_name => "Brown",
-          :company => "ExampleCo",
-          :email => "joe@example.com",
-          :phone => "312.555.1234",
-          :fax => "614.555.5678",
-          :website => "www.example.com"
-        })
-
-        # Revocations don't happen immediately so we add this.
-        sleep(6)
-
-        token_request = Braintree::PaymentMethod.create({
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
-          :customer_id => new_customer_result.customer.id
-        })
-
-        token_request.should_not be_success
       end
     end
   end

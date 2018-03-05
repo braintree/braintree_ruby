@@ -2,6 +2,7 @@ module Braintree
   class DisputeSearch < AdvancedSearch # :nodoc:
     text_fields(
       :case_number,
+      :customer_id,
       :id,
       :reference_number,
       :transaction_id
@@ -23,6 +24,8 @@ module Braintree
     range_fields(
       :amount_disputed,
       :amount_won,
+      :disbursement_date,
+      :effective_date,
       :received_date,
       :reply_by_date
     )

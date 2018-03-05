@@ -13,6 +13,5 @@ module Braintree
     rescue NotFoundError
       raise NotFoundError, "ideal payment with ideal_payment_id #{ideal_payment_id.inspect} not found"
     end
-
   end
 end

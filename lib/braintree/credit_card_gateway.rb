@@ -1,5 +1,7 @@
 module Braintree
   class CreditCardGateway # :nodoc:
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -14,6 +16,10 @@ module Braintree
       _do_create("/payment_methods", :credit_card => attributes)
     end
 
+    def create!(*args)
+      return_object_or_raise(:credit_card) { create(*args) }
+    end
+
     # Deprecated
     def create_credit_card_url
       "#{@config.base_merchant_url}/payment_methods/all/create_via_transparent_redirect_request"
@@ -23,6 +29,14 @@ module Braintree
     def create_from_transparent_redirect(query_string)
       params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
       _do_create("/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
+    end
+
+    def credit(token, transaction_attributes)
+      @gateway.transaction.credit(transaction_attributes.merge(:payment_method_token => token))
+    end
+
+    def credit!(*args)
+      return_object_or_raise(:transaction) { credit(*args) }
     end
 
     def delete(token)
@@ -65,6 +79,10 @@ module Braintree
     def update(token, attributes)
       Util.verify_keys(CreditCardGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/credit_card/#{token}", :credit_card => attributes)
+    end
+
+    def update!(*args)
+      return_object_or_raise(:credit_card) { update(*args) }
     end
 
     # Deprecated

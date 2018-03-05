@@ -217,6 +217,15 @@ describe Braintree::MerchantAccount do
     end
   end
 
+  describe "create!" do
+    it "creates a merchant account with the new parameters and doesn't require an id" do
+      merchant_account = Braintree::MerchantAccount.create!(VALID_APPLICATION_PARAMS)
+
+      merchant_account.status.should == Braintree::MerchantAccount::Status::Pending
+      merchant_account.master_merchant_account.id.should == "sandbox_master_merchant_account"
+    end
+  end
+
   describe "create_for_currency" do
     it "creates a new merchant account for currency" do
       result = SpecHelper::create_merchant
@@ -577,6 +586,19 @@ describe Braintree::MerchantAccount do
 
       result.should_not be_success
       result.errors.for(:merchant_account).for(:funding).on(:mobile_phone).map(&:code).should == [Braintree::ErrorCodes::MerchantAccount::Funding::MobilePhoneIsRequired]
+    end
+  end
+
+  describe "update!" do
+    it "updates the Merchant Account info" do
+      params = VALID_APPLICATION_PARAMS.clone
+      params.delete(:tos_accepted)
+      params.delete(:master_merchant_account_id)
+      params[:individual][:first_name] = "John"
+      params[:individual][:last_name] = "Doe"
+      merchant_account = Braintree::MerchantAccount.update!("sandbox_sub_merchant_account", params)
+      merchant_account.individual_details.first_name.should == "John"
+      merchant_account.individual_details.last_name.should == "Doe"
     end
   end
 end

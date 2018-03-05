@@ -28,10 +28,10 @@ module Braintree
 
     def self.sale(ideal_payment_id, transaction_attributes)
       Configuration.gateway.transaction.sale(transaction_attributes.merge(
-            :payment_method_nonce => ideal_payment_id,
-            :options => { :submit_for_settlement => true }
-          )
+          :payment_method_nonce => ideal_payment_id,
+          :options => { :submit_for_settlement => true }
         )
+      )
     end
 
     def self.sale!(ideal_payment_id, transaction_attributes)

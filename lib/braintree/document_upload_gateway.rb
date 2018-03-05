@@ -1,5 +1,7 @@
 module Braintree
   class DocumentUploadGateway # :nodoc:
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -9,6 +11,10 @@ module Braintree
     def create(attributes)
       Util.verify_keys(DocumentUploadGateway._create_signature, attributes)
       _do_create "/document_uploads", {"document_upload[kind]" => attributes[:kind]}, attributes[:file]
+    end
+
+    def create!(*args)
+      return_object_or_raise(:document_upload) { create(*args) }
     end
 
     def self._create_signature # :nodoc:

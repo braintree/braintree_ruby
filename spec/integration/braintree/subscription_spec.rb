@@ -1229,6 +1229,19 @@ describe Braintree::Subscription do
     end
   end
 
+  describe "self.cancel!" do
+    it "returns a updated subscription if valid" do
+      subscription = Braintree::Subscription.create!(
+        :payment_method_token => @credit_card.token,
+        :price => 54.32,
+        :plan_id => SpecHelper::TriallessPlan[:id]
+      )
+
+      updated_subscription = Braintree::Subscription.cancel!(subscription.id)
+      updated_subscription.status.should == Braintree::Subscription::Status::Canceled
+    end
+  end
+
   describe "self.search" do
     describe "in_trial_period" do
       it "works in the affirmative" do

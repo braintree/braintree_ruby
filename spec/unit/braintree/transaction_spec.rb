@@ -372,5 +372,4 @@ describe Braintree::Transaction do
       )
     end
   end
-
 end

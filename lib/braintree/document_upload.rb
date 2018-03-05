@@ -15,8 +15,12 @@ module Braintree
     attr_reader :name
     attr_reader :size
 
-    def self.create(attributes)
-      Configuration.gateway.document_upload.create(attributes)
+    def self.create(*args)
+      Configuration.gateway.document_upload.create(*args)
+    end
+
+    def self.create!(*args)
+      Configuration.gateway.document_upload.create!(*args)
     end
 
     def initialize(attributes) # :nodoc:

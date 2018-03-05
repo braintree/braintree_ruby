@@ -823,6 +823,79 @@ describe Braintree::Customer do
       found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal.new("1.00")
     end
 
+    context "when given an association filter id" do
+      it "filters out all filterable associations" do
+        customer = Braintree::Customer.create(
+          :custom_fields => {
+            :store_me => "custom value"
+          }
+        ).customer
+        credit_card = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :billing_address => {
+            :street_address => "1 E Main St",
+            :locality => "Chicago",
+            :region => "Illinois",
+            :postal_code => "60622",
+            :country_name => "United States of America"
+          }
+        ).credit_card
+
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => credit_card.token,
+          :plan_id => "integration_trialless_plan",
+          :price => "1.00"
+        ).subscription
+
+        found_customer = Braintree::Customer.find(customer.id, {
+          :association_filter_id => "customernoassociations"
+        })
+        found_customer.credit_cards.length.should == 0
+        found_customer.payment_methods.length.should == 0
+        found_customer.addresses.length.should == 0
+        found_customer.custom_fields.should == {}
+      end
+
+      it "filters out nested filterable associations" do
+        customer = Braintree::Customer.create(
+          :custom_fields => {
+            :store_me => "custom value"
+          }
+        ).customer
+        credit_card = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012",
+          :billing_address => {
+            :street_address => "1 E Main St",
+            :locality => "Chicago",
+            :region => "Illinois",
+            :postal_code => "60622",
+            :country_name => "United States of America"
+          }
+        ).credit_card
+
+        subscription = Braintree::Subscription.create(
+          :payment_method_token => credit_card.token,
+          :plan_id => "integration_trialless_plan",
+          :price => "1.00"
+        ).subscription
+
+        found_customer = Braintree::Customer.find(customer.id, {
+         :association_filter_id =>  "customertoplevelassociations"
+        })
+
+        found_customer.credit_cards.length.should == 1
+        found_customer.credit_cards.first.subscriptions.length.should == 0
+        found_customer.payment_methods.length.should == 1
+        found_customer.payment_methods.first.subscriptions.length.should == 0
+        found_customer.addresses.length.should == 1
+        found_customer.custom_fields.length.should == 1
+      end
+    end
+
     it "returns associated ApplePayCards" do
       result = Braintree::Customer.create(
         :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx

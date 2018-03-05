@@ -136,34 +136,34 @@ module Braintree
     attr_reader :visa_checkout_card_details
     attr_reader :voice_referral_number
 
-    def self.create(attributes)
-      Configuration.gateway.transaction.create(attributes)
+    def self.create(*args)
+      Configuration.gateway.transaction.create(*args)
     end
 
-    def self.create!(attributes)
-      return_object_or_raise(:transaction) { create(attributes) }
+    def self.create!(*args)
+      return_object_or_raise(:transaction) { create(*args) }
     end
 
-    def self.cancel_release(transaction_id)
-      Configuration.gateway.transaction.cancel_release(transaction_id)
+    def self.cancel_release(*args)
+      Configuration.gateway.transaction.cancel_release(*args)
     end
 
-    def self.cancel_release!(transaction_id)
-      return_object_or_raise(:transaction) { cancel_release(transaction_id) }
+    def self.cancel_release!(*args)
+      Configuration.gateway.transaction.cancel_release!(*args)
     end
 
-    def self.clone_transaction(transaction_id, attributes)
-      Configuration.gateway.transaction.clone_transaction(transaction_id, attributes)
+    def self.clone_transaction(*args)
+      Configuration.gateway.transaction.clone_transaction(*args)
     end
 
-    def self.clone_transaction!(transaction_id, attributes)
-      return_object_or_raise(:transaction) { clone_transaction(transaction_id, attributes) }
+    def self.clone_transaction!(*args)
+      Configuration.gateway.transaction.clone_transaction!(*args)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
-    def self.create_from_transparent_redirect(query_string)
+    def self.create_from_transparent_redirect(*args)
       warn "[DEPRECATED] Transaction.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      Configuration.gateway.transaction.create_from_transparent_redirect(query_string)
+      Configuration.gateway.transaction.create_from_transparent_redirect(*args)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
@@ -172,88 +172,88 @@ module Braintree
       Configuration.gateway.transaction.create_transaction_url
     end
 
-    def self.credit(attributes)
-      Configuration.gateway.transaction.credit(attributes)
+    def self.credit(*args)
+      Configuration.gateway.transaction.credit(*args)
     end
 
-    def self.credit!(attributes)
-      return_object_or_raise(:transaction) { credit(attributes) }
+    def self.credit!(*args)
+      Configuration.gateway.transaction.credit!(*args)
     end
 
-    def self.find(id)
-      Configuration.gateway.transaction.find(id)
+    def self.find(*args)
+      Configuration.gateway.transaction.find(*args)
     end
 
-    def self.line_items(id)
-      Configuration.gateway.transaction_line_item.find_all(id)
+    def self.line_items(*args)
+      Configuration.gateway.transaction_line_item.find_all(*args)
     end
 
-    def self.hold_in_escrow(id)
-      Configuration.gateway.transaction.hold_in_escrow(id)
+    def self.hold_in_escrow(*args)
+      Configuration.gateway.transaction.hold_in_escrow(*args)
     end
 
-    def self.hold_in_escrow!(id)
-      return_object_or_raise(:transaction) { hold_in_escrow(id) }
+    def self.hold_in_escrow!(*args)
+      Configuration.gateway.transaction.hold_in_escrow!(*args)
     end
 
-    def self.refund(id, amount_or_options = nil)
-      Configuration.gateway.transaction.refund(id, amount_or_options)
+    def self.refund(*args)
+      Configuration.gateway.transaction.refund(*args)
     end
 
-    def self.refund!(id, amount_or_options = nil)
-      return_object_or_raise(:transaction) { refund(id, amount_or_options) }
+    def self.refund!(*args)
+      Configuration.gateway.transaction.refund!(*args)
     end
 
-    def self.sale(attributes)
-      Configuration.gateway.transaction.sale(attributes)
+    def self.sale(*args)
+      Configuration.gateway.transaction.sale(*args)
     end
 
-    def self.sale!(attributes)
-      return_object_or_raise(:transaction) { sale(attributes) }
+    def self.sale!(*args)
+      Configuration.gateway.transaction.sale!(*args)
     end
 
     def self.search(&block)
       Configuration.gateway.transaction.search(&block)
     end
 
-    def self.release_from_escrow(transaction_id)
-      Configuration.gateway.transaction.release_from_escrow(transaction_id)
+    def self.release_from_escrow(*args)
+      Configuration.gateway.transaction.release_from_escrow(*args)
     end
 
-    def self.release_from_escrow!(transaction_id)
-      return_object_or_raise(:transaction) { release_from_escrow(transaction_id) }
+    def self.release_from_escrow!(*args)
+      Configuration.gateway.transaction.release_from_escrow!(*args)
     end
 
-    def self.submit_for_settlement(transaction_id, amount = nil, options = {})
-      Configuration.gateway.transaction.submit_for_settlement(transaction_id, amount, options)
+    def self.submit_for_settlement(*args)
+      Configuration.gateway.transaction.submit_for_settlement(*args)
     end
 
-    def self.submit_for_settlement!(transaction_id, amount = nil, options = {})
-      return_object_or_raise(:transaction) { submit_for_settlement(transaction_id, amount, options) }
+    def self.submit_for_settlement!(*args)
+      Configuration.gateway.transaction.submit_for_settlement!(*args)
     end
 
-    def self.update_details(transaction_id, options = {})
-      Configuration.gateway.transaction.update_details(transaction_id, options)
+    def self.update_details(*args)
+      Configuration.gateway.transaction.update_details(*args)
     end
 
-    def self.update_details!(transaction_id, options = {})
-      return_object_or_raise(:transaction) { update_details(transaction_id, options) }
+    def self.update_details!(*args)
+      return_object_or_raise(:transaction) { update_details(*args) }
     end
 
-    def self.submit_for_partial_settlement(authorized_transaction_id, amount = nil, options = {})
-      Configuration.gateway.transaction.submit_for_partial_settlement(authorized_transaction_id, amount, options)
+    def self.submit_for_partial_settlement(*args)
+      Configuration.gateway.transaction.submit_for_partial_settlement(*args)
     end
 
-    def self.submit_for_partial_settlement!(authorized_transaction_id, amount = nil, options = {})
-      return_object_or_raise(:transaction) { submit_for_partial_settlement(authorized_transaction_id, amount, options) }
+    def self.submit_for_partial_settlement!(*args)
+      Configuration.gateway.transaction.submit_for_partial_settlement!(*args)
     end
 
-    def self.void(transaction_id)
-      Configuration.gateway.transaction.void(transaction_id)
+    def self.void(*args)
+      Configuration.gateway.transaction.void(*args)
     end
 
-    def self.void!(transaction_id)
-      return_object_or_raise(:transaction) { void(transaction_id) }
+    def self.void!(*args)
+      Configuration.gateway.transaction.void!(*args)
     end
 
     def initialize(gateway, attributes) # :nodoc:

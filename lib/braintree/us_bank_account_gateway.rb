@@ -13,6 +13,5 @@ module Braintree
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
     end
-
   end
 end

@@ -41,6 +41,35 @@ describe Braintree::PaymentMethodNonce do
     end
   end
 
+  describe "self.create!" do
+    it "creates a payment method nonce from a vaulted credit card" do
+      customer = Braintree::Customer.create.customer
+      nonce = nonce_for_new_payment_method(
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        }
+      )
+
+      payment_method = Braintree::PaymentMethod.create!(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id
+      )
+
+      payment_method.should be_a(Braintree::CreditCard)
+      token = payment_method.token
+
+      found_credit_card = Braintree::CreditCard.find(token)
+      found_credit_card.should_not be_nil
+
+      payment_method_nonce = Braintree::PaymentMethodNonce.create!(found_credit_card.token)
+      payment_method_nonce.should_not be_nil
+      payment_method_nonce.nonce.should_not be_nil
+      payment_method_nonce.details.should_not be_nil
+    end
+  end
+
   describe "self.find" do
     it "finds and returns the nonce if one was found" do
       result = Braintree::PaymentMethodNonce.find("fake-valid-nonce")

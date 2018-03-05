@@ -19,28 +19,28 @@ module Braintree
     attr_reader :street_address
     attr_reader :updated_at
 
-    def self.create(attributes)
-      Configuration.gateway.address.create(attributes)
+    def self.create(*args)
+      Configuration.gateway.address.create(*args)
     end
 
-    def self.create!(attributes)
-      return_object_or_raise(:address) { create(attributes) }
+    def self.create!(*args)
+      Configuration.gateway.address.create!(*args)
     end
 
-    def self.delete(customer_or_customer_id, address_id)
-      Configuration.gateway.address.delete(customer_or_customer_id, address_id)
+    def self.delete(*args)
+      Configuration.gateway.address.delete(*args)
     end
 
-    def self.find(customer_or_customer_id, address_id)
-      Configuration.gateway.address.find(customer_or_customer_id, address_id)
+    def self.find(*args)
+      Configuration.gateway.address.find(*args)
     end
 
-    def self.update(customer_or_customer_id, address_id, attributes)
-      Configuration.gateway.address.update(customer_or_customer_id, address_id, attributes)
+    def self.update(*args)
+      Configuration.gateway.address.update(*args)
     end
 
-    def self.update!(customer_or_customer_id, address_id, attributes)
-      return_object_or_raise(:address) { update(customer_or_customer_id, address_id, attributes) }
+    def self.update!(*args)
+      Configuration.gateway.address.update!(*args)
     end
 
     def initialize(gateway, attributes) # :nodoc:

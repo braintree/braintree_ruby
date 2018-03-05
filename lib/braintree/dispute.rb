@@ -71,28 +71,28 @@ module Braintree
       end
     end
 
-    def self.accept(dispute_id)
-      Configuration.gateway.dispute.accept(dispute_id)
+    def self.accept(*args)
+      Configuration.gateway.dispute.accept(*args)
     end
 
-    def self.add_file_evidence(dispute_id, document_upload_id)
-      Configuration.gateway.dispute.add_file_evidence(dispute_id, document_upload_id)
+    def self.add_file_evidence(*args)
+      Configuration.gateway.dispute.add_file_evidence(*args)
     end
 
-    def self.add_text_evidence(dispute_id, content_or_request)
-      Configuration.gateway.dispute.add_text_evidence(dispute_id, content_or_request)
+    def self.add_text_evidence(*args)
+      Configuration.gateway.dispute.add_text_evidence(*args)
     end
 
-    def self.finalize(dispute_id)
-      Configuration.gateway.dispute.finalize(dispute_id)
+    def self.finalize(*args)
+      Configuration.gateway.dispute.finalize(*args)
     end
 
-    def self.find(dispute_id)
-      Configuration.gateway.dispute.find(dispute_id)
+    def self.find(*args)
+      Configuration.gateway.dispute.find(*args)
     end
 
-    def self.remove_evidence(dispute_id, evidence_id)
-      Configuration.gateway.dispute.remove_evidence(dispute_id, evidence_id)
+    def self.remove_evidence(*args)
+      Configuration.gateway.dispute.remove_evidence(*args)
     end
 
     def self.search(&block)

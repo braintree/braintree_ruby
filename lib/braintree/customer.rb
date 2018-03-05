@@ -30,12 +30,12 @@ module Braintree
       Configuration.gateway.customer.all
     end
 
-    def self.create(attributes = {})
-      Configuration.gateway.customer.create(attributes)
+    def self.create(*args)
+      Configuration.gateway.customer.create(*args)
     end
 
-    def self.create!(attributes = {})
-      return_object_or_raise(:customer) { create(attributes) }
+    def self.create!(*args)
+      Configuration.gateway.customer.create!(*args)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
@@ -45,9 +45,9 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
-    def self.create_from_transparent_redirect(query_string)
+    def self.create_from_transparent_redirect(*args)
       warn "[DEPRECATED] Customer.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      Configuration.gateway.customer.create_from_transparent_redirect(query_string)
+      Configuration.gateway.customer.create_from_transparent_redirect(*args)
     end
 
     def self.credit(customer_id, transaction_attributes)
@@ -58,12 +58,12 @@ module Braintree
        return_object_or_raise(:transaction){ credit(customer_id, transaction_attributes) }
     end
 
-    def self.delete(customer_id)
-      Configuration.gateway.customer.delete(customer_id)
+    def self.delete(*args)
+      Configuration.gateway.customer.delete(*args)
     end
 
-    def self.find(customer_id)
-      Configuration.gateway.customer.find(customer_id)
+    def self.find(*args)
+      Configuration.gateway.customer.find(*args)
     end
 
     def self.sale(customer_id, transaction_attributes)
@@ -79,16 +79,16 @@ module Braintree
     end
 
     # Returns a ResourceCollection of transactions for the customer with the given +customer_id+.
-    def self.transactions(customer_id, options = {})
-      Configuration.gateway.customer.transactions(customer_id, options = {})
+    def self.transactions(*args)
+      Configuration.gateway.customer.transactions(*args)
     end
 
-    def self.update(customer_id, attributes)
-      Configuration.gateway.customer.update(customer_id, attributes)
+    def self.update(*args)
+      Configuration.gateway.customer.update(*args)
     end
 
-    def self.update!(customer_id, attributes)
-      return_object_or_raise(:customer) { update(customer_id, attributes) }
+    def self.update!(*args)
+      Configuration.gateway.customer.update!(*args)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
@@ -98,9 +98,9 @@ module Braintree
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm
-    def self.update_from_transparent_redirect(query_string)
+    def self.update_from_transparent_redirect(*args)
       warn "[DEPRECATED] Customer.update_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      Configuration.gateway.customer.update_from_transparent_redirect(query_string)
+      Configuration.gateway.customer.update_from_transparent_redirect(*args)
     end
 
     def initialize(gateway, attributes) # :nodoc:

@@ -30,16 +30,16 @@ module Braintree
       self.new *args
     end
 
-    def self.find(token)
-      Configuration.gateway.us_bank_account.find(token)
+    def self.find(*args)
+      Configuration.gateway.us_bank_account.find(*args)
     end
 
     def self.sale(token, transaction_attributes)
       Configuration.gateway.transaction.sale(transaction_attributes.merge(
-            :payment_method_token => token,
-            :options => { :submit_for_settlement => true }
-          )
+          :payment_method_token => token,
+          :options => { :submit_for_settlement => true }
         )
+      )
     end
 
     def self.sale!(token, transaction_attributes)

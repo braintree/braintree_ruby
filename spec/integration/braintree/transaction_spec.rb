@@ -1402,7 +1402,7 @@ describe Braintree::Transaction do
         android_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
         android_pay_details.last_4.should == "1117"
         android_pay_details.virtual_card_last_4.should == "1117"
-        android_pay_details.source_description.should == "Visa 1111"
+        android_pay_details.source_description.should == "Discover 1111"
         android_pay_details.expiration_month.to_i.should > 0
         android_pay_details.expiration_year.to_i.should > 0
         android_pay_details.google_transaction_id.should == "google_transaction_id"
@@ -1470,6 +1470,17 @@ describe Braintree::Transaction do
         venmo_account_details.venmo_user_id.should == "Venmo-Joe-1"
         venmo_account_details.image_url.should include(".png")
         venmo_account_details.source_description.should == "Venmo Account: venmojoe"
+      end
+
+      it "can create a transaction with a fake venmo account nonce specifying a profile" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
+          :options => {:store_in_vault => true, :venmo => {:profile_id => "integration_venmo_merchant_public_id" }}
+        )
+        result.should be_success
       end
 
       it "can create a transaction with an unknown nonce" do

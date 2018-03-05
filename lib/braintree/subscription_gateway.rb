@@ -1,5 +1,7 @@
 module Braintree
   class SubscriptionGateway # :nodoc:
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -19,9 +21,17 @@ module Braintree
       raise NotFoundError, "subscription with id #{subscription_id.inspect} not found"
     end
 
+    def cancel!(*args)
+      return_object_or_raise(:subscription) { cancel(*args) }
+    end
+
     def create(attributes)
       Util.verify_keys(SubscriptionGateway._create_signature, attributes)
       _do_create "/subscriptions", :subscription => attributes
+    end
+
+    def create!(*args)
+      return_object_or_raise(:subscription) { create(*args) }
     end
 
     def find(id)
@@ -30,6 +40,10 @@ module Braintree
       Subscription._new(@gateway, response[:subscription])
     rescue NotFoundError
       raise NotFoundError, "subscription with id #{id.inspect} not found"
+    end
+
+    def retry_charge(subscription_id, amount=nil, submit_for_settlement=false)
+      @gateway.transaction.retry_subscription_charge(subscription_id, amount, submit_for_settlement)
     end
 
     def search(&block)
@@ -50,6 +64,10 @@ module Braintree
       else
         raise UnexpectedError, "expected :subscription or :api_error_response"
       end
+    end
+
+    def update!(*args)
+      return_object_or_raise(:subscription) { update(*args) }
     end
 
     def self._create_signature # :nodoc:

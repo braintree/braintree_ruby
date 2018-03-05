@@ -73,8 +73,8 @@ module Braintree
       self.new *args
     end
 
-    def self.find(id)
-      Configuration.gateway.verification.find(id)
+    def self.find(*args)
+      Configuration.gateway.verification.find(*args)
     end
 
     def self.search(&block)

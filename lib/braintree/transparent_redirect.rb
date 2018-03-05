@@ -8,28 +8,28 @@ module Braintree
       CreateTransaction = "create_transaction"
     end
 
-    def self.confirm(query_string)
-      Configuration.gateway.transparent_redirect.confirm(query_string)
+    def self.confirm(*args)
+      Configuration.gateway.transparent_redirect.confirm(*args)
     end
 
-    def self.create_credit_card_data(params)
-      Configuration.gateway.transparent_redirect.create_credit_card_data(params)
+    def self.create_credit_card_data(*args)
+      Configuration.gateway.transparent_redirect.create_credit_card_data(*args)
     end
 
-    def self.create_customer_data(params)
-      Configuration.gateway.transparent_redirect.create_customer_data(params)
+    def self.create_customer_data(*args)
+      Configuration.gateway.transparent_redirect.create_customer_data(*args)
     end
 
-    def self.transaction_data(params)
-      Configuration.gateway.transparent_redirect.transaction_data(params)
+    def self.transaction_data(*args)
+      Configuration.gateway.transparent_redirect.transaction_data(*args)
     end
 
-    def self.update_credit_card_data(params)
-      Configuration.gateway.transparent_redirect.update_credit_card_data(params)
+    def self.update_credit_card_data(*args)
+      Configuration.gateway.transparent_redirect.update_credit_card_data(*args)
     end
 
-    def self.update_customer_data(params)
-      Configuration.gateway.transparent_redirect.update_customer_data(params)
+    def self.update_customer_data(*args)
+      Configuration.gateway.transparent_redirect.update_customer_data(*args)
     end
 
     # Returns the URL to which Transparent Redirect Requests should be posted

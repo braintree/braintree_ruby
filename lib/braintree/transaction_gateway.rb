@@ -1,5 +1,7 @@
 module Braintree
   class TransactionGateway # :nodoc:
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -17,10 +19,18 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def cancel_release!(*args)
+      return_object_or_raise(:transaction) { cancel_release(*args) }
+    end
+
     def hold_in_escrow(transaction_id)
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/hold_in_escrow")
       _handle_transaction_response(response)
+    end
+
+    def hold_in_escrow!(*args)
+      return_object_or_raise(:transaction) { hold_in_escrow(*args) }
     end
 
     def _handle_transaction_response(response)
@@ -38,6 +48,10 @@ module Braintree
       _do_create "/transactions/#{transaction_id}/clone", :transaction_clone => attributes
     end
 
+    def clone_transaction!(*args)
+      return_object_or_raise(:transaction) { clone_transaction(*args) }
+    end
+
     # Deprecated
     def create_from_transparent_redirect(query_string)
       params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
@@ -51,6 +65,10 @@ module Braintree
 
     def credit(attributes)
       create(attributes.merge(:type => 'credit'))
+    end
+
+    def credit!(*args)
+      return_object_or_raise(:transaction) { credit(*args) }
     end
 
     def find(id)
@@ -73,6 +91,10 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def refund!(*args)
+      return_object_or_raise(:transaction) { refund(*args) }
+    end
+
     def retry_subscription_charge(subscription_id, amount=nil, submit_for_settlement=false)
       attributes = {
         :amount => amount,
@@ -87,6 +109,10 @@ module Braintree
 
     def sale(attributes)
       create(attributes.merge(:type => 'sale'))
+    end
+
+    def sale!(*args)
+      return_object_or_raise(:transaction) { sale(*args) }
     end
 
     def search(&block)
@@ -108,12 +134,20 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def release_from_escrow!(*args)
+      return_object_or_raise(:transaction) { release_from_escrow(*args) }
+    end
+
     def submit_for_settlement(transaction_id, amount = nil, options = {})
       raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
       Util.verify_keys(TransactionGateway._submit_for_settlement_signature, options)
       transaction_params = {:amount => amount}.merge(options)
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/submit_for_settlement", :transaction => transaction_params)
       _handle_transaction_response(response)
+    end
+
+    def submit_for_settlement!(*args)
+      return_object_or_raise(:transaction) { submit_for_settlement(*args) }
     end
 
     def update_details(transaction_id, options = {})
@@ -131,11 +165,18 @@ module Braintree
       _handle_transaction_response(response)
     end
 
+    def submit_for_partial_settlement!(*args)
+      return_object_or_raise(:transaction) { submit_for_partial_settlement(*args) }
+    end
+
     def void(transaction_id)
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/void")
       _handle_transaction_response(response)
     end
 
+    def void!(*args)
+      return_object_or_raise(:transaction) { void(*args) }
+    end
 
     def self._clone_signature # :nodoc:
       [:amount, :channel, {:options => [:submit_for_settlement]}]
@@ -180,7 +221,9 @@ module Braintree
           :skip_cvv,
           {:paypal => [:custom_field, :payee_email, :description, {:supplementary_data => :_any_key_}]},
           {:three_d_secure => [:required]},
-          {:amex_rewards => [:request_id, :points, :currency_amount, :currency_iso_code]}]
+          {:amex_rewards => [:request_id, :points, :currency_amount, :currency_iso_code]},
+          {:venmo => [:profile_id]}
+        ]
         },
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone, :url]},

@@ -55,36 +55,40 @@ module Braintree
     attr_reader :trial_period
     attr_reader :updated_at
 
-    def self.cancel(subscription_id)
-      Configuration.gateway.subscription.cancel(subscription_id)
+    def self.cancel(*args)
+      Configuration.gateway.subscription.cancel(*args)
     end
 
-    def self.create(attributes)
-      Configuration.gateway.subscription.create(attributes)
+    def self.cancel!(*args)
+      Configuration.gateway.subscription.cancel!(*args)
     end
 
-    def self.create!(attributes)
-      return_object_or_raise(:subscription) { create(attributes) }
+    def self.create(*args)
+      Configuration.gateway.subscription.create(*args)
     end
 
-    def self.find(id)
-      Configuration.gateway.subscription.find(id)
+    def self.create!(*args)
+      Configuration.gateway.subscription.create!(*args)
     end
 
-    def self.retry_charge(subscription_id, amount=nil, submit_for_settlement=false)
-      Configuration.gateway.transaction.retry_subscription_charge(subscription_id, amount, submit_for_settlement)
+    def self.find(*args)
+      Configuration.gateway.subscription.find(*args)
+    end
+
+    def self.retry_charge(*args)
+      Configuration.gateway.subscription.retry_charge(*args)
     end
 
     def self.search(&block)
       Configuration.gateway.subscription.search(&block)
     end
 
-    def self.update(subscription_id, attributes)
-      Configuration.gateway.subscription.update(subscription_id, attributes)
+    def self.update(*args)
+      Configuration.gateway.subscription.update(*args)
     end
 
-    def self.update!(subscription_id, attributes)
-      return_object_or_raise(:subscription) { update(subscription_id, attributes) }
+    def self.update!(*args)
+      Configuration.gateway.subscription.update!(*args)
     end
 
     def initialize(gateway, attributes) # :nodoc:

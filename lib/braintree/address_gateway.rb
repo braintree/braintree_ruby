@@ -1,5 +1,7 @@
 module Braintree
   class AddressGateway # :nodoc
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -22,6 +24,10 @@ module Braintree
       else
         raise UnexpectedError, "expected :address or :api_error_response"
       end
+    end
+
+    def create!(*args)
+      return_object_or_raise(:address) { create(*args) }
     end
 
     def delete(customer_or_customer_id, address_id)
@@ -50,6 +56,10 @@ module Braintree
       else
         raise UnexpectedError, "expected :address or :api_error_response"
       end
+    end
+
+    def update!(*args)
+      return_object_or_raise(:address) { update(*args) }
     end
 
     def _determine_customer_id(customer_or_customer_id) # :nodoc:

@@ -61,12 +61,12 @@ module Braintree
     attr_reader :updated_at
     attr_reader :verification
 
-    def self.create(attributes)
-      Configuration.gateway.credit_card.create(attributes)
+    def self.create(*args)
+      Configuration.gateway.credit_card.create(*args)
     end
 
-    def self.create!(attributes)
-      return_object_or_raise(:credit_card) { create(attributes) }
+    def self.create!(*args)
+      Configuration.gateway.credit_card.create!(*args)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.url
@@ -89,29 +89,29 @@ module Braintree
       return_object_or_raise(:transaction) { credit(token, transaction_attributes) }
     end
 
-    def self.delete(token)
-      Configuration.gateway.credit_card.delete(token)
+    def self.delete(*args)
+      Configuration.gateway.credit_card.delete(*args)
     end
 
-    def self.expired(options = {})
-      Configuration.gateway.credit_card.expired(options)
+    def self.expired(*args)
+      Configuration.gateway.credit_card.expired(*args)
     end
 
-    def self.expiring_between(start_date, end_date, options = {})
-      Configuration.gateway.credit_card.expiring_between(start_date, end_date, options)
+    def self.expiring_between(*args)
+      Configuration.gateway.credit_card.expiring_between(*args)
     end
 
-    def self.find(token)
-      Configuration.gateway.credit_card.find(token)
+    def self.find(*args)
+      Configuration.gateway.credit_card.find(*args)
     end
 
-    def self.from_nonce(nonce)
-      Configuration.gateway.credit_card.from_nonce(nonce)
+    def self.from_nonce(*args)
+      Configuration.gateway.credit_card.from_nonce(*args)
     end
 
     # Deprecated. Use Braintree::PaymentMethod.grant
-    def self.grant(token, allow_vaulting)
-      Configuration.gateway.credit_card.grant(token, allow_vaulting)
+    def self.grant(*args)
+      Configuration.gateway.credit_card.grant(*args)
     end
 
     def self.sale(token, transaction_attributes)
@@ -122,12 +122,12 @@ module Braintree
       return_object_or_raise(:transaction) { sale(token, transaction_attributes) }
     end
 
-    def self.update(token, attributes)
-      Configuration.gateway.credit_card.update(token, attributes)
+    def self.update(*args)
+      Configuration.gateway.credit_card.update(*args)
     end
 
-    def self.update!(token, attributes)
-      return_object_or_raise(:credit_card) { update(token, attributes) }
+    def self.update!(*args)
+      Configuration.gateway.credit_card.update!(*args)
     end
 
     # Deprecated. Use Braintree::TransparentRedirect.confirm

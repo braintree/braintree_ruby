@@ -1,5 +1,7 @@
 module Braintree
   class MerchantAccountGateway # :nodoc:
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -24,6 +26,10 @@ module Braintree
       _do_create "/merchant_accounts/create_via_api", :merchant_account => attributes
     end
 
+    def create!(*args)
+      return_object_or_raise(:merchant_account) { create(*args) }
+    end
+
     def find(merchant_account_id)
       raise ArgumentError if merchant_account_id.nil? || merchant_account_id.to_s.strip == ""
       response = @config.http.get("#{@config.base_merchant_path}/merchant_accounts/#{merchant_account_id}")
@@ -35,6 +41,10 @@ module Braintree
     def update(merchant_account_id, attributes)
       Util.verify_keys(MerchantAccountGateway._update_signature, attributes)
       _do_update "/merchant_accounts/#{merchant_account_id}/update_via_api", :merchant_account => attributes
+    end
+
+    def update!(*args)
+      return_object_or_raise(:merchant_account) { update(*args) }
     end
 
     def create_for_currency(params)

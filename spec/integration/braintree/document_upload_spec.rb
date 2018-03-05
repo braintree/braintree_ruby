@@ -52,4 +52,17 @@ describe Braintree::DocumentUploadGateway do
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end
+
+  describe "create!" do
+    it "returns successful with valid request" do
+      file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
+      document_upload = Braintree::DocumentUpload.create!({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
+
+      document_upload.id.should_not be_nil
+      document_upload.content_type.should == "image/png"
+      document_upload.kind.should == Braintree::DocumentUpload::Kind::EvidenceDocument
+      document_upload.name.should == "bt_logo.png"
+      document_upload.size.should == 2443
+    end
+  end
 end

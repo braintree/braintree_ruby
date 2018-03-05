@@ -29,16 +29,24 @@ module Braintree
 
     alias_method :default?, :default
 
-    def self.create(attributes)
-      Configuration.gateway.merchant_account.create(attributes)
+    def self.create(*args)
+      Configuration.gateway.merchant_account.create(*args)
     end
 
-    def self.find(attributes)
-      Configuration.gateway.merchant_account.find(attributes)
+    def self.create!(*args)
+      Configuration.gateway.merchant_account.create!(*args)
     end
 
-    def self.update(id, attributes)
-      Configuration.gateway.merchant_account.update(id, attributes)
+    def self.find(*args)
+      Configuration.gateway.merchant_account.find(*args)
+    end
+
+    def self.update(*args)
+      Configuration.gateway.merchant_account.update(*args)
+    end
+
+    def self.update!(*args)
+      Configuration.gateway.merchant_account.update!(*args)
     end
 
     def initialize(gateway, attributes) # :nodoc

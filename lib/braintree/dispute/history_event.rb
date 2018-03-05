@@ -3,6 +3,8 @@ module Braintree
     class HistoryEvent # :nodoc:
       include BaseModule
 
+      attr_reader :disbursement_date
+      attr_reader :effective_date
       attr_reader :status
       attr_reader :timestamp
 

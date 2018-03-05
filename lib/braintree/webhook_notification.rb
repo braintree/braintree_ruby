@@ -56,12 +56,12 @@ module Braintree
     attr_reader :timestamp
     attr_reader :transaction
 
-    def self.parse(signature, payload)
-      Configuration.gateway.webhook_notification.parse(signature, payload)
+    def self.parse(*args)
+      Configuration.gateway.webhook_notification.parse(*args)
     end
 
-    def self.verify(challenge)
-      Configuration.gateway.webhook_notification.verify(challenge)
+    def self.verify(*args)
+      Configuration.gateway.webhook_notification.verify(*args)
     end
 
     def initialize(gateway, attributes) # :nodoc:

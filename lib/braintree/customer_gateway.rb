@@ -1,5 +1,7 @@
 module Braintree
   class CustomerGateway # :nodoc:
+    include BaseModule
+
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -14,6 +16,10 @@ module Braintree
     def create(attributes = {})
       Util.verify_keys(CustomerGateway._create_signature, attributes)
       _do_create "/customers", :customer => attributes
+    end
+
+    def create!(*args)
+      return_object_or_raise(:customer) { create(*args) }
     end
 
     # Deprecated
@@ -32,10 +38,12 @@ module Braintree
       SuccessfulResult.new
     end
 
-    def find(customer_id)
+    def find(customer_id, options = {})
       raise ArgumentError, "customer_id contains invalid characters" unless customer_id.to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "customer_id cannot be blank" if customer_id.nil?|| customer_id.to_s.strip == ""
-      response = @config.http.get("#{@config.base_merchant_path}/customers/#{customer_id}")
+
+      query_params = options[:association_filter_id].nil? ? "" : "?association_filter_id=#{options[:association_filter_id]}"
+      response = @config.http.get("#{@config.base_merchant_path}/customers/#{customer_id}#{query_params}")
       Customer._new(@gateway, response[:customer])
     rescue NotFoundError
       raise NotFoundError, "customer with id #{customer_id.inspect} not found"
@@ -57,6 +65,10 @@ module Braintree
     def update(customer_id, attributes)
       Util.verify_keys(CustomerGateway._update_signature, attributes)
       _do_update(:put, "/customers/#{customer_id}", :customer => attributes)
+    end
+
+    def update!(*args)
+      return_object_or_raise(:customer) { update(*args) }
     end
 
     # Deprecated
