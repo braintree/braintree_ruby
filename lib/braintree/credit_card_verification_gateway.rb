@@ -7,7 +7,7 @@ module Braintree
     end
 
     def find(id)
-      raise ArgumentError if id.nil? || id.strip.to_s == ""
+      raise ArgumentError if id.nil? || id.to_s.strip == ""
       response = @config.http.get("#{@config.base_merchant_path}/verifications/#{id}")
       CreditCardVerification._new(response[:verification])
     rescue NotFoundError

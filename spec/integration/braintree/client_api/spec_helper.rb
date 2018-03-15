@@ -1,6 +1,5 @@
 require 'json'
 
-
 def decode_client_token(raw_client_token)
   decoded_client_token_string = Base64.decode64(raw_client_token)
   JSON.parse(decoded_client_token_string)
@@ -56,7 +55,7 @@ def nonce_for_paypal_account(paypal_account_details)
   body["paypalAccounts"][0]["nonce"]
 end
 
-def generate_valid_us_bank_account_nonce()
+def generate_non_plaid_us_bank_account_nonce
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
 
@@ -72,8 +71,37 @@ def generate_valid_us_bank_account_nonce()
     },
     :account_type => "checking",
     :routing_number => "021000021",
-    :account_number => "567891234",
-    :account_holder_name => "Dan Schulman",
+    :account_number => "1000000000",
+    :first_name => "John",
+    :last_name => "Doe",
+    :ownership_type => "personal",
+    :ach_mandate => {
+      :text => "cl mandate text"
+    }
+  }
+
+  json = _cosmos_post(token, url, payload)
+  json["data"]["id"]
+end
+
+def generate_valid_plaid_us_bank_account_nonce
+  raw_client_token = Braintree::ClientToken.generate
+  client_token = decode_client_token(raw_client_token)
+
+  url = client_token["braintree_api"]["url"] + "/tokens"
+  token = client_token["braintree_api"]["access_token"]
+  payload = {
+    :type => "plaid_public_token",
+    :public_token => "good",
+    :account_id => "plaid_account_id",
+    :ownership_type => "business",
+    :business_name => "PayPal, Inc.",
+    :billing_address => {
+      :street_address => "123 Ave",
+      :region => "CA",
+      :locality => "San Francisco",
+      :postal_code => "94112"
+    },
     :ach_mandate => {
       :text => "cl mandate text"
     }
@@ -126,7 +154,7 @@ def _cosmos_post(token, url, payload)
   resp = connection.start do |http|
     request = Net::HTTP::Post.new(uri.path)
     request["Content-Type"] = "application/json"
-    request["Braintree-Version"] = "2015-11-01"
+    request["Braintree-Version"] = "2016-10-07"
     request["Authorization"] = "Bearer #{token}"
     request.body = payload.to_json
     http.request(request)

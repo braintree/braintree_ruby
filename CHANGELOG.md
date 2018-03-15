@@ -1,3 +1,8 @@
+# 2.85.0
+* Add support for `oauth_access_revocation` on `WebhookNotification`s
+* Add support for US Bank Account verifications via `PaymentMethod#create`, `PaymentMethod#update`, and `Transaction#create`
+* Add support for US Bank Account verification search
+
 # 2.84.0
 * Add support for `address.create!` to gateway instance
 * Add support for `address.update!` to gateway instance

@@ -30,6 +30,7 @@ module Braintree
       PartnerMerchantConnected = "partner_merchant_connected"
       PartnerMerchantDisconnected = "partner_merchant_disconnected"
       PartnerMerchantDeclined = "partner_merchant_declined"
+      OAuthAccessRevoked = "oauth_access_revoked"
 
       AccountUpdaterDailyReport = "account_updater_daily_report"
 
@@ -51,6 +52,7 @@ module Braintree
     attr_reader :ideal_payment
     attr_reader :kind
     attr_reader :partner_merchant
+    attr_reader :oauth_access_revocation
     attr_reader :source_merchant_id
     attr_reader :subscription
     attr_reader :timestamp
@@ -70,6 +72,7 @@ module Braintree
       @error_result = ErrorResult.new(gateway, @subject[:api_error_response]) if @subject.has_key?(:api_error_response)
       @merchant_account = MerchantAccount._new(gateway, @subject[:merchant_account]) if @subject.has_key?(:merchant_account)
       @partner_merchant = OpenStruct.new(@subject[:partner_merchant]) if @subject.has_key?(:partner_merchant)
+      @oauth_access_revocation = OpenStruct.new(@subject[:oauth_application_revocation]) if @subject.has_key?(:oauth_application_revocation)
       @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
       @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
       @disbursement = Disbursement._new(gateway, @subject[:disbursement]) if @subject.has_key?(:disbursement)

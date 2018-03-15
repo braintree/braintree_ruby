@@ -58,6 +58,19 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_within(10).of(Time.now.utc)
     end
 
+    it 'builds a sample notification for OAuth application revocation' do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::OAuthAccessRevoked,
+        'my_id'
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+      expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::OAuthAccessRevoked)
+      expect(notification.oauth_access_revocation.merchant_id).to eq('abc123')
+      expect(notification.timestamp).to be_within(10).of(Time.now.utc)
+    end
+
     it "builds a sample notification with a source merchant ID" do
       sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,

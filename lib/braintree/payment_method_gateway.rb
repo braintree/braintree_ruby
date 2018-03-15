@@ -139,6 +139,8 @@ module Braintree
         SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
+      elsif response[:us_bank_account]
+        SuccessfulResult.new(:payment_method => UsBankAccount._new(@gateway, response[:us_bank_account]))
       elsif response
         SuccessfulResult.new(:payment_method => UnknownPaymentMethod._new(@gateway, response))
       else
@@ -163,7 +165,7 @@ module Braintree
       paypal_options_shipping_signature = AddressGateway._shared_signature
       options = [
         :make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session,
-        :verification_amount,
+        :verification_amount, :us_bank_account_verification_method,
         :paypal => [
           :payee_email,
           :order_id,

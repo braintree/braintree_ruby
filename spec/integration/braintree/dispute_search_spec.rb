@@ -10,7 +10,7 @@ describe Braintree::Dispute, "search" do
       :email => "jen@example.com",
       :phone => "312.555.1234",
       :fax => "614.555.5678",
-      :website => "www.example.com"
+      :website => "www.example.com",
     )
 
     result.customer
@@ -21,12 +21,12 @@ describe Braintree::Dispute, "search" do
       :amount => '10.00',
       :credit_card => {
         :expiration_date => '01/2020',
-        :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback
+        :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback,
       },
       :customer_id => customer.id,
       :merchant_account_id => "14LaddersLLC_instant",
       :options => {
-        :submit_for_settlement => true
+        :submit_for_settlement => true,
       }
     )
 
@@ -113,6 +113,17 @@ describe Braintree::Dispute, "search" do
       dispute = collection.disputes.first
 
       expect(dispute.received_date).to eq(Date.new(2014, 3, 4))
+    end
+
+    it "correctly returns disputes by reply_by_date range" do
+      reply_by_date = transaction.disputes.first.reply_by_date
+
+      collection = Braintree::Dispute.search do |search|
+        search.reply_by_date.between(reply_by_date, reply_by_date + 1)
+      end
+
+      dispute_ids = collection.disputes.map { |d| d.id }
+      expect(dispute_ids).to include(transaction.disputes.first.id)
     end
   end
 end

@@ -459,7 +459,7 @@ describe Braintree::CreditCard do
             :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
           )
           result.success?.should == true
-          result.credit_card.venmo_sdk?.should == true
+          result.credit_card.venmo_sdk?.should == false
           result.credit_card.bin.should == "400934"
           result.credit_card.last_4.should == "1881"
         end
@@ -490,7 +490,7 @@ describe Braintree::CreditCard do
             }
           )
           result.success?.should == true
-          result.credit_card.venmo_sdk?.should == true
+          result.credit_card.venmo_sdk?.should == false
         end
 
         it "venmo_sdk? returns false when given an invalid session" do

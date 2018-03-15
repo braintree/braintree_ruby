@@ -343,6 +343,8 @@ module Braintree
       PaymentMethodNonceCardTypeIsNotAccepted = "91567"
       PaymentMethodNonceConsumed = "91564"
       PaymentMethodNonceHasNoValidPaymentInstrumentType = "91569"
+      UsBankAccountNonceMustBePlaidVerified = "915171"
+      UsBankAccountNotVerified = "915172"
       PaymentMethodNonceLocked = "91566"
       PaymentMethodNonceUnknown = "91565"
       PaymentMethodTokenCardTypeIsNotAccepted = "91517"
@@ -612,6 +614,10 @@ module Braintree
       PaymentMethodNonceLocked = "93109"
       CannotForwardPaymentMethodType = "93107"
       PaymentMethodNoLongerSupported = "93117"
+
+      module Options
+        UsBankAccountVerificationMethodIsInvalid = "93121"
+      end
     end
 
     module AuthorizationFingerprint

@@ -11,11 +11,19 @@ module Braintree
     attr_reader :last_4
     attr_reader :routing_number
     attr_reader :token
+    attr_reader :verifications
+    attr_reader :verified
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @ach_mandate = AchMandate.new(attributes[:ach_mandate]) if attributes[:ach_mandate]
+
+      if attributes[:verifications]
+        @verifications = attributes[:verifications].map do |v|
+          UsBankAccountVerification._new(v)
+        end
+      end
     end
 
     def default?

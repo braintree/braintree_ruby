@@ -1281,7 +1281,7 @@ describe Braintree::Transaction do
           }
         )
         result.success?.should == true
-        result.transaction.credit_card_details.venmo_sdk?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == false
       end
     end
 
@@ -2114,96 +2114,6 @@ describe Braintree::Transaction do
           result.should_not be_success
           result.errors.for(:transaction).first.code.should == "91565"
         end
-      end
-    end
-
-    context "us bank account nonce" do
-      let!(:valid_nonce) { generate_valid_us_bank_account_nonce }
-      let!(:invalid_nonce) { generate_invalid_us_bank_account_nonce }
-      it "returns a successful result for tansacting on a us bank account nonce" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => "us_bank_merchant_account",
-          :payment_method_nonce => valid_nonce,
-          :options => {
-            :submit_for_settlement => true,
-          }
-        )
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6,}$/
-        result.transaction.type.should == "sale"
-        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::UsBankAccount
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "021000021"
-        result.transaction.us_bank_account_details.last_4.should == "1234"
-        result.transaction.us_bank_account_details.account_type.should == "checking"
-        result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
-        result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
-        result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
-      end
-
-      it "return successful result for vaulting and transacting on vaulted token" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => "us_bank_merchant_account",
-          :payment_method_nonce => valid_nonce,
-          :options => {
-            :submit_for_settlement => true,
-            :store_in_vault => true,
-          }
-        )
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6,}$/
-        result.transaction.type.should == "sale"
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "021000021"
-        result.transaction.us_bank_account_details.last_4.should == "1234"
-        result.transaction.us_bank_account_details.account_type.should == "checking"
-        result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
-        result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
-        result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
-
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => "us_bank_merchant_account",
-          :payment_method_token=> result.transaction.us_bank_account_details.token,
-          :options => {
-            :submit_for_settlement => true,
-          }
-        )
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6,}$/
-        result.transaction.type.should == "sale"
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-        result.transaction.us_bank_account_details.routing_number.should == "021000021"
-        result.transaction.us_bank_account_details.last_4.should == "1234"
-        result.transaction.us_bank_account_details.account_type.should == "checking"
-        result.transaction.us_bank_account_details.account_holder_name.should == "Dan Schulman"
-        result.transaction.us_bank_account_details.bank_name.should =~ /CHASE/
-        result.transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
-        result.transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
-      end
-
-      it "returns failure for token that doesn't exist" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => "us_bank_merchant_account",
-          :payment_method_nonce => invalid_nonce,
-          :options => {
-            :submit_for_settlement => true,
-          }
-        )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown
       end
     end
 
@@ -5809,7 +5719,7 @@ describe Braintree::Transaction do
           :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK.generate_test_payment_method_code(Braintree::Test::CreditCardNumbers::Visa)
         )
         result.success?.should == true
-        result.transaction.credit_card_details.venmo_sdk?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == false
       end
 
       it "errors when an invalid payment method code is passed" do
@@ -5836,7 +5746,7 @@ describe Braintree::Transaction do
           }
         )
         result.success?.should == true
-        result.transaction.credit_card_details.venmo_sdk?.should == true
+        result.transaction.credit_card_details.venmo_sdk?.should == false
       end
 
       it "venmo_sdk boolean is false when an invalid session is passed" do

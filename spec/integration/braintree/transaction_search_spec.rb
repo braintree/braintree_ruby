@@ -776,62 +776,74 @@ describe Braintree::Transaction, "search" do
       end
 
       context "dispute_date" do
+        before(:all) do
+          @disputed_transaction = Braintree::Transaction.sale!(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback,
+              :expiration_date => "03/18"
+            }
+          )
+
+          @disputed_date = @disputed_transaction.disputes.first.received_date
+          @disputed_time = @disputed_date.to_time
+
+          Timeout::timeout(60) {
+            dispute_date_indexed = false
+            until dispute_date_indexed
+              sleep 1
+              collection = Braintree::Transaction.search do |search|
+                search.id.is @disputed_transaction.id
+                search.dispute_date.is @disputed_date
+              end
+
+              dispute_date_indexed = collection.maximum_size == 1
+            end
+          }
+        end
+
         it "searches on dispute_date in UTC" do
-          disputed_time = Time.parse("2014-03-01 00:00:00 UTC")
-          transaction_id = "2disputetransaction"
-
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
+            search.id.is @disputed_transaction.id
             search.dispute_date.between(
-              disputed_time - 60,
-              disputed_time + 60
+              @disputed_time - 60,
+              @disputed_time + 60
             )
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
+          collection.first.id.should == @disputed_transaction.id
 
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
-            search.dispute_date >= disputed_time - 1
+            search.id.is @disputed_transaction.id
+            search.dispute_date >= @disputed_time - 1
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
+          collection.first.id.should == @disputed_transaction.id
 
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
-            search.dispute_date <= disputed_time + 1
+            search.id.is @disputed_transaction.id
+            search.dispute_date <= @disputed_time + 1
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
+          collection.first.id.should == @disputed_transaction.id
 
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
-            search.disbursement_date.between(
-              disputed_time - 300,
-              disputed_time - 100
-            )
-          end
-
-          collection.maximum_size.should == 0
-
-          collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
-            search.dispute_date.is disputed_time
+            search.id.is @disputed_transaction.id
+            search.dispute_date.is @disputed_time
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
+          collection.first.id.should == @disputed_transaction.id
         end
 
         it "searches on dispute_date in local time" do
-          now = Time.parse("2014-03-01 18:00:00 CST")
-          transaction_id = "2disputetransaction"
+          now = @disputed_time.localtime("-06:00")
 
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
+            search.id.is @disputed_transaction.id
             search.dispute_date.between(
               now - 60,
               now + 60
@@ -839,49 +851,35 @@ describe Braintree::Transaction, "search" do
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
+          collection.first.id.should == @disputed_transaction.id
 
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
+            search.id.is @disputed_transaction.id
             search.dispute_date >= now - 60
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
+          collection.first.id.should == @disputed_transaction.id
 
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
+            search.id.is @disputed_transaction.id
             search.dispute_date <= now + 60
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
-
-          collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
-            search.dispute_date.between(
-              now + 100,
-              now + 300
-            )
-          end
-
-          collection.maximum_size.should == 0
         end
 
         it "searches on dispute_date with date ranges" do
-          disputed_date = Date.new(2014, 3, 1)
-          transaction_id = "disputedtransaction"
-
           collection = Braintree::Transaction.search do |search|
-            search.id.is transaction_id
+            search.id.is @disputed_transaction.id
             search.dispute_date.between(
-              disputed_date - 1,
-              disputed_date + 1
+              @disputed_date - 1,
+              @disputed_date + 1
             )
           end
 
           collection.maximum_size.should == 1
-          collection.first.id.should == transaction_id
+          collection.first.id.should == @disputed_transaction.id
         end
       end
 

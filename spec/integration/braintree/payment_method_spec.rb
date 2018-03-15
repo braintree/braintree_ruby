@@ -483,41 +483,6 @@ describe Braintree::PaymentMethod do
       found_credit_card.billing_address.street_address.should == "456 Xyz Way"
     end
 
-    context "us bank account" do
-      it "creates a payment method from a us bank account nonce" do
-        customer = Braintree::Customer.create.customer
-        result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => generate_valid_us_bank_account_nonce,
-          :customer_id => customer.id
-        )
-
-        result.should be_success
-        us_bank_account = result.payment_method
-        us_bank_account.should be_a(Braintree::UsBankAccount)
-        us_bank_account.routing_number.should == "021000021"
-        us_bank_account.last_4.should == "1234"
-        us_bank_account.account_type.should == "checking"
-        us_bank_account.account_holder_name.should == "Dan Schulman"
-        us_bank_account.bank_name.should =~ /CHASE/
-        us_bank_account.default.should == true
-        us_bank_account.ach_mandate.text.should == "cl mandate text"
-        us_bank_account.ach_mandate.accepted_at.should be_a Time
-
-        Braintree::PaymentMethod.find(us_bank_account.token).should be_a(Braintree::UsBankAccount)
-      end
-
-      it "does not creates a payment method from an invalid us bank account nonce" do
-        customer = Braintree::Customer.create.customer
-        result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => generate_invalid_us_bank_account_nonce,
-          :customer_id => customer.id
-        )
-
-        result.should_not be_success
-        result.errors.for(:payment_method).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::PaymentMethod::PaymentMethodNonceUnknown
-      end
-    end
-
     context "paypal" do
       it "creates a payment method from an unvalidated future paypal account nonce" do
         nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")

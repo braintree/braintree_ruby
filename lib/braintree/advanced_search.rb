@@ -62,6 +62,10 @@ module Braintree
       end
     end
 
+    class EndsWithNode < SearchNode # :nodoc:
+      operators :ends_with
+    end
+
     class MultipleValueOrTextNode < MultipleValueNode
       extend Forwardable
       def_delegators :@text_node, :contains, :ends_with, :is, :is_not, :starts_with
@@ -127,6 +131,10 @@ module Braintree
 
     def self.date_range_fields(*fields)
       _create_field_accessors(fields, DateRangeNode)
+    end
+
+    def self.ends_with_fields(*fields)
+      _create_field_accessors(fields, EndsWithNode)
     end
 
     def self._create_field_accessors(fields, node_class)

@@ -112,6 +112,10 @@ module Braintree
       TestingGateway.new(self)
     end
 
+    def us_bank_account_verification
+      UsBankAccountVerificationGateway.new(self)
+    end
+
     def verification
       CreditCardVerificationGateway.new(self)
     end
