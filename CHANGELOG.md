@@ -1,3 +1,10 @@
+# Unreleased
+
+# 2.86.0
+* Remove `sepa_mandate_type` and `sepa_mandate_acceptance_location` params from `ClientTokenGateway`
+* Add `payer_id` accessor in `PayPalAccount`
+* Add support for VCR compelling evidence dispute representment
+
 # 2.85.0
 * Add support for `oauth_access_revocation` on `WebhookNotification`s
 * Add support for US Bank Account verifications via `PaymentMethod#create`, `PaymentMethod#update`, and `Transaction#create`

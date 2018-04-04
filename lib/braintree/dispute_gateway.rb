@@ -20,13 +20,23 @@ module Braintree
       raise NotFoundError, "dispute with id #{dispute_id} not found"
     end
 
-    def add_file_evidence(dispute_id, document_upload_id)
+    def add_file_evidence(dispute_id, document_id_or_request)
       raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
-      raise ArgumentError, "document_upload_id contains invalid characters" unless document_upload_id.to_s =~ /\A[\w-]+\z/
-      raise ArgumentError, "document_upload_id cannot be blank" if document_upload_id.nil? || dispute_id.to_s.strip == ""
+      raise ArgumentError, "document_id_or_request cannot be blank" if document_id_or_request.nil?
 
-      params = {document_upload_id: document_upload_id}
+      request = document_id_or_request.is_a?(Hash) ? document_id_or_request : { document_id: document_id_or_request }
+
+      raise ArgumentError, "document_id contains invalid characters" unless request[:document_id].to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "document_id cannot be blank" if request[:document_id].nil? || dispute_id.to_s.strip == ""
+      raise ArgumentError, "category must be a string" if request[:category] && !request[:category].is_a?(String)
+
+      params = {
+        evidence: {
+          document_upload_id: request[:document_id],
+          category: request[:category],
+        }
+      }
       response = @config.http.post("#{@config.base_merchant_path}/disputes/#{dispute_id}/evidence", params)
 
       if response[:evidence]
@@ -48,15 +58,20 @@ module Braintree
       request = content_or_request.is_a?(String) ? { content: content_or_request } : content_or_request
 
       raise ArgumentError, "content cannot be blank" if request[:content].nil? || request[:content].to_s.strip == ""
-      raise ArgumentError, "request can only contain the keys [:content, :tag, :sequence_number]" if (request.keys - [:content, :tag, :sequence_number]).any?
+      raise ArgumentError, "request can only contain the keys [:content, :category, :sequence_number]" if (request.keys - [:category, :content, :tag, :sequence_number]).any?
       raise ArgumentError, "sequence_number must be an integer" if request[:sequence_number] && request[:sequence_number].to_s.match(/\D/)
       raise ArgumentError, "tag must be a string" if request[:tag] && !request[:tag].is_a?(String)
+      raise ArgumentError, "category must be a string" if request[:category] && !request[:category].is_a?(String)
+
+      warn "[DEPRECATED] tag as an option is deprecated. Please use category" if request[:tag]
+
+      category = request[:category] || request[:tag]
 
       params_for_http_post = {
         evidence: {
           comments: request[:content]
         }.tap do |evidence_params|
-          evidence_params[:category] = request[:tag] if request[:tag]
+          evidence_params[:category] = category if category
           evidence_params[:sequence_number] = request[:sequence_number] if request[:sequence_number]
         end
       }

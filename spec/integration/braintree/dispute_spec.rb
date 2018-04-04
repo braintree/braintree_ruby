@@ -3,6 +3,12 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Dispute do
+  let(:document_upload) do
+    file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
+    response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
+    document_upload = response.document_upload
+  end
+
   let(:transaction) do
     result = Braintree::Transaction.sale(
       :amount => '10.00',
@@ -46,16 +52,11 @@ describe Braintree::Dispute do
   end
 
   describe "self.add_file_evidence" do
-    let(:document_upload) do
-      file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
-      response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
-      document_upload = response.document_upload
-    end
-
-    it "creates text evidence for the dispute" do
+    it "creates file evidence for the dispute" do
       result = Braintree::Dispute.add_file_evidence(dispute.id, document_upload.id)
 
       result.success?.should == true
+      result.evidence.category.should be_nil
       result.evidence.comment.should be_nil
       result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
       result.evidence.id.should =~ /^\w{16,}$/
@@ -87,6 +88,14 @@ describe Braintree::Dispute do
       expected_evidence.comment.should be_nil
       expected_evidence.url.should include("bt_logo.png")
     end
+
+    it "creates file evidence with a category when provided" do
+      result = Braintree::Dispute.add_file_evidence(dispute.id, {category: "GENERAL", document_id: document_upload.id})
+
+      result.success?.should == true
+      result.evidence.category.should == "GENERAL"
+      result.evidence.url.should include("bt_logo.png")
+    end
   end
 
   describe "self.add_text_evidence" do
@@ -94,6 +103,7 @@ describe Braintree::Dispute do
       result = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence")
 
       result.success?.should == true
+      result.evidence.category.should == nil
       result.evidence.comment.should == "text evidence"
       result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
       result.evidence.id.should =~ /^\w{16,}$/
@@ -131,6 +141,7 @@ describe Braintree::Dispute do
       result = Braintree::Dispute.add_text_evidence(dispute.id, { content: "123456789", tag: "REFUND_ID", sequence_number: 7 })
 
       result.success?.should == true
+      result.evidence.category.should == "REFUND_ID"
       result.evidence.comment.should == "123456789"
       result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
       result.evidence.id.should =~ /^\w{16,}$/
@@ -225,6 +236,68 @@ describe Braintree::Dispute do
       result.success?.should == false
       result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyRemoveEvidenceFromOpenDispute
       result.errors.for(:dispute)[0].message.should == "Evidence can only be removed from disputes that are in an Open state"
+    end
+  end
+
+  context "categorized evidence" do
+    it "fails to create file evidence for an unsupported category" do
+      result = Braintree::Dispute.add_file_evidence(dispute.id, {category: "NOTREALCATEGORY", document_id: document_upload.id})
+
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyCreateEvidenceWithValidCategory
+    end
+
+    it "fails to create text evidence for an unsupported category" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "NOTREALCATEGORY", content: "evidence"})
+
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyCreateEvidenceWithValidCategory
+    end
+
+    it "fails to create text evidence for a file only category MERCHANT_WEBSITE_OR_APP_ACCESS" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "MERCHANT_WEBSITE_OR_APP_ACCESS", content: "evidence"})
+
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::EvidenceCategoryDocumentOnly
+    end
+
+    it "fails to create file evidence for a text only category DEVICE_ID" do
+      result = Braintree::Dispute.add_file_evidence(dispute.id, {category: "DEVICE_ID", document_id: document_upload.id})
+
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::EvidenceCategoryTextOnly
+    end
+
+    it "fails to create evidence with an invalid date time format" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "DOWNLOAD_DATE_TIME", content: "baddate"})
+
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::EvidenceContentDateInvalid
+    end
+
+    it "successfully creates text evidence with an valid date time format" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "DOWNLOAD_DATE_TIME", content: "2018-10-20T18:00:00-0500"})
+
+      result.success?.should == true
+    end
+
+    it "fails to finalize a dispute with digital goods missing" do
+      Braintree::Dispute.add_text_evidence(dispute.id, {category: "DEVICE_ID", content: "iphone_id"})
+      result = Braintree::Dispute.finalize(dispute.id)
+
+      result.success?.should == false
+      error_codes = result.errors.for(:dispute).map(&:code)
+
+      error_codes.should include(Braintree::ErrorCodes::Dispute::DigitalGoodsMissingDownloadDate)
+      error_codes.should include(Braintree::ErrorCodes::Dispute::DigitalGoodsMissingEvidence)
+    end
+
+    it "fails to finalize a dispute with partial non-disputed transaction information provided" do
+      Braintree::Dispute.add_text_evidence(dispute.id, {category: "PRIOR_NON_DISPUTED_TRANSACTION_ARN", content: "123"})
+      result = Braintree::Dispute.finalize(dispute.id)
+
+      result.success?.should == false
+      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::NonDisputedPriorTransactionEvidenceMissingDate
     end
   end
 end

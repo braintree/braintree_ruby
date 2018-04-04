@@ -27,8 +27,6 @@ module Braintree
         SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
       elsif response[:us_bank_account]
         SuccessfulResult.new(:payment_method => UsBankAccount._new(@gateway, response[:us_bank_account]))
-      elsif response[:europe_bank_account]
-        SuccessfulResult.new(:payment_method => EuropeBankAccount._new(@gateway, response[:europe_bank_account]))
       elsif response[:apple_pay_card]
         SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
       elsif response[:android_pay_card]

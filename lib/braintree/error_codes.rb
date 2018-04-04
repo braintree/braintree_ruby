@@ -152,6 +152,23 @@ module Braintree
       CanOnlyAddEvidenceDocumentToDispute = "95703"
       CanOnlyAcceptOpenDispute = "95704"
       CanOnlyFinalizeOpenDispute = "95705"
+      CanOnlyCreateEvidenceWithValidCategory = "95706"
+      EvidenceContentDateInvalid = "95707"
+      EvidenceContentTooLong = "95708"
+      EvidenceContentARNTooLong = "95709"
+      EvidenceContentPhoneTooLong = "95710"
+      EvidenceCategoryTextOnly = "95711"
+      EvidenceCategoryDocumentOnly = "95712"
+      EvidenceCategoryNotForReasonCode = "95713"
+      EvidenceCategoryDuplicate = "95714"
+      EvidenceContentEmailInvalid = "95715"
+
+      DigitalGoodsMissingEvidence = "95720"
+      DigitalGoodsMissingDownloadDate = "95721"
+      NonDisputedPriorTransactionEvidenceMissingARN = "95722"
+      NonDisputedPriorTransactionEvidenceMissingDate = "95723"
+      RecurringTransactionEvidenceMissingDate = "95724"
+      RecurringTransactionEvidenceMissingARN = "95725"
     end
 
     module DocumentUpload

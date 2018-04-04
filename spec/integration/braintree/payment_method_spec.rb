@@ -200,6 +200,18 @@ describe Braintree::PaymentMethod do
       venmo_account.customer_id.should == customer.id
     end
 
+    it "raise server error when we attempt to create europe bank account payment method" do
+      customer = Braintree::Customer.create.customer
+      token = SecureRandom.hex(16)
+      expect do
+        Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::Europe,
+          :customer_id => customer.id,
+          :token => token
+        )
+      end.to raise_error(Braintree::ServerError)
+    end
+
     it "allows passing the make_default option alongside the nonce" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
@@ -534,10 +546,12 @@ describe Braintree::PaymentMethod do
         result.should be_success
         result.payment_method.should be_a(Braintree::PayPalAccount)
         result.payment_method.image_url.should_not be_nil
+        result.payment_method.payer_id.should_not be_nil
         token = result.payment_method.token
 
         found_paypal_account = Braintree::PayPalAccount.find(token)
         found_paypal_account.should_not be_nil
+        found_paypal_account.payer_id.should_not be_nil
       end
 
       it "creates a billing agreement payment method from a refresh token" do
@@ -550,11 +564,13 @@ describe Braintree::PaymentMethod do
         result.should be_success
         result.payment_method.should be_a(Braintree::PayPalAccount)
         result.payment_method.billing_agreement_id.should eq("B_FAKE_ID")
+        result.payment_method.payer_id.should_not be_nil
         token = result.payment_method.token
 
         found_paypal_account = Braintree::PayPalAccount.find(token)
         found_paypal_account.should_not be_nil
         found_paypal_account.billing_agreement_id.should eq("B_FAKE_ID")
+        found_paypal_account.payer_id.should_not be_nil
       end
 
       it "creates a billing agreement payment method from a refresh token without upgrading" do

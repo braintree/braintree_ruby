@@ -3,7 +3,8 @@ module Braintree
     class Evidence # :nodoc:
       include BaseModule
 
-      attr_reader :comment,
+      attr_reader :category,
+        :comment,
         :created_at,
         :id,
         :sent_to_processor_at,
@@ -13,7 +14,7 @@ module Braintree
 
       def initialize(attributes)
         unless attributes.nil?
-          @tag = attributes.delete(:category)
+          @tag = attributes[:category]
           set_instance_variables_from_hash attributes
         end
         @sent_to_processor_at = Date.parse(sent_to_processor_at) unless sent_to_processor_at.nil?
