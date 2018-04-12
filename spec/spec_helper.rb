@@ -219,6 +219,11 @@ end
 RSpec.configure do |config|
   config.include CustomMatchers
 
+  if ENV["JUNIT"] == "1"
+    config.add_formatter("RspecJunitFormatter", "tmp/build/braintree-ruby.#{rand}.junit.xml")
+    config.add_formatter("progress")
+  end
+
   config.expect_with :rspec do |expect|
     expect.syntax = [:should, :expect]
   end

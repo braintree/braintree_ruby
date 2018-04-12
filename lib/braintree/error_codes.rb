@@ -169,6 +169,7 @@ module Braintree
       NonDisputedPriorTransactionEvidenceMissingDate = "95723"
       RecurringTransactionEvidenceMissingDate = "95724"
       RecurringTransactionEvidenceMissingARN = "95725"
+      ValidEvidenceRequiredToFinalize = "95726"
     end
 
     module DocumentUpload

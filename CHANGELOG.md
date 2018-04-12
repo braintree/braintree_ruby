@@ -1,5 +1,8 @@
 # Unreleased
 
+# 2.87.0
+* Add Dispute error ValidEvidenceRequiredToFinalize
+
 # 2.86.0
 * Remove `sepa_mandate_type` and `sepa_mandate_acceptance_location` params from `ClientTokenGateway`
 * Add `payer_id` accessor in `PayPalAccount`
