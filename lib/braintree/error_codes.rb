@@ -668,5 +668,14 @@ module Braintree
         MerchantAccountCannotBeSubMerchantAccount = "94208"
       end
     end
+
+    module UsBankAccountVerification
+      NotConfirmable = "96101"
+      MustBeMicroTransfersVerification = "96102"
+      AmountsDoNotMatch = "96103"
+      TooManyConfirmationAttempts = "96104"
+      UnableToConfirmDepositAmounts = "96105"
+      InvalidDepositAmounts = "96106"
+    end
   end
 end

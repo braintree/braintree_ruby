@@ -8,16 +8,18 @@ module Braintree
       GatewayRejected = "gateway_rejected"
       ProcessorDeclined = "processor_declined"
       Verified = "verified"
+      Pending = "pending"
 
-      All = [Failed, GatewayRejected, ProcessorDeclined, Verified]
+      All = [Failed, GatewayRejected, ProcessorDeclined, Verified, Pending]
     end
 
     module VerificationMethod
       IndependentCheck = "independent_check"
       NetworkCheck = "network_check"
       TokenizedCheck = "tokenized_check"
+      MicroTransfers = "micro_transfers"
 
-      All = [IndependentCheck, NetworkCheck, TokenizedCheck]
+      All = [IndependentCheck, NetworkCheck, TokenizedCheck, MicroTransfers]
     end
 
     attr_reader :id
@@ -62,6 +64,10 @@ module Braintree
 
     def self._new(*args) # :nodoc:
       self.new *args
+    end
+
+    def self.confirm_micro_transfer_amounts(*args)
+      Configuration.gateway.us_bank_account_verification.confirm_micro_transfer_amounts(*args)
     end
 
     def self.find(*args)

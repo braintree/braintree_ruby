@@ -16,6 +16,32 @@ describe Braintree::UsBankAccountVerification do
     end
   end
 
+  describe "self.confirm_micro_transfer_amounts" do
+    it "raises error if passed empty string" do
+      expect do
+        Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts("", [])
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed empty string wth space" do
+      expect do
+        Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(" ", [])
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed nil" do
+      expect do
+        Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(nil, [])
+      end.to raise_error(ArgumentError)
+    end
+
+    it "raises error if passed non-array" do
+      expect do
+        Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(999, 123)
+      end.to raise_error(ArgumentError)
+    end
+  end
+
   describe "self.find" do
     it "raises error if passed empty string" do
       expect do

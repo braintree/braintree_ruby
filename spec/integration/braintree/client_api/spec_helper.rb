@@ -55,7 +55,7 @@ def nonce_for_paypal_account(paypal_account_details)
   body["paypalAccounts"][0]["nonce"]
 end
 
-def generate_non_plaid_us_bank_account_nonce
+def generate_non_plaid_us_bank_account_nonce(account_number="1000000000")
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
 
@@ -71,7 +71,7 @@ def generate_non_plaid_us_bank_account_nonce
     },
     :account_type => "checking",
     :routing_number => "021000021",
-    :account_number => "1000000000",
+    :account_number => account_number,
     :first_name => "John",
     :last_name => "Doe",
     :ownership_type => "personal",

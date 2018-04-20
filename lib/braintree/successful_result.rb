@@ -21,6 +21,7 @@ module Braintree
     attr_reader :subscription
     attr_reader :supported_networks
     attr_reader :transaction
+    attr_reader :us_bank_account_verification
 
     def initialize(attributes = {}) # :nodoc:
       @attrs = attributes.keys

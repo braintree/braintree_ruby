@@ -6,6 +6,25 @@ module Braintree
       @config.assert_has_access_token_or_keys
     end
 
+    def confirm_micro_transfer_amounts(id, deposit_amounts)
+      raise ArgumentError if id.nil? || id.to_s.strip == "" || !deposit_amounts.kind_of?(Array)
+      response = @config.http.put(
+        "#{@config.base_merchant_path}/us_bank_account_verifications/#{id}/confirm_micro_transfer_amounts",
+        :us_bank_account_verification => {
+          :deposit_amounts => deposit_amounts,
+        },
+      )
+      if response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        SuccessfulResult.new(
+          :us_bank_account_verification => UsBankAccountVerification._new(response[:us_bank_account_verification])
+        )
+      end
+    rescue NotFoundError
+      raise NotFoundError, "verification with id #{id.inspect} not found"
+    end
+
     def find(id)
       raise ArgumentError if id.nil? || id.to_s.strip == ""
       response = @config.http.get("#{@config.base_merchant_path}/us_bank_account_verifications/#{id}")

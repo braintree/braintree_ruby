@@ -1,4 +1,6 @@
-# Unreleased
+# 2.88.0
+* Add support for Micro Transfer ACH verifications
+* Add `image_url` and `token` attributes to `AndroidPayDetails` and `ApplePayDetails`
 
 # 2.87.0
 * Add Dispute error ValidEvidenceRequiredToFinalize

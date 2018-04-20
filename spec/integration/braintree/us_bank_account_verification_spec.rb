@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
-describe Braintree::UsBankAccountVerification, "search" do
+describe Braintree::UsBankAccountVerification do
   let(:nonce) { generate_non_plaid_us_bank_account_nonce }
   let(:customer) do
     params = {
@@ -11,6 +11,167 @@ describe Braintree::UsBankAccountVerification, "search" do
     }
 
     Braintree::Customer.create(params).customer
+  end
+
+  describe "self.confirm_micro_transfer_amounts" do
+    before do
+      Braintree::Configuration.merchant_id = "integration2_merchant_id"
+      Braintree::Configuration.public_key = "integration2_public_key"
+      Braintree::Configuration.private_key = "integration2_private_key"
+    end
+
+    after(:all) do
+      Braintree::Configuration.merchant_id = "integration_merchant_id"
+      Braintree::Configuration.public_key = "integration_public_key"
+      Braintree::Configuration.private_key = "integration_private_key"
+    end
+
+    context "with a micro transfer verification" do
+      it "successfully confirms settled amounts" do
+        nonce = generate_non_plaid_us_bank_account_nonce("1000000000")
+
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
+          }
+        )
+
+        result.should be_success
+
+        verification = result.payment_method.verifications.first
+        verification.verification_method.should == Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers
+        verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+
+        response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [17, 29])
+
+        response.should be_success
+        response.us_bank_account_verification.status.should == Braintree::UsBankAccountVerification::Status::Verified
+
+        us_bank_account = Braintree::UsBankAccount.find(response.us_bank_account_verification.us_bank_account[:token])
+
+        us_bank_account.verified.should be_truthy
+      end
+
+      it "successfully confirms not-yet-settled amounts" do
+        nonce = generate_non_plaid_us_bank_account_nonce("1000000001")
+
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
+          }
+        )
+
+        result.should be_success
+
+        verification = result.payment_method.verifications.first
+        verification.verification_method.should == Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers
+        verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+
+        response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [17, 29])
+
+        response.should be_success
+        response.us_bank_account_verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+      end
+
+      it "attempts to confirm" do
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
+          }
+        )
+
+        result.should be_success
+
+        verification = result.payment_method.verifications.first
+        verification.verification_method.should == Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers
+        verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+
+        response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
+
+        response.should_not be_success
+        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::AmountsDoNotMatch
+      end
+
+      it "exceeds the confirmation attempt threshold" do
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
+          }
+        )
+
+        result.should be_success
+
+        verification = result.payment_method.verifications.first
+
+        response = nil
+        4.times do
+          response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
+
+          response.should_not be_success
+          response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::AmountsDoNotMatch
+        end
+
+        response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
+        response.should_not be_success
+        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::TooManyConfirmationAttempts
+
+        response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
+        response.should_not be_success
+        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::TooManyConfirmationAttempts
+      end
+
+      it "returns an error for invalid deposit amounts" do
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
+          }
+        )
+
+        result.should be_success
+
+        verification = result.payment_method.verifications.first
+        response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, ["abc"])
+
+        response.should_not be_success
+        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::InvalidDepositAmounts
+      end
+    end
+
+    context "non-micro transfer" do
+      it "rejects for incorrect verification type" do
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck,
+          }
+        )
+
+        result.should be_success
+
+        verification = result.payment_method.verifications.first
+        response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
+
+        response.should_not be_success
+        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::MustBeMicroTransfersVerification
+      end
+    end
   end
 
   describe "self.find" do

@@ -7,10 +7,12 @@ module Braintree
       attr_reader :expiration_month
       attr_reader :expiration_year
       attr_reader :google_transaction_id
+      attr_reader :image_url
       attr_reader :last_4
       attr_reader :source_card_last_4
       attr_reader :source_card_type
       attr_reader :source_description
+      attr_reader :token
       attr_reader :virtual_card_last_4
       attr_reader :virtual_card_type
 
