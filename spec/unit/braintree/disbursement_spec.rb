@@ -76,4 +76,56 @@ describe Braintree::Disbursement do
       disbursement.success?.should == true
     end
   end
+
+  describe "credit?" do
+    subject do
+      described_class._new(
+        :gateway,
+        merchant_account: {
+          id: "sandbox_master_merchant_account",
+          status: "active",
+        },
+        success: true,
+        amount: "100.00",
+        disbursement_type: type,
+        disbursement_date: "2013-04-10",
+      )
+    end
+
+    context "when the disbursement type is credit" do
+      let(:type) { described_class::Types::Credit }
+      it { is_expected.to be_credit }
+    end
+
+    context "when the disbursement type is not credit" do
+      let(:type) { described_class::Types::Debit }
+      it { is_expected.not_to be_credit }
+    end
+  end
+
+  describe "debit?" do
+    subject do
+      described_class._new(
+        :gateway,
+        merchant_account: {
+          id: "sandbox_master_merchant_account",
+          status: "active",
+        },
+        success: true,
+        amount: "100.00",
+        disbursement_type: type,
+        disbursement_date: "2013-04-10",
+      )
+    end
+
+    context "when the disbursement type is debit" do
+      let(:type) { described_class::Types::Debit }
+      it { is_expected.to be_debit }
+    end
+
+    context "when the disbursement type is not debit" do
+      let(:type) { described_class::Types::Credit }
+      it { is_expected.not_to be_debit }
+    end
+  end
 end

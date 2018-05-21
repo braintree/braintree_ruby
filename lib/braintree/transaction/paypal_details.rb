@@ -9,6 +9,7 @@ module Braintree
       attr_reader :debug_id
       attr_reader :description
       attr_reader :image_url
+      attr_reader :payee_id
       attr_reader :payee_email
       attr_reader :payer_email
       attr_reader :payer_first_name

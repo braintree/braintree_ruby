@@ -1,3 +1,5 @@
+require 'stringio'
+
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Braintree::Configuration do
@@ -63,6 +65,33 @@ describe Braintree::Configuration do
           :environment => "development"
         )
       end.to raise_error(Braintree::ConfigurationError, /mixed credential types/)
+    end
+
+    context "mixed environments" do
+      before do
+        @original_stderr = $stderr
+        $stderr = StringIO.new
+      end
+
+      after do
+        $stderr = @original_stderr
+      end
+
+      it "warns if both environment and access_token are provided and their environments differ" do
+        Braintree::Configuration.new(
+          :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
+          :environment => "sandbox",
+        )
+        $stderr.string.should == "Braintree::Gateway should not be initialized with mixed environments: environment parameter and access_token do not match, environment from access_token is used.\n"
+      end
+
+      it "does not warn if both environment and access_token are provided and their environments match" do
+        Braintree::Configuration.new(
+          :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
+          :environment => "development",
+        )
+        $stderr.string.should == ""
+      end
     end
 
     it "accepts proxy params" do

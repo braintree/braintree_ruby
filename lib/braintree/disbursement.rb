@@ -2,8 +2,14 @@ module Braintree
   class Disbursement
     include BaseModule
 
+    module Types
+      Credit = "credit"
+      Debit  = "debit"
+    end
+
     attr_reader :amount
     attr_reader :disbursement_date
+    attr_reader :disbursement_type
     attr_reader :exception_message
     attr_reader :follow_up_action
     attr_reader :id
@@ -33,6 +39,14 @@ module Braintree
       nice_attributes << "amount: #{self.amount.to_s("F").inspect}"
       nice_attributes << "disbursement_date: #{self.disbursement_date.to_s}"
       "#<#{self.class} #{nice_attributes.join(', ')}>"
+    end
+
+    def debit?
+      disbursement_type == Types::Debit
+    end
+
+    def credit?
+      disbursement_type == Types::Credit
     end
 
     class << self

@@ -30,13 +30,13 @@ module Braintree
       PartnerMerchantConnected = "partner_merchant_connected"
       PartnerMerchantDisconnected = "partner_merchant_disconnected"
       PartnerMerchantDeclined = "partner_merchant_declined"
-      OAuthAccessRevoked = "oauth_access_revoked"
 
       AccountUpdaterDailyReport = "account_updater_daily_report"
 
       IdealPaymentComplete = "ideal_payment_complete"
       IdealPaymentFailed = "ideal_payment_failed"
 
+      OAuthAccessRevoked = "oauth_access_revoked"
       ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
       ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
 

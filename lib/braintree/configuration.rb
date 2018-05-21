@@ -123,6 +123,9 @@ module Braintree
         @environment = parser.environment
       elsif options[:access_token]
         parser.parse_access_token(options[:access_token])
+
+        _check_for_mixed_environment(options[:environment], parser.environment)
+
         @access_token = parser.access_token
         @environment = parser.environment
         @merchant_id = parser.merchant_id
@@ -142,6 +145,12 @@ module Braintree
 
       if (options[:public_key] || options[:private_key]) && (options[:access_token])
         raise ConfigurationError.new("Braintree::Gateway cannot be initialized with mixed credential types: public_key and private_key mixed with access_token.")
+      end
+    end
+
+    def _check_for_mixed_environment(options_environment, token_environment)
+      if options_environment && options_environment.to_sym != token_environment.to_sym
+        warn "Braintree::Gateway should not be initialized with mixed environments: environment parameter and access_token do not match, environment from access_token is used."
       end
     end
 

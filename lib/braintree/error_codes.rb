@@ -406,6 +406,7 @@ module Braintree
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
       UnsupportedVoiceAuthorization = "91539"
+      TransactionSourceIsInvalid = "915133"
 
       module Options
         SubmitForSettlementIsRequiredForCloning = "91544"

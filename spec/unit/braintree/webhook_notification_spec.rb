@@ -58,19 +58,6 @@ describe Braintree::WebhookNotification do
       notification.timestamp.should be_within(10).of(Time.now.utc)
     end
 
-    it 'builds a sample notification for OAuth application revocation' do
-      sample_notification = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::OAuthAccessRevoked,
-        'my_id'
-      )
-
-      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-
-      expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::OAuthAccessRevoked)
-      expect(notification.oauth_access_revocation.merchant_id).to eq('abc123')
-      expect(notification.timestamp).to be_within(10).of(Time.now.utc)
-    end
-
     it "builds a sample notification with a source merchant ID" do
       sample_notification = Braintree::WebhookTesting.sample_notification(
         Braintree::WebhookNotification::Kind::SubscriptionWentPastDue,
@@ -107,6 +94,7 @@ describe Braintree::WebhookNotification do
 
         status_transitioned = notification.connected_merchant_status_transitioned
         status_transitioned.merchant_public_id.should == "my_id"
+        status_transitioned.merchant_id.should == "my_id"
         status_transitioned.oauth_application_client_id.should == "oauth_application_client_id"
         status_transitioned.status.should == "new_status"
       end
@@ -123,9 +111,25 @@ describe Braintree::WebhookNotification do
 
         paypal_status_changed = notification.connected_merchant_paypal_status_changed
         paypal_status_changed.merchant_public_id.should == "my_id"
+        paypal_status_changed.merchant_id.should == "my_id"
         paypal_status_changed.oauth_application_client_id.should == "oauth_application_client_id"
         paypal_status_changed.action.should == "link"
       end
+
+      it 'builds a sample notification for OAuth application revocation' do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::OAuthAccessRevoked,
+          'my_id'
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::OAuthAccessRevoked
+        notification.oauth_access_revocation.merchant_id.should == "my_id"
+        notification.oauth_access_revocation.oauth_application_client_id.should == "oauth_application_client_id"
+        notification.timestamp.should be_within(10).of(Time.now.utc)
+      end
+
     end
 
     context "disputes" do

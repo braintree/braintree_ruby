@@ -153,14 +153,6 @@ module Braintree
       XML
     end
 
-    def _oauth_access_revoked_sample_xml(id)
-      <<-XML
-        <oauth-application-revocation>
-          <merchant-id>abc123</merchant-id>
-        </oauth-application-revocation>
-      XML
-    end
-
     def _merchant_account_approved_sample_xml(id)
 
       <<-XML
@@ -585,6 +577,15 @@ module Braintree
           <action>link</action>
         </connected-merchant-paypal-status-changed>
         XML
+    end
+
+    def _oauth_access_revoked_sample_xml(id)
+      <<-XML
+        <oauth-application-revocation>
+          <merchant-id>#{id}</merchant-id>
+          <oauth-application-client-id>oauth_application_client_id</oauth-application-client-id>
+        </oauth-application-revocation>
+      XML
     end
 
     def _ideal_payment_complete_sample_xml(id)
