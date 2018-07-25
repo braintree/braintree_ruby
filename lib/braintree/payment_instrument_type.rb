@@ -11,5 +11,6 @@ module Braintree
     IdealPayment = 'ideal_payment'
     VisaCheckoutCard = 'visa_checkout_card'
     MasterpassCard = 'masterpass_card'
+    SamsungPayCard = 'samsung_pay_card'
   end
 end

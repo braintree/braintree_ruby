@@ -13,13 +13,7 @@ module Braintree
     multiple_value_field :reason, :allows => Dispute::Reason::All
     multiple_value_field :reason_code
     multiple_value_field :status, :allows => Dispute::Status::All
-
-    multiple_value_field :transaction_source, :allows => [
-      Transaction::Source::Api,
-      Transaction::Source::ControlPanel,
-      Transaction::Source::Recurring,
-      Transaction::Source::Unrecognized,
-    ]
+    multiple_value_field :transaction_source
 
     range_fields(
       :amount_disputed,

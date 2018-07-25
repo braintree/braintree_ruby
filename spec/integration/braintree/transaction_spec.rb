@@ -124,18 +124,20 @@ describe Braintree::Transaction do
   describe "self.create" do
     describe "risk data" do
       it "returns decision, device_data_captured and id" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => 1_00,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-            :expiration_date => "05/2009"
-          }
-        )
-        result.transaction.risk_data.should be_a(Braintree::RiskData)
-        result.transaction.risk_data.should respond_to(:id)
-        result.transaction.risk_data.should respond_to(:decision)
-        result.transaction.risk_data.should respond_to(:device_data_captured)
+        with_advanced_fraud_integration_merchant do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => 1_00,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
+              :expiration_date => "05/2009"
+            }
+          )
+          result.transaction.risk_data.should be_a(Braintree::RiskData)
+          result.transaction.risk_data.should respond_to(:id)
+          result.transaction.risk_data.should respond_to(:decision)
+          result.transaction.risk_data.should respond_to(:device_data_captured)
+        end
       end
     end
 
@@ -4087,18 +4089,20 @@ describe Braintree::Transaction do
     end
 
     it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
-      result = Braintree::Transaction.sale(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
-        },
-        :options => {
-          :skip_advanced_fraud_checking => true
-        }
-      )
-      result.success?.should == true
-      result.transaction.risk_data.id.should be_nil
+      with_advanced_fraud_integration_merchant do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :options => {
+            :skip_advanced_fraud_checking => true
+          }
+        )
+        result.success?.should == true
+        result.transaction.risk_data.should be_nil
+      end
     end
 
     it "works with Apple Pay params" do
@@ -5714,6 +5718,8 @@ describe Braintree::Transaction do
       authorization_adjustment.amount.should == "-20.00"
       authorization_adjustment.success.should == true
       authorization_adjustment.timestamp.should be_a Time
+      authorization_adjustment.processor_response_code.should == "1000"
+      authorization_adjustment.processor_response_text.should == "Approved"
     end
   end
 

@@ -1,6 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
+def make_token
+ SecureRandom.uuid
+end
+
 describe Braintree::PaymentMethod do
   describe "self.create" do
     it "creates a payment method from a vaulted credit card nonce" do
@@ -239,8 +243,8 @@ describe Braintree::PaymentMethod do
     it "overrides the token in the nonce" do
       customer = Braintree::Customer.create!
 
-      first_token = "FIRST_TOKEN_#{rand(36**3).to_s(36)}"
-      second_token = "SECOND_TOKEN_#{rand(36**3).to_s(36)}"
+      first_token = make_token
+      second_token = make_token
       nonce = nonce_for_paypal_account(
         :consent_code => "PAYPAL_CONSENT_CODE",
         :token => first_token
@@ -774,7 +778,7 @@ describe Braintree::PaymentMethod do
     context "paypal accounts" do
       it "finds the payment method with the given token" do
         customer = Braintree::Customer.create!
-        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        payment_method_token = make_token
         nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
           :token => payment_method_token
@@ -796,7 +800,7 @@ describe Braintree::PaymentMethod do
     context "apple pay cards" do
       it "finds the payment method with the given token" do
         customer = Braintree::Customer.create!
-        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        payment_method_token = make_token
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
           :customer_id => customer.id,
@@ -821,7 +825,7 @@ describe Braintree::PaymentMethod do
     context "venmo accounts" do
       it "finds the payment method with the given token" do
         customer = Braintree::Customer.create!
-        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        payment_method_token = make_token
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
           :customer_id => customer.id,
@@ -845,7 +849,7 @@ describe Braintree::PaymentMethod do
     context "android pay cards" do
       it "finds the proxy card payment method with the given token" do
         customer = Braintree::Customer.create!
-        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        payment_method_token = make_token
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::AndroidPayDiscover,
           :customer_id => customer.id,
@@ -872,7 +876,7 @@ describe Braintree::PaymentMethod do
 
       it "finds the network token payment method with the given token" do
         customer = Braintree::Customer.create!
-        payment_method_token = "PAYMENT_METHOD_TOKEN_#{rand(36**3).to_s(36)}"
+        payment_method_token = make_token
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::AndroidPayMasterCard,
           :customer_id => customer.id,
@@ -901,7 +905,7 @@ describe Braintree::PaymentMethod do
     context "unknown payment methods" do
       it "finds the payment method with the given token" do
         customer = Braintree::Customer.create!
-        payment_method_token = "FUTURE_PAYMENT_#{rand(36**3).to_s(36)}"
+        payment_method_token = make_token
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable,
           :customer_id => customer.id,
@@ -969,7 +973,8 @@ describe Braintree::PaymentMethod do
 
     it "deletes a paypal account" do
       customer = Braintree::Customer.create!
-      paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
+      paypal_account_token = make_token
+
       nonce = nonce_for_paypal_account(
         :consent_code => "PAYPAL_CONSENT_CODE",
         :token => paypal_account_token
@@ -991,7 +996,7 @@ describe Braintree::PaymentMethod do
     end
 
     it "deletes a credit card" do
-      token = "CREDIT_CARD_#{rand(36**3).to_s(36)}"
+      token = make_token
       customer = Braintree::Customer.create!
       nonce = nonce_for_new_payment_method({
         :credit_card => {
@@ -1017,7 +1022,7 @@ describe Braintree::PaymentMethod do
     end
 
     it "raises a NotFoundError exception if payment method cannot be found" do
-      token = "CREDIT_CARD_#{rand(36**3).to_s(36)}"
+      token = make_token
       customer = Braintree::Customer.create!
 
       expect do
@@ -1301,7 +1306,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id
         )
 
-        updated_token = "UPDATED_TOKEN-" + rand(36**3).to_s(36)
+        updated_token = make_token
         updated_result = Braintree::PaymentMethod.update(
           original_token,
           :token => updated_token

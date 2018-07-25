@@ -39,6 +39,8 @@ module Braintree
         SuccessfulResult.new(:payment_method => VisaCheckoutCard._new(@gateway, response[:visa_checkout_card]))
       elsif response[:masterpass_card]
         SuccessfulResult.new(:payment_method => MasterpassCard._new(@gateway, response[:masterpass_card]))
+      elsif response[:samsung_pay_card]
+        SuccessfulResult.new(:payment_method => SamsungPayCard._new(@gateway, response[:samsung_pay_card]))
       elsif response[:payment_method_nonce]
         SuccessfulResult.new(:payment_method_nonce => PaymentMethodNonce._new(@gateway, response[:payment_method_nonce]))
       elsif response[:success]

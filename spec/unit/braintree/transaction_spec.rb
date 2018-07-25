@@ -214,16 +214,20 @@ describe Braintree::Transaction do
       transaction = Braintree::Transaction._new(
         :gateway,
         :authorization_adjustments => [
-          { :timestamp => timestamp, :amount => "12.00", :success => true },
-          { :timestamp => timestamp, :amount => "12.34", :success => false },
+          { :timestamp => timestamp, :processor_response_code => "1000", :processor_response_text => "Approved", :amount => "12.00", :success => true },
+          { :timestamp => timestamp, :processor_response_code => "3000", :processor_response_text => "Processor Network Unavailable - Try Again", :amount => "12.34", :success => false },
         ])
       transaction.authorization_adjustments.size.should == 2
       transaction.authorization_adjustments[0].amount.should == "12.00"
       transaction.authorization_adjustments[0].success.should == true
       transaction.authorization_adjustments[0].timestamp.should == timestamp
+      transaction.authorization_adjustments[0].processor_response_code.should == "1000"
+      transaction.authorization_adjustments[0].processor_response_text.should == "Approved"
       transaction.authorization_adjustments[1].amount.should == "12.34"
       transaction.authorization_adjustments[1].success.should == false
       transaction.authorization_adjustments[1].timestamp.should == timestamp
+      transaction.authorization_adjustments[1].processor_response_code.should == "3000"
+      transaction.authorization_adjustments[1].processor_response_text.should == "Processor Network Unavailable - Try Again"
     end
 
     it "handles receiving custom as an empty string" do

@@ -29,6 +29,7 @@ describe Braintree::DisputeSearch do
     :reference_number,
     :reply_by_date,
     :transaction_id,
+    :transaction_source,
   ].each do |field|
     it "allows searching on #{field}" do
       search = Braintree::DisputeSearch.new
@@ -43,7 +44,6 @@ describe Braintree::DisputeSearch do
     :kind,
     :reason,
     :status,
-    :transaction_source,
   ].each do |field|
     it "raises if provided an unknown #{field} value" do
       search = Braintree::DisputeSearch.new

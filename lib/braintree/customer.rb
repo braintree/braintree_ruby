@@ -20,6 +20,7 @@ module Braintree
     attr_reader :masterpass_cards
     attr_reader :paypal_accounts
     attr_reader :phone
+    attr_reader :samsung_pay_cards
     attr_reader :updated_at
     attr_reader :us_bank_accounts
     attr_reader :venmo_accounts
@@ -117,6 +118,7 @@ module Braintree
       @us_bank_accounts = (@us_bank_accounts || []).map { |pm| UsBankAccount._new gateway, pm }
       @visa_checkout_cards = (@visa_checkout_cards|| []).map { |pm| VisaCheckoutCard._new gateway, pm }
       @masterpass_cards = (@masterpass_cards|| []).map { |pm| MasterpassCard._new gateway, pm }
+      @samsung_pay_cards = (@samsung_pay_cards|| []).map { |pm| SamsungPayCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
     end
@@ -156,7 +158,8 @@ module Braintree
         @amex_express_checkout_cards +
         @venmo_accounts +
         @us_bank_accounts +
-        @visa_checkout_cards
+        @visa_checkout_cards +
+        @samsung_pay_cards
     end
 
     def inspect # :nodoc:

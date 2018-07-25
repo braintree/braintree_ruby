@@ -138,19 +138,21 @@ describe Braintree::CreditCard do
     end
 
     it "returns risk data on verification on credit_card create" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :cvv => "123",
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2020",
-        :options => {:verify_card => true}
-      )
-      verification = credit_card.verification
-      verification.risk_data.should respond_to(:id)
-      verification.risk_data.should respond_to(:decision)
-      verification.risk_data.should respond_to(:device_data_captured)
+      with_advanced_fraud_integration_merchant do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2020",
+          :options => {:verify_card => true}
+        )
+        verification = credit_card.verification
+        verification.risk_data.should respond_to(:id)
+        verification.risk_data.should respond_to(:decision)
+        verification.risk_data.should respond_to(:device_data_captured)
+      end
     end
 
     it "exposes the gateway rejection reason on verification" do
