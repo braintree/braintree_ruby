@@ -78,6 +78,38 @@ describe Braintree::Dispute, "search" do
       dispute = collection.disputes.first
     end
 
+    context "reason_code" do
+      before(:each) do
+        ['83.00', '10.40'].each do |amount|
+          Braintree::Transaction.sale(
+            :amount => amount,
+            :credit_card => {
+              :expiration_date => '01/2020',
+              :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback,
+            },
+            :customer_id => customer.id,
+            :merchant_account_id => "14LaddersLLC_instant",
+            :options => {
+              :submit_for_settlement => true,
+            }
+          )
+        end
+      end
+
+      it "correctly returns disputes by multiple reasons" do
+        reason_codes = ["83", "1040"]
+        collection = Braintree::Dispute.search do |search|
+          search.reason_code.in reason_codes
+        end
+
+        expect(collection.disputes.count).to be >= 2
+
+        collection.disputes.map(&:reason_code).each do |reason_code|
+          expect(reason_codes).to include(reason_code)
+        end
+      end
+    end
+
     it "correctly returns disputes by effective_date range" do
       effective_date = transaction.disputes.first.status_history.first.effective_date
 
