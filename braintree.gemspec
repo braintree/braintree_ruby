@@ -14,5 +14,8 @@ Gem::Specification.new do |s|
   s.has_rdoc = false
   s.files = Dir.glob ["README.rdoc", "LICENSE", "lib/**/*.{rb,crt}", "spec/**/*", "*.gemspec"]
   s.add_dependency "builder", ">= 2.0.0"
+  s.metadata = {
+    "changelog_uri" => "https://github.com/braintree/braintree_ruby/blob/master/CHANGELOG.md"
+  }
 end
 
