@@ -114,9 +114,20 @@ To suppress logs from Braintree on environments where they are considered noise
 (e.g. test) use the following configuration:
 
 ```ruby
-logger = Logger.new("/dev/null")
-logger.level = Logger::INFO
-gateway.config.logger = logger
+options = {
+  :environment => :sandbox,
+  :merchant_id => "your_merchant_id",
+  :public_key => "your_public_key",
+  :private_key => "your_private_key",
+}
+
+if Rails.env.test? # or ENV['TEST'] etc ...
+  logger = Logger.new("/dev/null")
+  logger.level = Logger::INFO
+  options.merge!(logger: logger)
+end
+
+Braintree::Gateway.new(options)
 ```
 
 ## License
