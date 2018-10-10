@@ -248,6 +248,31 @@ describe Braintree::Transaction do
       end
     end
 
+    context "elo" do
+      it "returns a successful result if successful" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :merchant_account_id => SpecHelper::AdyenMerchantAccountId,
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Elo,
+            :cvv => "737",
+            :expiration_date => "10/2020"
+          }
+        )
+        result.success?.should == true
+        result.transaction.id.should =~ /^\w{6,}$/
+        result.transaction.type.should == "sale"
+        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.processor_authorization_code.should_not be_nil
+        result.transaction.voice_referral_number.should be_nil
+        result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Elo[0, 6]
+        result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Elo[-4..-1]
+        result.transaction.credit_card_details.expiration_date.should == "10/2020"
+        result.transaction.credit_card_details.customer_location.should == "US"
+      end
+    end
+
     it "returns a successful result if successful" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -3617,6 +3642,182 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters
       end
     end
+
+    context "network_transaction_id" do
+      it "receives network_transaction_id for visa transaction" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :amount => "10.00",
+        )
+        result.success?.should == true
+        result.transaction.network_transaction_id.should_not be_nil
+      end
+    end
+
+    context "external vault" do
+      it "returns a validation error if used with an unsupported instrument type" do
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :customer_id => customer.id
+        )
+        payment_method_token = result.payment_method.token
+
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :customer_id => customer.id,
+          :payment_method_token => payment_method_token,
+          :external_vault => {
+            :status => Braintree::Transaction::ExternalVault::Status::WillVault,
+          },
+          :amount => "10.00",
+        )
+        result.success?.should == false
+        result.errors.for(:transaction)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentInstrumentWithExternalVaultIsInvalid
+      end
+
+      it "reject invalid status" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "05/2009"
+          },
+          :external_vault => {
+            :status => "not_valid",
+          },
+          :amount => "10.00",
+        )
+        result.success?.should == false
+        result.errors.for(:transaction).for(:external_vault).on(:status)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::StatusIsInvalid
+      end
+
+      context "Visa" do
+        it "accepts status" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::WillVault,
+            },
+            :amount => "10.00",
+          )
+          result.success?.should == true
+          result.transaction.network_transaction_id.should_not be_nil
+        end
+
+        it "accepts previous_network_transaction_id" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
+              :previous_network_transaction_id => "123456789012345",
+            },
+            :amount => "10.00",
+          )
+          result.success?.should == true
+          result.transaction.network_transaction_id.should_not be_nil
+        end
+
+        it "rejects non-vaulted status with previous_network_transaction_id" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::WillVault,
+              :previous_network_transaction_id => "123456789012345",
+            },
+            :amount => "10.00",
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).for(:external_vault).on(:status)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::StatusWithPreviousNetworkTransactionIdIsInvalid
+        end
+
+        it "rejects invalid previous_network_transaction_id" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
+              :previous_network_transaction_id => "not_and_valid_id",
+            },
+            :amount => "10.00",
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).for(:external_vault).on(:previous_network_transaction_id)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::PreviousNetworkTransactionIdIsInvalid
+        end
+      end
+
+      context "Non-Visa" do
+        it "accepts status" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::WillVault,
+            },
+            :amount => "10.00",
+          )
+          result.success?.should == true
+          result.transaction.network_transaction_id.should be_nil
+        end
+
+        it "accepts blank previous_network_transaction_id" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
+              :previous_network_transaction_id => "",
+            },
+            :amount => "10.00",
+          )
+          result.success?.should == true
+          result.transaction.network_transaction_id.should be_nil
+        end
+
+        it "rejects previous_network_transaction_id" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Discover,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
+              :previous_network_transaction_id => "123456789012345",
+            },
+            :amount => "10.00",
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).for(:external_vault).on(:previous_network_transaction_id)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::CardTypeIsInvalid
+        end
+      end
+
+    end
   end
 
   describe "self.create!" do
@@ -4808,8 +5009,8 @@ describe Braintree::Transaction do
     it "returns an error with an invalid payment instrument type" do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
-        :payment_method_nonce => Braintree::Test::Nonce::AndroidPayDiscover
+        :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
+        :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)

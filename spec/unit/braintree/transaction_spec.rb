@@ -255,6 +255,14 @@ describe Braintree::Transaction do
       )
       transaction.risk_data.should be_nil
     end
+
+    it "accepts network_transaction_id" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :network_transaction_id => "123456789012345"
+      )
+      transaction.network_transaction_id.should == "123456789012345"
+    end
   end
 
   describe "inspect" do

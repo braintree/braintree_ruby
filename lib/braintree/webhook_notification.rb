@@ -41,6 +41,8 @@ module Braintree
       ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
 
       GrantedPaymentInstrumentUpdate = "granted_payment_instrument_update"
+
+      LocalPaymentCompleted = "local_payment_completed"
     end
 
     attr_reader :account_updater_daily_report
@@ -51,8 +53,9 @@ module Braintree
     attr_reader :granted_payment_instrument_update
     attr_reader :ideal_payment
     attr_reader :kind
-    attr_reader :partner_merchant
+    attr_reader :local_payment_completed
     attr_reader :oauth_access_revocation
+    attr_reader :partner_merchant
     attr_reader :source_merchant_id
     attr_reader :subscription
     attr_reader :timestamp
@@ -82,6 +85,7 @@ module Braintree
       @connected_merchant_status_transitioned = ConnectedMerchantStatusTransitioned._new(@subject[:connected_merchant_status_transitioned]) if @subject.has_key?(:connected_merchant_status_transitioned)
       @connected_merchant_paypal_status_changed = ConnectedMerchantPayPalStatusChanged._new(@subject[:connected_merchant_paypal_status_changed]) if @subject.has_key?(:connected_merchant_paypal_status_changed)
       @granted_payment_instrument_update = GrantedPaymentInstrumentUpdate._new(@subject[:granted_payment_instrument_update]) if @subject.has_key?(:granted_payment_instrument_update)
+      @local_payment_completed = LocalPaymentCompleted._new(@subject[:local_payment]) if @subject.has_key?(:local_payment)
     end
 
     def merchant_account

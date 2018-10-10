@@ -59,7 +59,9 @@ END
 END
       Braintree::Http.new(:config)._format_and_sanitize_body_for_log(input_xml).should == expected_xml
     end
+  end
 
+  describe "self._http_do" do
     it "connects when proxy address is specified" do
       config = Braintree::Configuration.new(
         :proxy_address => "localhost",
@@ -113,6 +115,69 @@ END
       Net::HTTP.should_receive(:new).with(nil, nil).and_return(net_http_instance)
 
       http._http_do("GET", "/plans")
+    end
+  end
+
+  describe "_compose_headers" do
+    before (:each) do
+      config = Braintree::Configuration.new
+      @http = Braintree::Http.new(config)
+    end
+
+    it "returns a hash of default headers" do
+      default_headers = @http._compose_headers
+      expect(default_headers["Accept"]).to eq("application/xml")
+      expect(default_headers["Accept-Encoding"]).to eq("gzip")
+      expect(default_headers["Content-Type"]).to eq("application/xml")
+      expect(default_headers["User-Agent"]).to match(/Braintree Ruby Gem .*/)
+      expect(default_headers["X-ApiVersion"]).to eq("5")
+    end
+
+    it "overwrites defaults with override headers" do
+      override_headers = {
+        "Accept" => "application/pdf",
+        "Authorization" => "token"
+      }
+      headers = @http._compose_headers(override_headers)
+      expect(headers["Accept"]).to eq("application/pdf")
+      expect(headers["Accept-Encoding"]).to eq("gzip")
+      expect(headers["Authorization"]).to eq("token")
+      expect(headers["Content-Type"]).to eq("application/xml")
+      expect(headers["User-Agent"]).to match(/Braintree Ruby Gem .*/)
+      expect(headers["X-ApiVersion"]).to eq("5")
+    end
+
+    it "extends default headers when new headers are specified" do
+      override_headers = {
+        "New-Header" => "New Value"
+      }
+      headers = @http._compose_headers(override_headers)
+      expect(headers["Accept"]).to eq("application/xml")
+      expect(headers["Accept-Encoding"]).to eq("gzip")
+      expect(headers["Content-Type"]).to eq("application/xml")
+      expect(headers["User-Agent"]).to match(/Braintree Ruby Gem .*/)
+      expect(headers["X-ApiVersion"]).to eq("5")
+      expect(headers["New-Header"]).to eq("New Value")
+    end
+  end
+
+  describe "_setup_connection" do
+    it "creates a new Net::HTTP object using default server and port" do
+      config = Braintree::Configuration.new
+      http = Braintree::Http.new(config)
+
+      connection = http._setup_connection
+      expect(connection.address).to eq(nil)
+      expect(connection.port).to eq(80)
+    end
+
+    it "overrides the default server and port when replacements are specified" do
+      config = Braintree::Configuration.new
+      http = Braintree::Http.new(config)
+
+      connection = http._setup_connection("localhost", 3443)
+      expect(connection.address).to eq("localhost")
+      expect(connection.port).to eq(3443)
     end
   end
 

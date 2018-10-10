@@ -293,6 +293,25 @@ describe Braintree::Transaction, "search" do
         collection.maximum_size.should == 0
       end
 
+      it "searches for an Elo card" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::AdyenMerchantAccountId,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Elo,
+            :cvv => "737",
+            :expiration_date => "10/2020"
+          }
+        )
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction.id
+          search.credit_card_card_type.is Braintree::CreditCard::CardType::Elo
+        end
+
+        collection.maximum_size.should == 1
+      end
+
       it "searches by payment instrument type CreditCardDetail" do
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,

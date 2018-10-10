@@ -167,6 +167,19 @@ describe Braintree::Configuration do
       config = Braintree::Configuration.new :logger => nil
       config.logger.should_not == nil
     end
+
+    it "can set logger on gateway instance" do
+      gateway = Braintree::Configuration.gateway
+      old_logger = Braintree::Configuration.logger
+
+      new_logger = Logger.new("/dev/null")
+
+      gateway.config.logger = new_logger
+
+      expect(gateway.config.logger).to eq(new_logger)
+
+      gateway.config.logger = old_logger
+    end
   end
 
   describe "self.environment" do
@@ -182,6 +195,14 @@ describe Braintree::Configuration do
       expect do
         Braintree::Configuration.environment
       end.to raise_error(Braintree::ConfigurationError, "Braintree::Configuration.environment needs to be set")
+    end
+
+    it "converts environment to symbol" do
+      config = Braintree::Configuration.new({
+        :environment => "sandbox"
+      })
+
+      expect(config.environment).to eq(:sandbox)
     end
   end
 
@@ -332,6 +353,22 @@ describe Braintree::Configuration do
     it "is https for sandbox" do
       Braintree::Configuration.environment = :sandbox
       Braintree::Configuration.instantiate.protocol.should == "https"
+    end
+  end
+
+  describe "graphql_server" do
+    it "is localhost or GRAPHQL_HOST environment variable for development" do
+      Braintree::Configuration.environment = :development
+      old_gateway_url = ENV['GRAPHQL_HOST']
+      begin
+        ENV['GRAPHQL_HOST'] = nil
+        Braintree::Configuration.instantiate.graphql_server.should == "graphql.bt.local"
+
+        ENV['GRAPHQL_HOST'] = 'gateway'
+        Braintree::Configuration.instantiate.graphql_server.should == 'gateway'
+      ensure
+        ENV['GRAPHQL_HOST'] = old_gateway_url
+      end
     end
   end
 

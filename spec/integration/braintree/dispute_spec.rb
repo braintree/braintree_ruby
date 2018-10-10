@@ -34,6 +34,9 @@ describe Braintree::Dispute do
 
       refreshed_dispute = Braintree::Dispute.find(dispute.id)
       refreshed_dispute.status.should == Braintree::Dispute::Status::Accepted
+
+      dispute_from_transaction = Braintree::Transaction.find(dispute.transaction.id).disputes[0]
+      dispute_from_transaction.status.should == Braintree::Dispute::Status::Accepted
     end
 
     it "returns an error response if the dispute is not in open status" do

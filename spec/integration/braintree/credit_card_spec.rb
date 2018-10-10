@@ -535,6 +535,20 @@ describe Braintree::CreditCard do
         credit_card.expiration_date.should == "11/2099"
       end
     end
+
+    context "card_type" do
+      it "is set to Elo" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Elo,
+          :expiration_date => "10/2020",
+        )
+        result.success?.should == true
+        credit_card = result.credit_card
+        credit_card.card_type.should == Braintree::CreditCard::CardType::Elo
+      end
+    end
   end
 
   describe "self.create!" do

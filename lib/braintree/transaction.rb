@@ -69,6 +69,13 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
+    module ExternalVault
+      module Status
+        WillVault = "will_vault"
+        Vaulted = "vaulted"
+      end
+    end
+
     attr_reader :add_ons
     attr_reader :additional_processor_response          # The raw response from the processor.
     attr_reader :amex_express_checkout_details
@@ -102,6 +109,7 @@ module Braintree
     attr_reader :ideal_payment_details
     attr_reader :masterpass_card_details
     attr_reader :merchant_account_id
+    attr_reader :network_transaction_id
     attr_reader :order_id
     attr_reader :partial_settlement_transaction_ids
     attr_reader :payment_instrument_type

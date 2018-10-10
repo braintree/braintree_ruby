@@ -42,6 +42,7 @@ unless defined?(SPEC_HELPER_LOADED)
     UsBankMerchantAccountId = "us_bank_merchant_account"
     AnotherUsBankMerchantAccountId = "another_us_bank_merchant_account"
     IdealMerchantAccountId = "ideal_merchant_account"
+    AdyenMerchantAccountId = "adyen_ma"
 
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",

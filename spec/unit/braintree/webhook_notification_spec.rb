@@ -392,6 +392,21 @@ describe Braintree::WebhookNotification do
         notification.subscription.transactions.first.status.should == Braintree::Transaction::Status::SubmittedForSettlement
         notification.subscription.transactions.first.amount.should == BigDecimal("49.99")
       end
+
+      it "builds a sample notification for a subscription charged unsuccessfully webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::SubscriptionChargedUnsuccessfully,
+          "my_id"
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        notification.kind.should == Braintree::WebhookNotification::Kind::SubscriptionChargedUnsuccessfully
+        notification.subscription.id.should == "my_id"
+        notification.subscription.transactions.size.should == 1
+        notification.subscription.transactions.first.status.should == Braintree::Transaction::Status::Failed
+        notification.subscription.transactions.first.amount.should == BigDecimal("49.99")
+      end
     end
 
     it "includes a valid signature" do
@@ -436,6 +451,22 @@ describe Braintree::WebhookNotification do
       update.payment_method_nonce.should == 'ee257d98-de40-47e8-96b3-a6954ea7a9a4'
       update.token.should == 'abc123z'
       update.updated_fields.should == ['expiration-month', 'expiration-year']
+    end
+  end
+
+  context "local_payment_completed" do
+    it "builds a sample notification for a local_payment webhook" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::LocalPaymentCompleted,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      notification.kind.should == Braintree::WebhookNotification::Kind::LocalPaymentCompleted
+
+      local_payment_completed = notification.local_payment_completed
+      local_payment_completed.payment_id.should == 'PAY-XYZ123'
+      local_payment_completed.payer_id.should == 'ABCPAYER'
     end
   end
 

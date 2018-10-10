@@ -67,19 +67,34 @@ module Braintree
       end
     end
 
-    def _http_do(http_verb, path, body = nil, file = nil)
+    def _setup_connection(server = @config.server, port = @config.port)
       if @config.proxy_address
         connection = Net::HTTP.new(
-          @config.server,
-          @config.port,
+          server,
+          port,
           @config.proxy_address,
           @config.proxy_port,
           @config.proxy_user,
           @config.proxy_pass
         )
       else
-        connection = Net::HTTP.new(@config.server, @config.port)
+        connection = Net::HTTP.new(server, port)
       end
+    end
+
+    def _compose_headers(header_overrides = {})
+      headers = {}
+      headers["Accept"] = "application/xml"
+      headers["User-Agent"] = @config.user_agent
+      headers["Accept-Encoding"] = "gzip"
+      headers["X-ApiVersion"] = @config.api_version
+      headers["Content-Type"] = "application/xml"
+
+      headers.merge(header_overrides)
+    end
+
+    def _http_do(http_verb, path, body = nil, file = nil, connection = nil, header_overrides = {})
+      connection ||= _setup_connection
 
       connection.open_timeout = @config.http_open_timeout
       connection.read_timeout = @config.http_read_timeout
@@ -90,12 +105,10 @@ module Braintree
         connection.ca_file = @config.ca_file
         connection.verify_callback = proc { |preverify_ok, ssl_context| _verify_ssl_certificate(preverify_ok, ssl_context) }
       end
+
       connection.start do |http|
         request = http_verb.new(path)
-        request["Accept"] = "application/xml"
-        request["User-Agent"] = @config.user_agent
-        request["Accept-Encoding"] = "gzip"
-        request["X-ApiVersion"] = @config.api_version
+        _compose_headers(header_overrides).each { |header, value| request[header] = value }
         if @config.client_credentials?
           request.basic_auth @config.client_id, @config.client_secret
         elsif @config.access_token
@@ -117,7 +130,6 @@ module Braintree
             request.body = form_params.collect {|p| "--" + boundary + "#{LINE_FEED}" + p}.join("") + "--" + boundary + "--"
             @config.logger.debug _format_and_sanitize_body_for_log(_build_xml(body))
           else
-            request["Content-Type"] = "application/xml"
             request.body = body
             @config.logger.debug _format_and_sanitize_body_for_log(body)
           end

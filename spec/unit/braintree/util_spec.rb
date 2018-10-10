@@ -119,6 +119,58 @@ describe Braintree::Util do
     end
   end
 
+  describe "self.keys_valid?" do
+    it "returns true for wildcard matches" do
+      response = Braintree::Util.keys_valid?(
+        [:allowed, {:custom_fields => :_any_key_}],
+        :allowed => "ok",
+        :custom_fields => {
+          :custom_allowed => "ok",
+          :custom_allowed2 => "also ok",
+        }
+      )
+      expect(response).to eq(true)
+    end
+    it "raises an exception if the hash contains an invalid key" do
+      response = Braintree::Util.keys_valid?([:allowed], :allowed => "ok", :disallowed => "bad")
+      expect(response).to eq(false)
+    end
+
+    it "raises an exception with all keys listed if the hash contains invalid keys" do
+      response = Braintree::Util.keys_valid?([:allowed], :allowed => "ok", :disallowed => "bad", "also_invalid" => true)
+      expect(response).to eq(false)
+    end
+
+    it "returns false for invalid key inside of array" do
+      response = Braintree::Util.keys_valid?(
+        [{:add_ons => [{:update => [:amount]}, {:add => [:amount]}]}],
+        :add_ons => {
+          :update => [{:foo => 10}],
+          :add => [{:bar => 5}]
+        }
+      )
+      expect(response).to eq(false)
+    end
+
+    it "returns false if a deeply nested hash contains an invalid key" do
+      response = Braintree::Util.keys_valid?(
+        [:allowed, {:nested => [:nested_allowed, :nested_allowed2, {:deeply_allowed => [:super_deep_allowed]}]}],
+        :allowed => "ok",
+        :top_level_invalid => "bad",
+        :nested => {
+          :nested_allowed => "ok",
+          :nested_allowed2 => "also ok",
+          :nested_invalid => "bad",
+          :deeply_allowed => {
+            :super_deep_allowed => "yep",
+            :real_deep_invalid => "nope"
+          }
+        }
+      )
+      expect(response).to eq(false)
+    end
+  end
+
   describe "self._flatten_hash_keys" do
     it "flattens hash keys" do
       Braintree::Util._flatten_hash_keys(:nested => {
@@ -196,6 +248,63 @@ describe Braintree::Util do
     it "parses the query string when a key has an empty value" do
       query_string = "foo=bar%20baz&hash=a1b2c3&vat_number="
       Braintree::Util.parse_query_string(query_string).should == {:foo => "bar baz", :hash => "a1b2c3", :vat_number => ""}
+    end
+  end
+
+  describe "self.raise_exception_for_graphql_error" do
+    errors = {
+      "AUTHENTICATION" => Braintree::AuthenticationError,
+      "AUTHORIZATION" => Braintree::AuthorizationError,
+      "NOT_FOUND" => Braintree::NotFoundError,
+      "UNSUPPORTED_CLIENT" => Braintree::UpgradeRequiredError,
+      "RESOURCE_LIMIT" => Braintree::TooManyRequestsError,
+      "INTERNAL" => Braintree::ServerError,
+      "SERVICE_AVAILABILITY" => Braintree::DownForMaintenanceError,
+    }
+
+    errors.each do |graphQLError, exception|
+      it "raises an #{exception} when GraphQL returns an #{graphQLError} error" do
+        response = {
+          errors: [{
+            extensions: {
+              errorClass: graphQLError
+            }
+          }]
+        }
+        expect do
+          Braintree::Util.raise_exception_for_graphql_error(response)
+        end.to raise_error(exception)
+      end
+    end
+
+    it "does not raise an exception when GraphQL returns a validation error" do
+      response = {
+        errors: [{
+          extensions: {
+            errorClass: "VALIDATION"
+          }
+        }]
+      }
+      expect do
+        Braintree::Util.raise_exception_for_graphql_error(response)
+      end.to_not raise_error()
+    end
+
+    it "raises any non-validation errorClass response" do
+      response = {
+        errors: [{
+          extensions: {
+            errorClass: "VALIDATION"
+          }
+        }, {
+          extensions: {
+            errorClass: "NOT_FOUND"
+          }
+        }]
+      }
+      expect do
+        Braintree::Util.raise_exception_for_graphql_error(response)
+      end.to raise_error(Braintree::NotFoundError)
     end
   end
 

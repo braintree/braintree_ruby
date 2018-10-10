@@ -66,6 +66,37 @@ module Braintree
       end
     end
 
+    def self.raise_exception_for_graphql_error(response)
+      return if !response[:errors]
+
+      for error in response[:errors]
+        if error[:extensions] && error[:extensions][:errorClass]
+          case error[:extensions][:errorClass]
+          when "VALIDATION"
+            next # skip raising an error if it is a validation error
+          when "AUTHENTICATION"
+            raise AuthenticationError
+          when "AUTHORIZATION"
+            raise AuthorizationError, error[:message]
+          when "NOT_FOUND"
+            raise NotFoundError
+          when "UNSUPPORTED_CLIENT"
+            raise UpgradeRequiredError, "Please upgrade your client library."
+          when "RESOURCE_LIMIT"
+            raise TooManyRequestsError
+          when "INTERNAL"
+            raise ServerError
+          when "SERVICE_AVAILABILITY"
+            raise DownForMaintenanceError
+          else
+            raise UnexpectedError, "Unexpected Response: #{error[:message]}"
+          end
+        else
+         raise UnexpectedError, "Unexpected Response: #{error[:message]}"
+        end
+      end
+    end
+
     def self.to_big_decimal(decimal)
       case decimal
       when BigDecimal, NilClass
@@ -82,13 +113,17 @@ module Braintree
     end
 
     def self.verify_keys(valid_keys, hash)
-      flattened_valid_keys = _flatten_valid_keys(valid_keys)
-      invalid_keys = _flatten_hash_keys(hash) - flattened_valid_keys
-      invalid_keys = _remove_wildcard_keys(flattened_valid_keys, invalid_keys)
+      invalid_keys = _get_invalid_keys(valid_keys, hash)
       if invalid_keys.any?
         sorted = invalid_keys.sort_by { |k| k.to_s }.join(", ")
         raise ArgumentError, "invalid keys: #{sorted}"
       end
+    end
+
+    def self.keys_valid?(valid_keys, hash)
+      invalid_keys = _get_invalid_keys(valid_keys, hash)
+
+      !invalid_keys.any?
     end
 
     def self._flatten_valid_keys(valid_keys, namespace = nil)
@@ -136,6 +171,12 @@ module Braintree
           invalid_key.index(wildcard_key) != 0
         end
       end
+    end
+
+    def self._get_invalid_keys(valid_keys, hash)
+      flattened_valid_keys = _flatten_valid_keys(valid_keys)
+      keys = _flatten_hash_keys(hash) - flattened_valid_keys
+      keys = _remove_wildcard_keys(flattened_valid_keys, keys)
     end
 
     module IdEquality

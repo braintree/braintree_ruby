@@ -9,6 +9,7 @@ module Braintree
       ChinaUnionPay = "China UnionPay"
       DinersClubInternational = "Diners Club"
       Discover = "Discover"
+      Elo = "Elo"
       JCB = "JCB"
       Laser = "Laser"
       UK_Maestro = "UK Maestro"

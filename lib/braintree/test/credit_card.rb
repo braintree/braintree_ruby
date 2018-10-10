@@ -21,6 +21,7 @@ module Braintree
       CarteBlanches = %w[30569309025904] # :nodoc:
       DinersClubs = %w[38520000023237] # :nodoc:
 
+      Discover = "6011111111111117"
       Discovers = %w[6011111111111117 6011000990139424]
       JCBs = %w[3530111333300000 3566002020360505] # :nodoc:
 
@@ -30,6 +31,7 @@ module Braintree
 
       MasterCards = %w[5105105105105100 5555555555554444]
 
+      Elo = "5066991111111118"
       Visa = "4012888888881881"
       VisaInternational = "4009348888881881" # :nodoc:
       VisaPrepaid = "4500600000000061"

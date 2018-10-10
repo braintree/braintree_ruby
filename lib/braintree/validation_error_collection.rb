@@ -3,7 +3,8 @@ module Braintree
     include Enumerable
 
     def initialize(data) # :nodoc:
-      @errors = data[:errors].map { |hash| Braintree::ValidationError.new(hash) }
+      return if !data.is_a? Hash
+      @errors = (data[:errors] || {}).map { |hash| Braintree::ValidationError.new(hash) }
       @nested = {}
       data.keys.each do |key|
         next if key == :errors

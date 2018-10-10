@@ -328,6 +328,7 @@ module Braintree
       FinalAuthSubmitForSettlementForDifferentAmount = "95601"
       HasAlreadyBeenRefunded = "91512"
       IdealPaymentNotComplete = "815141"
+      PaymentInstrumentWithExternalVaultIsInvalid = "915176"
       TooManyLineItems = "915157"
       LineItemsExpected = "915158"
       DiscountAmountFormatIsInvalid = "915159"
@@ -438,6 +439,13 @@ module Braintree
           LodgingCheckInDateIsInvalid = "93412"
           LodgingCheckOutDateIsInvalid = "93413"
         end
+      end
+
+      module ExternalVault
+        StatusIsInvalid = "915175"
+        CardTypeIsInvalid = "915178"
+        StatusWithPreviousNetworkTransactionIdIsInvalid = "915177"
+        PreviousNetworkTransactionIdIsInvalid = "915179"
       end
     end
 

@@ -226,6 +226,10 @@ module Braintree
           {:venmo => [:profile_id]}
         ]
         },
+        {:external_vault => [
+          :status,
+          :previous_network_transaction_id,
+        ]},
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone, :url]},
         {:paypal_account => [:email, :token, :paypal_data, :payee_id, :payee_email]},
