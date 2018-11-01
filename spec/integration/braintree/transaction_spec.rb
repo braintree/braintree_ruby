@@ -287,6 +287,9 @@ describe Braintree::Transaction do
       result.transaction.type.should == "sale"
       result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.processor_authorization_code.should_not be_nil
+      result.transaction.processor_response_code.should == "1000"
+      result.transaction.processor_response_text.should == "Approved"
+      result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
       result.transaction.voice_referral_number.should be_nil
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
@@ -384,7 +387,7 @@ describe Braintree::Transaction do
       result.success?.should == true
     end
 
-    it "returns processor response code and text as well as the additional processor response if declined" do
+    it "returns processor response code and text as well as the additional processor response if soft declined" do
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => Braintree::Test::TransactionAmounts::Decline,
@@ -399,7 +402,27 @@ describe Braintree::Transaction do
       result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result.transaction.processor_response_code.should == "2000"
       result.transaction.processor_response_text.should == "Do Not Honor"
+      result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::SoftDeclined
       result.transaction.additional_processor_response.should == "2000 : Do Not Honor"
+    end
+
+    it "returns processor response code and text as well as the additional processor response if hard declined" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::HardDecline,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      result.success?.should == false
+      result.transaction.id.should =~ /^\w{6,}$/
+      result.transaction.type.should == "sale"
+      result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      result.transaction.processor_response_code.should == "2015"
+      result.transaction.processor_response_text.should == "Transaction Not Allowed"
+      result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::HardDeclined
+      result.transaction.additional_processor_response.should == "2015 : Transaction Not Allowed"
     end
 
     it "accepts all four country codes" do
@@ -4011,6 +4034,7 @@ describe Braintree::Transaction do
       transaction.order_id.should == "123"
       transaction.channel.should == "MyShoppingCartProvider"
       transaction.processor_response_code.should == "1000"
+      transaction.authorization_expires_at.between?(Time.now, Time.now + (60 * 60 * 24 * 60)).should == true
       transaction.created_at.between?(Time.now - 60, Time.now).should == true
       transaction.updated_at.between?(Time.now - 60, Time.now).should == true
       transaction.credit_card_details.bin.should == "510510"
@@ -5400,6 +5424,7 @@ describe Braintree::Transaction do
       transaction.order_id.should == "123"
       transaction.channel.should == "MyShoppingCartProvider"
       transaction.processor_response_code.should == "1000"
+      transaction.authorization_expires_at.between?(Time.now, Time.now + (60 * 60 * 24 * 60)).should == true
       transaction.created_at.between?(Time.now - 60, Time.now).should == true
       transaction.updated_at.between?(Time.now - 60, Time.now).should == true
       transaction.credit_card_details.bin.should == "510510"
@@ -5921,6 +5946,34 @@ describe Braintree::Transaction do
       authorization_adjustment.timestamp.should be_a Time
       authorization_adjustment.processor_response_code.should == "1000"
       authorization_adjustment.processor_response_text.should == "Approved"
+    end
+
+    it "includes authorization adjustments soft declined on found transactions" do
+      found_transaction = Braintree::Transaction.find("authadjustmenttransactionsoftdeclined")
+
+      found_transaction.authorization_adjustments.count.should == 1
+
+      authorization_adjustment = found_transaction.authorization_adjustments.first
+      authorization_adjustment.amount.should == "-20.00"
+      authorization_adjustment.success.should == false
+      authorization_adjustment.timestamp.should be_a Time
+      authorization_adjustment.processor_response_code.should == "3000"
+      authorization_adjustment.processor_response_text.should == "Processor Network Unavailable - Try Again"
+      authorization_adjustment.processor_response_type.should == Braintree::ProcessorResponseTypes::SoftDeclined
+    end
+
+    it "includes authorization adjustments hard declined on found transactions" do
+      found_transaction = Braintree::Transaction.find("authadjustmenttransactionharddeclined")
+
+      found_transaction.authorization_adjustments.count.should == 1
+
+      authorization_adjustment = found_transaction.authorization_adjustments.first
+      authorization_adjustment.amount.should == "-20.00"
+      authorization_adjustment.success.should == false
+      authorization_adjustment.timestamp.should be_a Time
+      authorization_adjustment.processor_response_code.should == "2015"
+      authorization_adjustment.processor_response_text.should == "Transaction Not Allowed"
+      authorization_adjustment.processor_response_type.should == Braintree::ProcessorResponseTypes::HardDeclined
     end
   end
 

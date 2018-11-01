@@ -22,12 +22,14 @@ module Braintree
     attr_reader :supported_networks
     attr_reader :transaction
     attr_reader :us_bank_account_verification
+    attr_reader :credit_card_verification
 
     def initialize(attributes = {}) # :nodoc:
       @attrs = attributes.keys
       attributes.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
+      @credit_card_verification = @verification
     end
 
     def inspect # :nodoc:

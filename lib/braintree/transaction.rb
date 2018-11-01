@@ -83,6 +83,7 @@ module Braintree
     attr_reader :android_pay_details
     attr_reader :apple_pay_details
     attr_reader :authorization_adjustments
+    attr_reader :authorization_expires_at
     attr_reader :authorized_transaction_id
     attr_reader :avs_error_response_code
     attr_reader :avs_postal_code_response_code
@@ -118,6 +119,7 @@ module Braintree
     attr_reader :processor_authorization_code           # Authorization code from the processor.
     attr_reader :processor_response_code                # Response code from the processor.
     attr_reader :processor_response_text                # Response text from the processor.
+    attr_reader :processor_response_type                # Response type from the processor.
     attr_reader :processor_settlement_response_code     # Settlement response code from the processor.
     attr_reader :processor_settlement_response_text     # Settlement response text from the processor.
     attr_reader :purchase_order_number

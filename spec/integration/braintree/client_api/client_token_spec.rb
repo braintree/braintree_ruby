@@ -186,22 +186,5 @@ describe Braintree::ClientToken do
         end
       end
     end
-
-    context "SEPA" do
-      it "raises error for passing in sepa related params" do
-        with_altpay_merchant do
-          result = Braintree::Customer.create
-          customer_id = result.customer.id
-
-          expect do
-            Braintree::ClientToken.generate(
-              :customer_id => customer_id,
-              :sepa_mandate_acceptance_location => "Hamburg, Germany",
-              :sepa_mandate_type => Braintree::EuropeBankAccount::MandateType::Business
-            )
-          end.to raise_error(ArgumentError, "invalid keys: sepa_mandate_acceptance_location, sepa_mandate_type")
-        end
-      end
-    end
   end
 end

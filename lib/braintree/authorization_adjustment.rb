@@ -7,6 +7,7 @@ module Braintree
     attr_reader :timestamp
     attr_reader :processor_response_code
     attr_reader :processor_response_text
+    attr_reader :processor_response_type
 
     class << self
       protected :new

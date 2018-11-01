@@ -17,6 +17,11 @@ describe Braintree::CreditCardVerification, "search" do
       result = Braintree::CreditCardVerification.create(verification_params)
 
       result.should be_success
+      result.credit_card_verification.id.should =~ /^\w{6,}$/
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
+      result.credit_card_verification.processor_response_code.should == "1000"
+      result.credit_card_verification.processor_response_text.should == "Approved"
+      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
     end
 
     it "returns processor response code and text as well as the additional processor response if declined" do
@@ -33,10 +38,11 @@ describe Braintree::CreditCardVerification, "search" do
       result = Braintree::CreditCardVerification.create(verification_params)
 
       result.success?.should == false
-      result.verification.id.should =~ /^\w{6,}$/
-      result.verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
-      result.verification.processor_response_code.should == "2000"
-      result.verification.processor_response_text.should == "Do Not Honor"
+      result.credit_card_verification.id.should =~ /^\w{6,}$/
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
+      result.credit_card_verification.processor_response_code.should == "2000"
+      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
+      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::SoftDeclined
     end
 
     it "returns validation errors" do
