@@ -232,8 +232,19 @@ module Braintree
         ]},
         {:custom_fields => :_any_key_},
         {:descriptor => [:name, :phone, :url]},
-        {:paypal_account => [:email, :token, :paypal_data, :payee_id, :payee_email]},
-        {:industry => [:industry_type, {:data => [:folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate]}]},
+        {:paypal_account => [:email, :token, :paypal_data, :payee_id, :payee_email, :payer_id, :payment_id]},
+        {:industry => [
+          :industry_type,
+          {:data => [
+            :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate,
+            :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
+            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket,
+            {:legs => [
+              :conjunction_ticket, :exchange_ticket, :coupon_number, :service_class, :carrier_code, :fare_basis_code, :flight_number, :departure_date, :departure_airport_code, :departure_time,
+              :arrival_airport_code, :arrival_time, :stopover_permitted, :fare_amount, :fee_amount, :tax_amount, :endorsement_or_restrictions,
+            ]},
+          ]},
+        ]},
         {:apple_pay_card => [:number, :cardholder_name, :cryptogram, :expiration_month, :expiration_year, :eci_indicator]},
         {:android_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]}
       ]

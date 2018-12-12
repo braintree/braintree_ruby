@@ -58,6 +58,7 @@ module Braintree
     module IndustryType
       Lodging = "lodging"
       TravelAndCruise = "travel_cruise"
+      TravelAndFlight = "travel_flight"
 
       All = constants.map { |c| const_get(c) }
     end

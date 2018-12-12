@@ -137,6 +137,7 @@ describe Braintree::Transaction do
           result.transaction.risk_data.should respond_to(:id)
           result.transaction.risk_data.should respond_to(:decision)
           result.transaction.risk_data.should respond_to(:device_data_captured)
+          result.transaction.risk_data.should respond_to(:fraud_service_provider)
         end
       end
     end
@@ -244,6 +245,105 @@ describe Braintree::Transaction do
           )
           result.success?.should be(false)
           result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelCruise::TravelPackageIsInvalid]
+        end
+      end
+
+      context "for travel flight" do
+        it "accepts valid industry data" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => 1_00,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :options => {
+              :submit_for_settlement => true
+            },
+            :industry => {
+              :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+              :data => {
+                :passenger_first_name => "John",
+                :passenger_last_name => "Doe",
+                :passenger_middle_initial => "M",
+                :passenger_title => "Mr.",
+                :issued_date => Date.new(2018, 1, 1),
+                :travel_agency_name => "Expedia",
+                :travel_agency_code => "12345678",
+                :ticket_number => "ticket-number",
+                :issuing_carrier_code => "AA",
+                :customer_code => "customer-code",
+                :fare_amount => 70_00,
+                :fee_amount => 10_00,
+                :tax_amount => 20_00,
+                :restricted_ticket => false,
+                :legs => [
+                  {
+                    :conjunction_ticket => "CJ0001",
+                    :exchange_ticket => "ET0001",
+                    :coupon_number => "1",
+                    :service_class => "Y",
+                    :carrier_code => "AA",
+                    :fare_basis_code => "W",
+                    :flight_number => "AA100",
+                    :departure_date => Date.new(2018, 1, 2),
+                    :departure_airport_code => "MDW",
+                    :departure_time => "08:00",
+                    :arrival_airport_code => "ATX",
+                    :arrival_time => "10:00",
+                    :stopover_permitted => false,
+                    :fare_amount => 35_00,
+                    :fee_amount => 5_00,
+                    :tax_amount => 10_00,
+                    :endorsement_or_restrictions => "NOT REFUNDABLE"
+                  },
+                  {
+                    :conjunction_ticket => "CJ0002",
+                    :exchange_ticket => "ET0002",
+                    :coupon_number => "1",
+                    :service_class => "Y",
+                    :carrier_code => "AA",
+                    :fare_basis_code => "W",
+                    :flight_number => "AA200",
+                    :departure_date => Date.new(2018, 1, 3),
+                    :departure_airport_code => "ATX",
+                    :departure_time => "12:00",
+                    :arrival_airport_code => "MDW",
+                    :arrival_time => "14:00",
+                    :stopover_permitted => false,
+                    :fare_amount => 35_00,
+                    :fee_amount => 5_00,
+                    :tax_amount => 10_00,
+                    :endorsement_or_restrictions => "NOT REFUNDABLE"
+                  }
+                ]
+              }
+            }
+          )
+          result.success?.should be(true)
+        end
+
+        it "returns errors if validations on industry data fails" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => 1_00,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+            :options => {
+              :submit_for_settlement => true
+            },
+            :industry => {
+              :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+              :data => {
+                :fare_amount => -1_23,
+                :restricted_ticket => false,
+                :legs => [
+                  {
+                    :fare_amount => -1_23
+                  }
+                ]
+              }
+            }
+          )
+          result.success?.should be(false)
+          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative]
+          result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::FareAmountCannotBeNegative]
         end
       end
     end
@@ -777,12 +877,8 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.create(params[:transaction])
       result.success?.should == false
-      result.errors.for(:transaction).on(:base).map{|error| error.code}.should include(Braintree::ErrorCodes::Transaction::PaymentMethodConflictWithVenmoSDK)
       result.errors.for(:transaction).on(:base).map{|error| error.code}.should include(Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer)
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
       result.errors.for(:transaction).on(:customer_id)[0].code.should == Braintree::ErrorCodes::Transaction::CustomerIdIsInvalid
-      result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
-      result.errors.for(:transaction).on(:channel)[0].code.should == Braintree::ErrorCodes::Transaction::ChannelIsTooLong
       result.errors.for(:transaction).on(:payment_method_token)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodTokenIsInvalid
       result.errors.for(:transaction).on(:type)[0].code.should == Braintree::ErrorCodes::Transaction::TypeIsInvalid
     end
@@ -1634,6 +1730,24 @@ describe Braintree::Transaction do
         )
         result.success?.should == true
         result.transaction.should_not be_nil
+      end
+
+      it "can create a transaction with local payment webhook content" do
+        result = Braintree::Transaction.sale(
+          :amount => "100",
+          :options => {
+            :submit_for_settlement => true
+          },
+          :paypal_account => {
+            :payer_id => "PAYER-1234",
+            :payment_id => "PAY-5678",
+          }
+        )
+
+        result.success?.should == true
+        result.transaction.status.should == Braintree::Transaction::Status::Settling
+        result.transaction.paypal_details.payer_id.should == "PAYER-1234"
+        result.transaction.paypal_details.payment_id.should == "PAY-5678"
       end
 
       it "can create a transaction with a payee id" do

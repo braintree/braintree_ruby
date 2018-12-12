@@ -345,6 +345,7 @@ module Braintree
       MerchantAccountDoesNotMatchIdealPaymentMerchantAccount = "915143"
       MerchantAccountDoesNotSupportMOTO = "91558"
       MerchantAccountDoesNotSupportRefunds = "91547"
+      MerchantAccountIdDoesNotMatchSubscription = "915180"
       MerchantAccountIdIsInvalid = "91513"
       MerchantAccountIsSuspended = "91514"
       OrderIdIsTooLong = "91501"
@@ -438,6 +439,53 @@ module Braintree
           DepartureDateIsInvalid = "93411"
           LodgingCheckInDateIsInvalid = "93412"
           LodgingCheckOutDateIsInvalid = "93413"
+        end
+
+        module TravelFlight
+          EmptyData = "93414"
+          UnknownDataField = "93415"
+          CustomerCodeIsTooLong = "93416"
+          FareAmountCannotBeNegative = "93417"
+          FareAmountFormatIsInvalid = "93418"
+          FareAmountIsTooLarge = "93419"
+          FeeAmountCannotBeNegative = "93420"
+          FeeAmountFormatIsInvalid = "93421"
+          FeeAmountIsTooLarge = "93422"
+          IssuedDateFormatIsInvalid = "93423"
+          IssuingCarrierCodeIsTooLong = "93424"
+          PassengerMiddleInitialIsTooLong = "93425"
+          RestrictedTicketIsRequired = "93426"
+          TaxAmountCannotBeNegative = "93427"
+          TaxAmountFormatIsInvalid = "93428"
+          TaxAmountIsTooLarge = "93429"
+          TicketNumberIsTooLong = "93430"
+          LegsExpected = "93431"
+          TooManyLegs = "93432"
+        end
+
+        module Leg
+          module TravelFlight
+            ArrivalAirportCodeIsTooLong = "96301"
+            ArrivalTimeFormatIsInvalid = "96302"
+            CarrierCodeIsTooLong = "96303"
+            ConjunctionTicketIsTooLong = "96304"
+            CouponNumberIsTooLong = "96305"
+            DepartureAirportCodeIsTooLong = "96306"
+            DepartureTimeFormatIsInvalid = "96307"
+            ExchangeTicketIsTooLong = "96308"
+            FareAmountCannotBeNegative = "96309"
+            FareAmountFormatIsInvalid = "96310"
+            FareAmountIsTooLarge = "96311"
+            FareBasisCodeIsTooLong = "96312"
+            FeeAmountCannotBeNegative = "96313"
+            FeeAmountFormatIsInvalid = "96314"
+            FeeAmountIsTooLarge = "96315"
+            ServiceClassIsTooLong = "96316"
+            TaxAmountCannotBeNegative = "96317"
+            TaxAmountFormatIsInvalid = "96318"
+            TaxAmountIsTooLarge = "96319"
+            TicketNumberIsTooLong = "96320"
+          end
         end
       end
 

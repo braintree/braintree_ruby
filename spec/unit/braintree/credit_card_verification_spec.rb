@@ -108,12 +108,14 @@ describe Braintree::CreditCardVerification do
       verification = Braintree::CreditCardVerification._new(:risk_data => {
         :id => "123",
         :decision => "WOO YOU WON $1000 dollars",
-        :device_data_captured => true
+        :device_data_captured => true,
+        :fraud_service_provider => "kount"
       })
 
       verification.risk_data.id.should == "123"
       verification.risk_data.decision.should == "WOO YOU WON $1000 dollars"
       verification.risk_data.device_data_captured.should == true
+      verification.risk_data.fraud_service_provider.should == "kount"
     end
 
     it "handles a nil risk_data" do

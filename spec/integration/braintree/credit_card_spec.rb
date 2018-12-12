@@ -152,6 +152,7 @@ describe Braintree::CreditCard do
         verification.risk_data.should respond_to(:id)
         verification.risk_data.should respond_to(:decision)
         verification.risk_data.should respond_to(:device_data_captured)
+        verification.risk_data.should respond_to(:fraud_service_provider)
       end
     end
 
