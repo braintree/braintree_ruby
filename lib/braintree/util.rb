@@ -102,7 +102,7 @@ module Braintree
       when BigDecimal, NilClass
         decimal
       when String
-        BigDecimal.new(decimal)
+        BigDecimal(decimal)
       else
         raise ArgumentError, "Argument must be a String or BigDecimal"
       end
