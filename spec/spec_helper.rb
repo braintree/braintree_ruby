@@ -47,7 +47,7 @@ unless defined?(SPEC_HELPER_LOADED)
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",
       :id => "integration_trial_plan",
-      :price => BigDecimal.new("43.21"),
+      :price => BigDecimal("43.21"),
       :trial_period => true,
       :trial_duration => 2,
       :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
@@ -56,14 +56,14 @@ unless defined?(SPEC_HELPER_LOADED)
     TriallessPlan = {
       :description => "Plan for integration tests -- without a trial",
       :id => "integration_trialless_plan",
-      :price => BigDecimal.new("12.34"),
+      :price => BigDecimal("12.34"),
       :trial_period => false
     }
 
     AddOnDiscountPlan = {
       :description => "Plan for integration tests -- with add-ons and discounts",
       :id => "integration_plan_with_add_ons_and_discounts",
-      :price => BigDecimal.new("9.99"),
+      :price => BigDecimal("9.99"),
       :trial_period => true,
       :trial_duration => 2,
       :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Day
@@ -72,7 +72,7 @@ unless defined?(SPEC_HELPER_LOADED)
     BillingDayOfMonthPlan = {
       :description => "Plan for integration tests -- with billing day of month",
       :id => "integration_plan_with_billing_day_of_month",
-      :price => BigDecimal.new("8.88"),
+      :price => BigDecimal("8.88"),
       :billing_day_of_month => 5
     }
 

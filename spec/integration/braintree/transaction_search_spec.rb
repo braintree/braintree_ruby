@@ -538,7 +538,7 @@ describe Braintree::Transaction, "search" do
 
         it "can also take BigDecimal for amount" do
           transaction = Braintree::Transaction.sale!(
-            :amount => BigDecimal.new("1000.00"),
+            :amount => BigDecimal("1000.00"),
             :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/12"
@@ -547,7 +547,7 @@ describe Braintree::Transaction, "search" do
 
           collection = Braintree::Transaction.search do |search|
             search.id.is transaction.id
-            search.amount <= BigDecimal.new("1000.00")
+            search.amount <= BigDecimal("1000.00")
           end
 
           collection.maximum_size.should == 1

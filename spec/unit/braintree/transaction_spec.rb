@@ -238,8 +238,8 @@ describe Braintree::Transaction do
     end
 
     it "accepts amount as either a String or a BigDecimal" do
-      Braintree::Transaction._new(:gateway, :amount => "12.34").amount.should == BigDecimal.new("12.34")
-      Braintree::Transaction._new(:gateway, :amount => BigDecimal.new("12.34")).amount.should == BigDecimal.new("12.34")
+      Braintree::Transaction._new(:gateway, :amount => "12.34").amount.should == BigDecimal("12.34")
+      Braintree::Transaction._new(:gateway, :amount => BigDecimal("12.34")).amount.should == BigDecimal("12.34")
     end
 
     it "blows up if amount is not a string or BigDecimal" do

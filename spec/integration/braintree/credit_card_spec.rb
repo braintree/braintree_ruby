@@ -592,7 +592,7 @@ describe Braintree::CreditCard do
         :amount => "100.00"
       )
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "credit"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -614,7 +614,7 @@ describe Braintree::CreditCard do
         customer.credit_cards[0].token,
         :amount => "100.00"
       )
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "credit"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -1064,7 +1064,7 @@ describe Braintree::CreditCard do
         :amount => "100.00"
       )
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "credit"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -1083,7 +1083,7 @@ describe Braintree::CreditCard do
         }
       )
       transaction = customer.credit_cards[0].credit!(:amount => "100.00")
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "credit"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -1208,7 +1208,7 @@ describe Braintree::CreditCard do
       found_card.subscriptions.first.id.should == subscription.id
       found_card.subscriptions.first.plan_id.should == "integration_trialless_plan"
       found_card.subscriptions.first.payment_method_token.should == credit_card.token
-      found_card.subscriptions.first.price.should == BigDecimal.new("1.00")
+      found_card.subscriptions.first.price.should == BigDecimal("1.00")
     end
 
     it "raises a NotFoundError exception if payment method cannot be found" do
@@ -1295,7 +1295,7 @@ describe Braintree::CreditCard do
       result = Braintree::CreditCard.sale(customer.credit_cards[0].token, :amount => "100.00")
 
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -1319,7 +1319,7 @@ describe Braintree::CreditCard do
       )
 
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -1336,7 +1336,7 @@ describe Braintree::CreditCard do
         }
       )
       transaction = Braintree::CreditCard.sale!(customer.credit_cards[0].token, :amount => "100.00")
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "sale"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -1358,7 +1358,7 @@ describe Braintree::CreditCard do
         :amount => "100.00"
       )
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -1377,7 +1377,7 @@ describe Braintree::CreditCard do
         }
       )
       transaction = customer.credit_cards[0].sale!(:amount => "100.00")
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "sale"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token

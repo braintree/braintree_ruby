@@ -359,7 +359,7 @@ describe Braintree::Subscription do
             :price => 98.76
           )
 
-          result.subscription.price.should == BigDecimal.new("98.76")
+          result.subscription.price.should == BigDecimal("98.76")
         end
       end
     end
@@ -445,14 +445,14 @@ describe Braintree::Subscription do
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
         add_ons.first.id.should == "increase_10"
-        add_ons.first.amount.should == BigDecimal.new("10.00")
+        add_ons.first.amount.should == BigDecimal("10.00")
         add_ons.first.quantity.should == 1
         add_ons.first.number_of_billing_cycles.should be_nil
         add_ons.first.never_expires?.should be(true)
         add_ons.first.current_billing_cycle.should == 0
 
         add_ons.last.id.should == "increase_20"
-        add_ons.last.amount.should == BigDecimal.new("20.00")
+        add_ons.last.amount.should == BigDecimal("20.00")
         add_ons.last.quantity.should == 1
         add_ons.last.number_of_billing_cycles.should be_nil
         add_ons.last.never_expires?.should be(true)
@@ -462,14 +462,14 @@ describe Braintree::Subscription do
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
         discounts.first.id.should == "discount_11"
-        discounts.first.amount.should == BigDecimal.new("11.00")
+        discounts.first.amount.should == BigDecimal("11.00")
         discounts.first.quantity.should == 1
         discounts.first.number_of_billing_cycles.should be_nil
         discounts.first.never_expires?.should be(true)
         discounts.first.current_billing_cycle.should == 0
 
         discounts.last.id.should == "discount_7"
-        discounts.last.amount.should == BigDecimal.new("7.00")
+        discounts.last.amount.should == BigDecimal("7.00")
         discounts.last.quantity.should == 1
         discounts.last.number_of_billing_cycles.should be_nil
         discounts.last.never_expires?.should be(true)
@@ -483,7 +483,7 @@ describe Braintree::Subscription do
           :add_ons => {
             :update => [
               {
-                :amount => BigDecimal.new("50.00"),
+                :amount => BigDecimal("50.00"),
                 :existing_id => SpecHelper::AddOnIncrease10,
                 :quantity => 2,
                 :number_of_billing_cycles => 5
@@ -493,7 +493,7 @@ describe Braintree::Subscription do
           :discounts => {
             :update => [
               {
-                :amount => BigDecimal.new("15.00"),
+                :amount => BigDecimal("15.00"),
                 :existing_id => SpecHelper::Discount7,
                 :quantity => 3,
                 :never_expires => true
@@ -509,14 +509,14 @@ describe Braintree::Subscription do
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
         add_ons.first.id.should == "increase_10"
-        add_ons.first.amount.should == BigDecimal.new("50.00")
+        add_ons.first.amount.should == BigDecimal("50.00")
         add_ons.first.quantity.should == 2
         add_ons.first.number_of_billing_cycles.should == 5
         add_ons.first.never_expires?.should be(false)
         add_ons.first.current_billing_cycle.should == 0
 
         add_ons.last.id.should == "increase_20"
-        add_ons.last.amount.should == BigDecimal.new("20.00")
+        add_ons.last.amount.should == BigDecimal("20.00")
         add_ons.last.quantity.should == 1
         add_ons.last.current_billing_cycle.should == 0
 
@@ -524,12 +524,12 @@ describe Braintree::Subscription do
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
         discounts.first.id.should == "discount_11"
-        discounts.first.amount.should == BigDecimal.new("11.00")
+        discounts.first.amount.should == BigDecimal("11.00")
         discounts.first.quantity.should == 1
         discounts.first.current_billing_cycle.should == 0
 
         discounts.last.id.should == "discount_7"
-        discounts.last.amount.should == BigDecimal.new("15.00")
+        discounts.last.amount.should == BigDecimal("15.00")
         discounts.last.quantity.should == 3
         discounts.last.number_of_billing_cycles.should be_nil
         discounts.last.never_expires?.should be(true)
@@ -553,13 +553,13 @@ describe Braintree::Subscription do
 
         subscription.add_ons.size.should == 1
         subscription.add_ons.first.id.should == "increase_20"
-        subscription.add_ons.first.amount.should == BigDecimal.new("20.00")
+        subscription.add_ons.first.amount.should == BigDecimal("20.00")
         subscription.add_ons.first.quantity.should == 1
         subscription.add_ons.first.current_billing_cycle.should == 0
 
         subscription.discounts.size.should == 1
         subscription.discounts.last.id.should == "discount_11"
-        subscription.discounts.last.amount.should == BigDecimal.new("11.00")
+        subscription.discounts.last.amount.should == BigDecimal("11.00")
         subscription.discounts.last.quantity.should == 1
         subscription.discounts.last.current_billing_cycle.should == 0
       end
@@ -582,30 +582,30 @@ describe Braintree::Subscription do
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
         add_ons[0].id.should == "increase_10"
-        add_ons[0].amount.should == BigDecimal.new("10.00")
+        add_ons[0].amount.should == BigDecimal("10.00")
         add_ons[0].quantity.should == 1
 
         add_ons[1].id.should == "increase_20"
-        add_ons[1].amount.should == BigDecimal.new("20.00")
+        add_ons[1].amount.should == BigDecimal("20.00")
         add_ons[1].quantity.should == 1
 
         add_ons[2].id.should == "increase_30"
-        add_ons[2].amount.should == BigDecimal.new("30.00")
+        add_ons[2].amount.should == BigDecimal("30.00")
         add_ons[2].quantity.should == 1
 
         subscription.discounts.size.should == 3
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
         discounts[0].id.should == "discount_11"
-        discounts[0].amount.should == BigDecimal.new("11.00")
+        discounts[0].amount.should == BigDecimal("11.00")
         discounts[0].quantity.should == 1
 
         discounts[1].id.should == "discount_15"
-        discounts[1].amount.should == BigDecimal.new("15.00")
+        discounts[1].amount.should == BigDecimal("15.00")
         discounts[1].quantity.should == 1
 
         discounts[2].id.should == "discount_7"
-        discounts[2].amount.should == BigDecimal.new("7.00")
+        discounts[2].amount.should == BigDecimal("7.00")
         discounts[2].quantity.should == 1
       end
 
@@ -824,7 +824,7 @@ describe Braintree::Subscription do
         result.success?.should == true
         result.subscription.id.should =~ /#{new_id}/
         result.subscription.plan_id.should == SpecHelper::TrialPlan[:id]
-        result.subscription.price.should == BigDecimal.new("9999.88")
+        result.subscription.price.should == BigDecimal("9999.88")
       end
 
       context "proration" do
@@ -1022,7 +1022,7 @@ describe Braintree::Subscription do
             :update => [
               {
                 :existing_id => subscription.add_ons.first.id,
-                :amount => BigDecimal.new("99.99"),
+                :amount => BigDecimal("99.99"),
                 :quantity => 12
               }
             ]
@@ -1031,7 +1031,7 @@ describe Braintree::Subscription do
             :update => [
               {
                 :existing_id => subscription.discounts.first.id,
-                :amount => BigDecimal.new("88.88"),
+                :amount => BigDecimal("88.88"),
                 :quantity => 9
               }
             ]
@@ -1043,13 +1043,13 @@ describe Braintree::Subscription do
         subscription.add_ons.size.should == 2
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
-        add_ons.first.amount.should == BigDecimal.new("99.99")
+        add_ons.first.amount.should == BigDecimal("99.99")
         add_ons.first.quantity.should == 12
 
         subscription.discounts.size.should == 2
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
-        discounts.last.amount.should == BigDecimal.new("88.88")
+        discounts.last.amount.should == BigDecimal("88.88")
         discounts.last.quantity.should == 9
       end
 
@@ -1075,30 +1075,30 @@ describe Braintree::Subscription do
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
         add_ons[0].id.should == "increase_10"
-        add_ons[0].amount.should == BigDecimal.new("10.00")
+        add_ons[0].amount.should == BigDecimal("10.00")
         add_ons[0].quantity.should == 1
 
         add_ons[1].id.should == "increase_20"
-        add_ons[1].amount.should == BigDecimal.new("20.00")
+        add_ons[1].amount.should == BigDecimal("20.00")
         add_ons[1].quantity.should == 1
 
         add_ons[2].id.should == "increase_30"
-        add_ons[2].amount.should == BigDecimal.new("30.00")
+        add_ons[2].amount.should == BigDecimal("30.00")
         add_ons[2].quantity.should == 1
 
         subscription.discounts.size.should == 3
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
         discounts[0].id.should == "discount_11"
-        discounts[0].amount.should == BigDecimal.new("11.00")
+        discounts[0].amount.should == BigDecimal("11.00")
         discounts[0].quantity.should == 1
 
         discounts[1].id.should == "discount_15"
-        discounts[1].amount.should == BigDecimal.new("15.00")
+        discounts[1].amount.should == BigDecimal("15.00")
         discounts[1].quantity.should == 1
 
         discounts[2].id.should == "discount_7"
-        discounts[2].amount.should == BigDecimal.new("7.00")
+        discounts[2].amount.should == BigDecimal("7.00")
         discounts[2].quantity.should == 1
       end
 
@@ -1123,12 +1123,12 @@ describe Braintree::Subscription do
 
         subscription.add_ons.size.should == 1
 
-        subscription.add_ons[0].amount.should == BigDecimal.new("30.00")
+        subscription.add_ons[0].amount.should == BigDecimal("30.00")
         subscription.add_ons[0].quantity.should == 1
 
         subscription.discounts.size.should == 1
 
-        subscription.discounts[0].amount.should == BigDecimal.new("15.00")
+        subscription.discounts[0].amount.should == BigDecimal("15.00")
         subscription.discounts[0].quantity.should == 1
       end
 
@@ -1151,11 +1151,11 @@ describe Braintree::Subscription do
         subscription = result.subscription
 
         subscription.add_ons.size.should == 1
-        subscription.add_ons.first.amount.should == BigDecimal.new("20.00")
+        subscription.add_ons.first.amount.should == BigDecimal("20.00")
         subscription.add_ons.first.quantity.should == 1
 
         subscription.discounts.size.should == 1
-        subscription.discounts.last.amount.should == BigDecimal.new("11.00")
+        subscription.discounts.last.amount.should == BigDecimal("11.00")
         subscription.discounts.last.quantity.should == 1
       end
     end
@@ -1180,7 +1180,7 @@ describe Braintree::Subscription do
 
       subscription.id.should =~ /#{new_id}/
       subscription.plan_id.should == SpecHelper::TrialPlan[:id]
-      subscription.price.should == BigDecimal.new("9999.88")
+      subscription.price.should == BigDecimal("9999.88")
     end
 
     it "raises a ValidationsFailed if invalid" do
@@ -1439,7 +1439,7 @@ describe Braintree::Subscription do
         collection.should_not include(active_subscription)
         collection.each do |s|
           s.status.should == Braintree::Subscription::Status::PastDue
-          s.balance.should == BigDecimal.new("6.00")
+          s.balance.should == BigDecimal("6.00")
         end
       end
 
@@ -1711,7 +1711,7 @@ describe Braintree::Subscription do
       result.success?.should == true
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       transaction.processor_authorization_code.should_not be_nil
       transaction.type.should == Braintree::Transaction::Type::Sale
       transaction.status.should == Braintree::Transaction::Status::Authorized
@@ -1729,7 +1729,7 @@ describe Braintree::Subscription do
       result.success?.should == true
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       transaction.processor_authorization_code.should_not be_nil
       transaction.type.should == Braintree::Transaction::Type::Sale
       transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -1747,7 +1747,7 @@ describe Braintree::Subscription do
       result.success?.should == true
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       transaction.processor_authorization_code.should_not be_nil
       transaction.type.should == Braintree::Transaction::Type::Sale
       transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement

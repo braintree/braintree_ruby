@@ -21,7 +21,7 @@ describe Braintree::Discount do
       discount = discounts.select { |discount| discount.id == id }.first
 
       discount.should_not be_nil
-      discount.amount.should == BigDecimal.new(expected[:amount])
+      discount.amount.should == BigDecimal(expected[:amount])
       discount.created_at.should_not be_nil
       discount.description.should == expected[:description]
       discount.kind.should == expected[:kind]

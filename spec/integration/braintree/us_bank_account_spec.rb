@@ -55,7 +55,7 @@ describe Braintree::UsBankAccount do
       )
 
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "sale"
       us_bank_account = result.transaction.us_bank_account_details
       us_bank_account.routing_number.should == "021000021"
@@ -88,7 +88,7 @@ describe Braintree::UsBankAccount do
         :amount => "100.00"
       )
 
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "sale"
       us_bank_account = transaction.us_bank_account_details
       us_bank_account.routing_number.should == "021000021"

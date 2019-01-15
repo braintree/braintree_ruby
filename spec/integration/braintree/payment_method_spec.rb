@@ -295,7 +295,7 @@ describe Braintree::PaymentMethod do
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
       result.credit_card_verification.processor_response_code.should == "2000"
       result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.amount.should == BigDecimal.new("100.00")
+      result.credit_card_verification.amount.should == BigDecimal("100.00")
     end
 
     it "respects fail_on_duplicate_payment_method when included outside of the nonce" do
@@ -759,7 +759,7 @@ describe Braintree::PaymentMethod do
         found_card.subscriptions.first.id.should == subscription.id
         found_card.subscriptions.first.plan_id.should == "integration_trialless_plan"
         found_card.subscriptions.first.payment_method_token.should == credit_card.token
-        found_card.subscriptions.first.price.should == BigDecimal.new("1.00")
+        found_card.subscriptions.first.price.should == BigDecimal("1.00")
       end
     end
 
