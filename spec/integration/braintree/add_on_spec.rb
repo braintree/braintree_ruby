@@ -21,7 +21,7 @@ describe Braintree::AddOn do
       add_on = add_ons.select { |add_on| add_on.id == id }.first
 
       add_on.should_not be_nil
-      add_on.amount.should == BigDecimal.new(expected[:amount])
+      add_on.amount.should == BigDecimal(expected[:amount])
       add_on.created_at.should_not be_nil
       add_on.description.should == expected[:description]
       add_on.kind.should == expected[:kind]

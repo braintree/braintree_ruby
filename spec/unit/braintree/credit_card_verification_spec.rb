@@ -36,8 +36,8 @@ describe Braintree::CreditCardVerification do
   end
 
   it "accepts amount as either a String or BigDecimal" do
-    Braintree::CreditCardVerification._new(:amount => "12.34").amount.should == BigDecimal.new("12.34")
-    Braintree::CreditCardVerification._new(:amount => BigDecimal.new("12.34")).amount.should == BigDecimal.new("12.34")
+    Braintree::CreditCardVerification._new(:amount => "12.34").amount.should == BigDecimal("12.34")
+    Braintree::CreditCardVerification._new(:amount => BigDecimal("12.34")).amount.should == BigDecimal("12.34")
   end
 
   describe "self.create" do

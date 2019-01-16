@@ -354,11 +354,11 @@ describe Braintree::Util do
 
   describe "self.to_big_decimal" do
     it "returns the BigDecimal when given a BigDecimal" do
-      Braintree::Util.to_big_decimal(BigDecimal.new("12.34")).should == BigDecimal.new("12.34")
+      Braintree::Util.to_big_decimal(BigDecimal("12.34")).should == BigDecimal("12.34")
     end
 
     it "returns a BigDecimal when given a string" do
-      Braintree::Util.to_big_decimal("12.34").should == BigDecimal.new("12.34")
+      Braintree::Util.to_big_decimal("12.34").should == BigDecimal("12.34")
     end
 
     it "returns nil when given nil" do

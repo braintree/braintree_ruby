@@ -51,7 +51,7 @@ describe Braintree::TransparentRedirect do
         result.success?.should == true
         transaction = result.transaction
         transaction.type.should == "sale"
-        transaction.amount.should == BigDecimal.new("1000.00")
+        transaction.amount.should == BigDecimal("1000.00")
         transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
         transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
         transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -78,7 +78,7 @@ describe Braintree::TransparentRedirect do
         query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params)
         result = Braintree::TransparentRedirect.confirm(query_string_response)
         result.success?.should == true
-        result.transaction.service_fee_amount.should == BigDecimal.new("1.00")
+        result.transaction.service_fee_amount.should == BigDecimal("1.00")
       end
 
       it "returns an error when there's an error" do

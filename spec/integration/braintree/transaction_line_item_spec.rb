@@ -27,11 +27,11 @@ describe Braintree::TransactionLineItem do
       line_items = Braintree::TransactionLineItem.find_all(transaction.id)
 
       line_item = line_items[0]
-      line_item.quantity.should == BigDecimal.new("1.0232")
+      line_item.quantity.should == BigDecimal("1.0232")
       line_item.name.should == "Name #1"
       line_item.kind.should == "debit"
-      line_item.unit_amount.should == BigDecimal.new("45.1232")
-      line_item.total_amount.should == BigDecimal.new("45.15")
+      line_item.unit_amount.should == BigDecimal("45.1232")
+      line_item.total_amount.should == BigDecimal("45.15")
     end
   end
 end

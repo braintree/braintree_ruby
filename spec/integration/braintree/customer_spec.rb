@@ -531,7 +531,7 @@ describe Braintree::Customer do
       )
       result = Braintree::Customer.credit(customer.id, :amount => "100.00")
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "credit"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -550,7 +550,7 @@ describe Braintree::Customer do
         }
       )
       transaction = Braintree::Customer.credit!(customer.id, :amount => "100.00")
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "credit"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -570,7 +570,7 @@ describe Braintree::Customer do
       )
       result = Braintree::Customer.sale(customer.id, :amount => "100.00")
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -589,7 +589,7 @@ describe Braintree::Customer do
         }
       )
       transaction = Braintree::Customer.sale!(customer.id, :amount => "100.00")
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "sale"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -626,7 +626,7 @@ describe Braintree::Customer do
         :amount => "100.00"
       )
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -645,7 +645,7 @@ describe Braintree::Customer do
         }
       )
       transaction = customer.sale!(:amount => "100.00")
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "sale"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -681,7 +681,7 @@ describe Braintree::Customer do
         :amount => "100.00"
       )
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "credit"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -700,7 +700,7 @@ describe Braintree::Customer do
         }
       )
       transaction = customer.credit!(:amount => "100.00")
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "credit"
       transaction.customer_details.id.should == customer.id
       transaction.credit_card_details.token.should == customer.credit_cards[0].token
@@ -820,7 +820,7 @@ describe Braintree::Customer do
       found_customer.credit_cards.first.subscriptions.first.id.should == subscription.id
       found_customer.credit_cards.first.subscriptions.first.plan_id.should == "integration_trialless_plan"
       found_customer.credit_cards.first.subscriptions.first.payment_method_token.should == credit_card.token
-      found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal.new("1.00")
+      found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal("1.00")
     end
 
     context "when given an association filter id" do

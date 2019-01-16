@@ -41,7 +41,7 @@ describe Braintree::Transaction do
       transaction = clone_result.transaction
 
       transaction.id.should_not == result.transaction.id
-      transaction.amount.should == BigDecimal.new("112.44")
+      transaction.amount.should == BigDecimal("112.44")
       transaction.channel.should == "MyShoppingCartProvider"
 
       transaction.billing_details.country_name.should == "Botswana"
@@ -363,7 +363,7 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.id.should =~ /^\w{6,}$/
         result.transaction.type.should == "sale"
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.processor_authorization_code.should_not be_nil
         result.transaction.voice_referral_number.should be_nil
         result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Elo[0, 6]
@@ -385,7 +385,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "sale"
-      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.processor_authorization_code.should_not be_nil
       result.transaction.processor_response_code.should == "1000"
       result.transaction.processor_response_text.should == "Approved"
@@ -425,7 +425,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "sale"
-      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.processor_authorization_code.should_not be_nil
       result.transaction.voice_referral_number.should be_nil
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
@@ -1005,13 +1005,13 @@ describe Braintree::Transaction do
         :add_ons => {
           :add => [
             {
-              :amount => BigDecimal.new("11.00"),
+              :amount => BigDecimal("11.00"),
               :inherited_from_id => SpecHelper::AddOnIncrease10,
               :quantity => 2,
               :number_of_billing_cycles => 5
             },
             {
-              :amount => BigDecimal.new("21.00"),
+              :amount => BigDecimal("21.00"),
               :inherited_from_id => SpecHelper::AddOnIncrease20,
               :quantity => 3,
               :number_of_billing_cycles => 6
@@ -1021,7 +1021,7 @@ describe Braintree::Transaction do
         :discounts => {
           :add => [
             {
-              :amount => BigDecimal.new("7.50"),
+              :amount => BigDecimal("7.50"),
               :inherited_from_id => SpecHelper::Discount7,
               :quantity => 2,
               :never_expires => true
@@ -1039,13 +1039,13 @@ describe Braintree::Transaction do
       add_ons = transaction.add_ons.sort_by { |add_on| add_on.id }
 
       add_ons.first.id.should == "increase_10"
-      add_ons.first.amount.should == BigDecimal.new("11.00")
+      add_ons.first.amount.should == BigDecimal("11.00")
       add_ons.first.quantity.should == 2
       add_ons.first.number_of_billing_cycles.should == 5
       add_ons.first.never_expires?.should be(false)
 
       add_ons.last.id.should == "increase_20"
-      add_ons.last.amount.should == BigDecimal.new("21.00")
+      add_ons.last.amount.should == BigDecimal("21.00")
       add_ons.last.quantity.should == 3
       add_ons.last.number_of_billing_cycles.should == 6
       add_ons.last.never_expires?.should be(false)
@@ -1053,7 +1053,7 @@ describe Braintree::Transaction do
       transaction.discounts.size.should == 1
 
       transaction.discounts.first.id.should == "discount_7"
-      transaction.discounts.first.amount.should == BigDecimal.new("7.50")
+      transaction.discounts.first.amount.should == BigDecimal("7.50")
       transaction.discounts.first.quantity.should == 2
       transaction.discounts.first.number_of_billing_cycles.should be_nil
       transaction.discounts.first.never_expires?.should be(true)
@@ -1112,7 +1112,7 @@ describe Braintree::Transaction do
           :purchase_order_number => '12345678901234567'
         )
         result.success?.should == true
-        result.transaction.tax_amount.should == BigDecimal.new("0.05")
+        result.transaction.tax_amount.should == BigDecimal("0.05")
         result.transaction.tax_exempt.should == false
         result.transaction.purchase_order_number.should == '12345678901234567'
       end
@@ -1124,11 +1124,11 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
           },
-          :tax_amount => BigDecimal.new('1.99'),
+          :tax_amount => BigDecimal('1.99'),
           :tax_exempt => true
         )
         result.success?.should == true
-        result.transaction.tax_amount.should == BigDecimal.new("1.99")
+        result.transaction.tax_amount.should == BigDecimal("1.99")
         result.transaction.tax_exempt.should == true
         result.transaction.purchase_order_number.should be_nil
       end
@@ -1355,7 +1355,7 @@ describe Braintree::Transaction do
           :service_fee_amount => "1.00"
         )
         result.success?.should == true
-        result.transaction.service_fee_amount.should == BigDecimal.new("1.00")
+        result.transaction.service_fee_amount.should == BigDecimal("1.00")
       end
 
       it "raises an error if transaction merchant account is a master" do
@@ -2465,7 +2465,7 @@ describe Braintree::Transaction do
         result.transaction.id.should =~ /^\w{6,}$/
         result.transaction.type.should == "sale"
         result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::IdealPayment
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+        result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
         result.transaction.status.should == Braintree::Transaction::Status::Settled
         result.transaction.ideal_payment_details.ideal_payment_id.should =~ /^idealpayment_\w{6,}$/
         result.transaction.ideal_payment_details.ideal_transaction_id.should =~ /^\d{16,}$/
@@ -2525,11 +2525,11 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.line_items.length.should == 1
         line_item = result.transaction.line_items[0]
-        line_item.quantity.should == BigDecimal.new("1.0232")
+        line_item.quantity.should == BigDecimal("1.0232")
         line_item.name.should == "Name #1"
         line_item.kind.should == "debit"
-        line_item.unit_amount.should == BigDecimal.new("45.1232")
-        line_item.total_amount.should == BigDecimal.new("45.15")
+        line_item.unit_amount.should == BigDecimal("45.1232")
+        line_item.total_amount.should == BigDecimal("45.15")
       end
 
       it "allows creation with single line item with zero amount fields and returns it" do
@@ -2553,14 +2553,14 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.line_items.length.should == 1
         line_item = result.transaction.line_items[0]
-        line_item.quantity.should == BigDecimal.new("1.0232")
+        line_item.quantity.should == BigDecimal("1.0232")
         line_item.name.should == "Name #1"
         line_item.kind.should == "debit"
-        line_item.unit_amount.should == BigDecimal.new("45.1232")
-        line_item.total_amount.should == BigDecimal.new("45.15")
-        line_item.unit_tax_amount.should == BigDecimal.new("0")
-        line_item.discount_amount.should == BigDecimal.new("0")
-        line_item.tax_amount.should == BigDecimal.new("0")
+        line_item.unit_amount.should == BigDecimal("45.1232")
+        line_item.total_amount.should == BigDecimal("45.15")
+        line_item.unit_tax_amount.should == BigDecimal("0")
+        line_item.discount_amount.should == BigDecimal("0")
+        line_item.tax_amount.should == BigDecimal("0")
       end
 
       it "allows creation with single line item and returns it" do
@@ -2589,16 +2589,16 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.line_items.length.should == 1
         line_item = result.transaction.line_items[0]
-        line_item.quantity.should == BigDecimal.new("1.0232")
+        line_item.quantity.should == BigDecimal("1.0232")
         line_item.name.should == "Name #1"
         line_item.description.should == "Description #1"
         line_item.kind.should == "debit"
-        line_item.unit_amount.should == BigDecimal.new("45.1232")
-        line_item.unit_tax_amount.should == BigDecimal.new("1.23")
+        line_item.unit_amount.should == BigDecimal("45.1232")
+        line_item.unit_tax_amount.should == BigDecimal("1.23")
         line_item.unit_of_measure.should == "gallon"
-        line_item.discount_amount.should == BigDecimal.new("1.02")
-        line_item.tax_amount.should == BigDecimal.new("4.50")
-        line_item.total_amount.should == BigDecimal.new("45.15")
+        line_item.discount_amount.should == BigDecimal("1.02")
+        line_item.tax_amount.should == BigDecimal("4.50")
+        line_item.total_amount.should == BigDecimal("45.15")
         line_item.product_code.should == "23434"
         line_item.commodity_code.should == "9SAASSD8724"
         line_item.url.should == "https://example.com/products/23434"
@@ -2636,24 +2636,24 @@ describe Braintree::Transaction do
         result.success?.should == true
         result.transaction.line_items.length.should == 2
         line_item_1 = result.transaction.line_items.find { |line_item| line_item.name == "Name #1" }
-        line_item_1.quantity.should == BigDecimal.new("1.0232")
+        line_item_1.quantity.should == BigDecimal("1.0232")
         line_item_1.name.should == "Name #1"
         line_item_1.kind.should == "debit"
-        line_item_1.unit_amount.should == BigDecimal.new("45.1232")
+        line_item_1.unit_amount.should == BigDecimal("45.1232")
         line_item_1.unit_of_measure.should == "gallon"
-        line_item_1.discount_amount.should == BigDecimal.new("1.02")
-        line_item_1.tax_amount.should == BigDecimal.new("4.50")
-        line_item_1.total_amount.should == BigDecimal.new("45.15")
+        line_item_1.discount_amount.should == BigDecimal("1.02")
+        line_item_1.tax_amount.should == BigDecimal("4.50")
+        line_item_1.total_amount.should == BigDecimal("45.15")
         line_item_1.product_code.should == "23434"
         line_item_1.commodity_code.should == "9SAASSD8724"
         line_item_2 = result.transaction.line_items.find { |line_item| line_item.name == "Name #2" }
-        line_item_2.quantity.should == BigDecimal.new("2.02")
+        line_item_2.quantity.should == BigDecimal("2.02")
         line_item_2.name.should == "Name #2"
         line_item_2.kind.should == "credit"
-        line_item_2.unit_amount.should == BigDecimal.new("5")
+        line_item_2.unit_amount.should == BigDecimal("5")
         line_item_2.unit_of_measure.should == "gallon"
-        line_item_2.total_amount.should == BigDecimal.new("10.1")
-        line_item_2.tax_amount.should == BigDecimal.new("1.50")
+        line_item_2.total_amount.should == BigDecimal("10.1")
+        line_item_2.tax_amount.should == BigDecimal("1.50")
         line_item_2.discount_amount.should == nil
         line_item_2.product_code.should == nil
         line_item_2.commodity_code.should == nil
@@ -3649,7 +3649,7 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).on(:line_items)[0].code.should == Braintree::ErrorCodes::Transaction::TooManyLineItems
       end
     end
-    
+
     context "level 3 summary data" do
       it "accepts level 3 summary data" do
         result = Braintree::Transaction.create(
@@ -3969,7 +3969,7 @@ describe Braintree::Transaction do
       )
       transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "sale"
-      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -4089,7 +4089,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "sale"
-      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -4143,7 +4143,7 @@ describe Braintree::Transaction do
       transaction.id.should =~ /\A\w{6,}\z/
       transaction.type.should == "sale"
       transaction.status.should == Braintree::Transaction::Status::Authorized
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.currency_iso_code.should == "USD"
       transaction.order_id.should == "123"
       transaction.channel.should == "MyShoppingCartProvider"
@@ -4671,7 +4671,7 @@ describe Braintree::Transaction do
       )
       transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "sale"
-      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -4711,10 +4711,10 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "999.99")
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("999.99")
+      result.transaction.amount.should == BigDecimal("999.99")
       result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       result.transaction.updated_at.between?(Time.now - 60, Time.now).should == true
     end
@@ -4783,7 +4783,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "1000.01")
       result.success?.should == false
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
@@ -4846,7 +4846,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       expect do
         Braintree::Transaction.submit_for_settlement!(transaction.id, "1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
@@ -4886,7 +4886,7 @@ describe Braintree::Transaction do
           :order_id => '456'
         })
         result.success?.should == true
-        result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize) - 1
+        result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize) - 1
         result.transaction.order_id.should == '456'
         result.transaction.descriptor.name.should ==  '456*123456789012345678'
       end
@@ -5216,7 +5216,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       expect do
         Braintree::Transaction.submit_for_partial_settlement!(transaction.id, "1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
@@ -5330,7 +5330,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6,}$/
       result.transaction.type.should == "credit"
-      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -5405,7 +5405,7 @@ describe Braintree::Transaction do
       )
       transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "credit"
-      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -5447,7 +5447,7 @@ describe Braintree::Transaction do
       result.success?.should == true
       transaction = result.transaction
       transaction.type.should == "sale"
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2009"
@@ -5534,7 +5534,7 @@ describe Braintree::Transaction do
       transaction.id.should =~ /\A\w{6,}\z/
       transaction.type.should == "sale"
       transaction.status.should == Braintree::Transaction::Status::Authorized
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.order_id.should == "123"
       transaction.channel.should == "MyShoppingCartProvider"
       transaction.processor_response_code.should == "1000"
@@ -5965,10 +5965,10 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       result = transaction.submit_for_settlement("999.99")
       result.success?.should == true
-      transaction.amount.should == BigDecimal.new("999.99")
+      transaction.amount.should == BigDecimal("999.99")
     end
 
     it "updates the transaction attributes" do
@@ -5979,10 +5979,10 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       result = transaction.submit_for_settlement("999.99")
       result.success?.should == true
-      transaction.amount.should == BigDecimal.new("999.99")
+      transaction.amount.should == BigDecimal("999.99")
       transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       transaction.updated_at.between?(Time.now - 60, Time.now).should == true
     end
@@ -5995,7 +5995,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       result = transaction.submit_for_settlement("1000.01")
       result.success?.should == false
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
@@ -6025,7 +6025,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         }
       )
-      transaction.amount.should == BigDecimal.new("1000.00")
+      transaction.amount.should == BigDecimal("1000.00")
       expect do
         transaction.submit_for_settlement!("1000.01")
       end.to raise_error(Braintree::ValidationsFailed)

@@ -11,8 +11,8 @@ describe Braintree::Subscription do
 
   context "price" do
     it "accepts price as either a String or a BigDecimal" do
-      Braintree::Subscription._new(:gateway, default_params.merge(:price => "12.34")).price.should == BigDecimal.new("12.34")
-      Braintree::Subscription._new(:gateway, default_params.merge(:price => BigDecimal.new("12.34"))).price.should == BigDecimal.new("12.34")
+      Braintree::Subscription._new(:gateway, default_params.merge(:price => "12.34")).price.should == BigDecimal("12.34")
+      Braintree::Subscription._new(:gateway, default_params.merge(:price => BigDecimal("12.34"))).price.should == BigDecimal("12.34")
     end
 
     it "blows up if price is not a string or BigDecimal" do

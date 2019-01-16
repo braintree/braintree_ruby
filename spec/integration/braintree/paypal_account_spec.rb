@@ -272,7 +272,7 @@ describe Braintree::PayPalAccount do
       result = Braintree::PayPalAccount.sale(customer.paypal_accounts[0].token, :amount => "100.00")
 
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new("100.00")
+      result.transaction.amount.should == BigDecimal("100.00")
       result.transaction.type.should == "sale"
       result.transaction.customer_details.id.should == customer.id
       result.transaction.paypal_details.token.should == customer.paypal_accounts[0].token
@@ -287,7 +287,7 @@ describe Braintree::PayPalAccount do
 
       transaction = Braintree::PayPalAccount.sale!(customer.paypal_accounts[0].token, :amount => "100.00")
 
-      transaction.amount.should == BigDecimal.new("100.00")
+      transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "sale"
       transaction.customer_details.id.should == customer.id
       transaction.paypal_details.token.should == customer.paypal_accounts[0].token

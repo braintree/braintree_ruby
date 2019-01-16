@@ -14,7 +14,7 @@ describe Braintree::IdealPayment do
       )
 
       result.success?.should == true
-      result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       result.transaction.type.should == "sale"
       ideal_payment_details = result.transaction.ideal_payment_details
       ideal_payment_details.ideal_payment_id.should =~ /^idealpayment_\w{6,}$/
@@ -36,7 +36,7 @@ describe Braintree::IdealPayment do
         :amount => Braintree::Test::TransactionAmounts::Authorize
       )
 
-      transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
       transaction.type.should == "sale"
       ideal_payment_details = transaction.ideal_payment_details
       ideal_payment_details.ideal_payment_id.should =~ /^idealpayment_\w{6,}$/

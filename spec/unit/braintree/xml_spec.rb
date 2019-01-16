@@ -108,17 +108,17 @@ describe Braintree::Xml do
 
 		context "BigDecimal" do
 			it "works for BigDecimals" do
-				hash = {:root => {:foo => BigDecimal.new("123.45")}}
+				hash = {:root => {:foo => BigDecimal("123.45")}}
 				Braintree::Xml.hash_to_xml(hash).should include("<foo>123.45</foo>")
 			end
 
 			it "works for BigDecimals with fewer than 2 digits" do
-				hash = {:root => {:foo => BigDecimal.new("1000.0")}}
+				hash = {:root => {:foo => BigDecimal("1000.0")}}
 				Braintree::Xml.hash_to_xml(hash).should include("<foo>1000.00</foo>")
 			end
 
 			it "works for BigDecimals with more than 2 digits" do
-				hash = {:root => {:foo => BigDecimal.new("12.345")}}
+				hash = {:root => {:foo => BigDecimal("12.345")}}
 				Braintree::Xml.hash_to_xml(hash).should include("<foo>12.345</foo>")
 			end
 		end

@@ -28,7 +28,7 @@ describe Braintree::Transaction do
             result.transaction.id.should =~ /^\w{6,}$/
             result.transaction.type.should == "sale"
             result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::UsBankAccount
-            result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+            result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
             result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
             result.transaction.us_bank_account_details.routing_number.should == "011000015"
             result.transaction.us_bank_account_details.last_4.should == "0000"
@@ -73,7 +73,7 @@ describe Braintree::Transaction do
 
             transaction.id.should =~ /^\w{6,}$/
             transaction.type.should == "sale"
-            transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+            transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
             transaction.status.should == Braintree::Transaction::Status::SettlementPending
             transaction.us_bank_account_details.routing_number.should == "011000015"
             transaction.us_bank_account_details.last_4.should == "0000"
@@ -114,7 +114,7 @@ describe Braintree::Transaction do
 
             transaction.id.should =~ /^\w{6,}$/
             transaction.type.should == "sale"
-            transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+            transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
             transaction.status.should == Braintree::Transaction::Status::SettlementPending
             transaction.us_bank_account_details.routing_number.should == "011000015"
             transaction.us_bank_account_details.last_4.should == "0000"
@@ -247,7 +247,7 @@ describe Braintree::Transaction do
             result.transaction.id.should =~ /^\w{6,}$/
             result.transaction.type.should == "sale"
             result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::UsBankAccount
-            result.transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+            result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
             result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
             result.transaction.us_bank_account_details.routing_number.should == "011000015"
             result.transaction.us_bank_account_details.last_4.should == "0000"
@@ -294,7 +294,7 @@ describe Braintree::Transaction do
 
             transaction.id.should =~ /^\w{6,}$/
             transaction.type.should == "sale"
-            transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+            transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
             transaction.status.should == Braintree::Transaction::Status::SettlementPending
             transaction.us_bank_account_details.routing_number.should == "011000015"
             transaction.us_bank_account_details.last_4.should == "0000"
@@ -335,7 +335,7 @@ describe Braintree::Transaction do
 
             transaction.id.should =~ /^\w{6,}$/
             transaction.type.should == "sale"
-            transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+            transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
             transaction.status.should == Braintree::Transaction::Status::SettlementPending
             transaction.us_bank_account_details.routing_number.should == "011000015"
             transaction.us_bank_account_details.last_4.should == "0000"
@@ -369,7 +369,7 @@ describe Braintree::Transaction do
 
             transaction.id.should =~ /^\w{6,}$/
             transaction.type.should == "sale"
-            transaction.amount.should == BigDecimal.new(Braintree::Test::TransactionAmounts::Authorize)
+            transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
             transaction.status.should == Braintree::Transaction::Status::SettlementPending
             transaction.us_bank_account_details.routing_number.should == "021000021"
             transaction.us_bank_account_details.last_4.should == "0000"
