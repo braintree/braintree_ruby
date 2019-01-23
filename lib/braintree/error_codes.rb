@@ -177,6 +177,7 @@ module Braintree
       FileIsTooLarge = "84902"
       FileTypeIsInvalid = "84903"
       FileIsMalformedOrEncrypted = "84904"
+      FileIsTooLong = "84905"
     end
 
     module PayPalAccount

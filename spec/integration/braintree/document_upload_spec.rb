@@ -46,6 +46,13 @@ describe Braintree::DocumentUploadGateway do
       end
     end
 
+    it "returns file too long error with file over 50 pages" do
+      filename = "#{File.dirname(__FILE__)}/../../fixtures/files/too_long.pdf"
+      file = File.new(filename, "r")
+      response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
+      response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::FileIsTooLong
+    end
+
     it "returns invalid keys error if signature is invalid" do
       expect do
         response = Braintree::DocumentUpload.create({:invalid_key => "do not add", :kind => Braintree::DocumentUpload::Kind::EvidenceDocument})

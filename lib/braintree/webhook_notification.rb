@@ -41,6 +41,7 @@ module Braintree
       ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
 
       GrantedPaymentInstrumentUpdate = "granted_payment_instrument_update"
+      GrantedPaymentInstrumentRevoked = "granted_payment_instrument_revoked"
 
       LocalPaymentCompleted = "local_payment_completed"
     end
@@ -51,6 +52,7 @@ module Braintree
     attr_reader :disbursement
     attr_reader :dispute
     attr_reader :granted_payment_instrument_update
+    attr_reader :revoked_payment_method_metadata
     attr_reader :ideal_payment
     attr_reader :kind
     attr_reader :local_payment_completed
@@ -85,6 +87,7 @@ module Braintree
       @connected_merchant_status_transitioned = ConnectedMerchantStatusTransitioned._new(@subject[:connected_merchant_status_transitioned]) if @subject.has_key?(:connected_merchant_status_transitioned)
       @connected_merchant_paypal_status_changed = ConnectedMerchantPayPalStatusChanged._new(@subject[:connected_merchant_paypal_status_changed]) if @subject.has_key?(:connected_merchant_paypal_status_changed)
       @granted_payment_instrument_update = GrantedPaymentInstrumentUpdate._new(@subject[:granted_payment_instrument_update]) if @subject.has_key?(:granted_payment_instrument_update)
+      @revoked_payment_method_metadata = RevokedPaymentMethodMetadata._new(gateway, @subject) if @kind == Kind::GrantedPaymentInstrumentRevoked
       @local_payment_completed = LocalPaymentCompleted._new(@subject[:local_payment]) if @subject.has_key?(:local_payment)
     end
 

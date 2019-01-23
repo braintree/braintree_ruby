@@ -1,3 +1,10 @@
+# 2.94.0
+* Add `bin` field to `payment_method_nonce_details`
+* Add Error indicating pdf uploads too long for dispute evidence.
+* Add `GrantedPaymentMethodRevoked` webhook response objects
+* Update BigDecimal#New calls to un-deprecated Kernel#BigDecimal calls
+  * Thank you @john-denisov and @jfiander!
+
 # 2.93.0
 * Allow PayPal payment ID and payer ID to be passed during transaction create
 * Add `travel_flight` support to industry-specific data

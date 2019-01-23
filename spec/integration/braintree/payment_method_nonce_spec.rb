@@ -83,6 +83,16 @@ describe Braintree::PaymentMethodNonce do
       nonce.details.fetch(:card_type).should == "Visa"
     end
 
+    it "return venmo details if details exist" do
+      result = Braintree::PaymentMethodNonce.find("fake-venmo-account-nonce")
+
+      nonce = result.payment_method_nonce
+
+      nonce.details.fetch(:last_two).should == "99"
+      nonce.details.fetch(:username).should == "venmojoe"
+      nonce.details.fetch(:venmo_user_id).should == "Venmo-Joe-1"
+    end
+
     it "returns null 3ds_info if there isn't any" do
       nonce = nonce_for_new_payment_method(
         :credit_card => {
@@ -98,6 +108,15 @@ describe Braintree::PaymentMethodNonce do
 
       result.should be_success
       nonce.three_d_secure_info.should be_nil
+    end
+
+    it "returns the bin" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-visa-nonce")
+
+      nonce = result.payment_method_nonce
+      result.should be_success
+      nonce.details.should_not be_nil
+      nonce.details[:bin].should == "401288"
     end
 
     it "returns bin_data with commercial set to Yes" do

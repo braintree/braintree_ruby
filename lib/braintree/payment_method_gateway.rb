@@ -19,36 +19,11 @@ module Braintree
 
     def _do_create(path, params=nil) # :nodoc:
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
-      if response[:credit_card]
-        SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
-      elsif response[:paypal_account]
-        SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
-      elsif response[:coinbase_account]
-        SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
-      elsif response[:us_bank_account]
-        SuccessfulResult.new(:payment_method => UsBankAccount._new(@gateway, response[:us_bank_account]))
-      elsif response[:apple_pay_card]
-        SuccessfulResult.new(:payment_method => ApplePayCard._new(@gateway, response[:apple_pay_card]))
-      elsif response[:android_pay_card]
-        SuccessfulResult.new(:payment_method => AndroidPayCard._new(@gateway, response[:android_pay_card]))
-      elsif response[:amex_express_checkout_card]
-        SuccessfulResult.new(:payment_method => AmexExpressCheckoutCard._new(@gateway, response[:amex_express_checkout_card]))
-      elsif response[:venmo_account]
-        SuccessfulResult.new(:payment_method => VenmoAccount._new(@gateway, response[:venmo_account]))
-      elsif response[:visa_checkout_card]
-        SuccessfulResult.new(:payment_method => VisaCheckoutCard._new(@gateway, response[:visa_checkout_card]))
-      elsif response[:masterpass_card]
-        SuccessfulResult.new(:payment_method => MasterpassCard._new(@gateway, response[:masterpass_card]))
-      elsif response[:samsung_pay_card]
-        SuccessfulResult.new(:payment_method => SamsungPayCard._new(@gateway, response[:samsung_pay_card]))
-      elsif response[:payment_method_nonce]
-        SuccessfulResult.new(:payment_method_nonce => PaymentMethodNonce._new(@gateway, response[:payment_method_nonce]))
-      elsif response[:success]
-        SuccessfulResult.new
-      elsif response[:api_error_response]
+
+      if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       elsif response
-        SuccessfulResult.new(:payment_method => UnknownPaymentMethod._new(@gateway, response))
+        SuccessfulResult.new(:payment_method => PaymentMethodParser.parse_payment_method(@gateway, response))
       else
         raise UnexpectedError, "expected :payment_method or :api_error_response"
       end
@@ -96,6 +71,17 @@ module Braintree
       return_object_or_raise(:payment_method) { update(*args) }
     end
 
+    def _do_update(http_verb, path, params) # :nodoc:
+      response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
+      if response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      elsif response
+        SuccessfulResult.new(:payment_method => PaymentMethodParser.parse_payment_method(@gateway, response))
+      else
+        raise UnexpectedError, "expected :payment_method or :api_error_response"
+      end
+    end
+
     def grant(token, options = {})
       raise ArgumentError if token.nil? || token.to_s.strip == ""
       if  options.class == Hash
@@ -106,7 +92,7 @@ module Braintree
         raise ArgumentError
       end
 
-      _do_create(
+      _do_grant(
         "/payment_methods/grant",
         :payment_method => {
           :shared_payment_method_token => token,
@@ -116,10 +102,21 @@ module Braintree
       raise NotFoundError, "payment method with token #{token.inspect} not found"
     end
 
+    def _do_grant(path, params=nil)
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
+      if response[:payment_method_nonce]
+        SuccessfulResult.new(:payment_method_nonce => PaymentMethodNonce._new(@gateway, response[:payment_method_nonce]))
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
+      else
+        raise UnexpectedError, "expected :payment_method_nonce or :api_error_response"
+      end
+    end
+
     def revoke(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
 
-      _do_create(
+      _do_revoke(
         "/payment_methods/revoke",
         :payment_method => {
           :shared_payment_method_token => token
@@ -129,22 +126,14 @@ module Braintree
       raise NotFoundError, "payment method with token #{token.inspect} not found"
     end
 
-    def _do_update(http_verb, path, params) # :nodoc:
-      response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
-      if response[:credit_card]
-        SuccessfulResult.new(:payment_method => CreditCard._new(@gateway, response[:credit_card]))
-      elsif response[:paypal_account]
-        SuccessfulResult.new(:payment_method => PayPalAccount._new(@gateway, response[:paypal_account]))
-      elsif response[:coinbase_account]
-        SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
+    def _do_revoke(path, params=nil)
+      response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
+      if response[:success]
+        SuccessfulResult.new
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
-      elsif response[:us_bank_account]
-        SuccessfulResult.new(:payment_method => UsBankAccount._new(@gateway, response[:us_bank_account]))
-      elsif response
-        SuccessfulResult.new(:payment_method => UnknownPaymentMethod._new(@gateway, response))
       else
-        raise UnexpectedError, "expected :payment_method or :api_error_response"
+        raise UnexpectedError, "expected :success or :api_error_response"
       end
     end
 
