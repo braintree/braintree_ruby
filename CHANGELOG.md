@@ -68,7 +68,7 @@
 * Add support for `subscription.retry_charge` to gateway instance
 * Add support for `transaction.cancel_release!` to gateway instance
 * Add support for `transaction.hold_in_escrow!` to gateway instance
-* Add support for `transaction.clone_transction!` to gateway instance
+* Add support for `transaction.clone_transaction!` to gateway instance
 * Add support for `transaction.credit!` to gateway instance
 * Add support for `transaction.refund!` to gateway instance
 * Add support for `transaction.release_from_escrow!` to gateway instance
