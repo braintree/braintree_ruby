@@ -3,6 +3,7 @@ module Braintree
     class CreditCardDetails # :nodoc:
       include BaseModule
 
+      attr_reader :account_type
       attr_reader :bin
       attr_reader :card_type
       attr_reader :cardholder_name

@@ -61,6 +61,69 @@ describe Braintree::CreditCardVerification, "search" do
       result.success?.should == false
       result.errors.for(:verification).for(:options).first.code.should == Braintree::ErrorCodes::Verification::Options::AmountCannotBeNegative
     end
+
+    it "returns account type with debit" do
+      result = Braintree::CreditCardVerification.create(
+        :credit_card => {
+          :expiration_date => "01/2020",
+          :number => Braintree::Test::CreditCardNumbers::Hiper
+        },
+        :options => {
+          :merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+          :account_type => "debit",
+        },
+      )
+
+      result.success?.should == true
+      result.credit_card_verification.credit_card[:account_type].should == "debit"
+    end
+
+    it "returns account type with credit" do
+      result = Braintree::CreditCardVerification.create(
+        :credit_card => {
+          :expiration_date => "01/2020",
+          :number => Braintree::Test::CreditCardNumbers::Hiper
+        },
+        :options => {
+          :merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+          :account_type => "credit",
+        },
+      )
+
+      result.success?.should == true
+      result.credit_card_verification.credit_card[:account_type].should == "credit"
+    end
+
+    it "errors with unsupported account type" do
+      result = Braintree::CreditCardVerification.create(
+        :credit_card => {
+          :expiration_date => "01/2020",
+          :number => Braintree::Test::CreditCardNumbers::Visa
+        },
+        :options => {
+          :account_type => "credit",
+        },
+      )
+
+      result.success?.should == false
+      result.errors.for(:verification).for(:options).on(:account_type)[0].code.should == Braintree::ErrorCodes::Verification::Options::AccountTypeNotSupported
+    end
+
+    it "errors with invalid account type" do
+      result = Braintree::CreditCardVerification.create(
+        :credit_card => {
+          :expiration_date => "01/2020",
+          :number => Braintree::Test::CreditCardNumbers::Hiper
+        },
+        :options => {
+          :merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+          :account_type => "ach",
+        },
+      )
+
+      result.success?.should == false
+      result.errors.for(:verification).for(:options).on(:account_type)[0].code.should == Braintree::ErrorCodes::Verification::Options::AccountTypeIsInvalid
+    end
   end
 
   describe "self.find" do

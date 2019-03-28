@@ -100,6 +100,8 @@ module Braintree
       TokenIsTooLong = "91720"
       VenmoSDKPaymentMethodCodeCardTypeIsNotAccepted = "91726"
       VerificationNotSupportedOnThisMerchantAccount = "91730"
+      VerificationAccountTypeIsInvalid = "91757"
+      VerificationAccountTypeNotSupported = "91758"
 
       module Options
         UpdateExistingTokenIsInvalid = "91723"
@@ -419,6 +421,12 @@ module Braintree
         module PayPal
           CustomFieldTooLong = "91580"
         end
+
+        module CreditCard
+          AccountTypeIsInvalid = "915184"
+          AccountTypeNotSupported = "915185"
+          AccountTypeDebitDoesNotSupportAuths = "915186"
+        end
       end
 
       module Industry
@@ -724,6 +732,8 @@ module Braintree
         MerchantAccountIsSuspended = "94205"
         MerchantAccountIsForbidden = "94206"
         MerchantAccountCannotBeSubMerchantAccount = "94208"
+        AccountTypeIsInvalid = "942184"
+        AccountTypeNotSupported = "942185"
       end
     end
 

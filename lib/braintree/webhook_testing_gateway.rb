@@ -76,7 +76,12 @@ module Braintree
         _ideal_payment_complete_sample_xml(id)
       when Braintree::WebhookNotification::Kind::IdealPaymentFailed
         _ideal_payment_failed_sample_xml(id)
+      # NEXT_MAJOR_VERSION remove GrantedPaymentInstrumentUpdate
       when Braintree::WebhookNotification::Kind::GrantedPaymentInstrumentUpdate
+        _granted_payment_instrument_update_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::GrantorUpdatedGrantedPaymentMethod
+        _granted_payment_instrument_update_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::RecipientUpdatedGrantedPaymentMethod
         _granted_payment_instrument_update_sample_xml(id)
       when Braintree::WebhookNotification::Kind::LocalPaymentCompleted
         _local_payment_completed_sample_xml(id)

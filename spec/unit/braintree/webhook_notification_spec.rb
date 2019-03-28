@@ -436,16 +436,33 @@ describe Braintree::WebhookNotification do
   end
 
   context "granted_payment_instrument_update" do
-    it "builds a sample notification for a granted_payment_instrument_update webhook" do
+    it "builds a sample notification for a GrantorUpdatedGrantedPaymentMethod webhook" do
       sample_notification = Braintree::WebhookTesting.sample_notification(
-        Braintree::WebhookNotification::Kind::GrantedPaymentInstrumentUpdate,
+        Braintree::WebhookNotification::Kind::GrantorUpdatedGrantedPaymentMethod,
         "my_id"
       )
 
       notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
       update = notification.granted_payment_instrument_update
 
-      notification.kind.should == Braintree::WebhookNotification::Kind::GrantedPaymentInstrumentUpdate
+      notification.kind.should == Braintree::WebhookNotification::Kind::GrantorUpdatedGrantedPaymentMethod
+      update.grant_owner_merchant_id.should == 'vczo7jqrpwrsi2px'
+      update.grant_recipient_merchant_id.should == 'cf0i8wgarszuy6hc'
+      update.payment_method_nonce.should == 'ee257d98-de40-47e8-96b3-a6954ea7a9a4'
+      update.token.should == 'abc123z'
+      update.updated_fields.should == ['expiration-month', 'expiration-year']
+    end
+
+    it "builds a sample notification for a RecipientUpdatedGrantedPaymentMethod webhook" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::RecipientUpdatedGrantedPaymentMethod,
+        "my_id"
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      update = notification.granted_payment_instrument_update
+
+      notification.kind.should == Braintree::WebhookNotification::Kind::RecipientUpdatedGrantedPaymentMethod
       update.grant_owner_merchant_id.should == 'vczo7jqrpwrsi2px'
       update.grant_recipient_merchant_id.should == 'cf0i8wgarszuy6hc'
       update.payment_method_nonce.should == 'ee257d98-de40-47e8-96b3-a6954ea7a9a4'

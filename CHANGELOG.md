@@ -1,3 +1,7 @@
+# 2.95.0
+* Deprecate `GrantedPaymentInstrumentUpdate` and add `GrantorUpdatedGrantedPaymentMethod` and `RecipientUpdatedGrantedPaymentMethod`
+* Add account_type support for transaction sale, verification, and payment_method create/update
+
 # 2.94.0
 * Add `bin` field to `payment_method_nonce_details`
 * Add Error indicating pdf uploads too long for dispute evidence.

@@ -40,7 +40,11 @@ module Braintree
       ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
       ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
 
+      # NEXT_MAJOR_VERSION remove GrantedPaymentInstrumentUpdate. Kind is not sent by Braintree Gateway.
+      # Kind will either be GrantorUpdatedGrantedPaymentMethod or RecipientUpdatedGrantedPaymentMethod.
       GrantedPaymentInstrumentUpdate = "granted_payment_instrument_update"
+      GrantorUpdatedGrantedPaymentMethod = "grantor_updated_granted_payment_method"
+      RecipientUpdatedGrantedPaymentMethod = "recipient_updated_granted_payment_method"
       GrantedPaymentInstrumentRevoked = "granted_payment_instrument_revoked"
 
       LocalPaymentCompleted = "local_payment_completed"

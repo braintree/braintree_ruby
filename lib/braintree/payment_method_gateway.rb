@@ -155,6 +155,7 @@ module Braintree
       options = [
         :make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session,
         :verification_amount, :us_bank_account_verification_method,
+        :verification_account_type,
         :paypal => [
           :payee_email,
           :order_id,

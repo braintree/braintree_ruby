@@ -487,6 +487,147 @@ describe Braintree::PaymentMethod do
       found_credit_card.billing_address.street_address.should == "456 Xyz Way"
     end
 
+    context "account_type" do
+      it "verifies card with account_type debit" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Hiper,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "debit",
+          }
+        )
+
+        result.should be_success
+        result.payment_method.verification.credit_card[:account_type].should == "debit"
+      end
+
+      it "verifies card with account_type credit" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Hiper,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "credit",
+          }
+        )
+
+        result.should be_success
+        result.payment_method.verification.credit_card[:account_type].should == "credit"
+      end
+
+      it "errors with invalid account_type" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Hiper,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "ach",
+          }
+        )
+
+        result.should_not be_success
+        result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code.should == Braintree::ErrorCodes::CreditCard::VerificationAccountTypeIsInvalid
+      end
+
+      it "errors when account_type not supported by merchant" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_account_type => "credit",
+          }
+        )
+
+        result.should_not be_success
+        result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code.should == Braintree::ErrorCodes::CreditCard::VerificationAccountTypeNotSupported
+      end
+
+      it "updates the credit card with account_type credit" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        )
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :cardholder_name => "New Holder",
+          :cvv => "456",
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_date => "06/2013",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "credit",
+          },
+        )
+        update_result.success?.should == true
+        update_result.payment_method.verification.credit_card[:account_type].should == "credit"
+      end
+
+      it "updates the credit card with account_type debit" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2012"
+        )
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :cardholder_name => "New Holder",
+          :cvv => "456",
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_date => "06/2013",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "debit",
+          },
+        )
+        update_result.success?.should == true
+        update_result.payment_method.verification.credit_card[:account_type].should == "debit"
+      end
+    end
+
     context "paypal" do
       it "creates a payment method from an unvalidated future paypal account nonce" do
         nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")

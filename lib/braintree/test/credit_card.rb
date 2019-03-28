@@ -32,6 +32,9 @@ module Braintree
       MasterCards = %w[5105105105105100 5555555555554444]
 
       Elo = "5066991111111118"
+      Hiper = "6370950000000005"
+      Hipercard = "6062820524845321"
+
       Visa = "4012888888881881"
       VisaInternational = "4009348888881881" # :nodoc:
       VisaPrepaid = "4500600000000061"
