@@ -26,6 +26,7 @@ module Braintree
       Duplicate    = "duplicate"
       Fraud        = "fraud"
       ThreeDSecure = "three_d_secure"
+      TokenIssuance = "token_issuance"
       Unrecognized = "unrecognized"
     end
 
@@ -108,7 +109,10 @@ module Braintree
     attr_reader :facilitator_details
     attr_reader :gateway_rejection_reason
     attr_reader :id
+    # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
+    # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
     attr_reader :ideal_payment_details
+    attr_reader :local_payment_details
     attr_reader :masterpass_card_details
     attr_reader :merchant_account_id
     attr_reader :network_transaction_id
@@ -282,6 +286,7 @@ module Braintree
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @tax_amount = Util.to_big_decimal(tax_amount)
       @descriptor = Descriptor.new(@descriptor)
+      @local_payment_details = LocalPaymentDetails.new(@local_payment)
       @paypal_details = PayPalDetails.new(@paypal)
       @apple_pay_details = ApplePayDetails.new(@apple_pay)
       @android_pay_details = AndroidPayDetails.new(@android_pay_card)

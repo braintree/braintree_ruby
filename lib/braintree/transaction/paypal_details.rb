@@ -9,14 +9,16 @@ module Braintree
       attr_reader :debug_id
       attr_reader :description
       attr_reader :image_url
-      attr_reader :payee_id
       attr_reader :payee_email
+      attr_reader :payee_id
       attr_reader :payer_email
       attr_reader :payer_first_name
       attr_reader :payer_id
       attr_reader :payer_last_name
       attr_reader :payer_status
       attr_reader :payment_id
+      attr_reader :refund_from_transaction_fee_amount
+      attr_reader :refund_from_transaction_fee_currency_iso_code
       attr_reader :refund_id
       attr_reader :seller_protection_status
       attr_reader :token

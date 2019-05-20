@@ -8,6 +8,7 @@ module Braintree
     attr_reader :email
     attr_reader :image_url
     attr_reader :payer_id
+    attr_reader :revoked_at
     attr_reader :subscriptions
     attr_reader :token
     attr_reader :updated_at

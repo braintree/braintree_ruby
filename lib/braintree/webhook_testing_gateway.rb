@@ -72,8 +72,12 @@ module Braintree
         _auth_status_transitioned_sample_xml(id)
       when Braintree::WebhookNotification::Kind::ConnectedMerchantPayPalStatusChanged
         _auth_paypal_status_changed_sample_xml(id)
+        # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
+        # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
       when Braintree::WebhookNotification::Kind::IdealPaymentComplete
         _ideal_payment_complete_sample_xml(id)
+        # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
+        # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
       when Braintree::WebhookNotification::Kind::IdealPaymentFailed
         _ideal_payment_failed_sample_xml(id)
       # NEXT_MAJOR_VERSION remove GrantedPaymentInstrumentUpdate
@@ -83,6 +87,8 @@ module Braintree
         _granted_payment_instrument_update_sample_xml(id)
       when Braintree::WebhookNotification::Kind::RecipientUpdatedGrantedPaymentMethod
         _granted_payment_instrument_update_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::PaymentMethodRevokedByCustomer
+        _payment_method_revoked_by_customer_sample_xml(id)
       when Braintree::WebhookNotification::Kind::LocalPaymentCompleted
         _local_payment_completed_sample_xml(id)
       else
@@ -669,11 +675,40 @@ module Braintree
       XML
     end
 
+    def _payment_method_revoked_by_customer_sample_xml(id)
+      <<-XML
+        <paypal-account>
+          <billing-agreement-id>a-billing-agreement-id</billing-agreement-id>
+          <created-at type="datetime">2019-01-01T12:00:00Z</created-at>
+          <customer-id>a-customer-id</customer-id>
+          <default type="boolean">true</default>
+          <email>name@email.com</email>
+          <global-id>cGF5bWVudG1ldGhvZF9jaDZieXNz</global-id>
+          <image-url>https://assets.braintreegateway.com/payment_method_logo/paypal.png?environment=test</image-url>
+          <subscriptions type="array"/>
+          <token>#{id}</token>
+          <updated-at type="datetime">2019-01-02T12:00:00Z</updated-at>
+          <is-channel-initiated nil="true"/>
+          <payer-id>a-payer-id</payer-id>
+          <payer-info nil="true"/>
+          <limited-use-order-id nil="true"/>
+          <revoked-at type="datetime">2019-01-02T12:00:00Z</revoked-at>
+        </paypal-account>
+      XML
+    end
+
     def _local_payment_completed_sample_xml(id)
       <<-XML
         <local-payment>
           <payment-id>PAY-XYZ123</payment-id>
           <payer-id>ABCPAYER</payer-id>
+          <payment-method-nonce>ee257d98-de40-47e8-96b3-a6954ea7a9a4</payment-method-nonce>
+          <transaction>
+            <id>#{id}</id>
+            <status>authorized</status>
+            <amount>49.99</amount>
+            <order-id>order4567</order-id>
+          </transaction>
         </local-payment>
       XML
     end

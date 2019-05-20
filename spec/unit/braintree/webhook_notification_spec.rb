@@ -305,44 +305,6 @@ describe Braintree::WebhookNotification do
       end
     end
 
-    context "ideal payments" do
-      it "builds a sample notification for a ideal_payment_complete complete webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::IdealPaymentComplete,
-          "my_id"
-        )
-
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-        notification.kind.should == Braintree::WebhookNotification::Kind::IdealPaymentComplete
-        ideal_payment = notification.ideal_payment
-
-        ideal_payment.id.should == "my_id"
-        ideal_payment.status.should == "COMPLETE"
-        ideal_payment.order_id.should == "ORDERABC"
-        ideal_payment.amount.should == "10.00"
-        ideal_payment.approval_url.should == "https://example.com"
-        ideal_payment.ideal_transaction_id.should == "1234567890"
-      end
-
-      it "builds a sample notification for a ideal_payment_failed webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::IdealPaymentFailed,
-          "my_id"
-        )
-
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-        notification.kind.should == Braintree::WebhookNotification::Kind::IdealPaymentFailed
-        ideal_payment = notification.ideal_payment
-
-        ideal_payment.id.should == "my_id"
-        ideal_payment.status.should == "FAILED"
-        ideal_payment.order_id.should == "ORDERABC"
-        ideal_payment.amount.should == "10.00"
-        ideal_payment.approval_url.should == "https://example.com"
-        ideal_payment.ideal_transaction_id.should == "1234567890"
-      end
-    end
-
     context "merchant account" do
       it "builds a sample notification for a merchant account approved webhook" do
         sample_notification = Braintree::WebhookTesting.sample_notification(
@@ -604,6 +566,23 @@ describe Braintree::WebhookNotification do
     end
   end
 
+  context "payment_method_revoked_by_customer" do
+    it "builds a sample notification for a payment_method_revoked_by_customer webhook" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::PaymentMethodRevokedByCustomer,
+        "my_payment_method_token"
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      notification.kind.should == Braintree::WebhookNotification::Kind::PaymentMethodRevokedByCustomer
+
+      metadata = notification.revoked_payment_method_metadata
+      metadata.token.should == "my_payment_method_token"
+      metadata.revoked_payment_method.class.should == Braintree::PayPalAccount
+      metadata.revoked_payment_method.revoked_at.should_not be_nil
+    end
+  end
+
   context "local_payment_completed" do
     it "builds a sample notification for a local_payment webhook" do
       sample_notification = Braintree::WebhookTesting.sample_notification(
@@ -615,8 +594,13 @@ describe Braintree::WebhookNotification do
       notification.kind.should == Braintree::WebhookNotification::Kind::LocalPaymentCompleted
 
       local_payment_completed = notification.local_payment_completed
-      local_payment_completed.payment_id.should == 'PAY-XYZ123'
-      local_payment_completed.payer_id.should == 'ABCPAYER'
+      local_payment_completed.payment_id.should == "PAY-XYZ123"
+      local_payment_completed.payer_id.should == "ABCPAYER"
+      local_payment_completed.payment_method_nonce.should == "ee257d98-de40-47e8-96b3-a6954ea7a9a4"
+      local_payment_completed.transaction.id.should == "my_id"
+      local_payment_completed.transaction.status.should == Braintree::Transaction::Status::Authorized
+      local_payment_completed.transaction.amount.should == 49.99
+      local_payment_completed.transaction.order_id.should == "order4567"
     end
   end
 

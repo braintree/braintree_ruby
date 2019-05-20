@@ -201,7 +201,7 @@ describe Braintree::Transaction do
           result.success?.should be(false)
           invalid_folio = Braintree::ErrorCodes::Transaction::Industry::Lodging::FolioNumberIsInvalid
           check_out_date_must_follow_check_in_date = Braintree::ErrorCodes::Transaction::Industry::Lodging::CheckOutDateMustFollowCheckInDate
-          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [invalid_folio, check_out_date_must_follow_check_in_date]
+          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should include *[invalid_folio, check_out_date_must_follow_check_in_date]
         end
       end
 
@@ -765,6 +765,16 @@ describe Braintree::Transaction do
         )
         result.success?.should == false
         result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
+      end
+
+      it "exposes the token issuance gateway rejection reason" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
+          :payment_method_nonce => Braintree::Test::Nonce::VenmoAccountTokenIssuanceError,
+        )
+        result.success?.should == false
+        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::TokenIssuance
       end
     end
 
@@ -1575,6 +1585,13 @@ describe Braintree::Transaction do
         apple_pay_details.cardholder_name.should_not be_nil
         apple_pay_details.image_url.should_not be_nil
         apple_pay_details.token.should be_nil
+        apple_pay_details.prepaid.should_not be_nil
+        apple_pay_details.healthcare.should_not be_nil
+        apple_pay_details.debit.should_not be_nil
+        apple_pay_details.durbin_regulated.should_not be_nil
+        apple_pay_details.commercial.should_not be_nil
+        apple_pay_details.payroll.should_not be_nil
+        apple_pay_details.product_id.should_not be_nil
       end
 
       it "can create a vaulted transaction with a fake apple pay nonce" do
@@ -1620,6 +1637,13 @@ describe Braintree::Transaction do
         android_pay_details.google_transaction_id.should == "google_transaction_id"
         android_pay_details.image_url.should_not be_nil
         android_pay_details.token.should be_nil
+        android_pay_details.prepaid.should_not be_nil
+        android_pay_details.healthcare.should_not be_nil
+        android_pay_details.debit.should_not be_nil
+        android_pay_details.durbin_regulated.should_not be_nil
+        android_pay_details.commercial.should_not be_nil
+        android_pay_details.payroll.should_not be_nil
+        android_pay_details.product_id.should_not be_nil
       end
 
       it "can create a vaulted transaction with a fake android pay proxy card nonce" do
@@ -2098,7 +2122,7 @@ describe Braintree::Transaction do
 
       it "returns an error for transaction with three_d_secure_pass_thru when processor settings do not support 3DS for card type" do
         result = Braintree::Transaction.create(
-          :merchant_account_id => "adyen_ma",
+          :merchant_account_id => "heartland_ma",
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
@@ -2236,6 +2260,21 @@ describe Braintree::Transaction do
           found_paypal_account = Braintree::PaymentMethod.find(payment_method_token)
           found_paypal_account.should be_a(Braintree::PayPalAccount)
           found_paypal_account.token.should == payment_method_token
+        end
+      end
+
+      context "local payments" do
+        it "can create a local payment transaction with a nonce" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => Braintree::Test::Nonce::LocalPayment
+          )
+
+          result.should be_success
+          result.transaction.local_payment_details.should_not be_nil
+          result.transaction.local_payment_details.funding_source.should_not be_nil
+          result.transaction.local_payment_details.payment_id.should_not be_nil
         end
       end
 
@@ -2436,53 +2475,6 @@ describe Braintree::Transaction do
           result.should_not be_success
           result.errors.for(:transaction).first.code.should == "91565"
         end
-      end
-    end
-
-    context "ideal payment nonce" do
-      it "returns a successful result for tansacting on an ideal payment nonce" do
-        valid_ideal_payment_id = generate_valid_ideal_payment_nonce
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :order_id => SpecHelper::DefaultOrderId,
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::IdealMerchantAccountId,
-          :payment_method_nonce => valid_ideal_payment_id,
-          :options => {
-            :submit_for_settlement => true,
-          }
-        )
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6,}$/
-        result.transaction.type.should == "sale"
-        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::IdealPayment
-        result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.status.should == Braintree::Transaction::Status::Settled
-        result.transaction.ideal_payment_details.ideal_payment_id.should =~ /^idealpayment_\w{6,}$/
-        result.transaction.ideal_payment_details.ideal_transaction_id.should =~ /^\d{16,}$/
-        result.transaction.ideal_payment_details.image_url.should start_with("https://")
-        result.transaction.ideal_payment_details.masked_iban.should_not be_empty
-        result.transaction.ideal_payment_details.bic.should_not be_empty
-      end
-
-      it "returns a failure if ideal payment is not complete" do
-        expired_payment_amount = "3.00"
-
-        incomplete_payment_id = generate_valid_ideal_payment_nonce(expired_payment_amount)
-
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :order_id => SpecHelper::DefaultOrderId,
-          :amount => expired_payment_amount,
-          :merchant_account_id => SpecHelper::IdealMerchantAccountId,
-          :payment_method_nonce => incomplete_payment_id,
-          :options => {
-            :submit_for_settlement => true,
-          }
-        )
-
-        result.success?.should == false
-        result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::IdealPaymentNotComplete
       end
     end
 
@@ -5863,6 +5855,8 @@ describe Braintree::Transaction do
         transaction.paypal_details.refund_id.should_not be_nil
         transaction.paypal_details.transaction_fee_amount.should_not be_nil
         transaction.paypal_details.transaction_fee_currency_iso_code.should_not be_nil
+        transaction.paypal_details.refund_from_transaction_fee_amount.should_not be_nil
+        transaction.paypal_details.refund_from_transaction_fee_currency_iso_code.should_not be_nil
       end
     end
   end

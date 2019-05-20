@@ -25,6 +25,7 @@ describe Braintree::PayPalAccount do
       paypal_account.created_at.should_not be_nil
       paypal_account.updated_at.should_not be_nil
       paypal_account.customer_id.should == customer.id
+      paypal_account.revoked_at.should be_nil
     end
 
     it "returns a PayPalAccount with a billing agreement id" do

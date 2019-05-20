@@ -33,6 +33,8 @@ module Braintree
 
       AccountUpdaterDailyReport = "account_updater_daily_report"
 
+      # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
+      # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
       IdealPaymentComplete = "ideal_payment_complete"
       IdealPaymentFailed = "ideal_payment_failed"
 
@@ -46,6 +48,7 @@ module Braintree
       GrantorUpdatedGrantedPaymentMethod = "grantor_updated_granted_payment_method"
       RecipientUpdatedGrantedPaymentMethod = "recipient_updated_granted_payment_method"
       GrantedPaymentInstrumentRevoked = "granted_payment_instrument_revoked"
+      PaymentMethodRevokedByCustomer = "payment_method_revoked_by_customer"
 
       LocalPaymentCompleted = "local_payment_completed"
     end
@@ -91,7 +94,7 @@ module Braintree
       @connected_merchant_status_transitioned = ConnectedMerchantStatusTransitioned._new(@subject[:connected_merchant_status_transitioned]) if @subject.has_key?(:connected_merchant_status_transitioned)
       @connected_merchant_paypal_status_changed = ConnectedMerchantPayPalStatusChanged._new(@subject[:connected_merchant_paypal_status_changed]) if @subject.has_key?(:connected_merchant_paypal_status_changed)
       @granted_payment_instrument_update = GrantedPaymentInstrumentUpdate._new(@subject[:granted_payment_instrument_update]) if @subject.has_key?(:granted_payment_instrument_update)
-      @revoked_payment_method_metadata = RevokedPaymentMethodMetadata._new(gateway, @subject) if @kind == Kind::GrantedPaymentInstrumentRevoked
+      @revoked_payment_method_metadata = RevokedPaymentMethodMetadata._new(gateway, @subject) if [Kind::GrantedPaymentInstrumentRevoked, Kind::PaymentMethodRevokedByCustomer].include?(@kind)
       @local_payment_completed = LocalPaymentCompleted._new(@subject[:local_payment]) if @subject.has_key?(:local_payment)
     end
 

@@ -345,6 +345,21 @@ describe Braintree::Transaction, "search" do
         collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::PayPalAccount
       end
 
+      it "searches by payment instrument type LocalPaymentDetail" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::LocalPayment
+        )
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction.id
+          search.payment_instrument_type.in ["LocalPaymentDetail"]
+        end
+
+        collection.first.id.should == transaction.id
+        collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::LocalPayment
+      end
+
       it "searches by payment instrument type ApplePay" do
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,

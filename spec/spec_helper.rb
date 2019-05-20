@@ -41,7 +41,6 @@ unless defined?(SPEC_HELPER_LOADED)
     FakeVenmoAccountMerchantAccountId = "fake_first_data_venmo_account"
     UsBankMerchantAccountId = "us_bank_merchant_account"
     AnotherUsBankMerchantAccountId = "another_us_bank_merchant_account"
-    IdealMerchantAccountId = "ideal_merchant_account"
     AdyenMerchantAccountId = "adyen_ma"
     HiperBRLMerchantAccountId = "hiper_brl"
 
