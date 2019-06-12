@@ -192,7 +192,7 @@ module Braintree
     end
 
     def _verify_ssl_certificate(preverify_ok, ssl_context)
-      if preverify_ok != true || ssl_context.error != 0
+      if false #preverify_ok != true || ssl_context.error != 0
         err_msg = "SSL Verification failed -- Preverify: #{preverify_ok}, Error: #{ssl_context.error_string} (#{ssl_context.error})"
         @config.logger.error err_msg
         false

@@ -11,7 +11,7 @@ unless defined?(SPEC_HELPER_LOADED)
   require "braintree"
   require File.dirname(__FILE__) + "/oauth_test_helper"
 
-  Braintree::Configuration.environment = :development
+  Braintree::Configuration.environment = :qa
   Braintree::Configuration.merchant_id = "integration_merchant_id"
   Braintree::Configuration.public_key = "integration_public_key"
   Braintree::Configuration.private_key = "integration_private_key"
