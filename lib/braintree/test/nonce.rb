@@ -6,7 +6,7 @@ module Braintree
       PayPalOneTimePayment = "fake-paypal-one-time-nonce"
       PayPalFuturePayment = "fake-paypal-future-nonce"
       PayPalBillingAgreement = "fake-paypal-billing-agreement-nonce"
-      LocalPayment = "fake-local-payment-nonce"
+      LocalPayment = "fake-local-payment-method-nonce"
       ApplePayVisa = "fake-apple-pay-visa-nonce"
       ApplePayMasterCard = "fake-apple-pay-mastercard-nonce"
       ApplePayAmEx = "fake-apple-pay-amex-nonce"

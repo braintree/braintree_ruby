@@ -64,6 +64,17 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
+    module AdditionalCharge
+      Restaurant = "restaurant"
+      GiftShop = "gift_shop"
+      MiniBar = "mini_bar"
+      Telephone = "telephone"
+      Laundry = "laundry"
+      Other = "other"
+
+      All = constants.map { |c| const_get(c) }
+    end
+
     module Type # :nodoc:
       Credit = "credit" # :nodoc:
       Sale = "sale" # :nodoc:

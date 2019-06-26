@@ -24,6 +24,7 @@ module Braintree
       PostalCodeInvalidCharacters = "81813"
       PostalCodeIsInvalid = "91826"
       PostalCodeIsRequired = "81808"
+      PostalCodeIsRequiredForCardBrandAndProcessor = "81828"
       PostalCodeIsTooLong = "81809"
       RegionIsInvalid = "91825"
       RegionIsTooLong = "81810"
@@ -407,6 +408,10 @@ module Braintree
       ThreeDSecureCavvIsRequired = "915116"
       ThreeDSecureXidIsRequired = "915115"
       ThreeDSecureEciFlagIsInvalid = "915114"
+      ThreeDSecureThreeDSecureVersionIsInvalid = "915119"
+      ThreeDSecureAuthenticationResponseIsInvalid = "915120"
+      ThreeDSecureDirectoryResponseIsInvalid = "915121"
+      ThreeDSecureCavvAlgorithmIsInvalid = "915122"
       ThreeDSecureMerchantAccountDoesNotSupportCardType = "915131"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
@@ -439,6 +444,16 @@ module Braintree
           CheckOutDateIsInvalid = "93405"
           CheckOutDateMustFollowCheckInDate = "93406"
           UnknownDataField = "93407"
+          RoomRateMustBeGreaterThanZero = "93433"
+          RoomRateFormatIsInvalid = "93434"
+          RoomRateIsTooLarge = "93435"
+          RoomTaxMustBeGreaterThanZero = "93436"
+          RoomTaxFormatIsInvalid = "93437"
+          RoomTaxIsTooLarge = "93438"
+          NoShowIndicatorIsInvalid = "93439"
+          AdvancedDepositIndicatorIsInvalid = "93440"
+          FireSafetyIndicatorIsInvalid = "93441"
+          PropertyPhoneIsInvalid = "93442"
         end
 
         module TravelCruise
@@ -495,6 +510,15 @@ module Braintree
             TaxAmountIsTooLarge = "96319"
             TicketNumberIsTooLong = "96320"
           end
+        end
+
+        module AdditionalCharge
+          KindIsInvalid = "96601"
+          KindMustBeUnique = "96602"
+          AmountMustBeGreaterThanZero = "96603"
+          AmountFormatIsInvalid = "96604"
+          AmountIsTooLarge = "96605"
+          AmountIsRequired = "96606"
         end
       end
 

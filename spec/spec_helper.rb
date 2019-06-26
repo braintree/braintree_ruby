@@ -5,6 +5,7 @@ unless defined?(SPEC_HELPER_LOADED)
   require "bundler/setup"
   require "rspec"
   require "libxml"
+  require "pry"
 
   braintree_lib = "#{project_root}/lib"
   $LOAD_PATH << braintree_lib

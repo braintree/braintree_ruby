@@ -205,6 +205,11 @@ module Braintree
             :eci_flag,
             :cavv,
             :xid,
+            :three_d_secure_version,
+            :authentication_response,
+            :directory_response,
+            :cavv_algorithm,
+            :ds_transaction_id,
           ]
         },
         {:options => [
@@ -237,12 +242,15 @@ module Braintree
         {:industry => [
           :industry_type,
           {:data => [
-            :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate,
+            :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
             :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
-            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket,
+            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone,
             {:legs => [
               :conjunction_ticket, :exchange_ticket, :coupon_number, :service_class, :carrier_code, :fare_basis_code, :flight_number, :departure_date, :departure_airport_code, :departure_time,
               :arrival_airport_code, :arrival_time, :stopover_permitted, :fare_amount, :fee_amount, :tax_amount, :endorsement_or_restrictions,
+            ]},
+            {:additional_charges => [
+              :kind, :amount,
             ]},
           ]},
         ]},

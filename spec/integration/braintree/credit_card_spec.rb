@@ -550,6 +550,75 @@ describe Braintree::CreditCard do
         credit_card.card_type.should == Braintree::CreditCard::CardType::Elo
       end
     end
+
+    context "verification_account_type" do
+      it "verifies card with account_type debit" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_month => "11",
+          :expiration_year => "2099",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "debit",
+          }
+        )
+
+        expect(result).to be_success
+      end
+
+      it "verifies card with account_type credit" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_month => "11",
+          :expiration_year => "2099",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "credit",
+          }
+        )
+
+        expect(result).to be_success
+      end
+
+      it "errors with invalid account_type" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_month => "11",
+          :expiration_year => "2099",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_account_type => "ach",
+          }
+        )
+
+        expect(result).to_not be_success
+        expect(result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code).to eq Braintree::ErrorCodes::CreditCard::VerificationAccountTypeIsInvalid
+      end
+
+      it "errors when account_type not supported by merchant" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "11",
+          :expiration_year => "2099",
+          :options => {
+            :verify_card => true,
+            :verification_account_type => "credit",
+          }
+        )
+
+        expect(result).to_not be_success
+        expect(result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code).to eq Braintree::ErrorCodes::CreditCard::VerificationAccountTypeNotSupported
+      end
+    end
   end
 
   describe "self.create!" do
@@ -936,6 +1005,44 @@ describe Braintree::CreditCard do
 
       Braintree::CreditCard.find(card1.token).should_not be_default
       Braintree::CreditCard.find(card2.token).should be_default
+    end
+
+    context "verification_account_type" do
+      it "updates the credit card with account_type credit" do
+        customer = Braintree::Customer.create!
+        card = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_date => "06/2013",
+        ).credit_card
+        update_result = Braintree::CreditCard.update(
+          card.token,
+          :options => {
+            :verify_card => true,
+            :verification_account_type => "credit",
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+          },
+        )
+        expect(update_result).to be_success
+      end
+
+      it "updates the credit card with account_type debit" do
+        customer = Braintree::Customer.create!
+        card = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_date => "06/2013",
+        ).credit_card
+        update_result = Braintree::CreditCard.update(
+          card.token,
+          :options => {
+            :verify_card => true,
+            :verification_account_type => "debit",
+            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+          },
+        )
+        expect(update_result).to be_success
+      end
     end
   end
 

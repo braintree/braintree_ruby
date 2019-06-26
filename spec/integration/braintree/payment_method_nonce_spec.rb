@@ -83,6 +83,17 @@ describe Braintree::PaymentMethodNonce do
       nonce.details.fetch(:card_type).should == "Visa"
     end
 
+    it "return paypal details if details exist" do
+      result = Braintree::PaymentMethodNonce.find("fake-google-pay-paypal-nonce")
+
+      nonce = result.payment_method_nonce
+
+      nonce.details.fetch(:payer_info).fetch(:first_name).should_not be_nil
+      nonce.details.fetch(:payer_info).fetch(:last_name).should_not be_nil
+      nonce.details.fetch(:payer_info).fetch(:email).should_not be_nil
+      nonce.details.fetch(:payer_info).fetch(:payer_id).should_not be_nil
+    end
+
     it "return venmo details if details exist" do
       result = Braintree::PaymentMethodNonce.find("fake-venmo-account-nonce")
 

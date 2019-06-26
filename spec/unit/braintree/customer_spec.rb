@@ -101,7 +101,7 @@ describe Braintree::Customer do
           :device_data,
           :fraud_merchant_id,
           :payment_method_nonce,
-          {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method]},
+          {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type]},
           {:billing_address => [
             :company,
             :country_code_alpha2,
@@ -186,6 +186,7 @@ describe Braintree::Customer do
             :verification_amount,
             :venmo_sdk_session,
             :fail_on_duplicate_payment_method,
+            :verification_account_type,
             :update_existing_token
           ]},
           {:billing_address => [

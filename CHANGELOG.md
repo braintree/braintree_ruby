@@ -1,3 +1,22 @@
+# 2.97.0
+* Add `capture_id` to local_payment_details
+* Add `refund_id` to local_payment_details
+* Add `debug_id` to local_payment_details
+* Add `transaction_fee_amount` to local_payment_details
+* Add `transaction_fee_currency_iso_code` to local_payment_details
+* Add `refund_from_transaction_fee_amount` to local_payment_details
+* Add `refund_from_transaction_fee_currency_iso_code` to local_payment_details
+* Add `three_d_secure_version`, `authentication_response`, `directory_response`, `cavv_algorithm` and `ds_transaction_id` to 3DS pass thru fields
+* Add verification_account_type support for credit_card create/update and customer create/update
+* Add `room_tax` field to transactions
+* Add `no_show` field to transactions
+* Add `advanced_deposit` field to transactions
+* Add `fire_safe` field to transactions
+* Add `property_phone` field to transactions
+* Add `additional_charges` field to transactions
+* Add `payer_info` to payment_method_nonce details
+* Add `PostalCodeIsRequiredForCardBrandAndProcessor` to validation errors
+
 # 2.96.0
 * Add `prepaid` field to android_pay_card
 * Add `healthcare` field to android_pay_card
