@@ -20,6 +20,7 @@ module Braintree
       AmexExpressCheckout = "fake-amex-express-checkout-nonce"
       VenmoAccount = "fake-venmo-account-nonce"
       VenmoAccountTokenIssuanceError = "fake-token-issuance-error-venmo-account-nonce"
+      ThreeDSecureVisaFullAuthentication = "fake-three-d-secure-visa-full-authentication-nonce"
       TransactableVisa = "fake-valid-visa-nonce"
       TransactableAmEx = "fake-valid-amex-nonce"
       TransactableMasterCard = "fake-valid-mastercard-nonce"

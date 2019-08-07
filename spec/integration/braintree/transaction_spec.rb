@@ -421,6 +421,31 @@ describe Braintree::Transaction do
       result.transaction.credit_card_details.customer_location.should == "US"
     end
 
+    it "returns a successful network response code if successful" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        }
+      )
+      expect(result.success?).to eq(true)
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(result.transaction.processor_authorization_code).not_to be_nil
+      expect(result.transaction.processor_response_code).to eq("1000")
+      expect(result.transaction.processor_response_text).to eq("Approved")
+      expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+      expect(result.transaction.network_response_code).to eq("XX")
+      expect(result.transaction.network_response_text).to eq("sample network response text")
+      expect(result.transaction.voice_referral_number).to be_nil
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2009")
+      expect(result.transaction.credit_card_details.customer_location).to eq("US")
+    end
+
     it "returns a successful result using an access token" do
       oauth_gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
@@ -927,6 +952,25 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.create(params[:transaction])
       result.success?.should == false
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountCannotBeNegative
+    end
+
+    it "returns an error if amount is not supported by processor" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Hiper,
+          :expiration_date => "05/2009"
+        },
+        :amount => "0.20",
+        :options => {
+          :credit_card => {
+            :account_type => "credit",
+          }
+        }
+      )
+      result.success?.should == false
+      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountNotSupportedByProcessor
     end
 
     it "returns an error if amount is invalid format" do
@@ -5970,6 +6014,11 @@ describe Braintree::Transaction do
         transaction.three_d_secure_info.should be_liability_shifted
         transaction.three_d_secure_info.should be_liability_shift_possible
         transaction.three_d_secure_info.status.should == "authenticate_successful"
+        transaction.three_d_secure_info.cavv.should == "somebase64value"
+        transaction.three_d_secure_info.xid.should == "xidvalue"
+        transaction.three_d_secure_info.eci_flag.should == "07"
+        transaction.three_d_secure_info.three_d_secure_version.should == "1.0.2"
+        transaction.three_d_secure_info.ds_transaction_id.should == "dstxnid"
       end
 
       it "is nil if the transaction wasn't 3d secured" do
@@ -6733,6 +6782,41 @@ describe Braintree::Transaction do
       result.transaction.facilitator_details.should_not == nil
       result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
       result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+    end
+  end
+
+  context "paypal here" do
+    it "gets the details of an auth/capture transaction" do
+      result = Braintree::Transaction.find('paypal_here_auth_capture_id')
+      result.payment_instrument_type.should eq(Braintree::PaymentInstrumentType::PayPalHere)
+      result.paypal_here_details.should_not be_nil
+
+      details = result.paypal_here_details
+      details.authorization_id.should_not be_nil
+      details.capture_id.should_not be_nil
+      details.invoice_id.should_not be_nil
+      details.last_4.should_not be_nil
+      details.payment_type.should_not be_nil
+      details.transaction_fee_amount.should_not be_nil
+      details.transaction_fee_currency_iso_code.should_not be_nil
+      details.transaction_initiation_date.should_not be_nil
+      details.transaction_updated_date.should_not be_nil
+    end
+
+    it "gets the details of a sale transaction" do
+      result = Braintree::Transaction.find('paypal_here_sale_id')
+      result.paypal_here_details.should_not be_nil
+
+      details = result.paypal_here_details
+      details.payment_id.should_not be_nil
+    end
+
+    it "gets the details of a refunded sale transaction" do
+      result = Braintree::Transaction.find('paypal_here_refund_id')
+      result.paypal_here_details.should_not be_nil
+
+      details = result.paypal_here_details
+      details.refund_id.should_not be_nil
     end
   end
 end

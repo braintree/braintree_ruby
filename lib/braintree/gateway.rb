@@ -1,6 +1,6 @@
 module Braintree
   class Gateway
-    attr_reader :config
+    attr_reader :config, :graphql_client
 
     def initialize(config)
       if config.is_a?(Hash)
@@ -10,6 +10,8 @@ module Braintree
       else
         raise ArgumentError, "config is an invalid type"
       end
+
+      @graphql_client = GraphQLClient.new(@config)
     end
 
     def add_on

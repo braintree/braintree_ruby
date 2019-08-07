@@ -1309,6 +1309,27 @@ describe Braintree::Customer do
       result.success?.should == true
     end
 
+    it "returns 3DS info on cc verification" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
+        :credit_card => {
+          :options => {:verify_card => true}
+        }
+      )
+      result.success?.should == true
+
+      three_d_secure_info = result.customer.payment_methods.first.verification.three_d_secure_info
+      three_d_secure_info.enrolled.should == "Y"
+      three_d_secure_info.should be_liability_shifted
+      three_d_secure_info.should be_liability_shift_possible
+      three_d_secure_info.status.should == "authenticate_successful"
+      three_d_secure_info.cavv.should == "cavv_value"
+      three_d_secure_info.xid.should == "xid_value"
+      three_d_secure_info.eci_flag.should == "05"
+      three_d_secure_info.three_d_secure_version.should == "1.0.2"
+      three_d_secure_info.ds_transaction_id.should == nil
+    end
+
     it "can update the nested billing address with billing_address_id" do
       customer = Braintree::Customer.create!
 

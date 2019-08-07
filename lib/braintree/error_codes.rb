@@ -300,6 +300,7 @@ module Braintree
       AmountIsRequired = "81502"
       AmountIsTooLarge = "81528"
       AmountMustBeGreaterThanZero = "81531"
+      AmountNotSupportedByProcessor = "815193"
       BillingAddressConflict = "91530"
       CannotBeVoided = "91504"
       CannotCancelRelease = "91562"

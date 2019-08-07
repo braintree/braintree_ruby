@@ -1,3 +1,11 @@
+# 2.98.0
+* Add `network_response_code` and `network_response_text` to transactions and verifications
+* Add `PayPalHereDetails`
+* Add `three_d_secure_info` to credit_card_verification
+* Add `xid`, `cavv`, `eciFlag`, `dsTransactionId`, and `threeDSecureVersion` to `ThreeDSecureInfo`
+* Add `graphql_client` to `Braintree::Gateway` class
+* Add `AmountNotSupportedByProcessor` to validation error
+
 # 2.97.0
 * Add `capture_id` to local_payment_details
 * Add `refund_id` to local_payment_details

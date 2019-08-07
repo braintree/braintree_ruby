@@ -263,6 +263,16 @@ describe Braintree::Transaction do
       )
       transaction.network_transaction_id.should == "123456789012345"
     end
+
+    it "accepts network_response code and network_response_text" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :network_response_code => "00",
+        :network_response_text => "Successful approval/completion or V.I.P. PIN verification is successful",
+      )
+      expect(transaction.network_response_code).to eq("00")
+      expect(transaction.network_response_text).to eq("Successful approval/completion or V.I.P. PIN verification is successful")
+    end
   end
 
   describe "inspect" do

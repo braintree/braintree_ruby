@@ -12,5 +12,6 @@ module Braintree
     MasterpassCard = 'masterpass_card'
     SamsungPayCard = 'samsung_pay_card'
     LocalPayment = 'local_payment'
+    PayPalHere = 'paypal_here'
   end
 end

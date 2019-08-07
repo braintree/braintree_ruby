@@ -24,6 +24,28 @@ describe Braintree::CreditCardVerification, "search" do
       result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
     end
 
+    it "creates a new verification with network response code/text" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2012",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+        :options => {
+          :amount => "10.00"
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.network_response_code).to eq("XX")
+      expect(result.credit_card_verification.network_response_text).to eq("sample network response text")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+    end
+
     it "returns processor response code and text as well as the additional processor response if declined" do
       verification_params = {
         :credit_card => {

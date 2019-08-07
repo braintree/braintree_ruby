@@ -13,10 +13,12 @@ describe Braintree::CreditCardVerification do
         :cvv_response_code => "I",
         :processor_response_code => "2000",
         :processor_response_text => "Do Not Honor",
-        :merchant_account_id => "some_id"
+        :merchant_account_id => "some_id",
+        :network_response_code => "05",
+        :network_response_text => "Do not Honor",
       )
 
-      verification.inspect.should == %(#<Braintree::CreditCardVerification status: "verified", processor_response_code: "2000", processor_response_text: "Do Not Honor", amount: "12.45", currency_iso_code: "USD", cvv_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", merchant_account_id: "some_id", gateway_rejection_reason: nil, id: nil, credit_card: nil, billing: nil, created_at: nil>)
+      verification.inspect.should == %(#<Braintree::CreditCardVerification status: "verified", processor_response_code: "2000", processor_response_text: "Do Not Honor", amount: "12.45", currency_iso_code: "USD", cvv_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", network_response_code: "05", network_response_text: "Do not Honor", merchant_account_id: "some_id", gateway_rejection_reason: nil, id: nil, credit_card: nil, billing: nil, created_at: nil>)
     end
 
     it "has a status" do
@@ -121,6 +123,18 @@ describe Braintree::CreditCardVerification do
     it "handles a nil risk_data" do
       verification = Braintree::CreditCardVerification._new(:risk_data => nil)
       verification.risk_data.should be_nil
+    end
+  end
+
+  describe "network responses" do
+    it "accepts network_response_code and network_response_text" do
+      verification = Braintree::CreditCardVerification._new(
+        :network_response_code => "00",
+        :network_response_text => "Successful approval/completion or V.I.P. PIN verification is successful",
+      )
+
+      expect(verification.network_response_code).to eq("00")
+      expect(verification.network_response_text).to eq("Successful approval/completion or V.I.P. PIN verification is successful")
     end
   end
 end
