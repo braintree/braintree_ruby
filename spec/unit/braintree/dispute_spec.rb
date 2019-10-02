@@ -8,6 +8,7 @@ describe Braintree::Dispute do
       :amount_disputed => "500.00",
       :amount_won => "0.00",
       :created_at => Time.utc(2009, 3, 9, 10, 50, 39),
+      :processor_comments => "forwarded comments",
       :date_opened => "2009-03-09",
       :date_won => "2009-04-15",
       :original_dispute_id => "original_dispute_id",
@@ -388,6 +389,18 @@ describe Braintree::Dispute do
     it "returns false when not given a dispute" do
       dispute = Braintree::Dispute._new(attributes)
       dispute.should_not == "not a dispute"
+    end
+  end
+
+  describe "comments" do
+    let(:dispute) { Braintree::Dispute._new(attributes) }
+
+    it "#forwarded_comments returns `processor_comments`" do
+      expect(dispute.forwarded_comments).to eq(dispute.processor_comments)
+    end
+
+    it "#processor_comments" do
+      expect(dispute.processor_comments).to eq(attributes[:processor_comments])
     end
   end
 

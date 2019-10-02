@@ -12,11 +12,11 @@ module Braintree
     attr_reader :date_opened
     attr_reader :date_won
     attr_reader :evidence
-    attr_reader :forwarded_comments
     attr_reader :id
     attr_reader :kind
     attr_reader :merchant_account_id
     attr_reader :original_dispute_id
+    attr_reader :processor_comments
     attr_reader :reason
     attr_reader :reason_code
     attr_reader :reason_description
@@ -119,6 +119,12 @@ module Braintree
       @status_history = status_history.map do |event|
         Braintree::Dispute::HistoryEvent.new(event)
       end unless status_history.nil?
+    end
+
+    def forwarded_comments
+      # NEXT_MAJOR_VERSION delete this method since it never returned anything anyway.
+      warn "[DEPRECATED] #forwarded_comments is deprecated. Please use #processor_comments"
+      processor_comments
     end
   end
 end

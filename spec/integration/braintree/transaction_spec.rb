@@ -4000,7 +4000,7 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:external_vault).on(:status)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::StatusIsInvalid
       end
 
-      context "Visa" do
+      context "Visa/Mastercard/Discover" do
         it "accepts status" do
           result = Braintree::Transaction.create(
             :type => "sale",
@@ -4021,7 +4021,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :number => Braintree::Test::CreditCardNumbers::MasterCard,
               :expiration_date => "05/2009"
             },
             :external_vault => {
@@ -4038,7 +4038,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :number => Braintree::Test::CreditCardNumbers::Discover,
               :expiration_date => "05/2009"
             },
             :external_vault => {
@@ -4050,31 +4050,14 @@ describe Braintree::Transaction do
           result.success?.should == false
           result.errors.for(:transaction).for(:external_vault).on(:status)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::StatusWithPreviousNetworkTransactionIdIsInvalid
         end
-
-        it "rejects invalid previous_network_transaction_id" do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Visa,
-              :expiration_date => "05/2009"
-            },
-            :external_vault => {
-              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
-              :previous_network_transaction_id => "not_and_valid_id",
-            },
-            :amount => "10.00",
-          )
-          result.success?.should == false
-          result.errors.for(:transaction).for(:external_vault).on(:previous_network_transaction_id)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::PreviousNetworkTransactionIdIsInvalid
-        end
       end
 
-      context "Non-Visa" do
+      context "Non-(Visa/Mastercard/Discover) card types" do
         it "accepts status" do
           result = Braintree::Transaction.create(
             :type => "sale",
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
               :expiration_date => "05/2009"
             },
             :external_vault => {
@@ -4090,7 +4073,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
               :expiration_date => "05/2009"
             },
             :external_vault => {
@@ -4107,7 +4090,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::Discover,
+              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
               :expiration_date => "05/2009"
             },
             :external_vault => {
