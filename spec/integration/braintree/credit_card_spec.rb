@@ -336,6 +336,21 @@ describe Braintree::CreditCard do
       Braintree::CreditCard.find(card1.token).should_not be_default
     end
 
+    it "can set the network transaction identifier when creating a credit card" do
+      customer = Braintree::Customer.create!
+
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009",
+        :external_vault => {
+          :network_transaction_id => "MCC123456789",
+        },
+      )
+
+      expect(result.success?).to eq(true)
+    end
+
     context "card type indicators" do
       it "sets the prepaid field if the card is prepaid" do
         customer = Braintree::Customer.create!

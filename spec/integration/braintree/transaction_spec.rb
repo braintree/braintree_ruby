@@ -1645,6 +1645,7 @@ describe Braintree::Transaction do
         result.transaction.should_not be_nil
         apple_pay_details = result.transaction.apple_pay_details
         apple_pay_details.should_not be_nil
+        apple_pay_details.bin.should_not be_nil
         apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
         apple_pay_details.payment_instrument_name.should == "Visa 8886"
         apple_pay_details.source_description.should == "Visa 8886"
@@ -1695,6 +1696,7 @@ describe Braintree::Transaction do
         result.transaction.should_not be_nil
         android_pay_details = result.transaction.android_pay_details
         android_pay_details.should_not be_nil
+        android_pay_details.bin.should_not be_nil
         android_pay_details.card_type.should == Braintree::CreditCard::CardType::Discover
         android_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
         android_pay_details.last_4.should == "1117"

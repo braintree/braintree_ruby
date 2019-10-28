@@ -383,6 +383,7 @@ module Braintree
       ProcessorDoesNotSupportCredits = "91546"
       ProcessorDoesNotSupportPartialSettlement = "915102"
       ProcessorDoesNotSupportVoiceAuthorizations = "91545"
+      ProcessorDoesNotSupportMotoForCardType = "915195"
       PurchaseOrderNumberIsInvalid = "91548"
       PurchaseOrderNumberIsTooLong = "91537"
       RefundAmountIsTooLarge = "91521"

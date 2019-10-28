@@ -3,6 +3,7 @@ module Braintree
     class AndroidPayDetails
       include BaseModule
 
+      attr_reader :bin
       attr_reader :card_type
       attr_reader :expiration_month
       attr_reader :expiration_year

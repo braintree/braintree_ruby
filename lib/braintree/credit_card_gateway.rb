@@ -113,6 +113,7 @@ module Braintree
         :billing_address_id, :cardholder_name, :cvv, :device_session_id, :expiration_date,
         :expiration_month, :expiration_year, :number, :token, :venmo_sdk_payment_method_code,
         :device_data, :fraud_merchant_id, :payment_method_nonce,
+        {:external_vault => [:network_transaction_id]},
         {:options => options},
         {:billing_address => billing_address_params}
       ]

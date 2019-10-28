@@ -101,6 +101,7 @@ describe Braintree::Customer do
           :device_data,
           :fraud_merchant_id,
           :payment_method_nonce,
+          {:external_vault=>[:network_transaction_id]},
           {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type]},
           {:billing_address => [
             :company,
@@ -179,6 +180,7 @@ describe Braintree::Customer do
           :device_data,
           :fraud_merchant_id,
           :payment_method_nonce,
+          {:external_vault=>[:network_transaction_id]},
           {:options => [
             :make_default,
             :verification_merchant_account_id,

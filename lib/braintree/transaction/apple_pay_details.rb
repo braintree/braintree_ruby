@@ -3,6 +3,7 @@ module Braintree
     class ApplePayDetails
       include BaseModule
 
+      attr_reader :bin
       attr_reader :card_type
       attr_reader :cardholder_name
       attr_reader :expiration_month
