@@ -110,7 +110,7 @@ unless defined?(SPEC_HELPER_LOADED)
     def self.create_3ds_verification(merchant_account_id, params)
       config = Braintree::Configuration.instantiate
       response = config.http.post("#{config.base_merchant_path}/three_d_secure/create_verification/#{merchant_account_id}", :three_d_secure_verification => params)
-      response[:three_d_secure_verification][:three_d_secure_token]
+      response[:three_d_secure_verification][:three_d_secure_authentication_id]
     end
 
     def self.create_merchant(params={})

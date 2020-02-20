@@ -246,6 +246,7 @@ describe Braintree::CreditCard do
       three_d_secure_info.eci_flag.should == "05"
       three_d_secure_info.three_d_secure_version.should == "1.0.2"
       three_d_secure_info.ds_transaction_id.should == nil
+      three_d_secure_info.three_d_secure_authentication_id.should_not be_nil
     end
 
     it "adds credit card with billing address to customer" do
@@ -1274,7 +1275,7 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.create!(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "01/2015"
+          :expiration_date => "01/#{Time.now.year - 3}"
         )
       end
 

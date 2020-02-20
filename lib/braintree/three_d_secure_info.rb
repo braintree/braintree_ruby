@@ -11,6 +11,7 @@ module Braintree
     attr_reader :eci_flag
     attr_reader :three_d_secure_version
     attr_reader :ds_transaction_id
+    attr_reader :three_d_secure_authentication_id
 
     alias_method :liability_shifted?, :liability_shifted
     alias_method :liability_shift_possible?, :liability_shift_possible
@@ -30,6 +31,7 @@ module Braintree
         :eci_flag,
         :three_d_secure_version,
         :ds_transaction_id,
+        :three_d_secure_authentication_id,
       ]
 
       formatted_attrs = attr_order.map do |attr|

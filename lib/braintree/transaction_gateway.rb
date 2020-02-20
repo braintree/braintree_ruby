@@ -188,7 +188,7 @@ module Braintree
         :purchase_order_number, :recurring, :transaction_source, :shipping_address_id, :type, :tax_amount, :tax_exempt,
         :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data, :fraud_merchant_id,
         :shipping_amount, :discount_amount, :ships_from_postal_code,
-        :billing_address_id, :payment_method_nonce, :three_d_secure_token,
+        :billing_address_id, :payment_method_nonce, :three_d_secure_token, :three_d_secure_authentication_id,
         :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id, :shared_payment_method_nonce,
         {:line_items => [:quantity, :name, :description, :kind, :unit_amount, :unit_tax_amount, :total_amount, :discount_amount, :tax_amount, :unit_of_measure, :product_code, :commodity_code, :url]},
         {:risk_data => [:customer_browser, :customer_ip]},
@@ -263,6 +263,13 @@ module Braintree
       [
         :order_id,
         {:descriptor => [:name, :phone, :url]},
+        :purchase_order_number,
+        :tax_amount,
+        :tax_exempt,
+        :discount_amount,
+        :shipping_amount,
+        :ships_from_postal_code,
+        :line_items => [:commodity_code, :description, :discount_amount, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :url, :tax_amount],
       ]
     end
 

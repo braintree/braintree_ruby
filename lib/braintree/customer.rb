@@ -15,6 +15,7 @@ module Braintree
     attr_reader :email
     attr_reader :fax
     attr_reader :first_name
+    attr_reader :graphql_id
     attr_reader :id
     attr_reader :last_name
     attr_reader :masterpass_cards

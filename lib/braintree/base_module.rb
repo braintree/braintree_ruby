@@ -18,6 +18,10 @@ module Braintree
 
       def set_instance_variables_from_hash(hash)
         hash.each do |key, value|
+          if key == :global_id
+            instance_variable_set "@graphql_id", value
+          end
+
           instance_variable_set "@#{key}", value
         end
       end

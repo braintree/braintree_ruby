@@ -12,6 +12,7 @@ module Braintree
     attr_reader :date_opened
     attr_reader :date_won
     attr_reader :evidence
+    attr_reader :graphql_id
     attr_reader :id
     attr_reader :kind
     attr_reader :merchant_account_id

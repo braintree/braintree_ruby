@@ -889,6 +889,7 @@ describe Braintree::Customer do
 
       customer = Braintree::Customer.find(result.customer.id)
       customer.id.should == result.customer.id
+      customer.graphql_id.should_not be_nil
       customer.first_name.should == "Joe"
       customer.last_name.should == "Cool"
     end
@@ -1015,6 +1016,7 @@ describe Braintree::Customer do
       android_pay_card.should be_a Braintree::AndroidPayCard
       android_pay_card.token.should_not be_nil
       android_pay_card.expiration_year.should_not be_nil
+      android_pay_card.is_network_tokenized?.should == false
     end
 
     it "returns associated android pay network tokens" do
@@ -1030,6 +1032,7 @@ describe Braintree::Customer do
       android_pay_card.should be_a Braintree::AndroidPayCard
       android_pay_card.token.should_not be_nil
       android_pay_card.expiration_year.should_not be_nil
+      android_pay_card.is_network_tokenized?.should == true
     end
 
     it "returns associated amex express checkout cards" do

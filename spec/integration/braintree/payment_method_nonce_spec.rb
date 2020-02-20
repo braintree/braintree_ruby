@@ -84,9 +84,13 @@ describe Braintree::PaymentMethodNonce do
     end
 
     it "return paypal details if details exist" do
-      result = Braintree::PaymentMethodNonce.find("fake-google-pay-paypal-nonce")
-
+      result = Braintree::PaymentMethodNonce.find("fake-paypal-one-time-nonce")
       nonce = result.payment_method_nonce
+
+      nonce.details.fetch(:cobranded_card_label).should_not be_nil
+      nonce.details.fetch(:shipping_option_id).should_not be_nil
+      nonce.details.fetch(:billing_address).fetch(:recipient_name).should_not be_nil
+      nonce.details.fetch(:shipping_address).fetch(:recipient_name).should_not be_nil
 
       nonce.details.fetch(:payer_info).fetch(:first_name).should_not be_nil
       nonce.details.fetch(:payer_info).fetch(:last_name).should_not be_nil

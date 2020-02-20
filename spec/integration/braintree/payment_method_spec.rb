@@ -121,6 +121,7 @@ describe Braintree::PaymentMethod do
       android_pay_card.expiration_year.to_i.should > 0
       android_pay_card.default.should == true
       android_pay_card.image_url.should =~ /android_pay/
+      android_pay_card.is_network_tokenized?.should == false
       android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Discover
       android_pay_card.source_card_last_4.should == "1111"
       android_pay_card.google_transaction_id.should == "google_transaction_id"
@@ -148,6 +149,7 @@ describe Braintree::PaymentMethod do
       android_pay_card.expiration_year.to_i.should > 0
       android_pay_card.default.should == true
       android_pay_card.image_url.should =~ /android_pay/
+      android_pay_card.is_network_tokenized?.should == true
       android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::MasterCard
       android_pay_card.source_card_last_4.should == "4444"
       android_pay_card.google_transaction_id.should == "google_transaction_id"
@@ -727,24 +729,6 @@ describe Braintree::PaymentMethod do
         found_paypal_account.payer_id.should_not be_nil
       end
 
-      it "creates a billing agreement payment method from a refresh token without upgrading" do
-        customer = Braintree::Customer.create.customer
-        result = Braintree::PaymentMethod.create(
-          :customer_id => customer.id,
-          :paypal_refresh_token => "some_future_payment_token",
-          :paypal_vault_without_upgrade => true,
-        )
-
-        result.should be_success
-        result.payment_method.should be_a(Braintree::PayPalAccount)
-        result.payment_method.billing_agreement_id.should be_nil
-        token = result.payment_method.token
-
-        found_paypal_account = Braintree::PayPalAccount.find(token)
-        found_paypal_account.should_not be_nil
-        found_paypal_account.billing_agreement_id.should be_nil
-      end
-
       it "does not create a payment method from an unvalidated onetime paypal account nonce" do
         customer = Braintree::Customer.create.customer
         nonce = nonce_for_paypal_account(:access_token => "PAYPAL_ACCESS_TOKEN")
@@ -1017,6 +1001,7 @@ describe Braintree::PaymentMethod do
         android_pay_card.expiration_year.to_i.should > 0
         android_pay_card.default.should == true
         android_pay_card.image_url.should =~ /android_pay/
+        android_pay_card.is_network_tokenized?.should == false
         android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Discover
         android_pay_card.source_card_last_4.should == "1111"
         android_pay_card.google_transaction_id.should == "google_transaction_id"
@@ -1044,6 +1029,7 @@ describe Braintree::PaymentMethod do
         android_pay_card.expiration_year.to_i.should > 0
         android_pay_card.default.should == true
         android_pay_card.image_url.should =~ /android_pay/
+        android_pay_card.is_network_tokenized?.should == true
         android_pay_card.source_card_type.should == Braintree::CreditCard::CardType::MasterCard
         android_pay_card.source_card_last_4.should == "4444"
         android_pay_card.google_transaction_id.should == "google_transaction_id"

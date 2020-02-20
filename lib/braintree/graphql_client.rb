@@ -19,10 +19,16 @@ module Braintree
       request['variables'] = variables
 
       response = _http_do Net::HTTP::Post, @config.graphql_base_url, request.to_json, nil, graphql_connection, @graphql_headers
-      data = JSON.parse(response.body, :symbolize_names => true)
+      data = _parse_response(response)
       Util.raise_exception_for_graphql_error(data)
 
       data
+    end
+
+    def _parse_response(response)
+      body = response.body
+      body = Zlib::GzipReader.new(StringIO.new(body)).read if response.header['Content-Encoding'] == "gzip"
+      JSON.parse(body, :symbolize_names => true)
     end
   end
 end

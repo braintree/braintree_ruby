@@ -186,6 +186,7 @@ describe Braintree::Dispute do
       dispute.amount_disputed.should == 31.0
       dispute.amount_won.should == 0.0
       dispute.id.should == "open_dispute"
+      dispute.graphql_id.should_not be_nil
       dispute.status.should == Braintree::Dispute::Status::Open
       dispute.transaction.amount.should == 31.0
       dispute.transaction.id.should == "open_disputed_transaction"

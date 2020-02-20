@@ -32,6 +32,10 @@ module Braintree
         @card_type = @virtual_card_type
         @last_4 = @virtual_card_last_4
       end
+
+      def is_network_tokenized?
+        @is_network_tokenized
+      end
     end
   end
 end

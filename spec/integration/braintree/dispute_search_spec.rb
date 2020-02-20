@@ -74,7 +74,7 @@ describe Braintree::Dispute, "search" do
         ]
       end
 
-      expect(collection.disputes.count).to eq(2)
+      expect(collection.disputes.count).to be >= 2
       dispute = collection.disputes.first
     end
 

@@ -29,6 +29,10 @@ module Braintree
       @default
     end
 
+    def is_network_tokenized?
+      @is_network_tokenized
+    end
+
     def card_type
       virtual_card_type
     end

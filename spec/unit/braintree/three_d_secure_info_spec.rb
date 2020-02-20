@@ -12,6 +12,7 @@ describe Braintree::ThreeDSecureInfo do
       :eci_flag => "06",
       :three_d_secure_version => "1.0.2",
       :ds_transaction_id => "dstrxid",
+      :three_d_secure_authentication_id => "auth_id",
     )
   }
 
@@ -26,12 +27,13 @@ describe Braintree::ThreeDSecureInfo do
       three_d_secure_info.eci_flag.should == "06"
       three_d_secure_info.three_d_secure_version.should == "1.0.2"
       three_d_secure_info.ds_transaction_id.should == "dstrxid"
+      three_d_secure_info.three_d_secure_authentication_id.should == "auth_id"
     end
   end
 
   describe "inspect" do
     it "prints the attributes" do
-      three_d_secure_info.inspect.should == %(#<ThreeDSecureInfo enrolled: "Y", liability_shifted: true, liability_shift_possible: true, status: "authenticate_successful", cavv: "cavvvalue", xid: "xidvalue", eci_flag: "06", three_d_secure_version: "1.0.2", ds_transaction_id: "dstrxid">)
+      three_d_secure_info.inspect.should == %(#<ThreeDSecureInfo enrolled: "Y", liability_shifted: true, liability_shift_possible: true, status: "authenticate_successful", cavv: "cavvvalue", xid: "xidvalue", eci_flag: "06", three_d_secure_version: "1.0.2", ds_transaction_id: "dstrxid", three_d_secure_authentication_id: "auth_id">)
     end
   end
 

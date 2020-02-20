@@ -178,6 +178,7 @@ module Braintree
         options << :fail_on_duplicate_payment_method
         signature << :customer_id
         signature << :paypal_refresh_token
+        # NEXT_MAJOR_VERSION remove this from the signature
         signature << :paypal_vault_without_upgrade
       when :update
         billing_address_params << {:options => [:update_existing]}
