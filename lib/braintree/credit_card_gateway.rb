@@ -118,6 +118,19 @@ module Braintree
         {:billing_address => billing_address_params}
       ]
 
+      signature << {
+        :three_d_secure_pass_thru => [
+          :eci_flag,
+          :cavv,
+          :xid,
+          :three_d_secure_version,
+          :authentication_response,
+          :directory_response,
+          :cavv_algorithm,
+          :ds_transaction_id,
+        ]
+      }
+
       case type
       when :create
         signature << :customer_id

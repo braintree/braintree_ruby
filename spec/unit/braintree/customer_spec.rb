@@ -116,7 +116,17 @@ describe Braintree::Customer do
             :postal_code,
             :region,
             :street_address
-          ]}
+          ]},
+          {:three_d_secure_pass_thru => [
+            :eci_flag,
+            :cavv,
+            :xid,
+            :three_d_secure_version,
+            :authentication_response,
+            :directory_response,
+            :cavv_algorithm,
+            :ds_transaction_id,
+          ]},
         ]},
         {:paypal_account => [
           :email,
@@ -205,7 +215,17 @@ describe Braintree::Customer do
             :region,
             :street_address,
             {:options => [:update_existing]}
-          ]}
+          ]},
+          {:three_d_secure_pass_thru => [
+            :eci_flag,
+            :cavv,
+            :xid,
+            :three_d_secure_version,
+            :authentication_response,
+            :directory_response,
+            :cavv_algorithm,
+            :ds_transaction_id,
+          ]},
         ]},
         {:options =>
           [:paypal => [

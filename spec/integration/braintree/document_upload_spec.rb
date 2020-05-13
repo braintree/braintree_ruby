@@ -46,6 +46,18 @@ describe Braintree::DocumentUploadGateway do
       end
     end
 
+    it "returns file is empty error with empty file" do
+      filename = "#{File.dirname(__FILE__)}/../../fixtures/files/empty_file.png"
+      begin
+        File.open(filename, "w+") {}
+        file = File.new(filename, "r")
+        response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
+        response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::FileIsEmpty
+      ensure
+        File.delete(filename)
+      end
+    end
+
     it "returns file too long error with file over 50 pages" do
       filename = "#{File.dirname(__FILE__)}/../../fixtures/files/too_long.pdf"
       file = File.new(filename, "r")

@@ -419,6 +419,7 @@ describe Braintree::Transaction do
       result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
       result.transaction.credit_card_details.customer_location.should == "US"
+      result.transaction.retrieval_reference_number.should_not be_nil
     end
 
     it "returns a successful network response code if successful" do

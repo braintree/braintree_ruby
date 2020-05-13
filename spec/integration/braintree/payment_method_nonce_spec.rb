@@ -239,5 +239,82 @@ describe Braintree::PaymentMethodNonce do
         Braintree::PaymentMethodNonce.find("not_a_nonce")
       end.to raise_error(Braintree::NotFoundError)
     end
+
+    context "authentication insights" do
+      let(:indian_payment_token) { "india_visa_credit" }
+      let(:european_payment_token) { "european_visa_credit" }
+      let(:indian_merchant_token) { "india_three_d_secure_merchant_account" }
+      let(:european_merchant_token) { "european_three_d_secure_merchant_account" }
+
+      describe "self.create" do
+        it "raises an exception if hash includes an invalid key" do
+          expect do
+            Braintree::PaymentMethodNonce.create("european_visa_credit", :invalid_key => "foo")
+          end.to raise_error(ArgumentError, "invalid keys: invalid_key")
+        end
+      end
+
+      context "regulation environments" do
+        it "can get unregulated" do
+          expect(
+            request_authentication_insights(european_merchant_token, indian_payment_token)[:regulation_environment]
+          ).to eq "unregulated"
+        end
+
+        it "can get psd2" do
+          expect(
+            request_authentication_insights(european_merchant_token, european_payment_token)[:regulation_environment]
+          ).to eq "psd2"
+        end
+
+        it "can get rbi" do
+          expect(
+            request_authentication_insights(indian_merchant_token, indian_payment_token)[:regulation_environment]
+          ).to eq "rbi"
+        end
+      end
+
+      context "sca_indicator" do
+        it "can get unavailable" do
+          expect(
+            request_authentication_insights(indian_merchant_token, indian_payment_token)[:sca_indicator]
+          ).to eq "unavailable"
+        end
+
+        it "can get sca_required" do
+          expect(
+            request_authentication_insights(indian_merchant_token, indian_payment_token, {amount: 2001})[:sca_indicator]
+          ).to eq "sca_required"
+        end
+
+        it "can get sca_optional" do
+          expect(
+            request_authentication_insights(indian_merchant_token, indian_payment_token, {amount: 2000, recurring_customer_consent: true, recurring_max_amount: 2000})[:sca_indicator]
+
+          ).to eq "sca_optional"
+        end
+      end
+
+      def request_authentication_insights(merchant_token, payment_method_token, options = {})
+        authentication_insight_options = {
+          amount: options[:amount],
+          recurring_customer_consent: options[:recurring_customer_consent],
+          recurring_max_amount: options[:recurring_max_amount],
+        }
+        nonce_request = {
+          merchant_account_id: merchant_token,
+          authentication_insight: true,
+          authentication_insight_options: authentication_insight_options,
+        }
+
+        result = Braintree::PaymentMethodNonce.create(
+          payment_method_token,
+          payment_method_nonce: nonce_request
+        )
+        result.should be_success
+
+        return result.payment_method_nonce.authentication_insight
+      end
+    end
   end
 end

@@ -1115,6 +1115,74 @@ describe Braintree::Customer do
   end
 
   describe "self.update" do
+      it "updates the credit card with three_d_secure pass thru params" do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe",
+          :last_name => "Cool"
+        )
+        result = Braintree::Customer.update(
+          customer.id,
+          :first_name => "Mr. Joe",
+          :last_name => "Super Cool",
+          :custom_fields => {
+            :store_me => "a value"
+          },
+          :credit_card => {
+            :number => 4111111111111111,
+            :expiration_date => "05/2060",
+            :three_d_secure_pass_thru => {
+              :eci_flag => '02',
+              :cavv => 'some_cavv',
+              :xid => 'some_xid',
+              :three_d_secure_version => '1.0.2',
+              :authentication_response => 'Y',
+              :directory_response => 'Y',
+              :cavv_algorithm => '2',
+              :ds_transaction_id => 'some_ds_transaction_id',
+            },
+            :options => {:verify_card => true},
+          }
+        )
+        result.success?.should == true
+        result.customer.id.should == customer.id
+        result.customer.first_name.should == "Mr. Joe"
+        result.customer.last_name.should == "Super Cool"
+        result.customer.custom_fields[:store_me].should == "a value"
+      end
+
+      it "validates the presence of three_d_secure_version while passing three_d_secure_pass_thru in update" do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe",
+          :last_name => "Cool"
+        )
+        result = Braintree::Customer.update(
+          customer.id,
+          :first_name => "Mr. Joe",
+          :last_name => "Super Cool",
+          :custom_fields => {
+            :store_me => "a value"
+          },
+          :credit_card => {
+            :number => 4111111111111111,
+            :expiration_date => "05/2060",
+            :three_d_secure_pass_thru => {
+              :eci_flag => '02',
+              :cavv => 'some_cavv',
+              :xid => 'some_xid',
+              :authentication_response => 'Y',
+              :directory_response => 'Y',
+              :cavv_algorithm => '2',
+              :ds_transaction_id => 'some_ds_transaction_id',
+            },
+            options: {:verify_card => true}
+          }
+        )
+        expect(result).to_not be_success
+        error = result.errors.for(:verification).first
+        expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::ThreeDSecureVersionIsRequired)
+        expect(error.message).to eq("ThreeDSecureVersion is required.")
+      end
+
     it "updates the customer with the given id if successful" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
@@ -1310,6 +1378,51 @@ describe Braintree::Customer do
         }
       )
       result.success?.should == true
+    end
+
+    it "validates presence of three_d_secure_version in 3ds pass thru params" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
+        :credit_card => {
+          :three_d_secure_pass_thru => {
+            :eci_flag => '02',
+            :cavv => 'some_cavv',
+            :xid => 'some_xid',
+            :three_d_secure_version => 'xx',
+            :authentication_response => 'Y',
+            :directory_response => 'Y',
+            :cavv_algorithm => '2',
+            :ds_transaction_id => 'some_ds_transaction_id',
+          },
+          :options => {:verify_card => true}
+        }
+      )
+
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::ThreeDSecureVersionIsInvalid)
+      expect(error.message).to eq("The version of 3D Secure authentication must be composed only of digits and separated by periods (e.g. `1.0.2`).")
+    end
+
+    it "accepts three_d_secure pass thru params in the request" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
+        :credit_card => {
+          :three_d_secure_pass_thru => {
+            :eci_flag => '02',
+            :cavv => 'some_cavv',
+            :xid => 'some_xid',
+            :three_d_secure_version => '2.2.1',
+            :authentication_response => 'Y',
+            :directory_response => 'Y',
+            :cavv_algorithm => '2',
+            :ds_transaction_id => 'some_ds_transaction_id',
+          },
+          :options => {:verify_card => true}
+        }
+      )
+
+      expect(result).to be_success
     end
 
     it "returns 3DS info on cc verification" do

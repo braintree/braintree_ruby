@@ -184,6 +184,54 @@ describe Braintree::WebhookNotification do
           dispute.kind.should == Braintree::Dispute::Kind::Chargeback
         end
 
+        it "builds a sample notification for a dispute accepted webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeAccepted,
+            dispute_id
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeAccepted
+
+          dispute = notification.dispute
+          dispute.status.should == Braintree::Dispute::Status::Accepted
+          dispute.id.should == dispute_id
+          dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        end
+
+        it "builds a sample notification for a dispute disputed webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeDisputed,
+            dispute_id
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeDisputed
+
+          dispute = notification.dispute
+          dispute.status.should == Braintree::Dispute::Status::Disputed
+          dispute.id.should == dispute_id
+          dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        end
+
+        it "builds a sample notification for a dispute expired webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeExpired,
+            dispute_id
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeExpired
+
+          dispute = notification.dispute
+          dispute.status.should == Braintree::Dispute::Status::Expired
+          dispute.id.should == dispute_id
+          dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        end
+
         it "is compatible with the previous dispute won webhook interface" do
           sample_notification = Braintree::WebhookTesting.sample_notification(
             Braintree::WebhookNotification::Kind::DisputeWon,

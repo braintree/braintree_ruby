@@ -1,3 +1,13 @@
+# 2.102.0
+* Add `threeDSecurePassThru` parameters to `Customer.create`, `PaymentMethod.create`, `CreditCard.create`, `Customer.update`, `PaymentMethod.update`, and `CreditCard.update`
+* Add `recurring_customer_consent`and `recurring_max_amount` options to `authentication_insight`to payment method nonce create
+* Add ThreeDSecure test payment method nonces
+* Add test `AuthenticationId`s
+* Add `DisputeAccepted`, `DisputeDisputed`, and `DisputeExpired` webhook constants
+* Add `Authentication Insight` to payment method nonce create
+* Add `FileIsEmpty` error to `DocumentUpload`
+* Add `retrieval_reference_number` to `Transaction`
+
 # 2.101.0
 * Add `RefundAuthHardDeclined` and `RefundAuthSoftDeclined` to validation errors
 * Add `is_network_tokenized?` to android_pay_card and android_pay_details

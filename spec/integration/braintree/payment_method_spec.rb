@@ -300,6 +300,50 @@ describe Braintree::PaymentMethod do
       result.credit_card_verification.amount.should == BigDecimal("100.00")
     end
 
+    it "validates presence of three_d_secure_version in 3ds pass thru params" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => '02',
+          :cavv => 'some_cavv',
+          :xid => 'some_xid',
+          :three_d_secure_version => 'xx',
+          :authentication_response => 'Y',
+          :directory_response => 'Y',
+          :cavv_algorithm => '2',
+          :ds_transaction_id => 'some_ds_transaction_id',
+        },
+        :options => {:verify_card => true}
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::ThreeDSecureVersionIsInvalid)
+      expect(error.message).to eq("The version of 3D Secure authentication must be composed only of digits and separated by periods (e.g. `1.0.2`).")
+    end
+
+    it "accepts three_d_secure pass thru params in the request" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => '02',
+          :cavv => 'some_cavv',
+          :xid => 'some_xid',
+          :three_d_secure_version => '1.0.2',
+          :authentication_response => 'Y',
+          :directory_response => 'Y',
+          :cavv_algorithm => '2',
+          :ds_transaction_id => 'some_ds_transaction_id',
+        },
+        :options => {:verify_card => true}
+      )
+
+      expect(result).to be_success
+    end
+
     it "returns 3DS info on cc verification" do
       customer = Braintree::Customer.create.customer
       result = Braintree::PaymentMethod.create(
@@ -1169,6 +1213,71 @@ describe Braintree::PaymentMethod do
 
   describe "self.update" do
     context "credit cards" do
+      it "throws validation error when passing invalid  pass thru params" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
+          :options => {:verify_card => true},
+        )
+
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :cardholder_name => "New Holder",
+          :cvv => "456",
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "06/2013",
+          :three_d_secure_pass_thru => {
+            :eci_flag => '02',
+            :cavv => 'some_cavv',
+            :xid => 'some_xid',
+            :three_d_secure_version => 'xx',
+            :authentication_response => 'Y',
+            :directory_response => 'Y',
+            :cavv_algorithm => '2',
+            :ds_transaction_id => 'some_ds_transaction_id',
+          },
+          :options => {:verify_card => true},
+        )
+        expect(update_result).to_not be_success
+        error = update_result.errors.for(:verification).first
+        expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::ThreeDSecureVersionIsInvalid)
+        expect(error.message).to eq("The version of 3D Secure authentication must be composed only of digits and separated by periods (e.g. `1.0.2`).")
+      end
+
+      it "updates the credit card with three_d_secure pass thru params" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
+          :options => {:verify_card => true},
+        )
+
+        update_result = Braintree::PaymentMethod.update(credit_card.token,
+          :cardholder_name => "New Holder",
+          :cvv => "456",
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "06/2013",
+          :three_d_secure_pass_thru => {
+            :eci_flag => '02',
+            :cavv => 'some_cavv',
+            :xid => 'some_xid',
+            :three_d_secure_version => '1.0.2',
+            :authentication_response => 'Y',
+            :directory_response => 'Y',
+            :cavv_algorithm => '2',
+            :ds_transaction_id => 'some_ds_transaction_id',
+          },
+          :options => {:verify_card => true},
+        )
+        update_result.success?.should == true
+        update_result.payment_method.should == credit_card
+        updated_credit_card = update_result.payment_method
+        updated_credit_card.cardholder_name.should == "New Holder"
+        updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
+        updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
+        updated_credit_card.expiration_date.should == "06/2013"
+      end
+
       it "updates the credit card" do
         customer = Braintree::Customer.create!
         credit_card = Braintree::CreditCard.create!(

@@ -227,6 +227,49 @@ describe Braintree::CreditCard do
       result.success?.should == true
     end
 
+    it "validates presence of three_d_secure_version in 3ds pass thru params" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => '02',
+          :cavv => 'some_cavv',
+          :xid => 'some_xid',
+          :authentication_response => 'Y',
+          :directory_response => 'Y',
+          :cavv_algorithm => '2',
+          :ds_transaction_id => 'some_ds_transaction_id',
+        },
+        :options => {:verify_card => true}
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::ThreeDSecureVersionIsRequired)
+      expect(error.message).to eq("ThreeDSecureVersion is required.")
+    end
+
+    it "accepts three_d_secure pass thru params in the request" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => '02',
+          :cavv => 'some_cavv',
+          :xid => 'some_xid',
+          :three_d_secure_version => '1.0.2',
+          :authentication_response => 'Y',
+          :directory_response => 'Y',
+          :cavv_algorithm => '2',
+          :ds_transaction_id => 'some_ds_transaction_id',
+        },
+        :options => {:verify_card => true}
+      )
+      result.success?.should == true
+
+    end
+
     it "returns 3DS info on cc verification" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
@@ -842,6 +885,62 @@ describe Braintree::CreditCard do
       updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
       updated_credit_card.expiration_date.should == "06/2013"
       updated_credit_card.cardholder_name.should == "New Holder"
+    end
+
+    it "validates presence of three_d_secure_version in 3ds pass thru params" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :cvv => "123",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+      result = Braintree::CreditCard.update(credit_card.token,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => '02',
+          :cavv => 'some_cavv',
+          :xid => 'some_xid',
+          :authentication_response => 'Y',
+          :directory_response => 'Y',
+          :cavv_algorithm => '2',
+          :ds_transaction_id => 'some_ds_transaction_id',
+        },
+        :options => {:verify_card => true}
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::ThreeDSecureVersionIsRequired)
+      expect(error.message).to eq("ThreeDSecureVersion is required.")
+    end
+
+    it "accepts three_d_secure pass thru params in the request" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :cvv => "123",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2012"
+      )
+      result = Braintree::CreditCard.update(credit_card.token,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => '02',
+          :cavv => 'some_cavv',
+          :three_d_secure_version=> "2.1.0",
+          :xid => 'some_xid',
+          :authentication_response => 'Y',
+          :directory_response => 'Y',
+          :cavv_algorithm => '2',
+          :ds_transaction_id => 'some_ds_transaction_id',
+        },
+        :options => {:verify_card => true}
+      )
+
+      result.success?.should == true
+
     end
 
     context "billing address" do

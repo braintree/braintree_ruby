@@ -181,6 +181,7 @@ module Braintree
       FileTypeIsInvalid = "84903"
       FileIsMalformedOrEncrypted = "84904"
       FileIsTooLong = "84905"
+      FileIsEmpty = "84906"
     end
 
     module PayPalAccount
@@ -766,6 +767,28 @@ module Braintree
         MerchantAccountCannotBeSubMerchantAccount = "94208"
         AccountTypeIsInvalid = "942184"
         AccountTypeNotSupported = "942185"
+      end
+
+      ThreeDSecureAuthenticationIdIsInvalid = "942196"
+      ThreeDSecureAuthenticationIdDoesntMatchNonceThreeDSecureAuthentication = "942198"
+      ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod = "942197"
+      ThreeDSecureAuthenticationIdWithThreeDSecurePassThruIsInvalid = "942199"
+      ThreeDSecureAuthenticationFailed = "94271"
+      ThreeDSecureTokenIsInvalid = "94268"
+      ThreeDSecureVerificationDataDoesntMatchVerify = "94270"
+      MerchantAccountDoesNotSupport3DSecure = "942169"
+      MerchantAcountDoesNotMatch3DSecureMerchantAccount = "94284"
+      AmountDoesNotMatch3DSecureAmount = "94285"
+
+      module ThreeDSecurePassThru
+        EciFlagIsRequired = "942113"
+        EciFlagIsInvalid = "942114"
+        CavvIsRequired = "942116"
+        ThreeDSecureVersionIsRequired = "942117"
+        ThreeDSecureVersionIsInvalid = "942119"
+        AuthenticationResponseIsInvalid = "942120"
+        DirectoryResponseIsInvalid = "942121"
+        CavvAlgorithmIsInvalid = "942122"
       end
     end
 

@@ -166,6 +166,7 @@ module Braintree
     attr_reader :venmo_account_details
     attr_reader :visa_checkout_card_details
     attr_reader :voice_referral_number
+    attr_reader :retrieval_reference_number
 
     def self.create(*args)
       Configuration.gateway.transaction.create(*args)

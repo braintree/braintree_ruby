@@ -40,6 +40,12 @@ module Braintree
         _dispute_lost_sample_xml(id)
       when Braintree::WebhookNotification::Kind::DisputeWon
         _dispute_won_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisputeAccepted
+        _dispute_accepted_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisputeDisputed
+        _dispute_disputed_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisputeExpired
+        _dispute_expired_sample_xml(id)
       when Braintree::WebhookNotification::Kind::PartnerMerchantConnected
         _partner_merchant_connected_sample_xml(id)
       when Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected
@@ -309,6 +315,30 @@ module Braintree
       end
     end
 
+    def _dispute_accepted_sample_xml(id)
+      if id == "legacy_dispute_id"
+        _old_dispute_accepted_sample_xml(id)
+      else
+        _new_dispute_accepted_sample_xml(id)
+      end
+    end
+
+    def _dispute_disputed_sample_xml(id)
+      if id == "legacy_dispute_id"
+        _old_dispute_disputed_sample_xml(id)
+      else
+        _new_dispute_disputed_sample_xml(id)
+      end
+    end
+
+    def _dispute_expired_sample_xml(id)
+      if id == "legacy_dispute_id"
+        _old_dispute_expired_sample_xml(id)
+      else
+        _new_dispute_expired_sample_xml(id)
+      end
+    end
+
     def _old_dispute_opened_sample_xml(id)
       <<-XML
         <dispute>
@@ -366,6 +396,66 @@ module Braintree
           </transaction>
           <date-opened type=\"date\">2014-03-21</date-opened>
           <date-won type=\"date\">2014-03-22</date-won>
+        </dispute>
+      XML
+    end
+
+    def _old_dispute_accepted_sample_xml(id)
+      <<-XML
+        <dispute>
+          <amount>100.00</amount>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <kind>chargeback</kind>
+          <status>accepted</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
+    end
+
+    def _old_dispute_disputed_sample_xml(id)
+      <<-XML
+        <dispute>
+          <amount>100.00</amount>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <kind>chargeback</kind>
+          <status>disputed</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
+    end
+
+    def _old_dispute_expired_sample_xml(id)
+      <<-XML
+        <dispute>
+          <amount>100.00</amount>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <kind>chargeback</kind>
+          <status>expired</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end
@@ -531,6 +621,159 @@ module Braintree
           </transaction>
           <date-opened type=\"date\">2014-03-21</date-opened>
           <date-won type=\"date\">2014-03-22</date-won>
+        </dispute>
+      XML
+    end
+
+    def _new_dispute_accepted_sample_xml(id)
+      <<-XML
+        <dispute>
+          <id>#{id}</id>
+          <amount>100.00</amount>
+          <amount-disputed>100.00</amount-disputed>
+          <amount-won>95.00</amount-won>
+          <case-number>CASE-12345</case-number>
+          <created-at type="datetime">2017-06-16T20:44:41Z</created-at>
+          <currency-iso-code>USD</currency-iso-code>
+          <forwarded-comments nil="true"/>
+          <kind>chargeback</kind>
+          <merchant-account-id>ytnlulaloidoqwvzxjrdqputg</merchant-account-id>
+          <reason>fraud</reason>
+          <reason-code nil="true"/>
+          <reason-description nil="true"/>
+          <received-date type="date">2016-02-15</received-date>
+          <reference-number>REF-9876</reference-number>
+          <reply-by-date type="date">2016-02-22</reply-by-date>
+          <status>accepted</status>
+          <updated-at type="datetime">2017-06-16T20:44:41Z</updated-at>
+          <original-dispute-id>9qde5qgp</original-dispute-id>
+          <status-history type="array">
+            <status-history>
+              <status>open</status>
+              <timestamp type="datetime">2017-06-16T20:44:41Z</timestamp>
+            </status-history>
+            <status-history>
+              <status>accepted</status>
+              <timestamp type="datetime">2017-06-25T20:50:55Z</timestamp>
+            </status-history>
+          </status-history>
+          <evidence type="array"/>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+            <created-at>2017-06-21T20:44:41Z</created-at>
+            <order-id nil="true"/>
+            <purchase-order-number nil="true"/>
+            <payment-instrument-subtype>Visa</payment-instrument-subtype>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
+    end
+
+    def _new_dispute_disputed_sample_xml(id)
+      <<-XML
+        <dispute>
+          <id>#{id}</id>
+          <amount>100.00</amount>
+          <amount-disputed>100.00</amount-disputed>
+          <amount-won>95.00</amount-won>
+          <case-number>CASE-12345</case-number>
+          <created-at type="datetime">2017-06-16T20:44:41Z</created-at>
+          <currency-iso-code>USD</currency-iso-code>
+          <forwarded-comments nil="true"/>
+          <kind>chargeback</kind>
+          <merchant-account-id>ytnlulaloidoqwvzxjrdqputg</merchant-account-id>
+          <reason>fraud</reason>
+          <reason-code nil="true"/>
+          <reason-description nil="true"/>
+          <received-date type="date">2016-02-15</received-date>
+          <reference-number>REF-9876</reference-number>
+          <reply-by-date type="date">2016-02-22</reply-by-date>
+          <status>disputed</status>
+          <updated-at type="datetime">2017-06-21T20:44:41Z</updated-at>
+          <original-dispute-id>9qde5qgp</original-dispute-id>
+          <status-history type="array">
+            <status-history>
+              <status>open</status>
+              <timestamp type="datetime">2017-06-16T20:44:41Z</timestamp>
+            </status-history>
+            <status-history>
+              <status>disputed</status>
+              <timestamp type="datetime">2017-06-25T20:50:55Z</timestamp>
+            </status-history>
+          </status-history>
+          <evidence type="array">
+            <evidence>
+              <id>rxtngk9j5j93tsrq</id>
+              <comments nil="true"/>
+              <created-at type="datetime">2017-06-21T20:44:42Z</created-at>
+              <sent-to-processor-at nil="true"/>
+              <url>s3.amazonaws.com/foo.jpg</url>
+            </evidence>
+            <evidence>
+              <id>88cfb8dd</id>
+              <comments>text evidence</comments>
+              <created-at type="datetime">2017-06-21T20:44:42Z</created-at>
+              <sent-to-processor-at nil="true"/>
+              <url nil="true"/>
+            </evidence>
+          </evidence>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+            <created-at>2017-06-21T20:44:41Z</created-at>
+            <order-id nil="true"/>
+            <purchase-order-number nil="true"/>
+            <payment-instrument-subtype>Visa</payment-instrument-subtype>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
+    end
+
+    def _new_dispute_expired_sample_xml(id)
+      <<-XML
+        <dispute>
+          <id>#{id}</id>
+          <amount>100.00</amount>
+          <amount-disputed>100.00</amount-disputed>
+          <amount-won>95.00</amount-won>
+          <case-number>CASE-12345</case-number>
+          <created-at type="datetime">2017-06-16T20:44:41Z</created-at>
+          <currency-iso-code>USD</currency-iso-code>
+          <forwarded-comments nil="true"/>
+          <kind>chargeback</kind>
+          <merchant-account-id>ytnlulaloidoqwvzxjrdqputg</merchant-account-id>
+          <reason>fraud</reason>
+          <reason-code nil="true"/>
+          <reason-description nil="true"/>
+          <received-date type="date">2016-02-15</received-date>
+          <reference-number>REF-9876</reference-number>
+          <reply-by-date type="date">2016-02-22</reply-by-date>
+          <status>expired</status>
+          <updated-at type="datetime">2017-06-16T20:44:41Z</updated-at>
+          <original-dispute-id>9qde5qgp</original-dispute-id>
+          <status-history type="array">
+            <status-history>
+              <status>open</status>
+              <timestamp type="datetime">2017-06-16T20:44:41Z</timestamp>
+            </status-history>
+            <status-history>
+              <status>expired</status>
+              <timestamp type="datetime">2017-06-25T20:50:55Z</timestamp>
+            </status-history>
+          </status-history>
+          <evidence type="array"/>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+            <created-at>2017-06-21T20:44:41Z</created-at>
+            <order-id nil="true"/>
+            <purchase-order-number nil="true"/>
+            <payment-instrument-subtype>Visa</payment-instrument-subtype>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>
       XML
     end

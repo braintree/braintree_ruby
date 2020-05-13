@@ -41,7 +41,17 @@ describe Braintree::CreditCard do
           :region,
           :street_address
         ]},
-        :customer_id
+        {:three_d_secure_pass_thru => [
+          :eci_flag,
+          :cavv,
+          :xid,
+          :three_d_secure_version,
+          :authentication_response,
+          :directory_response,
+          :cavv_algorithm,
+          :ds_transaction_id,
+        ]},
+        :customer_id,
       ]
     end
   end
@@ -78,7 +88,17 @@ describe Braintree::CreditCard do
           :region,
           :street_address,
           {:options => [:update_existing]}
-        ]}
+        ]},
+        {:three_d_secure_pass_thru => [
+          :eci_flag,
+          :cavv,
+          :xid,
+          :three_d_secure_version,
+          :authentication_response,
+          :directory_response,
+          :cavv_algorithm,
+          :ds_transaction_id,
+        ]},
       ]
     end
   end

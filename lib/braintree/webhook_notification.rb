@@ -13,6 +13,9 @@ module Braintree
       DisputeOpened = "dispute_opened"
       DisputeLost = "dispute_lost"
       DisputeWon = "dispute_won"
+      DisputeAccepted = "dispute_accepted"
+      DisputeDisputed = "dispute_disputed"
+      DisputeExpired = "dispute_expired"
 
       SubscriptionCanceled = "subscription_canceled"
       SubscriptionChargedSuccessfully = "subscription_charged_successfully"
