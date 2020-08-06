@@ -4,6 +4,7 @@ module Braintree
       include BaseModule
 
       attr_reader :amount
+      attr_reader :created_at
       attr_reader :id
       attr_reader :order_id
       attr_reader :purchase_order_number

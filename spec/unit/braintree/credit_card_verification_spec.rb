@@ -42,6 +42,13 @@ describe Braintree::CreditCardVerification do
     Braintree::CreditCardVerification._new(:amount => BigDecimal("12.34")).amount.should == BigDecimal("12.34")
   end
 
+  it "accepts network_transaction_id" do
+    verification = Braintree::CreditCardVerification._new(
+      :network_transaction_id => "123456789012345"
+    )
+    expect(verification.network_transaction_id).to eq "123456789012345"
+  end
+
   describe "self.create" do
     it "rejects invalid parameters" do
       expect do

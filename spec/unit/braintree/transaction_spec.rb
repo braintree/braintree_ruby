@@ -276,16 +276,18 @@ describe Braintree::Transaction do
   end
 
   describe "inspect" do
-    it "includes the id, type, amount, and status first" do
+    it "includes the id, type, amount, status, and processed_with_network_token?" do
       transaction = Braintree::Transaction._new(
         :gateway,
         :id => "1234",
         :type => "sale",
         :amount => "100.00",
-        :status => Braintree::Transaction::Status::Authorized
+        :status => Braintree::Transaction::Status::Authorized,
+        :processed_with_network_token => false,
       )
       output = transaction.inspect
       output.should include(%Q(#<Braintree::Transaction id: "1234", type: "sale", amount: "100.0", status: "authorized"))
+      output.should include(%Q(processed_with_network_token?: false))
     end
   end
 
@@ -392,6 +394,18 @@ describe Braintree::Transaction do
           :submit_for_settlement => false
         }
       )
+    end
+  end
+
+  describe "processed_with_network_token?" do
+    it "is true if the transaction was processed with a network token" do
+      transaction = Braintree::Transaction._new(:gateway, :processed_with_network_token => true)
+      transaction.processed_with_network_token?.should == true
+    end
+
+    it "is false if the transaction was not processed with a network token" do
+      transaction = Braintree::Transaction._new(:gateway, :processed_with_network_token => false)
+      transaction.processed_with_network_token?.should == false
     end
   end
 end

@@ -1,3 +1,24 @@
+# 2.103.0
+* Add `RiskThreshold` to gateway rejection reasons
+* Add `network_transaction_id` to `CreditCardVerification`
+* Add `product_sku` to `Transaction`
+* Add `phone_number` and `shipping_method` to `AddressDetails`
+* Add `customer_device_id`, `customer_location_zip`, and `customer_tenure` to `RiskData`
+* Add validation errors:
+   * `Transaction::ProductSkuIsInvalid`
+   * `Transaction::ShippingMethodIsInvalid`
+   * `Transaction::ShippingPhoneNumberIsInvalid`
+   * `Transaction::BillingPhoneNumberIsInvalid`
+   * `RiskData::CustomerBrowserIsTooLong`
+   * `RiskData::CustomerDeviceIdIsTooLong`
+   * `RiskData::CustomerLocationZipInvalidCharacters`
+   * `RiskData::CustomerLocationZipIsInvalid`
+   * `RiskData::CustomerLocationZipIsTooLong`
+   * `RiskData::CustomerTenureIsTooLong`
+* Add `processed_with_network_token` to `Transaction`
+* Add `is_network_tokenized` to `CreditCard`
+* Add `created_at` accessor to `dispute.transaction` on dispute webhooks (closes #200)
+
 # 2.102.0
 * Add `threeDSecurePassThru` parameters to `Customer.create`, `PaymentMethod.create`, `CreditCard.create`, `Customer.update`, `PaymentMethod.update`, and `CreditCard.update`
 * Add `recurring_customer_consent`and `recurring_max_amount` options to `authentication_insight`to payment method nonce create

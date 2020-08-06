@@ -37,6 +37,7 @@ describe Braintree::CreditCard do
           :first_name,
           :last_name,
           :locality,
+          :phone_number,
           :postal_code,
           :region,
           :street_address
@@ -84,6 +85,7 @@ describe Braintree::CreditCard do
           :first_name,
           :last_name,
           :locality,
+          :phone_number,
           :postal_code,
           :region,
           :street_address,
@@ -196,7 +198,8 @@ describe Braintree::CreditCard do
         :expiration_year => "2020",
         :last_4 => "1111",
         :token => "tok1",
-        :updated_at => Time.now
+        :updated_at => Time.now,
+        :is_network_tokenized => false,
       )
       output = credit_card.inspect
       output.should include(%q(bin: "411111"))
@@ -210,6 +213,7 @@ describe Braintree::CreditCard do
       output.should include(%q(token: "tok1"))
       output.should include(%Q(updated_at: #{credit_card.updated_at.inspect}))
       output.should include(%Q(created_at: #{credit_card.created_at.inspect}))
+      output.should include(%q(is_network_tokenized?: false))
     end
   end
 
@@ -221,6 +225,28 @@ describe Braintree::CreditCard do
         :last_4 => "5100"
       )
       credit_card.masked_number.should == "510510******5100"
+    end
+  end
+
+  describe "is_network_tokenized?" do
+    it "returns true" do
+      credit_card = Braintree::CreditCard._new(
+        :gateway,
+        :bin => "510510",
+        :last_4 => "5100",
+        :is_network_tokenized => true
+      )
+      credit_card.is_network_tokenized?.should == true
+    end
+
+    it "returns false" do
+      credit_card = Braintree::CreditCard._new(
+        :gateway,
+        :bin => "510510",
+        :last_4 => "5100",
+        :is_network_tokenized => false
+      )
+      credit_card.is_network_tokenized?.should == false
     end
   end
 

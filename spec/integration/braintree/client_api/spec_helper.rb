@@ -56,59 +56,84 @@ def nonce_for_paypal_account(paypal_account_details)
 end
 
 def generate_non_plaid_us_bank_account_nonce(account_number="1000000000")
-  raw_client_token = Braintree::ClientToken.generate
-  client_token = decode_client_token(raw_client_token)
-
-  url = client_token["braintree_api"]["url"] + "/tokens"
-  token = client_token["braintree_api"]["access_token"]
-  payload = {
-    :type => "us_bank_account",
-    :billing_address => {
-      :street_address => "123 Ave",
-      :region => "CA",
-      :locality => "San Francisco",
-      :postal_code => "94112"
-    },
-    :account_type => "checking",
-    :routing_number => "021000021",
-    :account_number => account_number,
-    :first_name => "John",
-    :last_name => "Doe",
-    :ownership_type => "personal",
-    :ach_mandate => {
-      :text => "cl mandate text"
+  query = %{
+    mutation TokenizeUsBankAccount($input: TokenizeUsBankAccountInput!) {
+      tokenizeUsBankAccount(input: $input) {
+        paymentMethod {
+          id
+        }
+      }
     }
   }
 
-  json = _cosmos_post(token, url, payload)
-  json["data"]["id"]
+  variables = {
+    :input => {
+      :usBankAccount => {
+        :accountNumber => account_number,
+        :routingNumber => "021000021",
+        :accountType => "CHECKING",
+        :individualOwner => {
+          :firstName => "John",
+          :lastName => "Doe",
+        },
+        :billingAddress => {
+          :streetAddress => "123 Ave",
+          :state => "CA",
+          :city => "San Francisco",
+          :zipCode => "94112"
+        },
+        :achMandate => "cl mandate text"
+      }
+    }
+  }
+
+  graphql_request = {
+    :query => query,
+    :variables => variables
+  }
+
+  json = _send_graphql_request(graphql_request)
+  json["data"]["tokenizeUsBankAccount"]["paymentMethod"]["id"]
 end
 
 def generate_valid_plaid_us_bank_account_nonce
-  raw_client_token = Braintree::ClientToken.generate
-  client_token = decode_client_token(raw_client_token)
-
-  url = client_token["braintree_api"]["url"] + "/tokens"
-  token = client_token["braintree_api"]["access_token"]
-  payload = {
-    :type => "plaid_public_token",
-    :public_token => "good",
-    :account_id => "plaid_account_id",
-    :ownership_type => "business",
-    :business_name => "PayPal, Inc.",
-    :billing_address => {
-      :street_address => "123 Ave",
-      :region => "CA",
-      :locality => "San Francisco",
-      :postal_code => "94112"
-    },
-    :ach_mandate => {
-      :text => "cl mandate text"
+  query = %{
+    mutation TokenizeUsBankLogin($input: TokenizeUsBankLoginInput!) {
+      tokenizeUsBankLogin(input: $input) {
+        paymentMethod {
+          id
+        }
+      }
     }
   }
 
-  json = _cosmos_post(token, url, payload)
-  json["data"]["id"]
+  variables = {
+    :input => {
+      :usBankLogin => {
+        :publicToken => "good",
+        :accountId => "plaid_account_id",
+        :accountType => "CHECKING",
+        :businessOwner => {
+          :businessName => "PayPal, Inc.",
+        },
+        :billingAddress => {
+          :streetAddress => "123 Ave",
+          :state => "CA",
+          :city => "San Francisco",
+          :zipCode => "94112"
+        },
+        :achMandate => "cl mandate text"
+      }
+    }
+  }
+
+  graphql_request = {
+    :query => query,
+    :variables => variables
+  }
+
+  json = _send_graphql_request(graphql_request)
+  json["data"]["tokenizeUsBankLogin"]["paymentMethod"]["id"]
 end
 
 def generate_valid_ideal_payment_nonce(amount = Braintree::Test::TransactionAmounts::Authorize)
@@ -120,8 +145,10 @@ def generate_valid_ideal_payment_nonce(amount = Braintree::Test::TransactionAmou
   )
   config = JSON.parse(client.get_configuration.body)
 
-  token = client_token["braintree_api"]["access_token"]
-  url = client_token["braintree_api"]["url"] + "/ideal-payments"
+  braintree_api = client_token["braintree_api"]
+  url = braintree_api["url"] + "/ideal-payments"
+
+  token = braintree_api["access_token"]
   payload = {
     :issuer => "RABONL2U",
     :order_id => SpecHelper::DefaultOrderId,
@@ -149,14 +176,39 @@ end
 def _cosmos_post(token, url, payload)
   uri = URI::parse(url)
   connection = Net::HTTP.new(uri.host, uri.port)
-  connection.use_ssl = true
-  connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
+  if uri.scheme == "https"
+    connection.use_ssl = true
+    connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
+  end
   resp = connection.start do |http|
     request = Net::HTTP::Post.new(uri.path)
     request["Content-Type"] = "application/json"
     request["Braintree-Version"] = "2016-10-07"
     request["Authorization"] = "Bearer #{token}"
     request.body = payload.to_json
+    http.request(request)
+  end
+
+  JSON.parse(resp.body)
+end
+
+def _send_graphql_request(graphql_request)
+  raw_client_token = Braintree::ClientToken.generate
+  client_token = decode_client_token(raw_client_token)
+  uri = URI::parse("#{client_token["braintree_api"]["url"]}/graphql")
+  connection = Net::HTTP.new(uri.host, uri.port)
+
+  if uri.scheme == "https"
+    connection.use_ssl = true
+    connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
+  end
+
+  resp = connection.start do |http|
+    request = Net::HTTP::Post.new(uri.path)
+    request["Content-Type"] = "application/json"
+    request["Braintree-Version"] = "2016-10-07"
+    request["Authorization"] = "Bearer #{client_token["braintree_api"]["access_token"]}"
+    request.body = graphql_request.to_json
     http.request(request)
   end
 

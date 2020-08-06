@@ -239,6 +239,10 @@ module Braintree
       @venmo_sdk
     end
 
+    def is_network_tokenized?
+      @is_network_tokenized
+    end
+
     class << self
       protected :new
     end
@@ -247,7 +251,7 @@ module Braintree
       [
         :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
         :expiration_year, :last_4, :token, :updated_at, :prepaid, :payroll, :product_id, :commercial, :debit, :durbin_regulated,
-        :healthcare, :country_of_issuance, :issuing_bank, :image_url
+        :healthcare, :country_of_issuance, :issuing_bank, :image_url, :is_network_tokenized?
       ]
     end
 

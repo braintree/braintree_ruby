@@ -303,6 +303,7 @@ module Braintree
       AmountMustBeGreaterThanZero = "81531"
       AmountNotSupportedByProcessor = "815193"
       BillingAddressConflict = "91530"
+      BillingPhoneNumberIsInvalid = "915206"
       CannotBeVoided = "91504"
       CannotCancelRelease = "91562"
       CannotCloneCredit = "91543"
@@ -376,6 +377,7 @@ module Braintree
       ProcessorDoesNotSupportUpdatingOrderId = "915107"
       ProcessorDoesNotSupportUpdatingTransactionDetails = "915130"
       ProcessorDoesNotSupportVoiceAuthorizations = "91545"
+      ProductSkuIsInvalid = "915202"
       PurchaseOrderNumberIsInvalid = "91548"
       PurchaseOrderNumberIsTooLong = "91537"
       RefundAmountIsTooLarge = "91521"
@@ -393,6 +395,8 @@ module Braintree
       ShippingAmountCannotBeNegative = "915163"
       ShippingAmountFormatIsInvalid = "915162"
       ShippingAmountIsTooLarge = "915164"
+      ShippingMethodIsInvalid = "915203"
+      ShippingPhoneNumberIsInvalid = "915204"
       ShipsFromPostalCodeInvalidCharacters = "915167"
       ShipsFromPostalCodeIsInvalid = "915166"
       ShipsFromPostalCodeIsTooLong = "915165"
@@ -799,6 +803,15 @@ module Braintree
       TooManyConfirmationAttempts = "96104"
       UnableToConfirmDepositAmounts = "96105"
       InvalidDepositAmounts = "96106"
+    end
+
+    module RiskData
+      CustomerBrowserIsTooLong = "94701"
+      CustomerDeviceIdIsTooLong = "94702"
+      CustomerLocationZipInvalidCharacters = "94703"
+      CustomerLocationZipIsInvalid = "94704"
+      CustomerLocationZipIsTooLong = "94705"
+      CustomerTenureIsTooLong = "94706"
     end
   end
 end

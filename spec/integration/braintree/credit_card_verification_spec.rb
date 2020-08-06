@@ -22,6 +22,7 @@ describe Braintree::CreditCardVerification, "search" do
       result.credit_card_verification.processor_response_code.should == "1000"
       result.credit_card_verification.processor_response_text.should == "Approved"
       result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
 
     it "creates a new verification with network response code/text" do

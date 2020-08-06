@@ -15,7 +15,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
-        :cvv => "100"
+        :cvv => "100",
       )
       result.success?.should == true
       credit_card = result.credit_card
@@ -1849,6 +1849,24 @@ describe Braintree::CreditCard do
       )
 
       credit_card.nonce.should_not be_nil
+    end
+  end
+
+  describe "card on file network tokenization" do
+    it "should find a network tokenized credit card" do
+      credit_card = Braintree::CreditCard.find("network_tokenized_credit_card")
+      credit_card.is_network_tokenized?.should == true
+    end
+
+    it "should find a non-network tokenized credit card" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009"
+      ).credit_card
+      credit_card_vaulted = Braintree::CreditCard.find(credit_card.token)
+      credit_card_vaulted.is_network_tokenized?.should == false
     end
   end
 end

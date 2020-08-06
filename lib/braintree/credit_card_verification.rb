@@ -27,6 +27,7 @@ module Braintree
     attr_reader :merchant_account_id
     attr_reader :network_response_code
     attr_reader :network_response_text
+    attr_reader :network_transaction_id
     attr_reader :processor_response_code
     attr_reader :processor_response_text
     attr_reader :processor_response_type

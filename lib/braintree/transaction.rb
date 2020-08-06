@@ -25,6 +25,7 @@ module Braintree
       CVV          = "cvv"
       Duplicate    = "duplicate"
       Fraud        = "fraud"
+      RiskThreshold = "risk_threshold"
       ThreeDSecure = "three_d_secure"
       TokenIssuance = "token_issuance"
       Unrecognized = "unrecognized"
@@ -142,6 +143,7 @@ module Braintree
     attr_reader :processor_response_type                # Response type from the processor.
     attr_reader :processor_settlement_response_code     # Settlement response code from the processor.
     attr_reader :processor_settlement_response_text     # Settlement response text from the processor.
+    attr_reader :product_sku
     attr_reader :purchase_order_number
     attr_reader :recurring
     attr_reader :refund_ids
@@ -439,6 +441,10 @@ module Braintree
       return_object_or_raise(:transaction) { void }
     end
 
+    def processed_with_network_token?
+      @processed_with_network_token
+    end
+
     class << self
       protected :new
       def _new(*args) # :nodoc:
@@ -447,7 +453,7 @@ module Braintree
     end
 
     def self._attributes # :nodoc:
-      [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :subscription_details, :type, :updated_at]
+      [:amount, :created_at, :credit_card_details, :customer_details, :id, :status, :subscription_details, :type, :updated_at, :processed_with_network_token?]
     end
   end
 end

@@ -140,6 +140,31 @@ describe Braintree::Transaction do
           result.transaction.risk_data.should respond_to(:fraud_service_provider)
         end
       end
+
+      it "handles validation errors for invalid risk data attributes" do
+        with_advanced_fraud_integration_merchant do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            },
+            :risk_data => {
+              :customer_browser => "#{"1" * 300}",
+              :customer_device_id => "customer_device_id_0#{"1" * 300}",
+              :customer_ip => "192.168.0.1",
+              :customer_location_zip => "not-a-$#phone",
+              :customer_tenure => "20#{"0" * 500}"
+            }
+          )
+          result.success?.should == false
+          result.errors.for(:transaction).for(:risk_data).on(:customer_browser).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerBrowserIsTooLong
+          result.errors.for(:transaction).for(:risk_data).on(:customer_device_id).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerDeviceIdIsTooLong
+          result.errors.for(:transaction).for(:risk_data).on(:customer_location_zip).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerLocationZipInvalidCharacters
+          result.errors.for(:transaction).for(:risk_data).on(:customer_tenure).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerTenureIsTooLong
+        end
+      end
     end
 
     describe "card type indicators" do
@@ -499,7 +524,7 @@ describe Braintree::Transaction do
       result.success?.should == true
     end
 
-    it "accepts additional security parameters: risk data with customer_browser and customer_ip" do
+    it "accepts additional security parameters: risk data" do
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -509,7 +534,10 @@ describe Braintree::Transaction do
         },
         :risk_data => {
           :customer_browser => "IE6",
-          :customer_ip => "192.168.0.1"
+          :customer_device_id => "customer_device_id_012",
+          :customer_ip => "192.168.0.1",
+          :customer_location_zip => "91244",
+          :customer_tenure => "20",
         }
       )
 
@@ -688,6 +716,68 @@ describe Braintree::Transaction do
       codes.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
+    it "returns an error if provided product sku is invalid" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :product_sku => "product$ku!",
+      )
+
+      result.success?.should == false
+      result.errors.for(:transaction).on(:product_sku).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::ProductSkuIsInvalid)
+    end
+
+    it "returns an error if provided shipping phone number is invalid" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :shipping => {
+          :phone_number => "123-234-3456=098765"
+        }
+      )
+
+      result.success?.should == false
+      result.errors.for(:transaction).for(:shipping).on(:phone_number).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::ShippingPhoneNumberIsInvalid)
+    end
+
+    it "returns an error if provided shipping method is invalid" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :shipping => {
+          :shipping_method => "urgent"
+        }
+      )
+
+      result.success?.should == false
+      result.errors.for(:transaction).for(:shipping).on(:shipping_method).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::ShippingMethodIsInvalid)
+    end
+
+    it "returns an error if provided billing phone number is invalid" do
+      result = Braintree::Transaction.sale(
+        :amount => "100",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        },
+        :billing => {
+          :phone_number => "123-234-3456=098765"
+        }
+      )
+
+      result.success?.should == false
+      result.errors.for(:transaction).for(:billing).on(:phone_number).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::BillingPhoneNumberIsInvalid)
+    end
+
     context "gateway rejection reason" do
       it "exposes the cvv gateway rejection reason" do
         old_merchant = Braintree::Configuration.merchant_id
@@ -805,16 +895,44 @@ describe Braintree::Transaction do
       end
 
       it "exposes the fraud gateway rejection reason" do
-        result = Braintree::Transaction.sale(
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Fraud,
-            :expiration_date => "05/2017",
-            :cvv => "333"
-          }
-        )
-        result.success?.should == false
-        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
+        with_advanced_fraud_integration_merchant do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Fraud,
+              :expiration_date => "05/2017",
+              :cvv => "333"
+            }
+          )
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
+        end
+      end
+
+      it "exposes the risk_threshold gateway rejection reason (via test cc num)" do
+        with_advanced_fraud_integration_merchant do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::RiskThreshold,
+              :expiration_date => "05/2017",
+              :cvv => "333"
+            }
+          )
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::RiskThreshold
+        end
+      end
+
+      it "exposes the risk_threshold gateway rejection reason (via test test nonce)" do
+        with_advanced_fraud_integration_merchant do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => Braintree::Test::Nonce::GatewayRejectedRiskThresholds,
+          )
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::RiskThreshold
+        end
       end
 
       it "exposes the token issuance gateway rejection reason" do
@@ -4536,6 +4654,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.sale(
         :amount => "100.00",
         :order_id => "123",
+        :product_sku => "productsku01",
         :channel => "MyShoppingCartProvider",
         :credit_card => {
           :cardholder_name => "The Cardholder",
@@ -4560,6 +4679,7 @@ describe Braintree::Transaction do
           :extended_address => "Suite 403",
           :locality => "Chicago",
           :region => "IL",
+          :phone_number => "122-555-1237",
           :postal_code => "60622",
           :country_name => "United States of America"
         },
@@ -4571,8 +4691,10 @@ describe Braintree::Transaction do
           :extended_address => "Apt 2F",
           :locality => "Bartlett",
           :region => "IL",
+          :phone_number => "122-555-1236",
           :postal_code => "60103",
-          :country_name => "United States of America"
+          :country_name => "United States of America",
+          :shipping_method => Braintree::Transaction::AddressDetails::ShippingMethod::Electronic
         }
       )
       result.success?.should == true
@@ -7037,6 +7159,39 @@ describe Braintree::Transaction do
 
       details = result.paypal_here_details
       details.refund_id.should_not be_nil
+    end
+  end
+
+  describe "card on file network tokenization" do
+    it "creates a transaction with a vaulted, tokenized credit card" do
+      result = Braintree::Transaction.sale(
+        :amount => "112.44",
+        :payment_method_token => "network_tokenized_credit_card",
+      )
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == BigDecimal("112.44")
+      transaction.processed_with_network_token?.should == true
+    end
+
+    it "creates a transaction with a vaulted, non-tokenized credit card" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :customer_id => customer.id
+      )
+      payment_method_token = result.payment_method.token
+
+      result = Braintree::Transaction.sale(
+        :amount => "112.44",
+        :payment_method_token => payment_method_token,
+      )
+      result.success?.should == true
+      transaction = result.transaction
+
+      transaction.amount.should == BigDecimal("112.44")
+      transaction.processed_with_network_token?.should == false
     end
   end
 end

@@ -62,6 +62,7 @@ module Braintree
       PayPalFuturePaymentRefreshToken = "fake-paypal-future-refresh-token-nonce"
       SEPA = "fake-sepa-bank-account-nonce"
       GatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce"
+      GatewayRejectedRiskThresholds = "fake-gateway-rejected-risk-thresholds-nonce"
       MasterpassAmEx = "fake-masterpass-amex-nonce"
       MasterpassDiscover = "fake-masterpass-discover-nonce"
       MasterpassMasterCard = "fake-masterpass-mastercard-nonce"

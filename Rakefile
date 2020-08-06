@@ -8,14 +8,35 @@ task :dev_console do
 end
 
 namespace :test do
+
+  # Usage:
+  #   rake test:unit
+  #   rake test:unit[configuration_spec]
+  #   rake test:unit[configuration_spec,"accepts merchant credentials"]
   desc "Run unit tests"
-  RSpec::Core::RakeTask.new(:unit) do |t|
-    t.pattern = "spec/unit/**/*_spec.rb"
+  task :unit, [:file_name, :test_name] do |task, args|
+    if args.file_name.nil?
+      sh "rspec --pattern spec/unit/**/*_spec.rb"
+    elsif args.test_name.nil?
+      sh "rspec --pattern spec/unit/**/#{args.file_name}.rb --format documentation --color"
+    else
+      sh "rspec --pattern spec/unit/**/#{args.file_name}.rb --example '#{args.test_name}' --format documentation --color"
+    end
   end
 
+  # Usage:
+  #   rake test:integration
+  #   rake test:integration[plan_spec]
+  #   rake test:integration[plan_spec,"gets all plans"]
   desc "Run integration tests"
-  RSpec::Core::RakeTask.new(:integration) do |t|
-    t.pattern = "spec/integration/**/*_spec.rb"
+  task :integration, [:file_name, :test_name] do |task, args|
+    if args.file_name.nil?
+      sh "rspec --pattern spec/integration/**/*_spec.rb"
+    elsif args.test_name.nil?
+      sh "rspec --pattern spec/integration/**/#{args.file_name}.rb --format documentation --color"
+    else
+      sh "rspec --pattern spec/integration/**/#{args.file_name}.rb --example '#{args.test_name}' --format documentation --color"
+    end
   end
 
   task :all => [:unit, :integration]
