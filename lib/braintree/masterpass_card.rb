@@ -1,4 +1,6 @@
 module Braintree
+  # NEXT_MAJOR_VERSION Remove this class.
+  # DEPRECATED The Masterpass Card payment method is deprecated.
   class MasterpassCard
     include BaseModule # :nodoc:
     include Braintree::Util::TokenEquality

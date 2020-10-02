@@ -1,5 +1,7 @@
 module Braintree
   class Transaction
+    # NEXT_MAJOR_VERSION Remove this class.
+    # DEPRECATED The Masterpass Card payment method is deprecated.
     class MasterpassCardDetails # :nodoc:
       include BaseModule
 

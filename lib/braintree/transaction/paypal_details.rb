@@ -9,6 +9,8 @@ module Braintree
       attr_reader :debug_id
       attr_reader :description
       attr_reader :image_url
+      attr_reader :implicitly_vaulted_payment_method_global_id
+      attr_reader :implicitly_vaulted_payment_method_token
       attr_reader :payee_email
       attr_reader :payee_id
       attr_reader :payer_email

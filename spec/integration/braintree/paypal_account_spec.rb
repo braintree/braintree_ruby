@@ -131,7 +131,7 @@ describe Braintree::PayPalAccount do
       )
 
       result.success?.should == false
-      result.errors.first.code.should == "82902"
+      result.errors.map(&:code).should include("82902")
     end
   end
 

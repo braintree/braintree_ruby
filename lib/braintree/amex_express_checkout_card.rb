@@ -1,4 +1,6 @@
 module Braintree
+  # NEXT_MAJOR_VERSION Remove this class.
+  # DEPRECATED The American Express Checkout payment method is deprecated.
   class AmexExpressCheckoutCard
     include BaseModule # :nodoc:
 

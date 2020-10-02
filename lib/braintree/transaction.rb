@@ -92,8 +92,11 @@ module Braintree
 
     attr_reader :add_ons
     attr_reader :additional_processor_response          # The raw response from the processor.
+    # NEXT_MAJOR_VERSION Remove this class.
+    # DEPRECATED The American Express Checkout payment method is deprecated.
     attr_reader :amex_express_checkout_details
     attr_reader :amount
+    # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
     attr_reader :android_pay_details
     attr_reader :apple_pay_details
     attr_reader :authorization_adjustments
@@ -126,6 +129,8 @@ module Braintree
     # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
     attr_reader :ideal_payment_details
     attr_reader :local_payment_details
+    # NEXT_MAJOR_VERSION Remove this class.
+    # DEPRECATED The Masterpass Card payment method is deprecated.
     attr_reader :masterpass_card_details
     attr_reader :merchant_account_id
     attr_reader :network_response_code                  # Response code from the card network
@@ -308,6 +313,7 @@ module Braintree
       @paypal_details = PayPalDetails.new(@paypal)
       @paypal_here_details = PayPalHereDetails.new(@paypal_here)
       @apple_pay_details = ApplePayDetails.new(@apple_pay)
+      # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
       @android_pay_details = AndroidPayDetails.new(@android_pay_card)
       @amex_express_checkout_details = AmexExpressCheckoutDetails.new(@amex_express_checkout_card)
       @venmo_account_details = VenmoAccountDetails.new(@venmo_account)

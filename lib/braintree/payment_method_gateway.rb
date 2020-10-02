@@ -52,6 +52,7 @@ module Braintree
       elsif response.has_key?(:apple_pay_card)
         ApplePayCard._new(@gateway, response[:apple_pay_card])
       elsif response.has_key?(:android_pay_card)
+        # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
         AndroidPayCard._new(@gateway, response[:android_pay_card])
       elsif response.has_key?(:venmo_account)
         VenmoAccount._new(@gateway, response[:venmo_account])

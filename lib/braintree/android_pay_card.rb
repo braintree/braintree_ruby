@@ -1,4 +1,5 @@
 module Braintree
+  # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
   class AndroidPayCard
     include BaseModule # :nodoc:
 

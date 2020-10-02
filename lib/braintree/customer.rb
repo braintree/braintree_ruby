@@ -4,7 +4,8 @@ module Braintree
     include Braintree::Util::IdEquality
 
     attr_reader :addresses
-    attr_reader :amex_express_checkout_cards
+    attr_reader :amex_express_checkout_cards # Deprecated
+    # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
     attr_reader :android_pay_cards
     attr_reader :apple_pay_cards
     attr_reader :coinbase_accounts
@@ -18,7 +19,7 @@ module Braintree
     attr_reader :graphql_id
     attr_reader :id
     attr_reader :last_name
-    attr_reader :masterpass_cards
+    attr_reader :masterpass_cards # Deprecated
     attr_reader :paypal_accounts
     attr_reader :phone
     attr_reader :samsung_pay_cards
@@ -113,6 +114,7 @@ module Braintree
       @coinbase_accounts = (@coinbase_accounts || []).map { |pm| CoinbaseAccount._new gateway, pm }
       @apple_pay_cards = (@apple_pay_cards || []).map { |pm| ApplePayCard._new gateway, pm }
       @europe_bank_accounts = (@europe_bank_Accounts || []).map { |pm| EuropeBankAccount._new gateway, pm }
+      # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
       @android_pay_cards = (@android_pay_cards || []).map { |pm| AndroidPayCard._new gateway, pm }
       @amex_express_checkout_cards = (@amex_express_checkout_cards || []).map { |pm| AmexExpressCheckoutCard._new gateway, pm }
       @venmo_accounts = (@venmo_accounts || []).map { |pm| VenmoAccount._new gateway, pm }

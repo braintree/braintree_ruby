@@ -13,10 +13,12 @@ module Braintree
       AbstractTransactable = "fake-abstract-transactable-nonce"
       Europe = "fake-europe-bank-account-nonce"
       Coinbase = "fake-coinbase-nonce"
+      # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
       AndroidPayDiscover = "fake-android-pay-discover-nonce"
       AndroidPayVisa = "fake-android-pay-visa-nonce"
       AndroidPayMasterCard = "fake-android-pay-mastercard-nonce"
       AndroidPayAmEx = "fake-android-pay-amex-nonce"
+      # NEXT_MAJOR_VERSION Remove AmexExpressCheckout test nonces
       AmexExpressCheckout = "fake-amex-express-checkout-nonce"
       VenmoAccount = "fake-venmo-account-nonce"
       VenmoAccountTokenIssuanceError = "fake-token-issuance-error-venmo-account-nonce"
@@ -63,6 +65,7 @@ module Braintree
       SEPA = "fake-sepa-bank-account-nonce"
       GatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce"
       GatewayRejectedRiskThresholds = "fake-gateway-rejected-risk-thresholds-nonce"
+      # NEXT_MAJOR_VERSION Remove Masterpass test nonces
       MasterpassAmEx = "fake-masterpass-amex-nonce"
       MasterpassDiscover = "fake-masterpass-discover-nonce"
       MasterpassMasterCard = "fake-masterpass-mastercard-nonce"

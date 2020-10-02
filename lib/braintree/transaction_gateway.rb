@@ -256,6 +256,7 @@ module Braintree
           ]},
         ]},
         {:apple_pay_card => [:number, :cardholder_name, :cryptogram, :expiration_month, :expiration_year, :eci_indicator]},
+        # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
         {:android_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]}
       ]
     end

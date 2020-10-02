@@ -42,6 +42,7 @@ describe Braintree::Dispute do
         :amount => "31.00",
         :id => "open_disputed_transaction",
         :created_at => Time.utc(2009, 2, 9, 12, 59, 59),
+        :installment_count => nil,
         :order_id => nil,
         :purchase_order_number => "po",
         :payment_instrument_subtype => "Visa",
@@ -320,6 +321,7 @@ describe Braintree::Dispute do
       dispute.transaction.amount.should == 31.00
       dispute.transaction.id.should == "open_disputed_transaction"
       dispute.transaction.created_at.should == Time.utc(2009, 2, 9, 12, 59, 59)
+      dispute.transaction.installment_count.should == nil
       dispute.transaction.order_id.should == nil
       dispute.transaction.purchase_order_number.should == "po"
       dispute.transaction.payment_instrument_subtype.should == "Visa"
