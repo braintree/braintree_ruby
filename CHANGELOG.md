@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.104.1
+
+* Update `LocalPaymentCompleted` webhook to handle no transaction being created for unbranded local payment methods
+
 ## 2.104.0
 
 * Deprecate Masterpass and American Express Checkout payment methods.

@@ -9,7 +9,7 @@ module Braintree
 
     def initialize(attributes) # :nodoc:
       set_instance_variables_from_hash(attributes)
-      @transaction = Transaction._new(Configuration.gateway, transaction)
+      @transaction = Transaction._new(Configuration.gateway, transaction) unless transaction.nil?
     end
 
     class << self
