@@ -20,6 +20,12 @@ module Braintree
         hash.each do |key, value|
           if key == :global_id
             instance_variable_set "@graphql_id", value
+          elsif key == :android_pay_cards
+            instance_variable_set "@google_pay_cards", value
+          elsif key == :android_pay_card
+            instance_variable_set "@google_pay_card", value
+          elsif key == :android_pay_details
+            instance_variable_set "@google_pay_details", value
           end
 
           instance_variable_set "@#{key}", value

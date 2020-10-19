@@ -1,5 +1,81 @@
 # Changelog
 
+## 3.0.0
+
+* Add `CreditCardVerification::GatewayRejectionReason`
+* Memory improvements related to XML parsing (addresses #159)
+* Breaking changes:
+  * Remove support for Transparent Redirect, Coinbase, iDEAL, Amex Express Checkout and Masterpass
+  * Rename `DownForMaintenanceError` to `ServiceUnavailableError`
+  * Update `Transaction.search` to raise an `UnexpectedError` if the search yields unexpected results
+  * Add `GatewayTimeoutError` and `RequestTimeoutError`
+  * Remove `ForgedQueryString` error
+  * Remove error codes:
+    * EuropeBankAccount.IBANIsRequired
+    * EuropeBankAccount.BICIsRequired
+    * EuropeBankAccount.AccountHolderNameIsRequired
+    * SEPAMandate.AccountHolderNameIsRequired
+    * SEPAMandate.BICIsRequired
+    * SEPAMandate.IBANIsRequired
+    * SEPAMandate.TypeIsRequired
+    * SEPAMandate.IBANInvalidCharacter
+    * SEPAMandate.BICInvalidCharacter
+    * SEPAMandate.BICLengthIsInvalid
+    * SEPAMandate.BICUnsupportedCountry
+    * SEPAMandate.IBANUnsupportedCountry
+    * SEPAMandate.IBANInvalidFormat
+    * SEPAMandate.LocaleIsUnsupported
+    * SEPAMandate.BillingAddressIsInvalid
+    * SEPAMandate.TypeIsInvalid
+    * Transaction.AmountDoesNotMatchIdealPaymentAmount
+    * Transaction.IdealPaymentNotComplete
+    * Transaction.IdealPaymentsCannotBeVaulted
+    * Transaction.MerchantAccountDoesNotMatchIdealPaymentMerchantAccount
+    * Transaction.OrderIdDoesNotMatchIdealPaymentOrderId
+    * Transaction.OrderIdIsRequiredWithIdealPayment
+    * TransactionLineItem.DiscountAmountMustBeGreaterThanZero
+    * TransactionLineItem.UnitTaxAmountMustBeGreaterThanZero
+  * Remove deprecated methods:
+    * Address#delete
+    * Address#update and Address#update!
+    * CreditCard.grant
+    * CreditCard#credit and CreditCard#credit!
+    * CreditCard#delete
+    * CreditCard#sale and CreditCard#sale!
+    * CreditCard#update and CreditCard#update!
+    * CreditCardGateway#grant
+    * Customer#default_credit_card
+    * Customer#sale and Customer#sale!
+    * Customer#update and Customer#update!
+    * Dispute#forwarded_comments
+    * Subscription#next_bill_amount
+    * Transaction#refund
+    * Transaction#refund_id
+    * Transaction#submit_for_settlement and Transaction#submit_for_settlement!
+    * Transaction#void and Transaction#void!
+  * Remove unused WebhookNotification::Kind::GrantedPaymentInstrumentUpdate
+  * Rename all Android Pay classes and methods to Google Pay 
+  * Rename Dispute::HistoryEvent to Dispute::StatusHistory
+  * Update the following methods to return `Date`s instead of `Strings` (fixes #161):
+    * DisbursementDetails#disbursement_date
+    * StatusHistory#disbursement_date
+    * StatusHistory#effective_date
+    * Subscription#billing_period_end_date
+    * Subscription#billing_period_start_date
+    * Subscription#first_billing_date
+    * Subscription#next_billing_date
+    * Subscription#paid_through_date
+    * SubscriptionDetails#billing_period_end_date
+    * SubscriptionDetails#billing_period_start_date
+  * Bump API version to support declined refund objects
+  * Remove deprecated parameters:
+    - `device_session_id` from CreditCard#create, Transaction#sale, PaymentMethod#create, and Customer#create
+    - `fraud_merchant_id` from CreditCard#create, Transaction#sale, PaymentMethod#create, and Customer#create
+    - `recurring` from Transaction#sale
+  * Update builder dependency to >= 3.2.4
+  * Update libxml-ruby dependency to >= 3.2.0
+  * Update gemspec to require ruby >= 2.5.0
+
 ## 2.104.1
 
 * Update `LocalPaymentCompleted` webhook to handle no transaction being created for unbranded local payment methods

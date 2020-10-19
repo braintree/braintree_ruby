@@ -3,6 +3,19 @@ module Braintree
     include BaseModule
     include Braintree::Util::IdEquality
 
+    module GatewayRejectionReason
+      ApplicationIncomplete = "application_incomplete"
+      AVS          = "avs"
+      AVSAndCVV    = "avs_and_cvv"
+      CVV          = "cvv"
+      Duplicate    = "duplicate"
+      Fraud        = "fraud"
+      RiskThreshold = "risk_threshold"
+      ThreeDSecure = "three_d_secure"
+      TokenIssuance = "token_issuance"
+      Unrecognized = "unrecognized"
+    end
+
     module Status
       Failed = 'failed'
       GatewayRejected = 'gateway_rejected'

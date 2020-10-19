@@ -36,18 +36,10 @@ module Braintree
 
       AccountUpdaterDailyReport = "account_updater_daily_report"
 
-      # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
-      # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
-      IdealPaymentComplete = "ideal_payment_complete"
-      IdealPaymentFailed = "ideal_payment_failed"
-
       OAuthAccessRevoked = "oauth_access_revoked"
       ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
       ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
 
-      # NEXT_MAJOR_VERSION remove GrantedPaymentInstrumentUpdate. Kind is not sent by Braintree Gateway.
-      # Kind will either be GrantorUpdatedGrantedPaymentMethod or RecipientUpdatedGrantedPaymentMethod.
-      GrantedPaymentInstrumentUpdate = "granted_payment_instrument_update"
       GrantorUpdatedGrantedPaymentMethod = "grantor_updated_granted_payment_method"
       RecipientUpdatedGrantedPaymentMethod = "recipient_updated_granted_payment_method"
       GrantedPaymentInstrumentRevoked = "granted_payment_instrument_revoked"
@@ -63,7 +55,6 @@ module Braintree
     attr_reader :dispute
     attr_reader :granted_payment_instrument_update
     attr_reader :revoked_payment_method_metadata
-    attr_reader :ideal_payment
     attr_reader :kind
     attr_reader :local_payment_completed
     attr_reader :oauth_access_revocation
@@ -93,7 +84,6 @@ module Braintree
       @disbursement = Disbursement._new(gateway, @subject[:disbursement]) if @subject.has_key?(:disbursement)
       @dispute = Dispute._new(@subject[:dispute]) if @subject.has_key?(:dispute)
       @account_updater_daily_report = AccountUpdaterDailyReport._new(@subject[:account_updater_daily_report]) if @subject.has_key?(:account_updater_daily_report)
-      @ideal_payment = Braintree::IdealPayment._new(gateway, @subject[:ideal_payment]) if @subject.has_key?(:ideal_payment)
       @connected_merchant_status_transitioned = ConnectedMerchantStatusTransitioned._new(@subject[:connected_merchant_status_transitioned]) if @subject.has_key?(:connected_merchant_status_transitioned)
       @connected_merchant_paypal_status_changed = ConnectedMerchantPayPalStatusChanged._new(@subject[:connected_merchant_paypal_status_changed]) if @subject.has_key?(:connected_merchant_paypal_status_changed)
       @granted_payment_instrument_update = GrantedPaymentInstrumentUpdate._new(@subject[:granted_payment_instrument_update]) if @subject.has_key?(:granted_payment_instrument_update)

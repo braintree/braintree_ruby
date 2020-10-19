@@ -22,17 +22,6 @@ module Braintree
       return_object_or_raise(:customer) { create(*args) }
     end
 
-    # Deprecated
-    def create_customer_url
-      "#{@config.base_merchant_url}/customers/all/create_via_transparent_redirect_request"
-    end
-
-    # Deprecated
-    def create_from_transparent_redirect(query_string)
-      params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
-      _do_create("/customers/all/confirm_transparent_redirect_request", :id => params[:id])
-    end
-
     def delete(customer_id)
       @config.http.delete("#{@config.base_merchant_path}/customers/#{customer_id}")
       SuccessfulResult.new
@@ -69,18 +58,6 @@ module Braintree
 
     def update!(*args)
       return_object_or_raise(:customer) { update(*args) }
-    end
-
-    # Deprecated
-    def update_customer_url
-      warn "[DEPRECATED] Customer.update_customer_url is deprecated. Please use TransparentRedirect.url"
-      "#{@config.base_merchant_url}/customers/all/update_via_transparent_redirect_request"
-    end
-
-    # Deprecated
-    def update_from_transparent_redirect(query_string)
-      params = @gateway.transparent_redirect.parse_and_validate_query_string(query_string)
-      _do_update(:post, "/customers/all/confirm_transparent_redirect_request", :id => params[:id])
     end
 
     def self._create_signature # :nodoc:

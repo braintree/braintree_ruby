@@ -82,7 +82,7 @@ describe Braintree::Dispute, "search" do
       effective_date = transaction.disputes.first.status_history.first.effective_date
 
       collection = Braintree::Dispute.search do |search|
-        search.effective_date.between(effective_date, Date.parse(effective_date).next_day.to_s)
+        search.effective_date.between(effective_date, effective_date.next_day)
       end
 
       expect(collection.disputes.count).to be >= 1
@@ -95,7 +95,7 @@ describe Braintree::Dispute, "search" do
       disbursement_date = transaction.disputes.first.status_history.first.disbursement_date
 
       collection = Braintree::Dispute.search do |search|
-        search.disbursement_date.between(disbursement_date, Date.parse(disbursement_date).next_day.to_s)
+        search.disbursement_date.between(disbursement_date, disbursement_date.next_day)
       end
 
       expect(collection.disputes.count).to be >= 1

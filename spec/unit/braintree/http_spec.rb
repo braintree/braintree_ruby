@@ -130,7 +130,7 @@ END
       expect(default_headers["Accept-Encoding"]).to eq("gzip")
       expect(default_headers["Content-Type"]).to eq("application/xml")
       expect(default_headers["User-Agent"]).to match(/Braintree Ruby Gem .*/)
-      expect(default_headers["X-ApiVersion"]).to eq("5")
+      expect(default_headers["X-ApiVersion"]).to eq("6")
     end
 
     it "overwrites defaults with override headers" do
@@ -144,7 +144,7 @@ END
       expect(headers["Authorization"]).to eq("token")
       expect(headers["Content-Type"]).to eq("application/xml")
       expect(headers["User-Agent"]).to match(/Braintree Ruby Gem .*/)
-      expect(headers["X-ApiVersion"]).to eq("5")
+      expect(headers["X-ApiVersion"]).to eq("6")
     end
 
     it "extends default headers when new headers are specified" do
@@ -156,7 +156,7 @@ END
       expect(headers["Accept-Encoding"]).to eq("gzip")
       expect(headers["Content-Type"]).to eq("application/xml")
       expect(headers["User-Agent"]).to match(/Braintree Ruby Gem .*/)
-      expect(headers["X-ApiVersion"]).to eq("5")
+      expect(headers["X-ApiVersion"]).to eq("6")
       expect(headers["New-Header"]).to eq("New Value")
     end
   end

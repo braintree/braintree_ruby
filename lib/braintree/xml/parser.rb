@@ -11,23 +11,14 @@ module Braintree
         "boolean"  => Proc.new { |boolean| %w(1 true).include?(boolean.strip) },
       }
 
-      def self.hash_from_xml(xml, parser = _determine_parser)
-        standardized_hash_structure = parser.parse(xml)
-        with_underscores_in_keys = _unrename_keys(standardized_hash_structure)
-        typecasted_xml = _typecast_xml_value(with_underscores_in_keys)
-        Util.symbolize_keys(typecasted_xml)
+      def self.hash_from_xml(xml)
+        standardized_hash_structure = ::Braintree::Xml::Libxml.parse(xml)
+        transformed_xml = _transform_xml(standardized_hash_structure)
+        Util.symbolize_keys(transformed_xml)
       end
 
-      def self._determine_parser
-        # LibXML causes a segfault in Ruby 2.0.0. We need to fall back to Rexml to prevent this segfault.
-        if !RUBY_VERSION.start_with?("2.0") && defined?(::LibXML::XML) && ::LibXML::XML.respond_to?(:default_keep_blanks=)
-          ::Braintree::Xml::Libxml
-        else
-          ::Braintree::Xml::Rexml
-        end
-      end
-
-      def self._typecast_xml_value(value)
+      # Transform into standard Ruby types and convert all keys to snake_case instead of dash-case
+      def self._transform_xml(value)
         case value.class.to_s
           when 'Hash'
             if value['type'] == 'array'
@@ -37,9 +28,9 @@ module Braintree
               else
                 case entries.class.to_s   # something weird with classes not matching here.  maybe singleton methods breaking is_a?
                 when "Array"
-                  entries.collect { |v| _typecast_xml_value(v) }
+                  entries.collect { |v| _transform_xml(v) }
                 when "Hash"
-                  [_typecast_xml_value(entries)]
+                  [_transform_xml(entries)]
                 else
                   raise "can't typecast #{entries.inspect}"
                 end
@@ -65,13 +56,13 @@ module Braintree
               nil
             else
               xml_value = value.inject({}) do |h,(k,v)|
-                h[k] = _typecast_xml_value(v)
+                h[k.to_s.tr("-", "_")] = _transform_xml(v) # convert dashes to underscores in keys
                 h
               end
               xml_value
             end
           when 'Array'
-            value.map! { |i| _typecast_xml_value(i) }
+            value.map! { |i| _transform_xml(i) }
             case value.length
               when 0 then nil
               when 1 then value.first
@@ -80,21 +71,7 @@ module Braintree
           when 'String'
             value
           else
-            raise "can't typecast #{value.class.name} - #{value.inspect}"
-        end
-      end
-
-      def self._unrename_keys(params)
-        case params.class.to_s
-          when "Hash"
-            params.inject({}) do |h,(k,v)|
-              h[k.to_s.tr("-", "_")] = _unrename_keys(v)
-              h
-            end
-          when "Array"
-            params.map { |v| _unrename_keys(v) }
-          else
-            params
+            raise "can't transform #{value.class.name} - #{value.inspect}"
         end
       end
     end

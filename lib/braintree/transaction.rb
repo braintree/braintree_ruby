@@ -92,12 +92,8 @@ module Braintree
 
     attr_reader :add_ons
     attr_reader :additional_processor_response          # The raw response from the processor.
-    # NEXT_MAJOR_VERSION Remove this class.
-    # DEPRECATED The American Express Checkout payment method is deprecated.
-    attr_reader :amex_express_checkout_details
     attr_reader :amount
-    # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
-    attr_reader :android_pay_details
+    attr_reader :google_pay_details
     attr_reader :apple_pay_details
     attr_reader :authorization_adjustments
     attr_reader :authorization_expires_at
@@ -107,7 +103,6 @@ module Braintree
     attr_reader :avs_street_address_response_code
     attr_reader :billing_details
     attr_reader :channel
-    attr_reader :coinbase_details
     attr_reader :created_at
     attr_reader :credit_card_details
     attr_reader :currency_iso_code
@@ -125,13 +120,7 @@ module Braintree
     attr_reader :gateway_rejection_reason
     attr_reader :graphql_id
     attr_reader :id
-    # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
-    # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
-    attr_reader :ideal_payment_details
     attr_reader :local_payment_details
-    # NEXT_MAJOR_VERSION Remove this class.
-    # DEPRECATED The Masterpass Card payment method is deprecated.
-    attr_reader :masterpass_card_details
     attr_reader :merchant_account_id
     attr_reader :network_response_code                  # Response code from the card network
     attr_reader :network_response_text                  # Response text from the card network
@@ -197,18 +186,6 @@ module Braintree
 
     def self.clone_transaction!(*args)
       Configuration.gateway.transaction.clone_transaction!(*args)
-    end
-
-    # Deprecated. Use Braintree::TransparentRedirect.confirm
-    def self.create_from_transparent_redirect(*args)
-      warn "[DEPRECATED] Transaction.create_from_transparent_redirect is deprecated. Please use TransparentRedirect.confirm"
-      Configuration.gateway.transaction.create_from_transparent_redirect(*args)
-    end
-
-    # Deprecated. Use Braintree::TransparentRedirect.url
-    def self.create_transaction_url
-      warn "[DEPRECATED] Transaction.create_transaction_url is deprecated. Please use TransparentRedirect.url"
-      Configuration.gateway.transaction.create_transaction_url
     end
 
     def self.credit(*args)
@@ -313,11 +290,8 @@ module Braintree
       @paypal_details = PayPalDetails.new(@paypal)
       @paypal_here_details = PayPalHereDetails.new(@paypal_here)
       @apple_pay_details = ApplePayDetails.new(@apple_pay)
-      # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
-      @android_pay_details = AndroidPayDetails.new(@android_pay_card)
-      @amex_express_checkout_details = AmexExpressCheckoutDetails.new(@amex_express_checkout_card)
+      @google_pay_details = GooglePayDetails.new(@google_pay_card)
       @venmo_account_details = VenmoAccountDetails.new(@venmo_account)
-      @coinbase_details = CoinbaseDetails.new(@coinbase_account)
       disputes.map! { |attrs| Dispute._new(attrs) } if disputes
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
@@ -328,9 +302,7 @@ module Braintree
       @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
       @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
-      @ideal_payment_details = IdealPaymentDetails.new(attributes[:ideal_payment]) if attributes[:ideal_payment]
       @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
-      @masterpass_card_details = MasterpassCardDetails.new(attributes[:masterpass_card])
       @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card])
       authorization_adjustments.map! { |attrs| AuthorizationAdjustment._new(attrs) } if authorization_adjustments
     end
@@ -352,18 +324,6 @@ module Braintree
       @gateway.transaction_line_item.find_all(id)
     end
 
-    # Deprecated. Use Braintree::Transaction.refund
-    def refund(amount = nil)
-      warn "[DEPRECATED] refund as an instance method is deprecated. Please use Transaction.refund"
-      result = @gateway.transaction.refund(id, amount)
-
-      if result.success?
-        SuccessfulResult.new(:new_transaction => result.transaction)
-      else
-        result
-      end
-    end
-
     # Returns true if the transaction has been refunded. False otherwise.
     def refunded?
       !@refund_id.nil?
@@ -372,27 +332,6 @@ module Braintree
     # Returns true if the transaction has been disbursed. False otherwise.
     def disbursed?
       @disbursement_details.valid?
-    end
-
-    def refund_id
-      warn "[DEPRECATED] Transaction.refund_id is deprecated. Please use Transaction.refund_ids"
-      @refund_id
-    end
-
-    # Deprecated. Use Braintree::Transaction.submit_for_settlement
-    def submit_for_settlement(amount = nil)
-      warn "[DEPRECATED] submit_for_settlement as an instance method is deprecated. Please use Transaction.submit_for_settlement"
-      result = @gateway.transaction.submit_for_settlement(id, amount)
-      if result.success?
-        copy_instance_variables_from_object result.transaction
-      end
-      result
-    end
-
-    # Deprecated. Use Braintree::Transaction.submit_for_settlement!
-    def submit_for_settlement!(amount = nil)
-      warn "[DEPRECATED] submit_for_settlement! as an instance method is deprecated. Please use Transaction.submit_for_settlement!"
-      return_object_or_raise(:transaction) { submit_for_settlement(amount) }
     end
 
     # If this transaction was stored in the vault, or created from vault records,
@@ -429,22 +368,6 @@ module Braintree
     def vault_shipping_address
       return nil if shipping_details.id.nil?
       @gateway.address.find(customer_details.id, shipping_details.id)
-    end
-
-    # Deprecated. Use Braintree::Transaction.void
-    def void
-      warn "[DEPRECATED] void as an instance method is deprecated. Please use Transaction.void"
-      result = @gateway.transaction.void(id)
-      if result.success?
-        copy_instance_variables_from_object result.transaction
-      end
-      result
-    end
-
-    # Deprecated. Use Braintree::Transaction.void!
-    def void!
-      warn "[DEPRECATED] void! as an instance method is deprecated. Please use Transaction.void!"
-      return_object_or_raise(:transaction) { void }
     end
 
     def processed_with_network_token?

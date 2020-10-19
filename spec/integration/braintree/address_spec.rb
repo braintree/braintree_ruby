@@ -347,98 +347,11 @@ describe Braintree::Address do
     it "deletes the address" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
       address = Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
-      address.delete.success?.should == true
+      result = Braintree::Address.delete(customer.id, address.id)
+      result.success?.should == true
       expect do
         Braintree::Address.find(customer.id, address.id)
       end.to raise_error(Braintree::NotFoundError)
-    end
-  end
-
-  describe "update" do
-    it "returns a success response and updates the address if valid" do
-      customer = Braintree::Customer.create!(:last_name => "Miller")
-      address = Braintree::Address.create!(
-        :customer_id => customer.id,
-        :street_address => "1812 E Old St",
-        :extended_address => "Suite Old 201",
-        :locality => "Old Chicago",
-        :region => "IL",
-        :postal_code => "60620",
-        :country_name => "United States of America"
-      )
-      result = address.update(
-        :street_address => "123 E New St",
-        :extended_address => "New Suite 3",
-        :locality => "Chicago",
-        :region => "Illinois",
-        :postal_code => "60621",
-        :country_name => "United States of America"
-      )
-      result.success?.should == true
-      result.address.should == address
-      address.street_address.should == "123 E New St"
-      address.extended_address.should == "New Suite 3"
-      address.locality.should == "Chicago"
-      address.region.should == "Illinois"
-      address.postal_code.should == "60621"
-      address.country_name.should == "United States of America"
-    end
-
-    it "returns an error response if invalid" do
-      customer = Braintree::Customer.create!(:last_name => "Miller")
-      address = Braintree::Address.create!(
-        :customer_id => customer.id,
-        :country_name => "United States of America"
-      )
-      result = address.update(
-        :street_address => "123 E New St",
-        :country_name => "United States of Invalid"
-      )
-      result.success?.should == false
-      result.errors.for(:address).on(:country_name)[0].message.should == "Country name is not an accepted country."
-    end
-  end
-
-  describe "update!" do
-    it "returns true and updates the address if valid" do
-      customer = Braintree::Customer.create!(:last_name => "Miller")
-      address = Braintree::Address.create!(
-        :customer_id => customer.id,
-        :street_address => "1812 E Old St",
-        :extended_address => "Suite Old 201",
-        :locality => "Old Chicago",
-        :region => "IL",
-        :postal_code => "60620",
-        :country_name => "United States of America"
-      )
-      address.update!(
-        :street_address => "123 E New St",
-        :extended_address => "New Suite 3",
-        :locality => "Chicago",
-        :region => "Illinois",
-        :postal_code => "60621",
-        :country_name => "United States of America"
-      ).should == address
-      address.street_address.should == "123 E New St"
-      address.extended_address.should == "New Suite 3"
-      address.locality.should == "Chicago"
-      address.region.should == "Illinois"
-      address.postal_code.should == "60621"
-      address.country_name.should == "United States of America"
-    end
-
-    it "raises a ValidationsFailed invalid" do
-      customer = Braintree::Customer.create!(:last_name => "Miller")
-      address = Braintree::Address.create!(
-        :customer_id => customer.id,
-        :country_name => "United States of America"
-      )
-      expect do
-        address.update!(
-          :street_address => "123 E New St",
-          :country_name => "United States of Invalid"
-        )
-      end.to raise_error(Braintree::ValidationsFailed)
     end
   end
 end

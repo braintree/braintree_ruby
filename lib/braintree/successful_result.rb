@@ -13,7 +13,6 @@ module Braintree
     attr_reader :merchant
     attr_reader :merchant_account
     attr_reader :merchant_accounts
-    attr_reader :new_transaction
     attr_reader :payment_method
     attr_reader :payment_method_nonce
     attr_reader :paypal_account

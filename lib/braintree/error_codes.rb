@@ -37,27 +37,27 @@ module Braintree
 
     module ApplePay
       ApplePayCardsAreNotAccepted = "83501"
-      CustomerIdIsRequiredForVaulting = "83502"
-      TokenIsInUse = "93503"
-      PaymentMethodNonceConsumed = "93504"
-      PaymentMethodNonceUnknown = "93505"
-      PaymentMethodNonceLocked = "93506"
-      PaymentMethodNonceCardTypeIsNotAccepted = "83518"
       CannotUpdateApplePayCardUsingPaymentMethodNonce = "93507"
-      NumberIsRequired = "93508"
-      ExpirationMonthIsRequired = "93509"
-      ExpirationYearIsRequired = "93510"
-      CryptogramIsRequired = "93511"
-      DecryptionFailed = "83512"
-      Disabled = "93513"
-      MerchantNotConfigured = "93514"
-      MerchantKeysAlreadyConfigured = "93515"
-      MerchantKeysNotConfigured = "93516"
       CertificateInvalid = "93517"
       CertificateMismatch = "93519"
+      CryptogramIsRequired = "93511"
+      CustomerIdIsRequiredForVaulting = "83502"
+      DecryptionFailed = "83512"
+      Disabled = "93513"
+      ExpirationMonthIsRequired = "93509"
+      ExpirationYearIsRequired = "93510"
       InvalidToken = "83520"
-      PrivateKeyMismatch = "93521"
       KeyMismatchStoringCertificate = "93522"
+      MerchantKeysAlreadyConfigured = "93515"
+      MerchantKeysNotConfigured = "93516"
+      MerchantNotConfigured = "93514"
+      NumberIsRequired = "93508"
+      PaymentMethodNonceCardTypeIsNotAccepted = "83518"
+      PaymentMethodNonceConsumed = "93504"
+      PaymentMethodNonceLocked = "93506"
+      PaymentMethodNonceUnknown = "93505"
+      PrivateKeyMismatch = "93521"
+      TokenIsInUse = "93503"
     end
 
     module CreditCard
@@ -100,9 +100,9 @@ module Braintree
       TokenIsRequired = "91722"
       TokenIsTooLong = "91720"
       VenmoSDKPaymentMethodCodeCardTypeIsNotAccepted = "91726"
-      VerificationNotSupportedOnThisMerchantAccount = "91730"
       VerificationAccountTypeIsInvalid = "91757"
       VerificationAccountTypeNotSupported = "91758"
+      VerificationNotSupportedOnThisMerchantAccount = "91730"
 
       module Options
         UpdateExistingTokenIsInvalid = "91723"
@@ -112,10 +112,10 @@ module Braintree
         VerificationAmountFormatIsInvalid = "91740"
         VerificationAmountIsTooLarge = "91752"
         VerificationAmountNotSupportedByProcessor = "91741"
+        VerificationMerchantAccountCannotBeSubMerchantAccount = "91755"
         VerificationMerchantAccountIdIsInvalid = "91728"
         VerificationMerchantAccountIsForbidden = "91743"
         VerificationMerchantAccountIsSuspended = "91742"
-        VerificationMerchantAccountCannotBeSubMerchantAccount = "91755"
       end
     end
 
@@ -141,47 +141,46 @@ module Braintree
     end
 
     module Descriptor
-      NameFormatIsInvalid = "92201"
-      PhoneFormatIsInvalid = "92202"
       DynamicDescriptorsDisabled = "92203"
       InternationalNameFormatIsInvalid = "92204"
       InternationalPhoneFormatIsInvalid = "92205"
+      NameFormatIsInvalid = "92201"
+      PhoneFormatIsInvalid = "92202"
       UrlFormatIsInvalid = "92206"
     end
 
     module Dispute
-      CanOnlyAddEvidenceToOpenDispute = "95701"
-      CanOnlyRemoveEvidenceFromOpenDispute = "95702"
-      CanOnlyAddEvidenceDocumentToDispute = "95703"
       CanOnlyAcceptOpenDispute = "95704"
-      CanOnlyFinalizeOpenDispute = "95705"
+      CanOnlyAddEvidenceDocumentToDispute = "95703"
+      CanOnlyAddEvidenceToOpenDispute = "95701"
       CanOnlyCreateEvidenceWithValidCategory = "95706"
-      EvidenceContentDateInvalid = "95707"
-      EvidenceContentTooLong = "95708"
-      EvidenceContentARNTooLong = "95709"
-      EvidenceContentPhoneTooLong = "95710"
-      EvidenceCategoryTextOnly = "95711"
-      EvidenceCategoryDocumentOnly = "95712"
-      EvidenceCategoryNotForReasonCode = "95713"
-      EvidenceCategoryDuplicate = "95714"
-      EvidenceContentEmailInvalid = "95715"
-
-      DigitalGoodsMissingEvidence = "95720"
+      CanOnlyFinalizeOpenDispute = "95705"
+      CanOnlyRemoveEvidenceFromOpenDispute = "95702"
       DigitalGoodsMissingDownloadDate = "95721"
+      DigitalGoodsMissingEvidence = "95720"
+      EvidenceCategoryDocumentOnly = "95712"
+      EvidenceCategoryDuplicate = "95714"
+      EvidenceCategoryNotForReasonCode = "95713"
+      EvidenceCategoryTextOnly = "95711"
+      EvidenceContentARNTooLong = "95709"
+      EvidenceContentDateInvalid = "95707"
+      EvidenceContentEmailInvalid = "95715"
+      EvidenceContentPhoneTooLong = "95710"
+      EvidenceContentTooLong = "95708"
       NonDisputedPriorTransactionEvidenceMissingARN = "95722"
       NonDisputedPriorTransactionEvidenceMissingDate = "95723"
-      RecurringTransactionEvidenceMissingDate = "95724"
       RecurringTransactionEvidenceMissingARN = "95725"
+      RecurringTransactionEvidenceMissingDate = "95724"
       ValidEvidenceRequiredToFinalize = "95726"
     end
 
     module DocumentUpload
-      KindIsInvalid = "84901"
-      FileIsTooLarge = "84902"
-      FileTypeIsInvalid = "84903"
-      FileIsMalformedOrEncrypted = "84904"
-      FileIsTooLong = "84905"
       FileIsEmpty = "84906"
+      FileIsMalformedOrEncrypted = "84904"
+      FileIsTooLarge = "84902"
+      FileIsTooLong = "84905"
+      FileTypeIsInvalid = "84903"
+      KindIsInvalid = "84901"
     end
 
     module PayPalAccount
@@ -201,28 +200,6 @@ module Braintree
       PaymentMethodNonceLocked = "92909"
       PaymentMethodNonceUnknown = "92908"
       TokenIsInUse = "92906"
-    end
-
-    module EuropeBankAccount
-      IBANIsRequired = "93001"
-      BICIsRequired = "93002"
-      AccountHolderNameIsRequired = "93003"
-    end
-
-    module SEPAMandate
-      AccountHolderNameIsRequired = "83301"
-      BICIsRequired = "83302"
-      IBANIsRequired = "83303"
-      TypeIsRequired = "93304"
-      IBANInvalidCharacter = "83305"
-      BICInvalidCharacter = "83306"
-      BICLengthIsInvalid = "83307"
-      BICUnsupportedCountry = "83308"
-      IBANUnsupportedCountry = "83309"
-      IBANInvalidFormat = "83310"
-      LocaleIsUnsupported = "93311"
-      BillingAddressIsInvalid = "93312"
-      TypeIsInvalid = "93313"
     end
 
     module Subscription
@@ -295,7 +272,6 @@ module Braintree
     module Transaction
       AmountCannotBeNegative = "81501"
       AmountDoesNotMatch3DSecureAmount = "91585"
-      AmountDoesNotMatchIdealPaymentAmount = "915144"
       AmountFormatIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsInvalid = "81503" # Keep for backwards compatibility
       AmountIsRequired = "81502"
@@ -325,11 +301,11 @@ module Braintree
       CannotUpdateTransactionDetailsNotSubmittedForSettlement = "915129"
       ChannelIsTooLong = "91550"
       CreditCardIsRequired = "91508"
+      CustomFieldIsInvalid = "91526"
+      CustomFieldIsTooLong = "81527"
       CustomerDefaultPaymentMethodCardTypeIsNotAccepted = "81509"
       CustomerDoesNotHaveCreditCard = "91511"
       CustomerIdIsInvalid = "91510"
-      CustomFieldIsInvalid = "91526"
-      CustomFieldIsTooLong = "81527"
       DiscountAmountCannotBeNegative = "915160"
       DiscountAmountFormatIsInvalid = "915159"
       DiscountAmountIsTooLarge = "915161"
@@ -337,19 +313,17 @@ module Braintree
       FailedAuthAdjustmentHardDecline = "95602"
       FinalAuthSubmitForSettlementForDifferentAmount = "95601"
       HasAlreadyBeenRefunded = "91512"
-      IdealPaymentNotComplete = "815141"
-      IdealPaymentsCannotBeVaulted = "915150"
       LineItemsExpected = "915158"
       MerchantAccountDoesNotMatch3DSecureMerchantAccount = "91584"
-      MerchantAccountDoesNotMatchIdealPaymentMerchantAccount = "915143"
       MerchantAccountDoesNotSupportMOTO = "91558"
       MerchantAccountDoesNotSupportRefunds = "91547"
       MerchantAccountIdDoesNotMatchSubscription = "915180"
       MerchantAccountIdIsInvalid = "91513"
       MerchantAccountIsSuspended = "91514"
-      OrderIdDoesNotMatchIdealPaymentOrderId = "91503"
-      OrderIdIsRequiredWithIdealPayment = "91502"
       OrderIdIsTooLong = "91501"
+      PayPalAuthExpired = "91579"
+      PayPalNotEnabled = "91576"
+      PayPalVaultRecordMissingData = "91583"
       PaymentInstrumentNotSupportedByMerchantAccount = "91577"
       PaymentInstrumentTypeIsNotAccepted = "915101"
       PaymentInstrumentWithExternalVaultIsInvalid = "915176"
@@ -364,9 +338,6 @@ module Braintree
       PaymentMethodNonceUnknown = "91565"
       PaymentMethodTokenCardTypeIsNotAccepted = "91517"
       PaymentMethodTokenIsInvalid = "91518"
-      PayPalAuthExpired = "91579"
-      PayPalNotEnabled = "91576"
-      PayPalVaultRecordMissingData = "91583"
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
       ProcessorDoesNotSupportAuths = "915104"
@@ -451,37 +422,36 @@ module Braintree
         IndustryTypeIsInvalid = "93401"
 
         module Lodging
-          EmptyData = "93402"
-          FolioNumberIsInvalid = "93403"
+          AdvancedDepositIndicatorIsInvalid = "93440"
           CheckInDateIsInvalid = "93404"
           CheckOutDateIsInvalid = "93405"
           CheckOutDateMustFollowCheckInDate = "93406"
-          UnknownDataField = "93407"
-          RoomRateMustBeGreaterThanZero = "93433"
+          EmptyData = "93402"
+          FireSafetyIndicatorIsInvalid = "93441"
+          FolioNumberIsInvalid = "93403"
+          NoShowIndicatorIsInvalid = "93439"
+          PropertyPhoneIsInvalid = "93442"
           RoomRateFormatIsInvalid = "93434"
           RoomRateIsTooLarge = "93435"
-          RoomTaxMustBeGreaterThanZero = "93436"
+          RoomRateMustBeGreaterThanZero = "93433"
           RoomTaxFormatIsInvalid = "93437"
           RoomTaxIsTooLarge = "93438"
-          NoShowIndicatorIsInvalid = "93439"
-          AdvancedDepositIndicatorIsInvalid = "93440"
-          FireSafetyIndicatorIsInvalid = "93441"
-          PropertyPhoneIsInvalid = "93442"
+          RoomTaxMustBeGreaterThanZero = "93436"
+          UnknownDataField = "93407"
         end
 
         module TravelCruise
-          EmptyData = "93408"
-          UnknownDataField = "93409"
-          TravelPackageIsInvalid = "93410"
           DepartureDateIsInvalid = "93411"
+          EmptyData = "93408"
           LodgingCheckInDateIsInvalid = "93412"
           LodgingCheckOutDateIsInvalid = "93413"
+          TravelPackageIsInvalid = "93410"
+          UnknownDataField = "93409"
         end
 
         module TravelFlight
-          EmptyData = "93414"
-          UnknownDataField = "93415"
           CustomerCodeIsTooLong = "93416"
+          EmptyData = "93414"
           FareAmountCannotBeNegative = "93417"
           FareAmountFormatIsInvalid = "93418"
           FareAmountIsTooLarge = "93419"
@@ -490,14 +460,15 @@ module Braintree
           FeeAmountIsTooLarge = "93422"
           IssuedDateFormatIsInvalid = "93423"
           IssuingCarrierCodeIsTooLong = "93424"
+          LegsExpected = "93431"
           PassengerMiddleInitialIsTooLong = "93425"
           RestrictedTicketIsRequired = "93426"
           TaxAmountCannotBeNegative = "93427"
           TaxAmountFormatIsInvalid = "93428"
           TaxAmountIsTooLarge = "93429"
           TicketNumberIsTooLong = "93430"
-          LegsExpected = "93431"
           TooManyLegs = "93432"
+          UnknownDataField = "93415"
         end
 
         module Leg
@@ -526,30 +497,29 @@ module Braintree
         end
 
         module AdditionalCharge
+          AmountFormatIsInvalid = "96604"
+          AmountIsRequired = "96606"
+          AmountIsTooLarge = "96605"
+          AmountMustBeGreaterThanZero = "96603"
           KindIsInvalid = "96601"
           KindMustBeUnique = "96602"
-          AmountMustBeGreaterThanZero = "96603"
-          AmountFormatIsInvalid = "96604"
-          AmountIsTooLarge = "96605"
-          AmountIsRequired = "96606"
         end
       end
 
       module ExternalVault
-        StatusIsInvalid = "915175"
         CardTypeIsInvalid = "915178"
-        StatusWithPreviousNetworkTransactionIdIsInvalid = "915177"
         PreviousNetworkTransactionIdIsInvalid = "915179"
+        StatusIsInvalid = "915175"
+        StatusWithPreviousNetworkTransactionIdIsInvalid = "915177"
       end
     end
 
     module TransactionLineItem
       CommodityCodeIsTooLong = "95801"
       DescriptionIsTooLong = "95803"
+      DiscountAmountCannotBeNegative = "95806"
       DiscountAmountFormatIsInvalid = "95804"
       DiscountAmountIsTooLarge = "95805"
-      DiscountAmountMustBeGreaterThanZero = "95806" # Deprecated as the amount may be zero. Use DiscountAmountCannotBeNegative.
-      DiscountAmountCannotBeNegative = "95806"
       KindIsInvalid = "95807"
       KindIsRequired = "95808"
       NameIsRequired = "95822"
@@ -558,6 +528,9 @@ module Braintree
       QuantityFormatIsInvalid = "95810"
       QuantityIsRequired = "95811"
       QuantityIsTooLarge = "95812"
+      TaxAmountCannotBeNegative = "95829"
+      TaxAmountFormatIsInvalid = "95827"
+      TaxAmountIsTooLarge = "95828"
       TotalAmountFormatIsInvalid = "95813"
       TotalAmountIsRequired = "95814"
       TotalAmountIsTooLarge = "95815"
@@ -567,13 +540,9 @@ module Braintree
       UnitAmountIsTooLarge = "95819"
       UnitAmountMustBeGreaterThanZero = "95820"
       UnitOfMeasureIsTooLong = "95821"
+      UnitTaxAmountCannotBeNegative = "95826"
       UnitTaxAmountFormatIsInvalid = "95824"
       UnitTaxAmountIsTooLarge = "95825"
-      UnitTaxAmountMustBeGreaterThanZero = "95826" # Deprecated as the amount may be zero. Use UnitTaxAmountCannotBeNegative.
-      UnitTaxAmountCannotBeNegative = "95826"
-      TaxAmountFormatIsInvalid = "95827"
-      TaxAmountIsTooLarge = "95828"
-      TaxAmountCannotBeNegative = "95829"
     end
 
     module Merchant
@@ -587,96 +556,96 @@ module Braintree
       CountryNameIsInvalid = "93611"
       CountryNameIsNotAccepted = "93610"
       CurrenciesAreInvalid = "93614"
+      CurrencyIsInvalid = "93618"
+      CurrencyIsRequired = "93617"
       EmailFormatIsInvalid = "93602"
       EmailIsRequired = "83601"
       InconsistentCountry = "93612"
-      PaymentMethodsAreInvalid = "93613"
-      PaymentMethodsAreNotAllowed = "93615"
       MerchantAccountExistsForCurrency = "93616"
-      CurrencyIsRequired = "93617"
-      CurrencyIsInvalid = "93618"
-      NoMerchantAccounts = "93619"
       MerchantAccountExistsForId = "93620"
       MerchantAccountNotAuthOnboarded = "93621"
+      NoMerchantAccounts = "93619"
+      PaymentMethodsAreInvalid = "93613"
+      PaymentMethodsAreNotAllowed = "93615"
     end
 
     module MerchantAccount
-      IdIsTooLong = "82602"
+      CannotBeUpdated = "82674"
+      Declined = "82626"
+      DeclinedFailedKYC = "82623"
+      DeclinedMasterCardMatch = "82622"
+      DeclinedOFAC = "82621"
+      DeclinedSsnInvalid = "82624"
+      DeclinedSsnMatchesDeceased = "82625"
+      IdCannotBeUpdated = "82675"
       IdFormatIsInvalid = "82603"
       IdIsInUse = "82604"
       IdIsNotAllowed = "82605"
-      MasterMerchantAccountIdIsRequired = "82606"
+      IdIsTooLong = "82602"
+      MasterMerchantAccountIdCannotBeUpdated = "82676"
       MasterMerchantAccountIdIsInvalid = "82607"
+      MasterMerchantAccountIdIsRequired = "82606"
       MasterMerchantAccountMustBeActive = "82608"
       TosAcceptedIsRequired = "82610"
-      IdCannotBeUpdated = "82675"
-      MasterMerchantAccountIdCannotBeUpdated = "82676"
-      CannotBeUpdated = "82674"
-      DeclinedOFAC = "82621"
-      DeclinedMasterCardMatch = "82622"
-      DeclinedFailedKYC = "82623"
-      DeclinedSsnInvalid = "82624"
-      DeclinedSsnMatchesDeceased = "82625"
-      Declined = "82626"
 
       module ApplicantDetails
-        FirstNameIsRequired = "82609"
-        LastNameIsRequired = "82611"
-        DateOfBirthIsRequired = "82612"
-        RoutingNumberIsRequired = "82613"
+        AccountNumberIsInvalid = "82670"
         AccountNumberIsRequired = "82614"
-        SsnIsInvalid = "82615"
-        EmailAddressIsInvalid = "82616"
-        FirstNameIsInvalid = "82627"
-        LastNameIsInvalid = "82628"
         CompanyNameIsInvalid = "82631"
-        TaxIdIsInvalid = "82632"
         CompanyNameIsRequiredWithTaxId = "82633"
-        TaxIdIsRequiredWithCompanyName = "82634"
-        RoutingNumberIsInvalid = "82635"
-        DeclinedOFAC = "82621"               # Keep for backwards compatibility
-        DeclinedMasterCardMatch = "82622"    # Keep for backwards compatibility
+        DateOfBirthIsInvalid = "82663"
+        DateOfBirthIsRequired = "82612"
+        Declined = "82626"                   # Keep for backwards compatibility
         DeclinedFailedKYC = "82623"          # Keep for backwards compatibility
+        DeclinedMasterCardMatch = "82622"    # Keep for backwards compatibility
+        DeclinedOFAC = "82621"               # Keep for backwards compatibility
         DeclinedSsnInvalid = "82624"         # Keep for backwards compatibility
         DeclinedSsnMatchesDeceased = "82625" # Keep for backwards compatibility
-        Declined = "82626"                   # Keep for backwards compatibility
-        PhoneIsInvalid = "82636"
-        DateOfBirthIsInvalid = "82663"
-        AccountNumberIsInvalid = "82670"
+        EmailAddressIsInvalid = "82616"
         EmailAddressIsRequired = "82665"
+        FirstNameIsInvalid = "82627"
+        FirstNameIsRequired = "82609"
+        LastNameIsInvalid = "82628"
+        LastNameIsRequired = "82611"
+        PhoneIsInvalid = "82636"
+        RoutingNumberIsInvalid = "82635"
+        RoutingNumberIsRequired = "82613"
+        SsnIsInvalid = "82615"
+        TaxIdIsInvalid = "82632"
+        TaxIdIsRequiredWithCompanyName = "82634"
         TaxIdMustBeBlank = "82673"
 
         module Address
-          StreetAddressIsRequired = "82617"
           LocalityIsRequired = "82618"
+          PostalCodeIsInvalid = "82630"
           PostalCodeIsRequired = "82619"
+          RegionIsInvalid = "82664"
           RegionIsRequired = "82620"
           StreetAddressIsInvalid = "82629"
-          PostalCodeIsInvalid = "82630"
-          RegionIsInvalid = "82664"
+          StreetAddressIsRequired = "82617"
         end
       end
 
       module Individual
-        FirstNameIsRequired = "82637"
-        LastNameIsRequired = "82638"
-        DateOfBirthIsRequired = "82639"
-        SsnIsInvalid = "82642"
-        EmailIsInvalid = "82643"
-        FirstNameIsInvalid = "82644"
-        LastNameIsInvalid = "82645"
-        PhoneIsInvalid = "82656"
         DateOfBirthIsInvalid = "82666"
+        DateOfBirthIsRequired = "82639"
+        EmailIsInvalid = "82643"
         EmailIsRequired = "82667"
+        FirstNameIsInvalid = "82644"
+        FirstNameIsRequired = "82637"
+        LastNameIsInvalid = "82645"
+        LastNameIsRequired = "82638"
+        PhoneIsInvalid = "82656"
+        SsnIsInvalid = "82642"
 
         module Address
-          StreetAddressIsRequired = "82657"
           LocalityIsRequired = "82658"
+          PostalCodeIsInvalid = "82662"
           PostalCodeIsRequired = "82659"
+          RegionIsInvalid = "82668"
           RegionIsRequired = "82660"
           StreetAddressIsInvalid = "82661"
-          PostalCodeIsInvalid = "82662"
-          RegionIsInvalid = "82668"
+          StreetAddressIsRequired = "82657"
         end
       end
 
@@ -688,9 +657,9 @@ module Braintree
         TaxIdIsRequiredWithLegalName = "82648"
         TaxIdMustBeBlank = "82672"
         module Address
-          StreetAddressIsInvalid = "82685"
           PostalCodeIsInvalid = "82686"
           RegionIsInvalid = "82684"
+          StreetAddressIsInvalid = "82685"
         end
       end
 
@@ -709,32 +678,32 @@ module Braintree
     end
 
     module SettlementBatchSummary
-      SettlementDateIsRequired = "82301"
-      SettlementDateIsInvalid = "82302"
       CustomFieldIsInvalid = "82303"
+      SettlementDateIsInvalid = "82302"
+      SettlementDateIsRequired = "82301"
     end
 
     module ClientToken
       CustomerDoesNotExist = "92804"
       FailOnDuplicatePaymentMethodRequiresCustomerId = "92803"
       MakeDefaultRequiresCustomerId = "92801"
-      ProxyMerchantDoesNotExist = "92805"
-      VerifyCardRequiresCustomerId = "92802"
-      UnsupportedVersion = "92806"
       MerchantAccountDoesNotExist = "92807"
+      ProxyMerchantDoesNotExist = "92805"
+      UnsupportedVersion = "92806"
+      VerifyCardRequiresCustomerId = "92802"
     end
 
     module PaymentMethod
-      PaymentMethodNonceConsumed = "93106"
+      CannotForwardPaymentMethodType = "93107"
       CustomerIdIsInvalid = "93105"
       CustomerIdIsRequired = "93104"
       NonceIsInvalid = "93102"
       NonceIsRequired = "93103"
-      PaymentMethodParamsAreRequired = "93101"
-      PaymentMethodNonceUnknown = "93108"
-      PaymentMethodNonceLocked = "93109"
-      CannotForwardPaymentMethodType = "93107"
       PaymentMethodNoLongerSupported = "93117"
+      PaymentMethodNonceConsumed = "93106"
+      PaymentMethodNonceLocked = "93109"
+      PaymentMethodNonceUnknown = "93108"
+      PaymentMethodParamsAreRequired = "93101"
 
       module Options
         UsBankAccountVerificationMethodIsInvalid = "93121"
@@ -761,48 +730,48 @@ module Braintree
 
     module Verification
       module Options
+        AccountTypeIsInvalid = "942184"
+        AccountTypeNotSupported = "942185"
         AmountCannotBeNegative = "94201"
         AmountFormatIsInvalid = "94202"
         AmountIsTooLarge = "94207"
         AmountNotSupportedByProcessor = "94203"
-        MerchantAccountIdIsInvalid = "94204"
-        MerchantAccountIsSuspended = "94205"
-        MerchantAccountIsForbidden = "94206"
         MerchantAccountCannotBeSubMerchantAccount = "94208"
-        AccountTypeIsInvalid = "942184"
-        AccountTypeNotSupported = "942185"
+        MerchantAccountIdIsInvalid = "94204"
+        MerchantAccountIsForbidden = "94206"
+        MerchantAccountIsSuspended = "94205"
       end
 
-      ThreeDSecureAuthenticationIdIsInvalid = "942196"
-      ThreeDSecureAuthenticationIdDoesntMatchNonceThreeDSecureAuthentication = "942198"
-      ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod = "942197"
-      ThreeDSecureAuthenticationIdWithThreeDSecurePassThruIsInvalid = "942199"
-      ThreeDSecureAuthenticationFailed = "94271"
-      ThreeDSecureTokenIsInvalid = "94268"
-      ThreeDSecureVerificationDataDoesntMatchVerify = "94270"
+      AmountDoesNotMatch3DSecureAmount = "94285"
       MerchantAccountDoesNotSupport3DSecure = "942169"
       MerchantAcountDoesNotMatch3DSecureMerchantAccount = "94284"
-      AmountDoesNotMatch3DSecureAmount = "94285"
+      ThreeDSecureAuthenticationFailed = "94271"
+      ThreeDSecureAuthenticationIdDoesntMatchNonceThreeDSecureAuthentication = "942198"
+      ThreeDSecureAuthenticationIdIsInvalid = "942196"
+      ThreeDSecureAuthenticationIdWithThreeDSecurePassThruIsInvalid = "942199"
+      ThreeDSecureTokenIsInvalid = "94268"
+      ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod = "942197"
+      ThreeDSecureVerificationDataDoesntMatchVerify = "94270"
 
       module ThreeDSecurePassThru
-        EciFlagIsRequired = "942113"
-        EciFlagIsInvalid = "942114"
-        CavvIsRequired = "942116"
-        ThreeDSecureVersionIsRequired = "942117"
-        ThreeDSecureVersionIsInvalid = "942119"
         AuthenticationResponseIsInvalid = "942120"
-        DirectoryResponseIsInvalid = "942121"
         CavvAlgorithmIsInvalid = "942122"
+        CavvIsRequired = "942116"
+        DirectoryResponseIsInvalid = "942121"
+        EciFlagIsInvalid = "942114"
+        EciFlagIsRequired = "942113"
+        ThreeDSecureVersionIsInvalid = "942119"
+        ThreeDSecureVersionIsRequired = "942117"
       end
     end
 
     module UsBankAccountVerification
-      NotConfirmable = "96101"
-      MustBeMicroTransfersVerification = "96102"
       AmountsDoNotMatch = "96103"
+      InvalidDepositAmounts = "96106"
+      MustBeMicroTransfersVerification = "96102"
+      NotConfirmable = "96101"
       TooManyConfirmationAttempts = "96104"
       UnableToConfirmDepositAmounts = "96105"
-      InvalidDepositAmounts = "96106"
     end
 
     module RiskData

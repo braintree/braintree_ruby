@@ -53,6 +53,8 @@ module Braintree
         raise AuthorizationError, message
       when 404
         raise NotFoundError
+      when 408
+        raise RequestTimeoutError
       when 426
         raise UpgradeRequiredError, "Please upgrade your client library."
       when 429
@@ -60,7 +62,9 @@ module Braintree
       when 500
         raise ServerError
       when 503
-        raise DownForMaintenanceError
+        raise ServiceUnavailableError
+      when 504
+        raise GatewayTimeoutError
       else
         raise UnexpectedError, "Unexpected HTTP_RESPONSE #{status_code.to_i}"
       end
@@ -87,7 +91,7 @@ module Braintree
           when "INTERNAL"
             raise ServerError
           when "SERVICE_AVAILABILITY"
-            raise DownForMaintenanceError
+            raise ServiceUnavailableError
           else
             raise UnexpectedError, "Unexpected Response: #{error[:message]}"
           end
@@ -124,6 +128,17 @@ module Braintree
       invalid_keys = _get_invalid_keys(valid_keys, hash)
 
       !invalid_keys.any?
+    end
+
+    def self.replace_key(hash, target_key, replacement_key)
+      hash.inject({}) do |new_hash, (key, value)|
+        if value.is_a?(Hash)
+          value = replace_key(value, target_key, replacement_key)
+        end
+
+        key = replacement_key if key == target_key
+        new_hash.merge(key => value)
+      end
     end
 
     def self._flatten_valid_keys(valid_keys, namespace = nil)

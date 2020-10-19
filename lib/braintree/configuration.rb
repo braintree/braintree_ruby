@@ -1,6 +1,6 @@
 module Braintree
   class Configuration
-    API_VERSION = "5" # :nodoc:
+    API_VERSION = "6" # :nodoc:
     DEFAULT_ENDPOINT = "api" # :nodoc:
     GRAPHQL_API_VERSION = "2018-09-10" # :nodoc:
 

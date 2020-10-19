@@ -5,7 +5,6 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   SSL_TEST_PORT = ENV['SSL_TEST_PORT'] || 8444
 
   require File.dirname(__FILE__) + "/../spec_helper"
-  require File.dirname(__FILE__) + "/../hacks/tcp_socket"
 
   def start_ssl_server
     web_server_pid_file = File.expand_path(File.join(File.dirname(__FILE__), "..", "httpsd.pid"))
@@ -13,9 +12,7 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     FileUtils.rm(web_server_pid_file) if File.exist?(web_server_pid_file)
     command = File.expand_path(File.join(File.dirname(__FILE__), "..", "script", "httpsd.rb"))
     `#{command} #{web_server_pid_file}`
-    TCPSocket.wait_for_service :host => "127.0.0.1", :port => SSL_TEST_PORT
-
-    yield
+    TCPSocket.new("127.0.0.1",SSL_TEST_PORT)
 
     10.times { unless File.exists?(web_server_pid_file); sleep 1; end }
   ensure

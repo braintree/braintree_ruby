@@ -4,7 +4,6 @@ unless defined?(SPEC_HELPER_LOADED)
   require "rubygems"
   require "bundler/setup"
   require "rspec"
-  require "libxml"
   require "pry"
 
   braintree_lib = "#{project_root}/lib"
@@ -26,10 +25,6 @@ unless defined?(SPEC_HELPER_LOADED)
       return if message =~ /^\[DEPRECATED\]/
       original_warn(message)
     end
-  end
-
-  def now_in_eastern
-    (Time.now.utc - 5*60*60).strftime("%Y-%m-%d")
   end
 
   module SpecHelper
@@ -188,15 +183,10 @@ unless defined?(SPEC_HELPER_LOADED)
       end
 
       def matches?(xml_string)
-        @libxml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string, Braintree::Xml::Libxml)
-        @rexml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string, Braintree::Xml::Rexml)
+        @libxml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string)
         if @libxml_parse != @expected_hash
           @results = @libxml_parse
           @failed_parser = "libxml"
-          false
-        elsif @rexml_parse != @expected_hash
-          @results = @rexml_parse
-          @failed_parser = "rexml"
           false
         else
           true

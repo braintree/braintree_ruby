@@ -5,11 +5,6 @@ The Braintree gem provides integration access to the Braintree Gateway.
 # Please Note
 **The Payment Card Industry (PCI) Council has [mandated](https://blog.pcisecuritystandards.org/migrating-from-ssl-and-early-tls) that early versions of TLS be retired from service.  All organizations that handle credit card information are required to comply with this standard. As part of this obligation, Braintree is updating its services to require TLS 1.2 for all HTTPS connections. Braintree will also require HTTP/1.1 for all connections. Please see our [technical documentation](https://github.com/paypal/tls-update) for more information.**
 
-## Dependencies
-
-* builder
-* libxml-ruby
-
 ## Installation
 
 ```ruby
@@ -21,6 +16,28 @@ Or add to your Gemfile:
 ```ruby
 gem 'braintree'
 ```
+
+## Dependencies
+
+* builder
+* libxml-ruby
+
+The Braintree Ruby SDK is tested against Ruby versions 2.5.8 and 2.7.2.
+
+_The Ruby core development community has released [End-of-Life branches](https://www.ruby-lang.org/en/downloads/branches/) for Ruby versions lower than 2.5, and are no longer receiving security updates. As a result, Braintree no longer supports these versions of Ruby. **We have updated our gem specifications to reflect these updates.**_
+
+## Versions
+
+Braintree employs a deprecation policy for our SDKs. For more information on the statuses of an SDK check our [developer docs](https://developers.braintreepayments.com/reference/general/server-sdk-deprecation-policy). [Minimum supported versions](https://developers.braintreepayments.com/reference/general/best-practices/ruby#server-sdk-versions) are also available in our developer docs.
+
+| Major version number | Status      | Released      | Deprecated   | Unsupported  |
+| -------------------- | ----------- | ------------- | ------------ | ------------ |
+| 3.x.x                | Active      | October 2020  | TBA          | TBA          |
+| 2.x.x                | Inactive    | April 2010    | October 2022 | October 2023 |
+
+## Documentation
+
+* [Official documentation](https://developers.braintreepayments.com/start/hello-server/ruby)
 
 ## Quick Start Example
 
@@ -89,10 +106,6 @@ end
 
 We recommend using the bang methods when you assume that the data is valid and do not expect validations to fail.
 Otherwise, we recommend using the non-bang methods.
-
-## More Information
-
-* [Documentation](https://developers.braintreepayments.com/ruby/sdk/server/overview)
 
 ## Developing (Docker)
 

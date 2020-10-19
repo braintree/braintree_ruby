@@ -12,14 +12,10 @@ module Braintree
       ApplePayAmEx = "fake-apple-pay-amex-nonce"
       AbstractTransactable = "fake-abstract-transactable-nonce"
       Europe = "fake-europe-bank-account-nonce"
-      Coinbase = "fake-coinbase-nonce"
-      # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
-      AndroidPayDiscover = "fake-android-pay-discover-nonce"
-      AndroidPayVisa = "fake-android-pay-visa-nonce"
-      AndroidPayMasterCard = "fake-android-pay-mastercard-nonce"
-      AndroidPayAmEx = "fake-android-pay-amex-nonce"
-      # NEXT_MAJOR_VERSION Remove AmexExpressCheckout test nonces
-      AmexExpressCheckout = "fake-amex-express-checkout-nonce"
+      GooglePayDiscover = "fake-android-pay-discover-nonce"
+      GooglePayVisa = "fake-android-pay-visa-nonce"
+      GooglePayMasterCard = "fake-android-pay-mastercard-nonce"
+      GooglePayAmEx = "fake-android-pay-amex-nonce"
       VenmoAccount = "fake-venmo-account-nonce"
       VenmoAccountTokenIssuanceError = "fake-token-issuance-error-venmo-account-nonce"
       ThreeDSecureVisaFullAuthentication = "fake-three-d-secure-visa-full-authentication-nonce"
@@ -62,14 +58,8 @@ module Braintree
       ProcessorFailureJCB = "fake-processor-failure-jcb-nonce"
       LuhnInvalid = "fake-luhn-invalid-nonce"
       PayPalFuturePaymentRefreshToken = "fake-paypal-future-refresh-token-nonce"
-      SEPA = "fake-sepa-bank-account-nonce"
       GatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce"
       GatewayRejectedRiskThresholds = "fake-gateway-rejected-risk-thresholds-nonce"
-      # NEXT_MAJOR_VERSION Remove Masterpass test nonces
-      MasterpassAmEx = "fake-masterpass-amex-nonce"
-      MasterpassDiscover = "fake-masterpass-discover-nonce"
-      MasterpassMasterCard = "fake-masterpass-mastercard-nonce"
-      MasterpassVisa = "fake-masterpass-visa-nonce"
       VisaCheckoutAmEx = "fake-visa-checkout-amex-nonce"
       VisaCheckoutDiscover = "fake-visa-checkout-discover-nonce"
       VisaCheckoutMasterCard = "fake-visa-checkout-mastercard-nonce"
@@ -78,15 +68,6 @@ module Braintree
       SamsungPayDiscover = "tokensam_fake_discover"
       SamsungPayMasterCard = "tokensam_fake_mastercard"
       SamsungPayVisa = "tokensam_fake_visa"
-
-      def self.const_missing(const_name)
-        if const_name == :AndroidPay
-          warn "[DEPRECATED] Braintree::Test::Nonce::AndroidPay is deprecated. Use a card-specific nonce, e.g. Braintree::Test::Nonce::AndroidPayMasterCard"
-          "fake-android-pay-nonce"
-        else
-          super
-        end
-      end
     end
   end
 end

@@ -275,7 +275,7 @@ describe Braintree::WebhookNotification do
         notification.kind.should == Braintree::WebhookNotification::Kind::TransactionDisbursed
         notification.transaction.id.should == "my_id"
         notification.transaction.amount.should == 1_00
-        notification.transaction.disbursement_details.disbursement_date.should == "2013-07-09"
+        notification.transaction.disbursement_details.disbursement_date.should == Date.parse("2013-07-09")
       end
 
       it "builds a sample notification for a disbursement_exception webhook" do

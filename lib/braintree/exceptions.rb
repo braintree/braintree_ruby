@@ -8,9 +8,7 @@ module Braintree # :nodoc:
 
   class ConfigurationError < BraintreeError; end
 
-  class DownForMaintenanceError < BraintreeError; end
-
-  class ForgedQueryString < BraintreeError; end
+  class GatewayTimeoutError < BraintreeError; end
 
   class InvalidSignature < BraintreeError; end
 
@@ -18,7 +16,11 @@ module Braintree # :nodoc:
 
   class NotFoundError < BraintreeError; end
 
+  class RequestTimeoutError < BraintreeError; end
+
   class ServerError < BraintreeError; end
+
+  class ServiceUnavailableError < BraintreeError; end
 
   class SSLCertificateError < BraintreeError; end
 

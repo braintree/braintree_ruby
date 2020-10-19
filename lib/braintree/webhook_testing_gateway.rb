@@ -78,17 +78,6 @@ module Braintree
         _auth_status_transitioned_sample_xml(id)
       when Braintree::WebhookNotification::Kind::ConnectedMerchantPayPalStatusChanged
         _auth_paypal_status_changed_sample_xml(id)
-        # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
-        # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
-      when Braintree::WebhookNotification::Kind::IdealPaymentComplete
-        _ideal_payment_complete_sample_xml(id)
-        # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
-        # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
-      when Braintree::WebhookNotification::Kind::IdealPaymentFailed
-        _ideal_payment_failed_sample_xml(id)
-      # NEXT_MAJOR_VERSION remove GrantedPaymentInstrumentUpdate
-      when Braintree::WebhookNotification::Kind::GrantedPaymentInstrumentUpdate
-        _granted_payment_instrument_update_sample_xml(id)
       when Braintree::WebhookNotification::Kind::GrantorUpdatedGrantedPaymentMethod
         _granted_payment_instrument_update_sample_xml(id)
       when Braintree::WebhookNotification::Kind::RecipientUpdatedGrantedPaymentMethod
@@ -864,38 +853,6 @@ module Braintree
           <merchant-id>#{id}</merchant-id>
           <oauth-application-client-id>oauth_application_client_id</oauth-application-client-id>
         </oauth-application-revocation>
-      XML
-    end
-
-    def _ideal_payment_complete_sample_xml(id)
-      <<-XML
-        <ideal-payment>
-          <id>#{id}</id>
-          <status>COMPLETE</status>
-          <issuer>ABCISSUER</issuer>
-          <order-id>ORDERABC</order-id>
-          <currency>EUR</currency>
-          <amount>10.00</amount>
-          <created-at>2016-11-29T23:27:34.547Z</created-at>
-          <approval-url>https://example.com</approval-url>
-          <ideal-transaction-id>1234567890</ideal-transaction-id>
-        </ideal-payment>
-      XML
-    end
-
-    def _ideal_payment_failed_sample_xml(id)
-      <<-XML
-        <ideal-payment>
-          <id>#{id}</id>
-          <status>FAILED</status>
-          <issuer>ABCISSUER</issuer>
-          <order-id>ORDERABC</order-id>
-          <currency>EUR</currency>
-          <amount>10.00</amount>
-          <created-at>2016-11-29T23:27:34.547Z</created-at>
-          <approval-url>https://example.com</approval-url>
-          <ideal-transaction-id>1234567890</ideal-transaction-id>
-        </ideal-payment>
       XML
     end
 

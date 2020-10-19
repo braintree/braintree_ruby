@@ -52,17 +52,6 @@ module Braintree
       return_object_or_raise(:transaction) { clone_transaction(*args) }
     end
 
-    # Deprecated
-    def create_from_transparent_redirect(query_string)
-      params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
-      _do_create("/transactions/all/confirm_transparent_redirect_request", :id => params[:id])
-    end
-
-    def create_transaction_url
-      warn "[DEPRECATED] Transaction.create_transaction_url is deprecated. Please use TransparentRedirect.url"
-      "#{@config.base_merchant_url}/transactions/all/create_via_transparent_redirect_request"
-    end
-
     def credit(attributes)
       create(attributes.merge(:type => 'credit'))
     end
@@ -124,7 +113,7 @@ module Braintree
       if response.has_key?(:search_results)
         ResourceCollection.new(response) { |ids| _fetch_transactions(search, ids) }
       else
-        raise DownForMaintenanceError
+        raise UnexpectedError, "expected :search_results"
       end
     end
 
@@ -184,13 +173,13 @@ module Braintree
 
     def self._create_signature # :nodoc:
       [
-        :amount, :customer_id, :merchant_account_id, :order_id, :channel, :payment_method_token,
-        :purchase_order_number, :recurring, :transaction_source, :shipping_address_id, :type, :tax_amount, :tax_exempt,
-        :venmo_sdk_payment_method_code, :device_session_id, :service_fee_amount, :device_data, :fraud_merchant_id,
-        :shipping_amount, :discount_amount, :ships_from_postal_code,
-        :billing_address_id, :payment_method_nonce, :three_d_secure_token, :three_d_secure_authentication_id,
-        :shared_payment_method_token, :shared_billing_address_id, :shared_customer_id, :shared_shipping_address_id, :shared_payment_method_nonce,
-        :product_sku,
+        :amount, :billing_address_id, :channel, :customer_id, :device_data, :discount_amount,
+        :merchant_account_id, :order_id, :payment_method_nonce, :payment_method_token,
+        :product_sku, :purchase_order_number, :service_fee_amount, :shared_billing_address_id,
+        :shared_customer_id, :shared_payment_method_nonce, :shared_payment_method_token,
+        :shared_shipping_address_id, :shipping_address_id, :shipping_amount,
+        :ships_from_postal_code, :tax_amount, :tax_exempt, :three_d_secure_authentication_id,
+        :three_d_secure_token, :transaction_source, :type, :venmo_sdk_payment_method_code,
         {:line_items => [:quantity, :name, :description, :kind, :unit_amount, :unit_tax_amount, :total_amount, :discount_amount, :tax_amount, :unit_of_measure, :product_code, :commodity_code, :url]},
         {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number]},
@@ -256,8 +245,7 @@ module Braintree
           ]},
         ]},
         {:apple_pay_card => [:number, :cardholder_name, :cryptogram, :expiration_month, :expiration_year, :eci_indicator]},
-        # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
-        {:android_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]}
+        {:google_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]}
       ]
     end
 
@@ -291,6 +279,9 @@ module Braintree
     end
 
     def _do_create(path, params=nil) # :nodoc:
+      if !params.nil?
+        params = Util.replace_key(params, :google_pay_card, :android_pay_card)
+      end
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       _handle_transaction_response(response)
     end

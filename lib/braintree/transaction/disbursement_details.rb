@@ -13,6 +13,7 @@ module Braintree
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
+        @disbursement_date = Date.parse(disbursement_date) unless disbursement_date.nil?
       end
 
       def funds_held?

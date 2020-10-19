@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class AndroidPayDetails
+    class GooglePayDetails
       include BaseModule
 
       attr_reader :bin

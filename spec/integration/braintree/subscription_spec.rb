@@ -19,23 +19,21 @@ describe Braintree::Subscription do
         :plan_id => SpecHelper::TriallessPlan[:id]
       )
 
-      date_format = /^\d{4}\D\d{1,2}\D\d{1,2}$/
       result.success?.should == true
       result.subscription.id.should =~ /^\w{6}$/
       result.subscription.status.should == Braintree::Subscription::Status::Active
       result.subscription.plan_id.should == "integration_trialless_plan"
 
-      result.subscription.first_billing_date.should match(date_format)
-      result.subscription.next_billing_date.should match(date_format)
-      result.subscription.billing_period_start_date.should match(date_format)
-      result.subscription.billing_period_end_date.should match(date_format)
-      result.subscription.paid_through_date.should match(date_format)
+      expect(result.subscription.first_billing_date).to be_a Date
+      expect(result.subscription.next_billing_date).to be_a Date
+      expect(result.subscription.billing_period_start_date).to be_a Date
+      expect(result.subscription.billing_period_end_date).to be_a Date
+      expect(result.subscription.paid_through_date).to be_a Date
 
       result.subscription.created_at.between?(Time.now - 60, Time.now).should == true
       result.subscription.updated_at.between?(Time.now - 60, Time.now).should == true
 
       result.subscription.failure_count.should == 0
-      result.subscription.next_bill_amount.should == "12.34"
       result.subscription.next_billing_period_amount.should == "12.34"
       result.subscription.payment_method_token.should == @credit_card.token
 
@@ -68,7 +66,6 @@ describe Braintree::Subscription do
         :id => new_id
       )
 
-      date_format = /^\d{4}\D\d{1,2}\D\d{1,2}$/
       result.success?.should == true
       result.subscription.id.should == new_id
     end
@@ -195,7 +192,7 @@ describe Braintree::Subscription do
         )
 
         result.success?.should == true
-        result.subscription.first_billing_date.should == (Date.today + 3).to_s
+        result.subscription.first_billing_date.should == Date.today + 3
         result.subscription.status.should == Braintree::Subscription::Status::Pending
       end
 
@@ -678,20 +675,18 @@ describe Braintree::Subscription do
         :plan_id => SpecHelper::TriallessPlan[:id]
       )
 
-      date_format = /^\d{4}\D\d{1,2}\D\d{1,2}$/
       subscription.id.should =~ /^\w{6}$/
       subscription.status.should == Braintree::Subscription::Status::Active
       subscription.plan_id.should == "integration_trialless_plan"
 
-      subscription.first_billing_date.should match(date_format)
-      subscription.next_billing_date.should match(date_format)
-      subscription.billing_period_start_date.should match(date_format)
-      subscription.billing_period_end_date.should match(date_format)
-      subscription.paid_through_date.should match(date_format)
+      expect(subscription.first_billing_date).to be_a Date
+      expect(subscription.next_billing_date).to be_a Date
+      expect(subscription.billing_period_start_date).to be_a Date
+      expect(subscription.billing_period_end_date).to be_a Date
+      expect(subscription.paid_through_date).to be_a Date
 
       subscription.failure_count.should == 0
       subscription.current_billing_cycle.should == 1
-      subscription.next_bill_amount.should == "12.34"
       subscription.next_billing_period_amount.should == "12.34"
       subscription.payment_method_token.should == @credit_card.token
     end

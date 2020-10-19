@@ -20,17 +20,6 @@ module Braintree
       return_object_or_raise(:credit_card) { create(*args) }
     end
 
-    # Deprecated
-    def create_credit_card_url
-      "#{@config.base_merchant_url}/payment_methods/all/create_via_transparent_redirect_request"
-    end
-
-    # Deprecated
-    def create_from_transparent_redirect(query_string)
-      params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
-      _do_create("/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
-    end
-
     def credit(token, transaction_attributes)
       @gateway.transaction.credit(transaction_attributes.merge(:payment_method_token => token))
     end
@@ -71,11 +60,6 @@ module Braintree
       raise NotFoundError, "nonce #{nonce.inspect} locked, consumed, or not found"
     end
 
-    # Deprecated in favor of PaymentMethodGateway.grant
-    def grant(token, allow_vaulting)
-      @gateway.payment_method.grant(token, allow_vaulting)
-    end
-
     def update(token, attributes)
       Util.verify_keys(CreditCardGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/credit_card/#{token}", :credit_card => attributes)
@@ -83,19 +67,6 @@ module Braintree
 
     def update!(*args)
       return_object_or_raise(:credit_card) { update(*args) }
-    end
-
-    # Deprecated
-    def update_from_transparent_redirect(query_string)
-      warn "[DEPRECATED] CreditCard.update_via_transparent_redirect_request is deprecated. Please use TransparentRedirect.confirm"
-      params = @gateway.transparent_redirect.parse_and_validate_query_string query_string
-      _do_update(:post, "/payment_methods/all/confirm_transparent_redirect_request", :id => params[:id])
-    end
-
-    # Deprecated
-    def update_credit_card_url
-      warn "[DEPRECATED] CreditCard.update_credit_card_url is deprecated. Please use TransparentRedirect.url"
-      "#{@config.base_merchant_url}/payment_methods/all/update_via_transparent_redirect_request"
     end
 
     def self._create_signature # :nodoc:
@@ -110,9 +81,9 @@ module Braintree
       billing_address_params = AddressGateway._shared_signature
       options = [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type]
       signature = [
-        :billing_address_id, :cardholder_name, :cvv, :device_session_id, :expiration_date,
-        :expiration_month, :expiration_year, :number, :token, :venmo_sdk_payment_method_code,
-        :device_data, :fraud_merchant_id, :payment_method_nonce,
+        :billing_address_id, :cardholder_name, :cvv, :expiration_date, :expiration_month,
+        :expiration_year, :number, :token, :venmo_sdk_payment_method_code, :device_data,
+        :payment_method_nonce,
         {:external_vault => [:network_transaction_id]},
         {:options => options},
         {:billing_address => billing_address_params}
