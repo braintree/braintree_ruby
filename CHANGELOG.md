@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Update `BinData` class to correctly execute the `inspect` method.
+
 ## 2.104.1
 
 * Update `LocalPaymentCompleted` webhook to handle no transaction being created for unbranded local payment methods
