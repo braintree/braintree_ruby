@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Update `BinData` class to correctly execute the `inspect` method.
+
 ## 3.0.1
 
 * Add `CreditCardVerification::GatewayRejectionReason`
