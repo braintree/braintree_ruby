@@ -1,7 +1,8 @@
 # Changelog
 
 ## unreleased
-* Update `BinData` class to correctly execute the `inspect` method.
+
+* Update `BinData` class to correctly execute the `inspect` method.(Thanks @kinduff)
 
 ## 3.0.1
 
