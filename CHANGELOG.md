@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0
+## 3.0.1
 
 * Add `CreditCardVerification::GatewayRejectionReason`
 * Memory improvements related to XML parsing (addresses #159)
@@ -75,6 +75,9 @@
   * Update builder dependency to >= 3.2.4
   * Update libxml-ruby dependency to >= 3.2.0
   * Update gemspec to require ruby >= 2.5.0
+
+## 3.0.0
+  This version has been yanked from rubygems, do not use.
 
 ## 2.104.1
 
