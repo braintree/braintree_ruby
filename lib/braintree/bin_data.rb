@@ -22,5 +22,12 @@ module Braintree
       end
       "#<BinData #{formatted_attrs.join(", ")}>"
     end
+
+    def self._attributes # :nodoc:
+      [
+        :commercial, :country_of_issuance, :debit, :durbin_regulated, :healthcare,
+        :issuing_bank, :payroll, :prepaid, :product_id
+      ]
+    end
   end
 end
