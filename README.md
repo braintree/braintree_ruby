@@ -39,6 +39,8 @@ Braintree employs a deprecation policy for our SDKs. For more information on the
 
 * [Official documentation](https://developers.braintreepayments.com/start/hello-server/ruby)
 
+Updating from an Inactive, Deprecated, or Unsupported version of this SDK? Check our [Migration Guide](https://developers.braintreepayments.com/reference/general/server-sdk-migration-guide/ruby) for tips.
+
 ## Quick Start Example
 
 ```ruby

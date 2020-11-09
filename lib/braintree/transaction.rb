@@ -90,10 +90,10 @@ module Braintree
       end
     end
 
+    attr_reader :acquirer_reference_number
     attr_reader :add_ons
     attr_reader :additional_processor_response          # The raw response from the processor.
     attr_reader :amount
-    attr_reader :google_pay_details
     attr_reader :apple_pay_details
     attr_reader :authorization_adjustments
     attr_reader :authorization_expires_at
@@ -118,6 +118,7 @@ module Braintree
     attr_reader :facilitated_details
     attr_reader :facilitator_details
     attr_reader :gateway_rejection_reason
+    attr_reader :google_pay_details
     attr_reader :graphql_id
     attr_reader :id
     attr_reader :local_payment_details
@@ -142,6 +143,7 @@ module Braintree
     attr_reader :recurring
     attr_reader :refund_ids
     attr_reader :refunded_transaction_id
+    attr_reader :retrieval_reference_number
     attr_reader :risk_data
     attr_reader :samsung_pay_card_details
     attr_reader :service_fee_amount
@@ -162,7 +164,6 @@ module Braintree
     attr_reader :venmo_account_details
     attr_reader :visa_checkout_card_details
     attr_reader :voice_referral_number
-    attr_reader :retrieval_reference_number
 
     def self.create(*args)
       Configuration.gateway.transaction.create(*args)

@@ -4,6 +4,7 @@ module Braintree
       include BaseModule
 
       attr_reader :authorization_id
+      attr_reader :billing_agreement_id
       attr_reader :capture_id
       attr_reader :custom_field
       attr_reader :debug_id

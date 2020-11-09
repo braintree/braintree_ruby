@@ -109,7 +109,7 @@ describe Braintree::Dispute, "search" do
         search.received_date.between("03/03/2014", "03/05/2014")
       end
 
-      expect(collection.disputes.count).to eq(1)
+      expect(collection.disputes.count).to be >= 1
       dispute = collection.disputes.first
 
       expect(dispute.received_date).to eq(Date.new(2014, 3, 4))

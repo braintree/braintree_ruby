@@ -445,6 +445,7 @@ describe Braintree::Transaction do
       result.transaction.credit_card_details.expiration_date.should == "05/2009"
       result.transaction.credit_card_details.customer_location.should == "US"
       result.transaction.retrieval_reference_number.should_not be_nil
+      result.transaction.acquirer_reference_number.should be_nil
     end
 
     it "returns a successful network response code if successful" do
@@ -2660,6 +2661,22 @@ describe Braintree::Transaction do
           found_paypal_account = Braintree::PaymentMethod.find(payment_method_token)
           found_paypal_account.should be_a(Braintree::PayPalAccount)
           found_paypal_account.token.should == payment_method_token
+        end
+      end
+
+      context "billing agreement" do
+        it "can create a paypal billing agreement" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
+            :options => {:store_in_vault => true}
+          )
+
+          result.should be_success
+          result.transaction.paypal_details.should_not be_nil
+          result.transaction.paypal_details.debug_id.should_not be_nil
+          result.transaction.paypal_details.billing_agreement_id.should_not be_nil
         end
       end
 
@@ -6043,6 +6060,12 @@ describe Braintree::Transaction do
       expect do
         Braintree::Transaction.find("invalid-id")
       end.to raise_error(Braintree::NotFoundError, 'transaction with id "invalid-id" not found')
+    end
+
+    it "finds a transaction and returns an acquirer_reference_number if the transaction has one" do
+      transaction = Braintree::Transaction.find("transactionwithacquirerreferencenumber")
+
+      transaction.acquirer_reference_number.should == "123456789 091019"
     end
 
     context "disbursement_details" do

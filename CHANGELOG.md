@@ -1,7 +1,8 @@
 # Changelog
 
-## unreleased
-
+## 3.1.0
+* Add `acquirer_reference_number` to `Transaction`
+* Add `billing_agreement_id` to `PayPalDetails`
 * Update `BinData` class to correctly execute the `inspect` method.(Thanks @kinduff)
 
 ## 3.0.1
