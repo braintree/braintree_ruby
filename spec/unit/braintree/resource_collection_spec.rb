@@ -28,22 +28,22 @@ describe "Braintree::ResourceCollection" do
       collection.first.should == nil
     end
 
-    it 'returns the first occourence' do
-      values = %w(a b c d e)
-      collection = Braintree::ResourceCollection.new(:search_results => {:ids => [0,1,2,3,4], :page_size => 2}) do |ids|
-        ids.map {|id| values[id] }
+    context 'with results' do
+      let(:collection) do
+        values = %w(a b c d e)
+
+        Braintree::ResourceCollection.new(:search_results => {:ids => [0,1,2,3,4], :page_size => 2}) do |ids|
+          ids.map {|id| values[id] }
+        end
       end
 
-      collection.first.should == 'a'
-    end
-
-    it 'returns the first N occourences' do
-      values = %w(a b c d e)
-      collection = Braintree::ResourceCollection.new(:search_results => {:ids => [0,1,2,3,4], :page_size => 2}) do |ids|
-        ids.map {|id| values[id] }
+      it 'returns the first occourence' do
+        collection.first.should == 'a'
       end
 
-      collection.first(4).should == ['a','b','c','d']
+      it 'returns the first N occourences' do
+        collection.first(4).should == ['a','b','c','d']
+      end
     end
   end
 
