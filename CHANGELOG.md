@@ -1,5 +1,8 @@
 # Changelog
 
+##unreleased
+* Allows `ResourceCollection#first` to receive one argument and return that argument number of items
+
 ## 3.1.0
 * Add `acquirer_reference_number` to `Transaction`
 * Add `billing_agreement_id` to `PayPalDetails`

@@ -22,9 +22,14 @@ module Braintree
       @ids.empty?
     end
 
-    # Returns the first item in the collection or nil if the collection is empty
-    def first
-      @paging_block.call([@ids.first]).first
+    # Returns the first or the first N items in the collection or nil if the collection is empty
+    def first(amount = 1)
+      return nil if @ids.empty?
+      return @paging_block.call([@ids.first]).first if amount == 1
+
+      @ids.first(amount).each_slice(@page_size).flat_map do |page_of_ids|
+        @paging_block.call(page_of_ids)
+      end
     end
 
     # Only the maximum size of a resource collection can be determined since the data on the server can change while
