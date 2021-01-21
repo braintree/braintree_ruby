@@ -58,20 +58,15 @@ module Braintree
       request = content_or_request.is_a?(String) ? { content: content_or_request } : content_or_request
 
       raise ArgumentError, "content cannot be blank" if request[:content].nil? || request[:content].to_s.strip == ""
-      raise ArgumentError, "request can only contain the keys [:content, :category, :sequence_number]" if (request.keys - [:category, :content, :tag, :sequence_number]).any?
+      raise ArgumentError, "request can only contain the keys [:content, :category, :sequence_number]" if (request.keys - [:category, :content, :sequence_number]).any?
       raise ArgumentError, "sequence_number must be an integer" if request[:sequence_number] && request[:sequence_number].to_s.match(/\D/)
-      raise ArgumentError, "tag must be a string" if request[:tag] && !request[:tag].is_a?(String)
       raise ArgumentError, "category must be a string" if request[:category] && !request[:category].is_a?(String)
-
-      warn "[DEPRECATED] tag as an option is deprecated. Please use category" if request[:tag]
-
-      category = request[:category] || request[:tag]
 
       params_for_http_post = {
         evidence: {
           comments: request[:content]
         }.tap do |evidence_params|
-          evidence_params[:category] = category if category
+          evidence_params[:category] = request[:category] if request[:category]
           evidence_params[:sequence_number] = request[:sequence_number] if request[:sequence_number]
         end
       }

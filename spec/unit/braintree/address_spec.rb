@@ -94,12 +94,4 @@ describe Braintree::Address do
       end.to raise_error(NoMethodError, /protected method .new/)
     end
   end
-
-  describe "update" do
-    it "raises an exception if hash includes an invalid key" do
-      expect do
-        Braintree::Address._new(Braintree::Configuration.gateway, {}).update(:street_address => "456 E Main", :invalid_key2 => "foo")
-      end.to raise_error(ArgumentError, "invalid keys: invalid_key2")
-    end
-  end
 end

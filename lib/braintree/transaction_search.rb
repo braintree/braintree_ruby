@@ -28,7 +28,6 @@ module Braintree
       :paypal_authorization_id,
       :paypal_payer_email,
       :processor_authorization_code,
-      :europe_bank_account_iban,
       :settlement_batch_id,
       :shipping_company,
       :shipping_country_name,

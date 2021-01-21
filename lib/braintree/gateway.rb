@@ -74,12 +74,6 @@ module Braintree
       UsBankAccountGateway.new(self)
     end
 
-    # NEXT_MAJOR_VERSION Remove this class as legacy Ideal has been removed/disabled in the Braintree Gateway
-    # DEPRECATED If you're looking to accept iDEAL as a payment method contact accounts@braintreepayments.com for a solution.
-    def ideal_payment
-      IdealPaymentGateway.new(self)
-    end
-
     def merchant
       MerchantGateway.new(self)
     end
@@ -88,20 +82,12 @@ module Braintree
       MerchantAccountGateway.new(self)
     end
 
-    def europe_bank_account
-      EuropeBankAccountGateway.new(self)
-    end
-
     def settlement_batch_summary
       SettlementBatchSummaryGateway.new(self)
     end
 
     def subscription
       SubscriptionGateway.new(self)
-    end
-
-    def transparent_redirect
-      TransparentRedirectGateway.new(self)
     end
 
     def transaction

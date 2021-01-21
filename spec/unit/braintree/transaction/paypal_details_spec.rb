@@ -5,6 +5,7 @@ describe Braintree::Transaction::PayPalDetails do
     it "sets all fields" do
       details = Braintree::Transaction::PayPalDetails.new(
         :authorization_id => "id",
+        :billing_agreement_id => "billing-agreement-id",
         :capture_id => "capture-id",
         :custom_field => "custom-field",
         :debug_id => "debug-id",
@@ -30,6 +31,7 @@ describe Braintree::Transaction::PayPalDetails do
       )
 
       expect(details.authorization_id).to eq("id")
+      expect(details.billing_agreement_id).to eq("billing-agreement-id")
       expect(details.capture_id).to eq("capture-id")
       expect(details.custom_field).to eq("custom-field")
       expect(details.debug_id).to eq("debug-id")

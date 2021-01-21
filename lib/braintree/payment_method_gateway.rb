@@ -43,17 +43,12 @@ module Braintree
         CreditCard._new(@gateway, response[:credit_card])
       elsif response.has_key?(:paypal_account)
         PayPalAccount._new(@gateway, response[:paypal_account])
-      elsif response[:coinbase_account]
-        SuccessfulResult.new(:payment_method => CoinbaseAccount._new(@gateway, response[:coinbase_account]))
       elsif response.has_key?(:us_bank_account)
         UsBankAccount._new(@gateway, response[:us_bank_account])
-      elsif response.has_key?(:europe_bank_account)
-        EuropeBankAccount._new(@gateway, response[:europe_bank_account])
       elsif response.has_key?(:apple_pay_card)
         ApplePayCard._new(@gateway, response[:apple_pay_card])
       elsif response.has_key?(:android_pay_card)
-        # NEXT_MAJOR_VERSION rename Android Pay to Google Pay
-        AndroidPayCard._new(@gateway, response[:android_pay_card])
+        GooglePayCard._new(@gateway, response[:android_pay_card])
       elsif response.has_key?(:venmo_account)
         VenmoAccount._new(@gateway, response[:venmo_account])
       else
@@ -167,9 +162,9 @@ module Braintree
         ],
       ]
       signature = [
-        :billing_address_id, :cardholder_name, :cvv, :device_session_id, :expiration_date,
-        :expiration_month, :expiration_year, :number, :token, :venmo_sdk_payment_method_code,
-        :device_data, :fraud_merchant_id, :payment_method_nonce,
+        :billing_address_id, :cardholder_name, :cvv, :expiration_date, :expiration_month,
+        :expiration_year, :number, :token, :venmo_sdk_payment_method_code, :device_data,
+        :payment_method_nonce,
         {:options => options},
         {:billing_address => billing_address_params}
       ]

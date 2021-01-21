@@ -15,7 +15,6 @@ describe Braintree::CreditCard do
         :billing_address_id,
         :cardholder_name,
         :cvv,
-        :device_session_id,
         :expiration_date,
         :expiration_month,
         :expiration_year,
@@ -23,7 +22,6 @@ describe Braintree::CreditCard do
         :token,
         :venmo_sdk_payment_method_code,
         :device_data,
-        :fraud_merchant_id,
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
         {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type]},
@@ -63,7 +61,6 @@ describe Braintree::CreditCard do
         :billing_address_id,
         :cardholder_name,
         :cvv,
-        :device_session_id,
         :expiration_date,
         :expiration_month,
         :expiration_year,
@@ -71,7 +68,6 @@ describe Braintree::CreditCard do
         :token,
         :venmo_sdk_payment_method_code,
         :device_data,
-        :fraud_merchant_id,
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
         {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type]},
@@ -102,21 +98,6 @@ describe Braintree::CreditCard do
           :ds_transaction_id,
         ]},
       ]
-    end
-  end
-
-  describe "self.create_from_transparent_redirect" do
-    it "raises an exception if the query string is forged" do
-      expect do
-        Braintree::CreditCard.create_from_transparent_redirect("http_status=200&forged=query_string")
-      end.to raise_error(Braintree::ForgedQueryString)
-    end
-  end
-
-  describe "self.create_credit_card_url" do
-    it "returns the url" do
-      config = Braintree::Configuration.instantiate
-      Braintree::CreditCard.create_credit_card_url.should == "http#{config.ssl? ? 's' : ''}://#{config.server}:#{config.port}/merchants/integration_merchant_id/payment_methods/all/create_via_transparent_redirect_request"
     end
   end
 
@@ -253,7 +234,7 @@ describe Braintree::CreditCard do
   describe "self.update" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
-        Braintree::CreditCard._new(Braintree::Configuration.gateway, {}).update(:invalid_key => 'val')
+        Braintree::CreditCard.update(:gateway, :invalid_key => 'val')
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end

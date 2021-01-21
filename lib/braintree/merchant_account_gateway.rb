@@ -83,6 +83,7 @@ module Braintree
       end
     end
 
+    # this is part of Marketplace and shouldn't be removed unless we're removing all Marketplace code
     def self._detect_signature(attributes)
       if attributes.has_key?(:applicant_details)
         warn "[DEPRECATED] Passing :applicant_details to create is deprecated. Please use :individual, :business, and :funding."
@@ -92,6 +93,7 @@ module Braintree
       end
     end
 
+    # this is part of Marketplace and shouldn't be removed unless we're removing all Marketplace code
     def self._deprecated_create_signature # :nodoc:
       [
         {:applicant_details => [

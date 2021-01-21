@@ -200,13 +200,6 @@ describe Braintree::Dispute do
       it "does not raise an exception if the optional parameters are valid" do
         Braintree::Http.stub(:new).and_return double.as_null_object
         expect do
-          Braintree::Dispute.add_text_evidence("dispute_id", { content: "a", tag: "", sequence_number: 3 })
-        end.to_not raise_error
-      end
-
-      it "does not raise an exception if the category parameter is provided" do
-        Braintree::Http.stub(:new).and_return double.as_null_object
-        expect do
           Braintree::Dispute.add_text_evidence("dispute_id", { content: "a", category: "", sequence_number: 3 })
         end.to_not raise_error
       end
@@ -327,7 +320,7 @@ describe Braintree::Dispute do
       dispute.transaction.payment_instrument_subtype.should == "Visa"
     end
 
-    it "converts status_history hash into an array of Dispute::HistoryEvent objects" do
+    it "converts status_history hash into an array of Dispute::StatusHistory objects" do
       dispute = Braintree::Dispute._new(attributes)
 
       dispute.status_history.length.should == 1
@@ -397,10 +390,6 @@ describe Braintree::Dispute do
 
   describe "comments" do
     let(:dispute) { Braintree::Dispute._new(attributes) }
-
-    it "#forwarded_comments returns `processor_comments`" do
-      expect(dispute.forwarded_comments).to eq(dispute.processor_comments)
-    end
 
     it "#processor_comments" do
       expect(dispute.processor_comments).to eq(attributes[:processor_comments])

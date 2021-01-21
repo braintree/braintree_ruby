@@ -17,10 +17,10 @@ module Braintree
     end
 
     def inspect
-      nice_attributes = self.class._attributes.map do |attr|
+      formatted_attributes = self.class._attributes.map do |attr|
         "#{attr}: #{send(attr).inspect}"
       end
-      "#<#{self.class} #{nice_attributes.join(", ")}>"
+      "#<#{self.class} #{formatted_attributes.join(", ")}>"
     end
 
     def self._attributes # :nodoc:

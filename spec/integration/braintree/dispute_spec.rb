@@ -141,7 +141,7 @@ describe Braintree::Dispute do
     end
 
     it "creates text evidence for the dispute with optional parameters" do
-      result = Braintree::Dispute.add_text_evidence(dispute.id, { content: "123456789", tag: "REFUND_ID", sequence_number: 7 })
+      result = Braintree::Dispute.add_text_evidence(dispute.id, { content: "123456789", category: "REFUND_ID", sequence_number: 7 })
 
       result.success?.should == true
       result.evidence.category.should == "REFUND_ID"
@@ -149,7 +149,6 @@ describe Braintree::Dispute do
       result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
       result.evidence.id.should =~ /^\w{16,}$/
       result.evidence.sent_to_processor_at.should == nil
-      result.evidence.tag.should == "REFUND_ID"
       result.evidence.sequence_number.should == 7
     end
   end

@@ -35,8 +35,7 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
         :cvv => "100",
-        :device_session_id => "abc123",
-        :fraud_merchant_id => "7"
+        :device_data => "device_data",
       )
       result.success?.should == true
     end
@@ -110,7 +109,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true}
       )
       result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
       result.credit_card_verification.processor_response_code.should == "2000"
       result.credit_card_verification.processor_response_text.should == "Do Not Honor"
       result.credit_card_verification.cvv_response_code.should == "I"
@@ -128,7 +127,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true, :verification_amount => "100.00"}
       )
       result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
       result.credit_card_verification.processor_response_code.should == "2000"
       result.credit_card_verification.processor_response_text.should == "Do Not Honor"
       result.credit_card_verification.cvv_response_code.should == "I"
@@ -175,7 +174,7 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true}
         )
         result.success?.should == false
-        result.credit_card_verification.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::CVV
+        result.credit_card_verification.gateway_rejection_reason.should == Braintree::CreditCardVerification::GatewayRejectionReason::CVV
       ensure
         Braintree::Configuration.merchant_id = old_merchant
         Braintree::Configuration.public_key = old_public_key
@@ -192,7 +191,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true, :verification_amount => "1.01"}
       )
       result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
       result.credit_card_verification.processor_response_code.should == "2000"
       result.credit_card_verification.processor_response_text.should == "Do Not Honor"
       result.credit_card_verification.cvv_response_code.should == "I"
@@ -773,95 +772,6 @@ describe Braintree::CreditCard do
     end
   end
 
-  describe "self.create_from_transparent_redirect" do
-    it "returns a successful result if successful" do
-      result = Braintree::Customer.create
-      result.success?.should == true
-      customer = result.customer
-      params =  {
-        :credit_card => {
-          :cardholder_name => "Card Holder",
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
-        }
-      }
-      tr_data_params = {
-        :credit_card => {
-          :customer_id => customer.id
-        }
-      }
-      tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
-      result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
-      result.success?.should == true
-      credit_card = result.credit_card
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      credit_card.cardholder_name.should == "Card Holder"
-      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      credit_card.expiration_month.should == "05"
-      credit_card.expiration_year.should == "2012"
-      credit_card.expiration_date.should == "05/2012"
-      credit_card.customer_id.should == customer.id
-    end
-
-    it "create card as default" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :cardholder_name => "Old Cardholder Name",
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
-        }
-      )
-      card1 = customer.credit_cards[0]
-
-      params =  {
-        :credit_card => {
-          :cardholder_name => "Card Holder",
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012",
-          :options => {:make_default => true}
-        }
-      }
-      tr_data_params = {
-        :credit_card => {
-          :customer_id => customer.id
-        }
-      }
-      tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
-      result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
-      result.success?.should == true
-      card2 = result.credit_card
-
-      Braintree::CreditCard.find(card1.token).should_not be_default
-      card2.should be_default
-    end
-
-    it "returns xml with nested errors if validation errors" do
-      customer = Braintree::Customer.create.customer
-      params =  {
-        :credit_card => {
-          :cardholder_name => "Card Holder",
-          :number => "eleventy",
-          :expiration_date => "y2k"
-        }
-      }
-      tr_data_params = {
-        :credit_card => {
-          :customer_id => customer.id
-        }
-      }
-      tr_data = Braintree::TransparentRedirect.create_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.create_credit_card_url)
-      result = Braintree::CreditCard.create_from_transparent_redirect(query_string_response)
-      result.success?.should == false
-      result.params[:customer_id] == customer.id
-      result.params[:credit_card]["cardholder_name"] == customer.id
-      result.params[:credit_card]["number"] == "eleventy"
-      result.params[:credit_card]["exipiration_date"] == "y2k"
-    end
-  end
-
   describe "self.update" do
     it "updates the credit card" do
       customer = Braintree::Customer.create!
@@ -1053,7 +963,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true}
       )
       update_result.success?.should == false
-      update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      update_result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
       update_result.credit_card_verification.gateway_rejection_reason.should be_nil
     end
 
@@ -1218,132 +1128,6 @@ describe Braintree::CreditCard do
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "invalid/date"
         )
-      end.to raise_error(Braintree::ValidationsFailed)
-    end
-  end
-
-  describe "self.update_from_transparent_redirect" do
-    it "updates the credit card" do
-      old_token = "token_#{rand(10**10)}"
-      new_token = "token_#{rand(10**10)}"
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :cardholder_name => "Old Cardholder Name",
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012",
-          :token => old_token
-        }
-      )
-      credit_card = customer.credit_cards[0]
-      params = {
-        :credit_card => {
-          :cardholder_name => "New Cardholder Name",
-          :number => Braintree::Test::CreditCardNumbers::MasterCard,
-          :expiration_date => "05/2014"
-        }
-      }
-      tr_data_params = {
-        :payment_method_token => old_token,
-        :credit_card => {
-          :token => new_token
-        }
-      }
-      tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.update_credit_card_url)
-      result = Braintree::CreditCard.update_from_transparent_redirect(query_string_response)
-      result.success?.should == true
-      credit_card = result.credit_card
-      credit_card.cardholder_name.should == "New Cardholder Name"
-      credit_card.masked_number.should == "555555******4444"
-      credit_card.expiration_date.should == "05/2014"
-      credit_card.token.should == new_token
-    end
-
-    it "updates the default credit card" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :cardholder_name => "Old Cardholder Name",
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
-        }
-      )
-      card1 = customer.credit_cards[0]
-
-      card2 = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
-      ).credit_card
-
-      card1.should be_default
-      card2.should_not be_default
-
-      params = {
-        :credit_card => {
-          :options => {:make_default => true}
-        }
-      }
-      tr_data_params = {
-        :payment_method_token => card2.token
-      }
-      tr_data = Braintree::TransparentRedirect.update_credit_card_data({:redirect_url => "http://example.com"}.merge(tr_data_params))
-      query_string_response = SpecHelper.simulate_form_post_for_tr(tr_data, params, Braintree::CreditCard.update_credit_card_url)
-      result = Braintree::CreditCard.update_from_transparent_redirect(query_string_response)
-
-      Braintree::CreditCard.find(card1.token).should_not be_default
-      Braintree::CreditCard.find(card2.token).should be_default
-    end
-  end
-
-  describe "credit" do
-    it "creates a credit transaction using the customer, returning a result object" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2010"
-        }
-      )
-      result = customer.credit_cards[0].credit(
-        :amount => "100.00"
-      )
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "credit"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2010"
-    end
-  end
-
-  describe "credit!" do
-    it "returns the created credit tranaction if valid" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2010"
-        }
-      )
-      transaction = customer.credit_cards[0].credit!(:amount => "100.00")
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "credit"
-      transaction.customer_details.id.should == customer.id
-      transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2010"
-    end
-
-    it "raises a ValidationsFailed if invalid" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2010"
-        }
-      )
-      expect do
-        customer.credit_cards[0].credit!(:amount => "invalid")
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
@@ -1586,255 +1370,6 @@ describe Braintree::CreditCard do
       transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
       transaction.credit_card_details.expiration_date.should == "05/2010"
-    end
-  end
-
-  describe "sale" do
-    it "creates a sale transaction using the credit card, returning a result object" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2010"
-        }
-      )
-      result = customer.credit_cards[0].sale(
-        :amount => "100.00"
-      )
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "sale"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2010"
-    end
-  end
-
-  describe "sale!" do
-    it "returns the created sale tranaction if valid" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2010"
-        }
-      )
-      transaction = customer.credit_cards[0].sale!(:amount => "100.00")
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "sale"
-      transaction.customer_details.id.should == customer.id
-      transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2010"
-    end
-
-    it "raises a ValidationsFailed if invalid" do
-      customer = Braintree::Customer.create!(
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2010"
-        }
-      )
-      expect do
-        customer.credit_cards[0].sale!(:amount => "invalid")
-      end.to raise_error(Braintree::ValidationsFailed)
-    end
-  end
-
-  describe "update" do
-    it "updates the credit card" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :cvv => "123",
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-      update_result = credit_card.update(
-        :cardholder_name => "New Holder",
-        :cvv => "456",
-        :number => Braintree::Test::CreditCardNumbers::MasterCard,
-        :expiration_date => "06/2013"
-      )
-      update_result.success?.should == true
-      update_result.credit_card.should == credit_card
-      updated_credit_card = update_result.credit_card
-      updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      updated_credit_card.expiration_date.should == "06/2013"
-      updated_credit_card.cardholder_name.should == "New Holder"
-    end
-
-    it "verifies the update if options[verify_card]=true" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :cvv => "123",
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-      update_result = credit_card.update(
-        :cardholder_name => "New Holder",
-        :cvv => "456",
-        :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
-        :expiration_date => "06/2013",
-        :options => {:verify_card => true}
-      )
-      update_result.success?.should == false
-      update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
-    end
-
-    it "fails on create if credit_card[options][fail_on_duplicate_payment_method]=true and there is a duplicated payment method" do
-      customer = Braintree::Customer.create!
-      Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2015"
-      )
-
-      result = Braintree::CreditCard.create(
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2015",
-        :options => {:fail_on_duplicate_payment_method => true}
-      )
-
-      result.success?.should == false
-      result.errors.for(:credit_card).on(:number)[0].message.should == "Duplicate card exists in the vault."
-    end
-
-    it "allows user to specify merchant account for verification" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :cvv => "123",
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-      update_result = credit_card.update(
-        :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
-        :expiration_date => "05/2009",
-        :options => {
-          :verify_card => true,
-          :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
-        }
-      )
-      update_result.success?.should == false
-      update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
-      update_result.credit_card_verification.processor_response_code.should == "2000"
-      update_result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      update_result.credit_card_verification.cvv_response_code.should == "I"
-      update_result.credit_card_verification.avs_error_response_code.should == nil
-      update_result.credit_card_verification.avs_postal_code_response_code.should == "I"
-      update_result.credit_card_verification.avs_street_address_response_code.should == "I"
-    end
-
-    it "can update the billing address" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :cvv => "123",
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012",
-        :billing_address => {
-          :first_name => "Old First Name",
-          :last_name => "Old Last Name",
-          :company => "Old Company",
-          :street_address => "123 Old St",
-          :extended_address => "Apt Old",
-          :locality => "Old City",
-          :region => "Old State",
-          :postal_code => "12345",
-          :country_name => "Canada"
-        }
-      )
-      result = credit_card.update(
-        :options => {:verify_card => false},
-        :billing_address => {
-          :first_name => "New First Name",
-          :last_name => "New Last Name",
-          :company => "New Company",
-          :street_address => "123 New St",
-          :extended_address => "Apt New",
-          :locality => "New City",
-          :region => "New State",
-          :postal_code => "56789",
-          :country_name => "United States of America"
-        }
-      )
-      result.success?.should == true
-      address = result.credit_card.billing_address
-      address.should == credit_card.billing_address # making sure credit card instance was updated
-      address.first_name.should == "New First Name"
-      address.last_name.should == "New Last Name"
-      address.company.should == "New Company"
-      address.street_address.should == "123 New St"
-      address.extended_address.should == "Apt New"
-      address.locality.should == "New City"
-      address.region.should == "New State"
-      address.postal_code.should == "56789"
-      address.country_name.should == "United States of America"
-    end
-
-    it "returns an error response if invalid" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-      update_result = credit_card.update(
-        :cardholder_name => "New Holder",
-        :number => "invalid",
-        :expiration_date => "05/2014"
-      )
-      update_result.success?.should == false
-      update_result.errors.for(:credit_card).on(:number)[0].message.should == "Credit card number must be 12-19 digits."
-    end
-  end
-
-  describe "update!" do
-    it "updates the credit card and returns true if valid" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-      credit_card.update!(
-        :cardholder_name => "New Holder",
-        :number => Braintree::Test::CreditCardNumbers::MasterCard,
-        :expiration_date => "06/2013"
-      ).should == credit_card
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      credit_card.expiration_date.should == "06/2013"
-      credit_card.cardholder_name.should == "New Holder"
-      credit_card.updated_at.between?(Time.now - 60, Time.now).should == true
-    end
-
-    it "raises a ValidationsFailed if invalid" do
-      customer = Braintree::Customer.create!
-      credit_card = Braintree::CreditCard.create!(
-        :cardholder_name => "Original Holder",
-        :customer_id => customer.id,
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
-      )
-      expect do
-        credit_card.update!(
-          :cardholder_name => "New Holder",
-          :number => Braintree::Test::CreditCardNumbers::MasterCard,
-          :expiration_date => "invalid/date"
-        )
-      end.to raise_error(Braintree::ValidationsFailed)
     end
   end
 

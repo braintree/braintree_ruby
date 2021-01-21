@@ -57,24 +57,29 @@ describe Braintree::Xml::Parser do
       xml.should parse_to(:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]})
     end
 
-    it "parses using libxml when not using ruby 2.0" do
-      xml = "<root><foo type=\"integer\">123</foo></root>"
-      stub_const("RUBY_VERSION", "2.1.1")
-      ::Braintree::Xml::Libxml.should_receive(:parse).and_call_original
-
-      Braintree::Xml::Parser.hash_from_xml(xml)
+    it "parses an array" do
+      xml = <<-END
+        <root>
+          <customers type="array">
+            <customer><name>Adam</name><customer-id>1</customer-id></customer>
+            <customer><name>Ben</name><customer-id>2</customer-id></customer>
+          </customers>
+        </root>
+      END
+      xml.should parse_to(:root => {:customers => [{:name => "Adam", :customer_id => "1"}, {:name => "Ben", :customer_id => "2"}]})
     end
 
-    it "parses using rexml when using ruby 2.0 to avoid Libxml segfault" do
-      segfault_prone_library_in_ruby_2_0 = ::Braintree::Xml::Libxml
-
-      xml = "<root><foo type=\"integer\">123</foo></root>"
-      stub_const("RUBY_VERSION", "2.0.0")
-
-      ::Braintree::Xml::Rexml.should_receive(:parse).and_call_original
-      segfault_prone_library_in_ruby_2_0.should_not_receive(:parse)
-
-      Braintree::Xml::Parser.hash_from_xml(xml)
+    it "parses nested objects" do
+      xml = <<-END
+        <root>
+          <paypal-details>
+            <deets type="array"><super-secrets><secret-code>1234</secret-code></super-secrets></deets>
+            <payer-email>abc@test.com</payer-email>
+            <payment-id>1234567890</payment-id>
+          </paypal-details>
+        </root>
+      END
+      xml.should parse_to(:root => {:paypal_details => {:deets => [{:secret_code => "1234"}], :payer_email => "abc@test.com", :payment_id => "1234567890"}})
     end
   end
 end
