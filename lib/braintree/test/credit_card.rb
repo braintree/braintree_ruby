@@ -36,6 +36,7 @@ module Braintree
       Hipercard = "6062820524845321"
 
       Visa = "4012888888881881"
+      VisaCountryOfIssuanceIE = "4023490000000008"
       VisaInternational = "4009348888881881" # :nodoc:
       VisaPrepaid = "4500600000000061"
 

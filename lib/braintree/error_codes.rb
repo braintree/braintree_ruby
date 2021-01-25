@@ -68,6 +68,7 @@ module Braintree
       CardholderNameIsTooLong = "81723"
       CreditCardTypeIsNotAccepted = "81703"
       CreditCardTypeIsNotAcceptedBySubscriptionMerchantAccount = "81718"
+      CurrencyCodeNotSupportedByMerchantAccount = "91760"
       CustomerIdIsInvalid = "91705"
       CustomerIdIsRequired = "91704"
       CvvIsInvalid = "81707"
@@ -301,6 +302,7 @@ module Braintree
       CannotUpdateTransactionDetailsNotSubmittedForSettlement = "915129"
       ChannelIsTooLong = "91550"
       CreditCardIsRequired = "91508"
+      CurrencyCodeNotSupportedByMerchantAccount = "915214"
       CustomFieldIsInvalid = "91526"
       CustomFieldIsTooLong = "81527"
       CustomerDefaultPaymentMethodCardTypeIsNotAccepted = "81509"
@@ -354,6 +356,7 @@ module Braintree
       RefundAmountIsTooLarge = "91521"
       RefundAuthHardDeclined = "915200"
       RefundAuthSoftDeclined = "915201"
+      ScaExemptionInvalid = "915213"
       ServiceFeeAmountCannotBeNegative = "91554"
       ServiceFeeAmountFormatIsInvalid = "91555"
       ServiceFeeAmountIsTooLarge = "91556"
@@ -507,6 +510,7 @@ module Braintree
       end
 
       module ExternalVault
+        # NEXT_MAJOR_VERSION remove this validation error as it is no longer returned by the gateway
         CardTypeIsInvalid = "915178"
         PreviousNetworkTransactionIdIsInvalid = "915179"
         StatusIsInvalid = "915175"
@@ -775,6 +779,7 @@ module Braintree
     end
 
     module RiskData
+      # NEXT_MAJOR_VERSION Remove CustomerBrowserIsTooLong (this validation is no longer applied)
       CustomerBrowserIsTooLong = "94701"
       CustomerDeviceIdIsTooLong = "94702"
       CustomerLocationZipInvalidCharacters = "94703"

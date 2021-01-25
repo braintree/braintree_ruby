@@ -121,6 +121,8 @@ module Braintree
     attr_reader :google_pay_details
     attr_reader :graphql_id
     attr_reader :id
+    attr_reader :installment_count
+    attr_reader :installments
     attr_reader :local_payment_details
     attr_reader :merchant_account_id
     attr_reader :network_response_code                  # Response code from the card network
@@ -143,9 +145,11 @@ module Braintree
     attr_reader :recurring
     attr_reader :refund_ids
     attr_reader :refunded_transaction_id
+    attr_reader :refunded_installments
     attr_reader :retrieval_reference_number
     attr_reader :risk_data
     attr_reader :samsung_pay_card_details
+    attr_reader :sca_exemption_requested
     attr_reader :service_fee_amount
     attr_reader :settlement_batch_id
     attr_reader :shipping_amount
@@ -305,7 +309,11 @@ module Braintree
       @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
       @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
       @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card])
+      @sca_exemption_requested = attributes[:sca_exemption_requested]
       authorization_adjustments.map! { |attrs| AuthorizationAdjustment._new(attrs) } if authorization_adjustments
+
+      installments.map! { |attrs| Installment.new(attrs) } if installments
+      refunded_installments.map! { |attrs| Installment.new(attrs) } if refunded_installments
     end
 
     def inspect # :nodoc:

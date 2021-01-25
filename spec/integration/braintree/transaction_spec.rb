@@ -159,7 +159,6 @@ describe Braintree::Transaction do
             }
           )
           result.success?.should == false
-          result.errors.for(:transaction).for(:risk_data).on(:customer_browser).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerBrowserIsTooLong
           result.errors.for(:transaction).for(:risk_data).on(:customer_device_id).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerDeviceIdIsTooLong
           result.errors.for(:transaction).for(:risk_data).on(:customer_location_zip).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerLocationZipInvalidCharacters
           result.errors.for(:transaction).for(:risk_data).on(:customer_tenure).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerTenureIsTooLong
@@ -179,6 +178,42 @@ describe Braintree::Transaction do
         )
         result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
         result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::CreditCard
+      end
+    end
+
+    describe "sca_exemption" do
+      context "with a valid request" do
+        it "succeeds" do
+          requested_exemption = "low_value"
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::VisaCountryOfIssuanceIE,
+              :expiration_date => "05/2009"
+            },
+            :sca_exemption => requested_exemption,
+          )
+          expect(result).to be_success
+          expect(result.transaction.sca_exemption_requested).to eq(requested_exemption)
+        end
+      end
+
+      context "with an invalid request" do
+        it "returns an error" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+            },
+            :sca_exemption => "invalid_sca_exemption_value",
+          )
+          sca_exemption_invalid = Braintree::ErrorCodes::Transaction::ScaExemptionInvalid
+          expect(result).not_to be_success
+          expect(result.errors.for(:transaction).map(&:code)).to eq([sca_exemption_invalid])
+        end
       end
     end
 
@@ -4270,7 +4305,7 @@ describe Braintree::Transaction do
         result.errors.for(:transaction).for(:external_vault).on(:status)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::StatusIsInvalid
       end
 
-      context "Visa/Mastercard/Discover" do
+      context "Visa/Mastercard/Discover/AmEx" do
         it "accepts status" do
           result = Braintree::Transaction.create(
             :type => "sale",
@@ -4322,12 +4357,12 @@ describe Braintree::Transaction do
         end
       end
 
-      context "Non-(Visa/Mastercard/Discover) card types" do
+      context "Non-(Visa/Mastercard/Discover/AmEx) card types" do
         it "accepts status" do
           result = Braintree::Transaction.create(
             :type => "sale",
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :number => Braintree::Test::CreditCardNumbers::JCBs[0],
               :expiration_date => "05/2009"
             },
             :external_vault => {
@@ -4343,7 +4378,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
+              :number => Braintree::Test::CreditCardNumbers::JCBs[0],
               :expiration_date => "05/2009"
             },
             :external_vault => {
@@ -4355,25 +4390,7 @@ describe Braintree::Transaction do
           result.success?.should == true
           result.transaction.network_transaction_id.should be_nil
         end
-
-        it "rejects previous_network_transaction_id" do
-          result = Braintree::Transaction.create(
-            :type => "sale",
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmExes[0],
-              :expiration_date => "05/2009"
-            },
-            :external_vault => {
-              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
-              :previous_network_transaction_id => "123456789012345",
-            },
-            :amount => "10.00",
-          )
-          result.success?.should == false
-          result.errors.for(:transaction).for(:external_vault).on(:previous_network_transaction_id)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::CardTypeIsInvalid
-        end
       end
-
     end
 
     context "account_type" do
@@ -4957,6 +4974,73 @@ describe Braintree::Transaction do
       result.success?.should == false
       result.params.should == {:transaction => {:type => 'sale', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
+    end
+
+    it "validates currency_iso_code and creates transaction" do
+      params = {
+        :transaction => {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :currency_iso_code => "USD",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        }
+      }
+      result = Braintree::Transaction.sale(params[:transaction])
+      result.success?.should == true
+      result.transaction.currency_iso_code == "USD"
+    end
+
+    it "validates currency_iso_code and returns error" do
+      params = {
+        :transaction => {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :currency_iso_code => "CAD",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        }
+      }
+      result = Braintree::Transaction.sale(params[:transaction])
+      result.success?.should == false
+      result.errors.for(:transaction).on(:currency_iso_code)[0].code.should == Braintree::ErrorCodes::Transaction::CurrencyCodeNotSupportedByMerchantAccount
+    end
+
+    it "validates currency_iso_code and creates transaction with specified merchant account" do
+      params = {
+        :transaction => {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :currency_iso_code => "USD",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        }
+      }
+      result = Braintree::Transaction.sale(params[:transaction])
+      result.success?.should == true
+      result.transaction.currency_iso_code == "USD"
+      result.transaction.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
+    end
+
+    it "validates currency_iso_code and returns error with specified merchant account" do
+      params = {
+        :transaction => {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          :currency_iso_code => "CAD",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          }
+        }
+      }
+      result = Braintree::Transaction.sale(params[:transaction])
+      result.success?.should == false
+      result.errors.for(:transaction).on(:currency_iso_code)[0].code.should == Braintree::ErrorCodes::Transaction::CurrencyCodeNotSupportedByMerchantAccount
     end
 
     it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
@@ -6787,6 +6871,93 @@ describe Braintree::Transaction do
 
       transaction.amount.should == BigDecimal("112.44")
       transaction.processed_with_network_token?.should == false
+    end
+  end
+
+  describe "installments" do
+    it "creates a transaction with an installment count" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :amount => "100.01",
+        :installments => {
+          :count => 12,
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.installment_count).to eq(12)
+    end
+
+    it "creates a transaction with a installments during capture" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :amount => "100.01",
+        :installments => {
+          :count => 12,
+        },
+        :options => {
+          :submit_for_settlement => true,
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      transaction = result.transaction
+      expect(transaction.installment_count).to eq(12)
+
+      installments = transaction.installments
+      expect(installments.map(&:id)).to match_array((1..12).map { |i| "#{transaction.id}_INST_#{i}" })
+      expect(installments.map(&:amount)).to match_array([BigDecimal("8.33")] * 11 + [BigDecimal("8.38")])
+    end
+
+    it "can refund a transaction with installments" do
+      sale_result = Braintree::Transaction.create(
+        :type => "sale",
+        :merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :amount => "100.01",
+        :installments => {
+          :count => 12,
+        },
+        :options => {
+          :submit_for_settlement => true,
+        },
+      )
+
+      expect(sale_result.success?).to eq(true)
+      sale_transaction = sale_result.transaction
+
+      refund_result = Braintree::Transaction.refund(sale_transaction.id, "49.99")
+
+      expect(refund_result.success?).to eq(true)
+      refund_transaction = refund_result.transaction
+      installments = refund_transaction.refunded_installments
+
+      (1..11).each do |i|
+        installment = installments.find { |installment| installment.id == "#{sale_transaction.id}_INST_#{i}" }
+
+        expect(installment.amount).to eq(BigDecimal("8.33"))
+        expect(installment.adjustments.map(&:amount)).to match_array([BigDecimal("-4.16")])
+        expect(installment.adjustments.map(&:kind)).to match_array([Braintree::Transaction::Installment::Adjustment::Kind::Refund])
+      end
+
+      installment = installments.find { |installment| installment.id == "#{sale_transaction.id}_INST_12" }
+
+      expect(installment.amount).to eq(BigDecimal("8.38"))
+      expect(installment.adjustments.map(&:amount)).to match_array([BigDecimal("-4.23")])
+      expect(installment.adjustments.map(&:kind)).to match_array([Braintree::Transaction::Installment::Adjustment::Kind::Refund])
     end
   end
 end

@@ -1,7 +1,16 @@
 # Changelog
 
-##unreleased
-* Allows `ResourceCollection#first` to receive one argument and return that argument number of items
+## 3.2.0
+* Add SCA exemption to Transaction sale
+* Add Installment support to Transaction sale
+  * Add `installment_count` to `Transaction`
+  * Add new `Installment` and `Installment::Adjustment` classes to `Transaction`
+* Add `verification_currency_iso_code` parameter to `Customer.create`, `PaymentMethod.create`, `CreditCard.create`, `Customer.update`, `PaymentMethod.update`, and `CreditCard.update`
+* Add `currency_iso_code` parameter to `Transaction.sale`
+* Add validation errors
+   * `CreditCard::CurrencyCodeNotSupportedByMerchantAccount`
+   * `Transaction::CurrencyCodeNotSupportedByMerchantAccount`
+* Allows `ResourceCollection#first` to receive one argument and return that argument number of items(Thanks @regismesquita)
 
 ## 3.1.0
 * Add `acquirer_reference_number` to `Transaction`
@@ -533,7 +542,7 @@
 * Adds authorized_transaction_id, partial_settlement_transaction_ids and facilitator_details attr_readers to Transaction
 * Adds support for Transaction#sale with raw Apple Pay parameters
 * Adds Merchant.provision_raw_apple_pay
-* Relaxes constraints on TrasnactionSearch#source
+* Relaxes constraints on TransactionSearch#source
 * Adds Check WebhookNotifications
 * Adds Transaction.submit_for_partial_settlement
 

@@ -849,6 +849,99 @@ describe Braintree::PaymentMethod do
         payment_method.should be_a Braintree::UnknownPaymentMethod
       end
     end
+
+    context "verification_currency_iso_code" do
+      it "validates verification_currency_iso_code against currency configured in default merchant account" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_currency_iso_code => "USD"
+          }
+        )
+
+        result.should be_success
+        result.payment_method.verification.currency_iso_code  == "USD"
+      end
+
+      it "validates verification_currency_iso_code against currency configured in verification_merchant_account_id" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_currency_iso_code => "USD"
+          }
+        )
+
+        result.should be_success
+        result.payment_method.verification.currency_iso_code  == "USD"
+        result.payment_method.verification.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
+      end
+
+
+      it "errors with invalid presentment currency due to verification_currency_iso_code not matching with currency configured in default merchant account" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_currency_iso_code => "GBP"
+          }
+        )
+        result.should_not be_success
+        result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+      end
+
+      it "errors with invalid presentment currency due to verification_currency_iso_code not matching with currency configured in verification_merchant_account_id" do
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_month => "11",
+            :expiration_year => "2099",
+          }
+        )
+        customer = Braintree::Customer.create!
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_currency_iso_code => "GBP"
+          }
+        )
+
+        result.should_not be_success
+        result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+      end
+    end
   end
 
   describe "self.create!" do
@@ -1274,6 +1367,90 @@ describe Braintree::PaymentMethod do
         updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
         updated_credit_card.expiration_date.should == "06/2013"
       end
+
+      context "verification_currency_iso_code" do
+        it "validates verification_currency_iso_code and updates the credit card " do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :cardholder_name => "Original Holder",
+            :customer_id => customer.id,
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012"
+          )
+          update_result = Braintree::PaymentMethod.update(credit_card.token,
+                                                          :cardholder_name => "New Holder",
+                                                          :cvv => "456",
+                                                          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+                                                          :expiration_date => "06/2013",
+                                                          :options => {:verify_card => true, :verification_currency_iso_code => "USD"}
+                                                         )
+          update_result.success?.should == true
+          update_result.payment_method.verification.currency_iso_code  == "USD"
+        end
+
+        it "validates verification_currency_iso_code against the given verification_merchant_account_id and updates the credit card " do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :cardholder_name => "Original Holder",
+            :customer_id => customer.id,
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012"
+          )
+          update_result = Braintree::PaymentMethod.update(credit_card.token,
+                                                          :cardholder_name => "New Holder",
+                                                          :cvv => "456",
+                                                          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+                                                          :expiration_date => "06/2013",
+                                                          :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "USD"}
+                                                         )
+          update_result.success?.should == true
+          update_result.payment_method.verification.currency_iso_code  == "USD"
+          update_result.payment_method.verification.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
+        end
+
+        it "throws validation error when passing invalid verification_currency_iso_code" do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :cardholder_name => "Original Holder",
+            :customer_id => customer.id,
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012"
+          )
+          update_result = Braintree::PaymentMethod.update(credit_card.token,
+                                                          :cardholder_name => "New Holder",
+                                                          :cvv => "456",
+                                                          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+                                                          :expiration_date => "06/2013",
+                                                          :options => {:verify_card => true, :verification_currency_iso_code => "GBP"}
+                                                         )
+          expect(update_result).to_not be_success
+          update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+        end
+
+        it "throws validation error when passing invalid verification_currency_iso_code of the given verification merchant account id" do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :cardholder_name => "Original Holder",
+            :customer_id => customer.id,
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012"
+          )
+          update_result = Braintree::PaymentMethod.update(credit_card.token,
+                                                          :cardholder_name => "New Holder",
+                                                          :cvv => "456",
+                                                          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+                                                          :expiration_date => "06/2013",
+                                                          :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "GBP"}
+                                                         )
+          expect(update_result).to_not be_success
+          update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+        end
+      end
+
 
       context "billing address" do
         it "creates a new billing address by default" do

@@ -100,7 +100,7 @@ describe Braintree::Customer do
           :device_data,
           :payment_method_nonce,
           {:external_vault=>[:network_transaction_id]},
-          {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type]},
+          {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code]},
           {:billing_address => [
             :company,
             :country_code_alpha2,
@@ -197,6 +197,7 @@ describe Braintree::Customer do
             :venmo_sdk_session,
             :fail_on_duplicate_payment_method,
             :verification_account_type,
+            :verification_currency_iso_code,
             :update_existing_token
           ]},
           {:billing_address => [

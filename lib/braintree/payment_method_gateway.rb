@@ -19,7 +19,6 @@ module Braintree
 
     def _do_create(path, params=nil) # :nodoc:
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
-
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
       elsif response
@@ -152,6 +151,7 @@ module Braintree
         :make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session,
         :verification_amount, :us_bank_account_verification_method,
         :verification_account_type,
+        :verification_currency_iso_code,
         :paypal => [
           :payee_email,
           :order_id,

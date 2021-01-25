@@ -8,5 +8,5 @@
 - [ ] Ran unit tests (`rake test:unit`)
 
 <!-- **For Braintree Developers only, don't forget:**
-- [ ] Does this change require work to be done to the GraphQL API? If you have questions check with the GraphQL team.
+- [ ] [GraphQL PR](link-to-pr-here). If this PR changes or adds API input or response fields, it must be added to the GraphQL API before this PR to the server SDK can be merged in.
 - [ ] Add & Run integration tests -->

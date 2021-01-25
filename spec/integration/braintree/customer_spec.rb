@@ -257,6 +257,92 @@ describe Braintree::Customer do
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end
 
+    it "can create a customer and a payment method at the same time after validating verification_currency_iso_code" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :cvv => "100",
+          :options => {
+            :verify_card => true,
+            :verification_currency_iso_code => "USD"
+          }
+        }
+      )
+
+      result.success?.should == true
+      result.customer.first_name.should == "Mike"
+      result.customer.last_name.should == "Jones"
+      result.customer.credit_cards[0].bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
+      result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
+      result.customer.credit_cards[0].expiration_date.should == "05/2010"
+      result.customer.credit_cards[0].unique_number_identifier.should =~ /\A\w{32}\z/
+      result.customer.credit_cards[0].verification.currency_iso_code == "USD"
+    end
+
+    it "errors when verification_currency_iso_code is not supported by merchant account" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :cvv => "100",
+          :options => {
+            :verify_card => true,
+            :verification_currency_iso_code => "GBP"
+          }
+        }
+      )
+      expect(result).to_not be_success
+      expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+    end
+
+    it "validates verification_currency_iso_code of the given verification_merchant_account_id and creates customer" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_currency_iso_code => "USD"
+          }
+        }
+      )
+      result.success?.should == true
+      result.customer.credit_cards[0].verification.currency_iso_code == "USD"
+      result.customer.first_name.should == "Mike"
+      result.customer.last_name.should == "Jones"
+      result.customer.credit_cards[0].bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
+      result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
+      result.customer.credit_cards[0].expiration_date.should == "05/2010"
+      result.customer.credit_cards[0].unique_number_identifier.should =~ /\A\w{32}\z/
+    end
+
+    it "validates verification_currency_iso_code of the given verification_merchant_account_id and returns error" do
+      result = Braintree::Customer.create(
+        :first_name => "Mike",
+        :last_name => "Jones",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_currency_iso_code => "GBP"
+          }
+        }
+      )
+      expect(result).to_not be_success
+      expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+    end
+
+
     it "can create a customer, payment method, and billing address at the same time" do
       result = Braintree::Customer.create(
         :first_name => "Mike",
@@ -1345,6 +1431,87 @@ describe Braintree::Customer do
       )
       result.success?.should == false
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
+    end
+
+    context "verification_currency_iso_code" do
+      it "can update the customer after validating verification_currency_iso_code" do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe"
+        )
+
+        result = Braintree::Customer.update(
+          customer.id,
+          :first_name => "New Joe",
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2009",
+            :options => { :verify_card => true, :verification_currency_iso_code => "USD" }
+          }
+        )
+        result.success?.should == true
+        result.customer.credit_cards[0].verification.currency_iso_code == "USD"
+      end
+
+      it "can update the customer after validating verification_currency_iso_code against the given verification_merchant_account_id" do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe"
+        )
+
+        result = Braintree::Customer.update(
+          customer.id,
+          :first_name => "New Joe",
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2009",
+            :options => { :verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "USD" }
+          }
+        )
+        result.success?.should == true
+        result.customer.credit_cards[0].verification.currency_iso_code == "USD"
+        result.customer.credit_cards[0].verification.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
+      end
+
+      it "throws error due to verification_currency_iso_code not matching against the currency configured in default merchant account" do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe"
+        )
+
+        result = Braintree::Customer.update(
+          customer.id,
+          :first_name => "New Joe",
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2009",
+            :options => { :verify_card => true, :verification_currency_iso_code => "GBP" }
+          }
+        )
+        result.success?.should == false
+        expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+
+      end
+
+      it "throws error due to verification_currency_iso_code not matching against the currency configured in the given verification merchant account" do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe"
+        )
+
+        result = Braintree::Customer.update(
+          customer.id,
+          :first_name => "New Joe",
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2009",
+            :options => { :verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "GBP" }
+          }
+        )
+        result.success?.should == false
+        expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+
+      end
     end
 
     context "verification_account_type" do
