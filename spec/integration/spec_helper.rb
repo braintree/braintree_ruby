@@ -42,8 +42,14 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     end
   end
 
-  def with_advanced_fraud_integration_merchant(&block)
+  def with_advanced_fraud_kount_integration_merchant(&block)
     with_other_merchant("advanced_fraud_integration_merchant_id", "advanced_fraud_integration_public_key", "advanced_fraud_integration_private_key") do
+      block.call
+    end
+  end
+
+  def with_fraud_protection_enterprise_merchant(&block)
+    with_other_merchant("fraud_protection_enterprise_integration_merchant_id", "fraud_protection_enterprise_integration_public_key", "fraud_protection_enterprise_integration_private_key") do
       block.call
     end
   end

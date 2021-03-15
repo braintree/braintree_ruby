@@ -123,8 +123,8 @@ describe Braintree::Transaction do
 
   describe "self.create" do
     describe "risk data" do
-      it "returns decision, device_data_captured and id" do
-        with_advanced_fraud_integration_merchant do
+      it "returns decision, device_data_captured, id, transaction_risk_score, and decision_reasons" do
+        with_fraud_protection_enterprise_merchant do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => 1_00,
@@ -134,15 +134,17 @@ describe Braintree::Transaction do
             }
           )
           result.transaction.risk_data.should be_a(Braintree::RiskData)
-          result.transaction.risk_data.should respond_to(:id)
-          result.transaction.risk_data.should respond_to(:decision)
-          result.transaction.risk_data.should respond_to(:device_data_captured)
-          result.transaction.risk_data.should respond_to(:fraud_service_provider)
+          result.transaction.risk_data.id.should_not be_nil
+          result.transaction.risk_data.decision.should_not be_nil
+          result.transaction.risk_data.decision_reasons.should_not be_nil
+          result.transaction.risk_data.device_data_captured.should_not be_nil
+          result.transaction.risk_data.fraud_service_provider.should_not be_nil
+          expect(result.transaction.risk_data).to respond_to(:transaction_risk_score)
         end
       end
 
       it "handles validation errors for invalid risk data attributes" do
-        with_advanced_fraud_integration_merchant do
+        with_advanced_fraud_kount_integration_merchant do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -930,7 +932,7 @@ describe Braintree::Transaction do
       end
 
       it "exposes the fraud gateway rejection reason" do
-        with_advanced_fraud_integration_merchant do
+        with_advanced_fraud_kount_integration_merchant do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :credit_card => {
@@ -945,7 +947,7 @@ describe Braintree::Transaction do
       end
 
       it "exposes the risk_threshold gateway rejection reason (via test cc num)" do
-        with_advanced_fraud_integration_merchant do
+        with_advanced_fraud_kount_integration_merchant do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :credit_card => {
@@ -960,7 +962,7 @@ describe Braintree::Transaction do
       end
 
       it "exposes the risk_threshold gateway rejection reason (via test test nonce)" do
-        with_advanced_fraud_integration_merchant do
+        with_advanced_fraud_kount_integration_merchant do
           result = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => Braintree::Test::Nonce::GatewayRejectedRiskThresholds,
@@ -5044,7 +5046,7 @@ describe Braintree::Transaction do
     end
 
     it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
-      with_advanced_fraud_integration_merchant do
+      with_advanced_fraud_kount_integration_merchant do
         result = Braintree::Transaction.sale(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :credit_card => {
@@ -6238,15 +6240,21 @@ describe Braintree::Transaction do
       it "returns all the three_d_secure_info" do
         transaction = Braintree::Transaction.find("threedsecuredtransaction")
 
-        transaction.three_d_secure_info.enrolled.should == "Y"
-        transaction.three_d_secure_info.should be_liability_shifted
-        transaction.three_d_secure_info.should be_liability_shift_possible
-        transaction.three_d_secure_info.status.should == "authenticate_successful"
+        expect(transaction.three_d_secure_info.authentication).to have_key(:trans_status)
+        expect(transaction.three_d_secure_info.authentication).to have_key(:trans_status_reason)
+        expect(transaction.three_d_secure_info.lookup).to have_key(:trans_status)
+        expect(transaction.three_d_secure_info.lookup).to have_key(:trans_status_reason)
         transaction.three_d_secure_info.cavv.should == "somebase64value"
-        transaction.three_d_secure_info.xid.should == "xidvalue"
-        transaction.three_d_secure_info.eci_flag.should == "07"
-        transaction.three_d_secure_info.three_d_secure_version.should == "1.0.2"
         transaction.three_d_secure_info.ds_transaction_id.should == "dstxnid"
+        transaction.three_d_secure_info.eci_flag.should == "07"
+        transaction.three_d_secure_info.enrolled.should == "Y"
+        transaction.three_d_secure_info.pares_status.should == "Y"
+        transaction.three_d_secure_info.should be_liability_shift_possible
+        transaction.three_d_secure_info.should be_liability_shifted
+        transaction.three_d_secure_info.status.should == "authenticate_successful"
+        expect(transaction.three_d_secure_info.three_d_secure_authentication_id).to be
+        transaction.three_d_secure_info.three_d_secure_version.should == "1.0.2"
+        transaction.three_d_secure_info.xid.should == "xidvalue"
       end
 
       it "is nil if the transaction wasn't 3d secured" do

@@ -137,7 +137,7 @@ describe Braintree::CreditCard do
     end
 
     it "returns risk data on verification on credit_card create" do
-      with_advanced_fraud_integration_merchant do
+      with_fraud_protection_enterprise_merchant do
         customer = Braintree::Customer.create!
         credit_card = Braintree::CreditCard.create!(
           :cardholder_name => "Original Holder",
@@ -148,10 +148,12 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true}
         )
         verification = credit_card.verification
-        verification.risk_data.should respond_to(:id)
-        verification.risk_data.should respond_to(:decision)
-        verification.risk_data.should respond_to(:device_data_captured)
-        verification.risk_data.should respond_to(:fraud_service_provider)
+        verification.risk_data.id.should_not be_nil
+        verification.risk_data.decision.should_not be_nil
+        verification.risk_data.decision_reasons.should_not be_nil
+        verification.risk_data.device_data_captured.should_not be_nil
+        verification.risk_data.fraud_service_provider.should_not be_nil
+        expect(verification.risk_data).to respond_to(:transaction_risk_score)
       end
     end
 
