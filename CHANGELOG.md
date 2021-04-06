@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Add support for `ActiveSupport::TimeWithZone` when generating XML
+
 ## 3.3.0
 * Add `decision_reasons` and `transaction_risk_score` fields to `RiskData`
 * Add `acs_transaction_id`, `pares_status`, `three_d_secure_transaction_id`, `lookup`, and `authentication` to `ThreeDSecureInfo`

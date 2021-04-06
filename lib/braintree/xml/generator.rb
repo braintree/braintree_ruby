@@ -12,6 +12,7 @@ module Braintree
         "Date"       => "datetime",
         "DateTime"   => "datetime",
         "Time"       => "datetime",
+        "ActiveSupport::TimeWithZone" => "datetime"
       }
 
       XML_FORMATTING_NAMES = {
