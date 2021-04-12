@@ -11,11 +11,11 @@ module Braintree
     end
 
     module Status
-      Active = 'Active'
-      Canceled = 'Canceled'
-      Expired = 'Expired'
-      PastDue = 'Past Due'
-      Pending = 'Pending'
+      Active = "Active"
+      Canceled = "Canceled"
+      Expired = "Expired"
+      PastDue = "Past Due"
+      Pending = "Pending"
 
       All = constants.map { |c| const_get(c) }
     end
@@ -115,7 +115,7 @@ module Braintree
     class << self
       protected :new
       def _new(*args) # :nodoc:
-        self.new *args
+        self.new(*args)
       end
     end
   end

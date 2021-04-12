@@ -36,7 +36,7 @@ describe Braintree::UsBankAccountVerification do
           :options => {
             :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
             :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
-          }
+          },
         )
 
         result.should be_success
@@ -64,7 +64,7 @@ describe Braintree::UsBankAccountVerification do
           :options => {
             :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
             :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
-          }
+          },
         )
 
         result.should be_success
@@ -86,7 +86,7 @@ describe Braintree::UsBankAccountVerification do
           :options => {
             :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
             :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
-          }
+          },
         )
 
         result.should be_success
@@ -108,7 +108,7 @@ describe Braintree::UsBankAccountVerification do
           :options => {
             :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
             :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
-          }
+          },
         )
 
         result.should be_success
@@ -139,7 +139,7 @@ describe Braintree::UsBankAccountVerification do
           :options => {
             :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
             :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers,
-          }
+          },
         )
 
         result.should be_success
@@ -160,7 +160,7 @@ describe Braintree::UsBankAccountVerification do
           :options => {
             :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
             :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck,
-          }
+          },
         )
 
         result.should be_success
@@ -182,7 +182,7 @@ describe Braintree::UsBankAccountVerification do
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
           :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck,
-        }
+        },
       )
 
       result.should be_success
@@ -208,7 +208,7 @@ describe Braintree::UsBankAccountVerification do
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
           :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck,
-        }
+        },
       ).payment_method
     end
 

@@ -16,7 +16,7 @@ module Braintree
         expect {
           client_token = Braintree::ClientToken.generate(
             :public_key => "bad_key",
-            :created_at => "bad_time"
+            :created_at => "bad_time",
           )
         }.to raise_error(ArgumentError, /created_at, public_key/)
       end
@@ -27,7 +27,7 @@ module Braintree
         it "raises an ArgumentError if #{option_name} is present" do
           expect do
             Braintree::ClientToken.generate(
-              option_name.to_sym => true
+              option_name.to_sym => true,
             )
           end.to raise_error(ArgumentError, /#{option_name}/)
         end

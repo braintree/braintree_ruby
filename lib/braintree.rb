@@ -1,4 +1,4 @@
-require 'base64'
+require "base64"
 require "bigdecimal"
 require "cgi"
 require "date"
@@ -71,6 +71,7 @@ require "braintree/gateway"
 require "braintree/graphql_client"
 require "braintree/google_pay_card"
 require "braintree/local_payment_completed"
+require "braintree/local_payment_reversed"
 require "braintree/transaction/local_payment_details"
 require "braintree/merchant"
 require "braintree/merchant_gateway"

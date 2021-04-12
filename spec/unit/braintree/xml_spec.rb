@@ -99,34 +99,34 @@ describe Braintree::Xml do
       verify_to_xml_and_back hash
     end
 
-		context "Integer" do
-			it "works for integers" do
-				hash = { :root => {:foo => 1 } }
-				Braintree::Xml.hash_to_xml(hash).should include("<foo type=\"integer\">1</foo>")
-			end
-		end
+    context "Integer" do
+      it "works for integers" do
+        hash = {:root => {:foo => 1}}
+        Braintree::Xml.hash_to_xml(hash).should include("<foo type=\"integer\">1</foo>")
+      end
+    end
 
-		context "BigDecimal" do
-			it "works for BigDecimals" do
-				hash = {:root => {:foo => BigDecimal("123.45")}}
-				Braintree::Xml.hash_to_xml(hash).should include("<foo>123.45</foo>")
-			end
+    context "BigDecimal" do
+      it "works for BigDecimals" do
+        hash = {:root => {:foo => BigDecimal("123.45")}}
+        Braintree::Xml.hash_to_xml(hash).should include("<foo>123.45</foo>")
+      end
 
-			it "works for BigDecimals with fewer than 2 digits" do
-				hash = {:root => {:foo => BigDecimal("1000.0")}}
-				Braintree::Xml.hash_to_xml(hash).should include("<foo>1000.00</foo>")
-			end
+      it "works for BigDecimals with fewer than 2 digits" do
+        hash = {:root => {:foo => BigDecimal("1000.0")}}
+        Braintree::Xml.hash_to_xml(hash).should include("<foo>1000.00</foo>")
+      end
 
-			it "works for BigDecimals with more than 2 digits" do
-				hash = {:root => {:foo => BigDecimal("12.345")}}
-				Braintree::Xml.hash_to_xml(hash).should include("<foo>12.345</foo>")
-			end
-		end
+      it "works for BigDecimals with more than 2 digits" do
+        hash = {:root => {:foo => BigDecimal("12.345")}}
+        Braintree::Xml.hash_to_xml(hash).should include("<foo>12.345</foo>")
+      end
+    end
 
-		it "works for symbols" do
-			hash = {:root => {:foo => :bar}}
-			Braintree::Xml.hash_to_xml(hash).should include("<foo>bar</foo>")
-		end
+    it "works for symbols" do
+      hash = {:root => {:foo => :bar}}
+      Braintree::Xml.hash_to_xml(hash).should include("<foo>bar</foo>")
+    end
 
     it "type casts booleans" do
       hash = {:root => {:string_true => "true", :bool_true => true, :bool_false => false, :string_false => "false"}}
@@ -154,13 +154,13 @@ describe Braintree::Xml do
     end
 
     it "escapes keys and values" do
-      hash = { "ke<y" => "val>ue" }
+      hash = {"ke<y" => "val>ue"}
       Braintree::Xml.hash_to_xml(hash).should include("<ke&lt;y>val&gt;ue</ke&lt;y>")
     end
 
     it "escapes nested keys and values" do
-      hash = { "top<" => { "ke<y" => "val>ue" } }
-      Braintree::Xml.hash_to_xml(hash).gsub(/\s/, '').should include("<top&lt;><ke&lt;y>val&gt;ue</ke&lt;y></top&lt;>")
+      hash = {"top<" => {"ke<y" => "val>ue"}}
+      Braintree::Xml.hash_to_xml(hash).gsub(/\s/, "").should include("<top&lt;><ke&lt;y>val&gt;ue</ke&lt;y></top&lt;>")
     end
   end
 end

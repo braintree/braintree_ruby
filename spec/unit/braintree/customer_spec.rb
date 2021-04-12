@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe Braintree::Customer do
   describe "inspect" do
     it "includes the id first" do
-      output = Braintree::Customer._new(:gateway, {:first_name => 'Dan', :id => '1234'}).inspect
+      output = Braintree::Customer._new(:gateway, {:first_name => "Dan", :id => "1234"}).inspect
       output.should include("#<Braintree::Customer id: \"1234\",")
     end
 
@@ -18,7 +18,7 @@ describe Braintree::Customer do
         :phone => "802-483-5932",
         :website => "patrick.smith.com",
         :created_at => Time.now,
-        :updated_at => Time.now
+        :updated_at => Time.now,
       )
       output = customer.inspect
       output.should include(%q(company: "Company"))
@@ -290,7 +290,7 @@ describe Braintree::Customer do
         :paypal_accounts => [
           {:token => "paypal_1"},
           {:token => "paypal_2"}
-        ]
+        ],
       )
 
       customer.credit_cards.size.should == 2

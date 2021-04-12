@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe Braintree::ApplePayCard do
   describe "bin" do
     it "returns Apple pay card bin" do
-      Braintree::ApplePayCard._new(:gateway, bin: '411111').bin.should == '411111'
+      Braintree::ApplePayCard._new(:gateway, bin: "411111").bin.should == "411111"
     end
   end
 

@@ -86,6 +86,8 @@ module Braintree
         _payment_method_revoked_by_customer_sample_xml(id)
       when Braintree::WebhookNotification::Kind::LocalPaymentCompleted
         _local_payment_completed_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::LocalPaymentReversed
+        _local_payment_reversed_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -910,6 +912,14 @@ module Braintree
             <order-id>order4567</order-id>
           </transaction>
         </local-payment>
+      XML
+    end
+
+    def _local_payment_reversed_sample_xml(id)
+      <<-XML
+        <local-payment-reversed>
+          <payment-id>PAY-XYZ123</payment-id>
+        </local-payment-reversed>
       XML
     end
   end

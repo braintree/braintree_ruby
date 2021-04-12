@@ -7,8 +7,8 @@ module Braintree
     end
 
     def parse(signature_string, payload)
-      raise InvalidSignature, 'signature cannot be nil' if signature_string.nil?
-      raise InvalidSignature, 'payload cannot be nil' if payload.nil?
+      raise InvalidSignature, "signature cannot be nil" if signature_string.nil?
+      raise InvalidSignature, "payload cannot be nil" if payload.nil?
       if payload =~ /[^A-Za-z0-9+=\/\n]/
         raise InvalidSignature, "payload contains illegal characters"
       end
@@ -18,7 +18,7 @@ module Braintree
     end
 
     def verify(challenge)
-      raise InvalidChallenge, 'challenge contains non-hex characters' unless challenge =~ /\A[a-f0-9]{20,32}\z/
+      raise InvalidChallenge, "challenge contains non-hex characters" unless challenge =~ /\A[a-f0-9]{20,32}\z/
       digest = Braintree::Digest.hexdigest(@config.private_key, challenge)
       "#{@config.public_key}|#{digest}"
     end
@@ -34,13 +34,13 @@ module Braintree
 
     def _verify_signature(signature_string, payload)
       public_key, signature = _matching_signature_pair(signature_string)
-      raise InvalidSignature, 'no matching public key' if public_key.nil?
+      raise InvalidSignature, "no matching public key" if public_key.nil?
 
       signature_matches = [payload, payload + "\n"].any? do |payload|
         payload_signature = Braintree::Digest.hexdigest(@config.private_key, payload)
         Braintree::Digest.secure_compare(signature, payload_signature)
       end
-      raise InvalidSignature, 'signature does not match payload - one has been modified' unless signature_matches
+      raise InvalidSignature, "signature does not match payload - one has been modified" unless signature_matches
     end
   end
 end

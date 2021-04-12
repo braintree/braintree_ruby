@@ -58,7 +58,7 @@ module Braintree
     end
 
     def self._new(*args) # :nodoc:
-      self.new *args
+      self.new(*args)
     end
   end
 end

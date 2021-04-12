@@ -36,7 +36,7 @@ module Braintree
     end
 
     def self._new(*args)
-      self.new *args
+      self.new(*args)
     end
   end
 end

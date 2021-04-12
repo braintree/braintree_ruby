@@ -9,11 +9,11 @@ describe Braintree::PayPalAccount do
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => payment_method_token
+        :token => payment_method_token,
       )
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
       result.should be_success
 
@@ -35,7 +35,7 @@ describe Braintree::PayPalAccount do
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
         :customer_id => customer.id,
-        :token => payment_method_token
+        :token => payment_method_token,
       )
       result.should be_success
 
@@ -56,7 +56,7 @@ describe Braintree::PayPalAccount do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
         :cvv => "100",
-        :token => "CREDIT_CARD_TOKEN"
+        :token => "CREDIT_CARD_TOKEN",
       )
 
       expect do
@@ -70,11 +70,11 @@ describe Braintree::PayPalAccount do
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => payment_method_token
+        :token => payment_method_token,
       )
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
       result.should be_success
 
@@ -82,12 +82,12 @@ describe Braintree::PayPalAccount do
 
       subscription1 = Braintree::Subscription.create(
         :payment_method_token => token,
-        :plan_id => SpecHelper::TriallessPlan[:id]
+        :plan_id => SpecHelper::TriallessPlan[:id],
       ).subscription
 
       subscription2 = Braintree::Subscription.create(
         :payment_method_token => token,
-        :plan_id => SpecHelper::TriallessPlan[:id]
+        :plan_id => SpecHelper::TriallessPlan[:id],
       ).subscription
 
       paypal_account = Braintree::PayPalAccount.find(token)
@@ -105,7 +105,7 @@ describe Braintree::PayPalAccount do
         :options => {
             :make_default => true,
             :fail_on_duplicate_payment_method => true,
-        }
+        },
       )
 
       result.should be_success
@@ -116,7 +116,7 @@ describe Braintree::PayPalAccount do
     it "throws an error if customer id is not specified" do
       result = Braintree::PayPalAccount.create(
         :billing_agreement_id => "some_billing_agreement_id",
-        :email => "some@example.com"
+        :email => "some@example.com",
       )
 
       result.success?.should == false
@@ -127,7 +127,7 @@ describe Braintree::PayPalAccount do
       customer = Braintree::Customer.create!
       result = Braintree::PayPalAccount.create(
         :customer_id => customer.id,
-        :email => "some@example.com"
+        :email => "some@example.com",
       )
 
       result.success?.should == false
@@ -141,14 +141,14 @@ describe Braintree::PayPalAccount do
       create_result = Braintree::PayPalAccount.create(
         :customer_id => customer.id,
         :billing_agreement_id => "first_billing_agreement_id",
-        :email => "first@example.com"
+        :email => "first@example.com",
       )
       create_result.success?.should == true
 
       update_result = Braintree::PayPalAccount.update(
         create_result.paypal_account.token,
         :billing_agreement_id => "second_billing_agreement_id",
-        :email => "second@example.com"
+        :email => "second@example.com",
       )
 
       update_result.success?.should == true
@@ -163,17 +163,17 @@ describe Braintree::PayPalAccount do
       original_token = random_payment_method_token
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => original_token
+        :token => original_token,
       )
       original_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       updated_token = "UPDATED_TOKEN-" + rand(36**3).to_s(36)
       updated_result = Braintree::PayPalAccount.update(
         original_token,
-        :token => updated_token
+        :token => updated_token,
       )
 
       updated_paypal_account = Braintree::PayPalAccount.find(updated_token)
@@ -190,19 +190,19 @@ describe Braintree::PayPalAccount do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
-        :options => {:make_default => true}
+        :options => {:make_default => true},
       )
       result.should be_success
 
       nonce = nonce_for_paypal_account(:consent_code => "consent-code")
       original_token = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       ).payment_method.token
 
       updated_result = Braintree::PayPalAccount.update(
         original_token,
-        :options => {:make_default => true}
+        :options => {:make_default => true},
       )
 
       updated_paypal_account = Braintree::PayPalAccount.find(original_token)
@@ -216,25 +216,25 @@ describe Braintree::PayPalAccount do
 
       first_nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => first_token
+        :token => first_token,
       )
       first_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => first_nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       second_nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => second_token
+        :token => second_token,
       )
       second_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => second_nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       updated_result = Braintree::PayPalAccount.update(
         first_token,
-        :token => second_token
+        :token => second_token,
       )
 
       updated_result.should_not be_success
@@ -249,11 +249,11 @@ describe Braintree::PayPalAccount do
 
       nonce = nonce_for_paypal_account(
         :consent_code => "consent-code",
-        :token => token
+        :token => token,
       )
       Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       result = Braintree::PayPalAccount.delete(token)
@@ -267,7 +267,7 @@ describe Braintree::PayPalAccount do
   context "self.sale" do
     it "creates a transaction using a paypal account and returns a result object" do
       customer = Braintree::Customer.create!(
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
       )
 
       result = Braintree::PayPalAccount.sale(customer.paypal_accounts[0].token, :amount => "100.00")
@@ -283,7 +283,7 @@ describe Braintree::PayPalAccount do
   context "self.sale!" do
     it "creates a transaction using a paypal account and returns a transaction" do
       customer = Braintree::Customer.create!(
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
       )
 
       transaction = Braintree::PayPalAccount.sale!(customer.paypal_accounts[0].token, :amount => "100.00")

@@ -9,7 +9,7 @@ describe Braintree::TestTransaction do
         :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
         :options => {
         :submit_for_settlement => true
-      }
+      },
       )
       sale_result.success?.should == true
       sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -25,7 +25,7 @@ describe Braintree::TestTransaction do
         :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
         :options => {
           :submit_for_settlement => true
-        }
+        },
       )
       sale_result.success?.should == true
       sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -41,7 +41,7 @@ describe Braintree::TestTransaction do
         :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
         :options => {
           :submit_for_settlement => true
-        }
+        },
       )
       sale_result.success?.should == true
       sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -57,7 +57,7 @@ describe Braintree::TestTransaction do
         :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
         :options => {
           :submit_for_settlement => true
-        }
+        },
       )
       sale_result.success?.should == true
       sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -70,7 +70,7 @@ describe Braintree::TestTransaction do
     it "returns a validation error when invalid transition is specified" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa
+        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
       )
       sale_result.success?.should == true
 
@@ -97,10 +97,10 @@ describe Braintree::TestTransaction do
         in_prod do
           config = Braintree::Configuration.new(
             :environment => (original_env == :production ? :development : original_env),
-            :merchant_id => 'integration_merchant_id',
-            :public_key => 'integration_public_key',
-            :private_key => 'integration_private_key',
-            :logger => Logger.new(StringIO.new)
+            :merchant_id => "integration_merchant_id",
+            :public_key => "integration_public_key",
+            :private_key => "integration_private_key",
+            :logger => Logger.new(StringIO.new),
           )
 
           gateway = Braintree::Gateway.new(config)
@@ -110,7 +110,7 @@ describe Braintree::TestTransaction do
 
           sale_result = transaction_gateway.sale(
             :amount => "100",
-            :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa
+            :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
           )
           testing_gateway.settle(sale_result.transaction.id)
         end

@@ -4,7 +4,7 @@ describe Braintree::CreditCard do
   describe "self.create" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
-        Braintree::CreditCard.create(:invalid_key => 'val')
+        Braintree::CreditCard.create(:invalid_key => "val")
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end
@@ -203,7 +203,7 @@ describe Braintree::CreditCard do
       credit_card = Braintree::CreditCard._new(
         :gateway,
         :bin => "510510",
-        :last_4 => "5100"
+        :last_4 => "5100",
       )
       credit_card.masked_number.should == "510510******5100"
     end
@@ -215,7 +215,7 @@ describe Braintree::CreditCard do
         :gateway,
         :bin => "510510",
         :last_4 => "5100",
-        :is_network_tokenized => true
+        :is_network_tokenized => true,
       )
       credit_card.is_network_tokenized?.should == true
     end
@@ -225,7 +225,7 @@ describe Braintree::CreditCard do
         :gateway,
         :bin => "510510",
         :last_4 => "5100",
-        :is_network_tokenized => false
+        :is_network_tokenized => false,
       )
       credit_card.is_network_tokenized?.should == false
     end
@@ -234,7 +234,7 @@ describe Braintree::CreditCard do
   describe "self.update" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
-        Braintree::CreditCard.update(:gateway, :invalid_key => 'val')
+        Braintree::CreditCard.update(:gateway, :invalid_key => "val")
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end
@@ -250,8 +250,8 @@ describe Braintree::CreditCard do
   describe "self._new" do
     describe "initializing verification" do
       it "picks the youngest verification" do
-        verification1 = { :created_at => Time.now, :id => 123 }
-        verification2 = { :created_at => Time.now - 3600, :id => 456 }
+        verification1 = {:created_at => Time.now, :id => 123}
+        verification2 = {:created_at => Time.now - 3600, :id => 456}
         credit_card = Braintree::CreditCard._new(Braintree::Configuration.gateway, {:verifications => [verification1, verification2]})
         credit_card.verification.id.should == 123
       end

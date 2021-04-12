@@ -26,7 +26,7 @@ module Braintree
       if response.has_key?(:response) && response[:response][:merchant]
         Braintree::SuccessfulResult.new(
           :merchant => Merchant._new(@gateway, response[:response][:merchant]),
-          :credentials => OAuthCredentials._new(response[:response][:credentials])
+          :credentials => OAuthCredentials._new(response[:response][:credentials]),
         )
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])

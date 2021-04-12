@@ -26,7 +26,7 @@ module Braintree
           date_or_time.respond_to?(:xmlschema) ? date_or_time.xmlschema : date_or_time.to_s
         end,
         "bigdecimal" => Proc.new do |bigdecimal|
-          str = bigdecimal.to_s('F')
+          str = bigdecimal.to_s("F")
           if str =~ /\.\d$/
             str += "0"
           end
@@ -62,15 +62,15 @@ module Braintree
             else
               type_name = XML_TYPE_NAMES[value.class.name]
 
-              attributes = ((value.nil? || type_name.nil?) ? {} : { :type => type_name })
+              attributes = ((value.nil? || type_name.nil?) ? {} : {:type => type_name})
               if value.nil?
                 attributes[:nil] = true
               end
 
-							formatting_name = XML_FORMATTING_NAMES[value.class.name]
+              formatting_name = XML_FORMATTING_NAMES[value.class.name]
               options[:builder].tag!(_xml_escape(key),
                 XML_FORMATTING[formatting_name] ? XML_FORMATTING[formatting_name].call(value) : value,
-                attributes
+                attributes,
               )
             end
           end

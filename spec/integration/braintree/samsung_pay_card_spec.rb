@@ -8,7 +8,7 @@ describe Braintree::SamsungPayCard do
     result = Braintree::PaymentMethod.create(
       :payment_method_nonce => Braintree::Test::Nonce::SamsungPayDiscover,
       :customer_id => customer.id,
-      :cardholder_name => 'Jenny Block',
+      :cardholder_name => "Jenny Block",
       :billing_address => {
           :first_name => "New First Name",
           :last_name => "New Last Name",
@@ -19,7 +19,7 @@ describe Braintree::SamsungPayCard do
           :region => "New State",
           :postal_code => "56789",
           :country_name => "United States of America"
-      }
+      },
     )
     result.should be_success
 
@@ -65,7 +65,7 @@ describe Braintree::SamsungPayCard do
     result = Braintree::PaymentMethod.create(
       :payment_method_nonce => Braintree::Test::Nonce::SamsungPayDiscover,
       :customer_id => customer.id,
-      :cardholder_name => 'Jenny Block',
+      :cardholder_name => "Jenny Block",
       :billing_address => {
           :first_name => "New First Name",
           :last_name => "New Last Name",
@@ -76,11 +76,11 @@ describe Braintree::SamsungPayCard do
           :region => "New State",
           :postal_code => "56789",
           :country_name => "United States of America"
-      }
+      },
     )
 
     result.should be_success
-    result.payment_method.cardholder_name.should == 'Jenny Block'
+    result.payment_method.cardholder_name.should == "Jenny Block"
 
     address = result.payment_method.billing_address
     address.first_name.should == "New First Name"
@@ -96,7 +96,7 @@ describe Braintree::SamsungPayCard do
   it "can search for transactions" do
     transaction_create_result = Braintree::Transaction.sale(
       :payment_method_nonce => Braintree::Test::Nonce::SamsungPayDiscover,
-      :amount => '47.00',
+      :amount => "47.00",
     )
     transaction_create_result.should be_success
     transaction_id = transaction_create_result.transaction.id
@@ -114,8 +114,8 @@ describe Braintree::SamsungPayCard do
     result = Braintree::Transaction.sale(
       :payment_method_nonce => Braintree::Test::Nonce::SamsungPayDiscover,
       :customer_id => customer.id,
-      :amount => '47.00',
-      :options => { :store_in_vault => true },
+      :amount => "47.00",
+      :options => {:store_in_vault => true},
     )
     result.should be_success
 
@@ -138,7 +138,7 @@ describe Braintree::SamsungPayCard do
     samsung_pay_card_details.prepaid.should_not be_nil
     samsung_pay_card_details.product_id.should_not be_nil
     samsung_pay_card_details.source_card_last_4.should_not be_nil
-    samsung_pay_card_details.source_card_last_4.should == '3333'
+    samsung_pay_card_details.source_card_last_4.should == "3333"
     samsung_pay_card_details.token.should_not be_nil
   end
 end

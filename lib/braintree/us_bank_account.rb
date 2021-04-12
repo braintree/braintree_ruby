@@ -35,7 +35,7 @@ module Braintree
     end
 
     def self._new(*args) # :nodoc:
-      self.new *args
+      self.new(*args)
     end
 
     def self.find(*args)
@@ -45,8 +45,8 @@ module Braintree
     def self.sale(token, transaction_attributes)
       Configuration.gateway.transaction.sale(transaction_attributes.merge(
           :payment_method_token => token,
-          :options => { :submit_for_settlement => true }
-        )
+          :options => {:submit_for_settlement => true},
+        ),
       )
     end
 

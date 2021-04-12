@@ -25,7 +25,7 @@ module Braintree
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
       raise ArgumentError, "document_id_or_request cannot be blank" if document_id_or_request.nil?
 
-      request = document_id_or_request.is_a?(Hash) ? document_id_or_request : { document_id: document_id_or_request }
+      request = document_id_or_request.is_a?(Hash) ? document_id_or_request : {document_id: document_id_or_request}
 
       raise ArgumentError, "document_id contains invalid characters" unless request[:document_id].to_s =~ /\A[\w-]+\z/
       raise ArgumentError, "document_id cannot be blank" if request[:document_id].nil? || dispute_id.to_s.strip == ""
@@ -55,7 +55,7 @@ module Braintree
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
       raise ArgumentError, "content_or_request cannot be blank" if content_or_request.nil?
 
-      request = content_or_request.is_a?(String) ? { content: content_or_request } : content_or_request
+      request = content_or_request.is_a?(String) ? {content: content_or_request} : content_or_request
 
       raise ArgumentError, "content cannot be blank" if request[:content].nil? || request[:content].to_s.strip == ""
       raise ArgumentError, "request can only contain the keys [:content, :category, :sequence_number]" if (request.keys - [:category, :content, :sequence_number]).any?

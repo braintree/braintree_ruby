@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe Braintree::Address do
   describe "==" do
     it "returns true if given an address with the same id and customer_id" do
-      first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => 'a1')
+      first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
       second = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
 
       first.should == second

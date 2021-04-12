@@ -12,12 +12,12 @@ describe Braintree::PaymentMethodNonce do
           :number => "4111111111111111",
           :expiration_month => "11",
           :expiration_year => "2099",
-        }
+        },
       )
 
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       result.should be_success
@@ -49,12 +49,12 @@ describe Braintree::PaymentMethodNonce do
           :number => "4111111111111111",
           :expiration_month => "11",
           :expiration_year => "2099",
-        }
+        },
       )
 
       payment_method = Braintree::PaymentMethod.create!(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       payment_method.should be_a(Braintree::CreditCard)
@@ -114,7 +114,7 @@ describe Braintree::PaymentMethodNonce do
           :number => "4111111111111111",
           :expiration_month => "11",
           :expiration_year => "2099",
-        }
+        },
       )
 
       result = Braintree::PaymentMethodNonce.find(nonce)
@@ -257,19 +257,19 @@ describe Braintree::PaymentMethodNonce do
       context "regulation environments" do
         it "can get unregulated" do
           expect(
-            request_authentication_insights(european_merchant_token, indian_payment_token)[:regulation_environment]
+            request_authentication_insights(european_merchant_token, indian_payment_token)[:regulation_environment],
           ).to eq "unregulated"
         end
 
         it "can get psd2" do
           expect(
-            request_authentication_insights(european_merchant_token, european_payment_token)[:regulation_environment]
+            request_authentication_insights(european_merchant_token, european_payment_token)[:regulation_environment],
           ).to eq "psd2"
         end
 
         it "can get rbi" do
           expect(
-            request_authentication_insights(indian_merchant_token, indian_payment_token)[:regulation_environment]
+            request_authentication_insights(indian_merchant_token, indian_payment_token)[:regulation_environment],
           ).to eq "rbi"
         end
       end
@@ -277,19 +277,19 @@ describe Braintree::PaymentMethodNonce do
       context "sca_indicator" do
         it "can get unavailable" do
           expect(
-            request_authentication_insights(indian_merchant_token, indian_payment_token)[:sca_indicator]
+            request_authentication_insights(indian_merchant_token, indian_payment_token)[:sca_indicator],
           ).to eq "unavailable"
         end
 
         it "can get sca_required" do
           expect(
-            request_authentication_insights(indian_merchant_token, indian_payment_token, {amount: 2001})[:sca_indicator]
+            request_authentication_insights(indian_merchant_token, indian_payment_token, {amount: 2001})[:sca_indicator],
           ).to eq "sca_required"
         end
 
         it "can get sca_optional" do
           expect(
-            request_authentication_insights(indian_merchant_token, indian_payment_token, {amount: 2000, recurring_customer_consent: true, recurring_max_amount: 2000})[:sca_indicator]
+            request_authentication_insights(indian_merchant_token, indian_payment_token, {amount: 2000, recurring_customer_consent: true, recurring_max_amount: 2000})[:sca_indicator],
 
           ).to eq "sca_optional"
         end
@@ -309,7 +309,7 @@ describe Braintree::PaymentMethodNonce do
 
         result = Braintree::PaymentMethodNonce.create(
           payment_method_token,
-          payment_method_nonce: nonce_request
+          payment_method_nonce: nonce_request,
         )
         result.should be_success
 

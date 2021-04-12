@@ -6,13 +6,13 @@ describe Braintree::MerchantGateway do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant.create(
         :email => "name@email.com",
         :country_code_alpha3 => "USA",
-        :payment_methods => ["credit_card", "paypal"]
+        :payment_methods => ["credit_card", "paypal"],
       )
 
       result.should be_success
@@ -37,13 +37,13 @@ describe Braintree::MerchantGateway do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant.create(
         :email => "name@email.com",
         :country_code_alpha3 => "USA",
-        :payment_methods => ["fake_money"]
+        :payment_methods => ["fake_money"],
       )
 
       result.should_not be_success
@@ -71,7 +71,7 @@ describe Braintree::MerchantGateway do
         result = gateway.merchant.create(
           :email => "name@email.com",
           :country_code_alpha3 => "USA",
-          :payment_methods => ["credit_card", "paypal"]
+          :payment_methods => ["credit_card", "paypal"],
         )
 
         result.should be_success
@@ -83,7 +83,7 @@ describe Braintree::MerchantGateway do
         @gateway = Braintree::Gateway.new(
           :client_id => "client_id$development$signup_client_id",
           :client_secret => "client_secret$development$signup_client_secret",
-          :logger => Logger.new("/dev/null")
+          :logger => Logger.new("/dev/null"),
         )
       end
 
@@ -92,7 +92,7 @@ describe Braintree::MerchantGateway do
           :email => "name@email.com",
           :country_code_alpha3 => "USA",
           :payment_methods => ["credit_card", "paypal"],
-          :currencies => ["GBP", "USD"]
+          :currencies => ["GBP", "USD"],
         )
 
         merchant = result.merchant
@@ -127,7 +127,7 @@ describe Braintree::MerchantGateway do
           :email => "name@email.com",
           :country_code_alpha3 => "GBR",
           :payment_methods => ["credit_card", "paypal"],
-          :currencies => ["GBP", "USD"]
+          :currencies => ["GBP", "USD"],
         )
 
         merchant = result.merchant
@@ -167,7 +167,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          }
+          },
         )
 
         result.should be_success
@@ -207,7 +207,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          }
+          },
         )
 
         result.should be_success
@@ -243,7 +243,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          }
+          },
         )
 
         result.should be_success
@@ -280,7 +280,7 @@ describe Braintree::MerchantGateway do
           :paypal_account => {
             :client_id => "paypal_client_id",
             :client_secret => "paypal_client_secret",
-          }
+          },
         )
 
         result.should_not be_success

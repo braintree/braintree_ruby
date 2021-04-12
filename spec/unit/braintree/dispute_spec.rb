@@ -137,13 +137,13 @@ describe Braintree::Dispute do
       it "does not raise an exception if the optional parameters are valid" do
         Braintree::Http.stub(:new).and_return double.as_null_object
         expect do
-          Braintree::Dispute.add_file_evidence("dispute_id", { category: "GENERAL", document_id: "document_id" })
+          Braintree::Dispute.add_file_evidence("dispute_id", {category: "GENERAL", document_id: "document_id"})
         end.to_not raise_error
       end
 
       it "raises an exception if the optional params contain invalid keys" do
         expect do
-          Braintree::Dispute.add_file_evidence("dispute_id", { random_param: "" })
+          Braintree::Dispute.add_file_evidence("dispute_id", {random_param: ""})
         end.to raise_error(ArgumentError)
       end
 
@@ -151,7 +151,7 @@ describe Braintree::Dispute do
         Braintree::Http.stub(:new).and_return double.as_null_object
 
         expect do
-          Braintree::Dispute.add_file_evidence("dispute_id", { category: 3, document_id: "document_id" })
+          Braintree::Dispute.add_file_evidence("dispute_id", {category: 3, document_id: "document_id"})
         end.to raise_error(ArgumentError)
       end
     end
@@ -200,31 +200,31 @@ describe Braintree::Dispute do
       it "does not raise an exception if the optional parameters are valid" do
         Braintree::Http.stub(:new).and_return double.as_null_object
         expect do
-          Braintree::Dispute.add_text_evidence("dispute_id", { content: "a", category: "", sequence_number: 3 })
+          Braintree::Dispute.add_text_evidence("dispute_id", {content: "a", category: "", sequence_number: 3})
         end.to_not raise_error
       end
 
       it "raises an exception if the optional params contain invalid keys" do
         expect do
-          Braintree::Dispute.add_text_evidence("dispute_id", { random_param: "" })
+          Braintree::Dispute.add_text_evidence("dispute_id", {random_param: ""})
         end.to raise_error(ArgumentError)
       end
 
       it "raises an exception if sequence_number is provided and not an integer" do
         expect do
-          Braintree::Dispute.add_text_evidence("dispute_id", { sequence_number: "abc" })
+          Braintree::Dispute.add_text_evidence("dispute_id", {sequence_number: "abc"})
         end.to raise_error(ArgumentError)
       end
 
       it "raises an exception if the param tag is not a string" do
         expect do
-          Braintree::Dispute.add_text_evidence("dispute_id", { tag: 3 })
+          Braintree::Dispute.add_text_evidence("dispute_id", {tag: 3})
         end.to raise_error(ArgumentError)
       end
 
       it "raises an exception if the param category is not a string" do
         expect do
-          Braintree::Dispute.add_text_evidence("dispute_id", { category: 3 })
+          Braintree::Dispute.add_text_evidence("dispute_id", {category: 3})
         end.to raise_error(ArgumentError)
       end
     end

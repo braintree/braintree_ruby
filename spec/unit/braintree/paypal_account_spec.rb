@@ -8,7 +8,7 @@ describe Braintree::PayPalAccount do
           :invalid_key => "bad stuff",
           :options => {
             :invalid_option => "bad option",
-          }
+          },
         )
       end.to raise_error(ArgumentError, "invalid keys: invalid_key, options[invalid_option]")
     end
@@ -17,7 +17,7 @@ describe Braintree::PayPalAccount do
   describe "self.update" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
-        Braintree::PayPalAccount.update("some_token", :invalid_key => 'val')
+        Braintree::PayPalAccount.update("some_token", :invalid_key => "val")
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end

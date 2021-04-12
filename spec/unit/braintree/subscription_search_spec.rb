@@ -11,7 +11,7 @@ module Braintree
             Subscription::Status::Active,
             Subscription::Status::Canceled,
             Subscription::Status::Expired,
-            Subscription::Status::PastDue
+            Subscription::Status::PastDue,
           )
         end.should_not raise_error
       end

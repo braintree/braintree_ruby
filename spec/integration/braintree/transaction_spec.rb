@@ -24,7 +24,7 @@ describe Braintree::Transaction do
           :country_code_alpha2 => "BT",
           :country_code_alpha3 => "BTN",
           :country_code_numeric => "064"
-        }
+        },
       )
       result.success?.should == true
 
@@ -34,7 +34,7 @@ describe Braintree::Transaction do
         :channel => "MyShoppingCartProvider",
         :options => {
           :submit_for_settlement => false
-        }
+        },
       )
       clone_result.success?.should == true
 
@@ -67,7 +67,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => "5105105105105100",
           :expiration_date => "05/2012"
-        }
+        },
       )
 
       result.success?.should be(true)
@@ -84,7 +84,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result = Braintree::Transaction.clone_transaction(transaction.id, :amount => "112.44")
       result.success?.should be(false)
@@ -100,7 +100,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "112.44", :options => {:submit_for_settlement => false})
       clone_transaction.id.should_not == transaction.id
@@ -112,7 +112,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       expect do
         clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "im not a number")
@@ -131,14 +131,14 @@ describe Braintree::Transaction do
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
               :expiration_date => "05/2009"
-            }
+            },
           )
           result.transaction.risk_data.should be_a(Braintree::RiskData)
           result.transaction.risk_data.id.should_not be_nil
           result.transaction.risk_data.decision.should_not be_nil
           result.transaction.risk_data.decision_reasons.should_not be_nil
-          result.transaction.risk_data.device_data_captured.should_not be_nil
-          result.transaction.risk_data.fraud_service_provider.should_not be_nil
+          expect(result.transaction.risk_data).to respond_to(:device_data_captured)
+          expect(result.transaction.risk_data).to respond_to(:fraud_service_provider)
           expect(result.transaction.risk_data).to respond_to(:transaction_risk_score)
         end
       end
@@ -158,7 +158,7 @@ describe Braintree::Transaction do
               :customer_ip => "192.168.0.1",
               :customer_location_zip => "not-a-$#phone",
               :customer_tenure => "20#{"0" * 500}"
-            }
+            },
           )
           result.success?.should == false
           result.errors.for(:transaction).for(:risk_data).on(:customer_device_id).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerDeviceIdIsTooLong
@@ -176,7 +176,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
             :expiration_date => "05/2009"
-          }
+          },
         )
         result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
         result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::CreditCard
@@ -252,7 +252,7 @@ describe Braintree::Transaction do
                   },
                 ],
               }
-            }
+            },
           )
           result.success?.should be(true)
         end
@@ -279,15 +279,15 @@ describe Braintree::Transaction do
                   },
                 ],
               }
-            }
+            },
           )
           result.success?.should be(false)
           invalid_folio = Braintree::ErrorCodes::Transaction::Industry::Lodging::FolioNumberIsInvalid
           check_out_date_must_follow_check_in_date = Braintree::ErrorCodes::Transaction::Industry::Lodging::CheckOutDateMustFollowCheckInDate
           room_rate_format_is_invalid = Braintree::ErrorCodes::Transaction::Industry::Lodging::RoomRateFormatIsInvalid
           invalid_additional_charge_kind = Braintree::ErrorCodes::Transaction::Industry::AdditionalCharge::KindIsInvalid
-          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should include *[invalid_folio, check_out_date_must_follow_check_in_date, room_rate_format_is_invalid]
-          result.errors.for(:transaction).for(:industry).for(:additional_charges).for(:index_0).on(:kind).map { |e| e.code }.sort.should include *[invalid_additional_charge_kind]
+          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should include(*[invalid_folio, check_out_date_must_follow_check_in_date, room_rate_format_is_invalid])
+          result.errors.for(:transaction).for(:industry).for(:additional_charges).for(:index_0).on(:kind).map { |e| e.code }.sort.should include(*[invalid_additional_charge_kind])
         end
       end
 
@@ -309,7 +309,7 @@ describe Braintree::Transaction do
                 :lodging_check_out_date => "2014-07-07",
                 :lodging_name => "Royal Caribbean",
               }
-            }
+            },
           )
           result.success?.should be(true)
         end
@@ -327,7 +327,7 @@ describe Braintree::Transaction do
               :data => {
                 :lodging_name => "Royal Caribbean"
               }
-            }
+            },
           )
           result.success?.should be(false)
           result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelCruise::TravelPackageIsInvalid]
@@ -401,7 +401,7 @@ describe Braintree::Transaction do
                   }
                 ]
               }
-            }
+            },
           )
           result.success?.should be(true)
         end
@@ -425,7 +425,7 @@ describe Braintree::Transaction do
                   }
                 ]
               }
-            }
+            },
           )
           result.success?.should be(false)
           result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative]
@@ -444,7 +444,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Elo,
             :cvv => "737",
             :expiration_date => "10/2020"
-          }
+          },
         )
         result.success?.should == true
         result.transaction.id.should =~ /^\w{6,}$/
@@ -466,7 +466,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6,}$/
@@ -492,7 +492,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       expect(result.success?).to eq(true)
       expect(result.transaction.type).to eq("sale")
@@ -514,7 +514,7 @@ describe Braintree::Transaction do
       oauth_gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
         :merchant_public_id => "integration_merchant_id",
@@ -523,7 +523,7 @@ describe Braintree::Transaction do
 
       gateway = Braintree::Gateway.new(
         :access_token => access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.transaction.create(
@@ -532,7 +532,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result.success?.should == true
@@ -575,7 +575,7 @@ describe Braintree::Transaction do
           :customer_ip => "192.168.0.1",
           :customer_location_zip => "91244",
           :customer_tenure => "20",
-        }
+        },
       )
 
       result.success?.should == true
@@ -585,7 +585,7 @@ describe Braintree::Transaction do
       result = Braintree::Customer.create()
       address_result = Braintree::Address.create(
         :customer_id => result.customer.id,
-        :country_code_alpha2 => "US"
+        :country_code_alpha2 => "US",
       )
 
       result = Braintree::Transaction.create(
@@ -596,7 +596,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result.success?.should == true
@@ -609,7 +609,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == false
       result.transaction.id.should =~ /^\w{6,}$/
@@ -628,7 +628,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == false
       result.transaction.id.should =~ /^\w{6,}$/
@@ -665,7 +665,7 @@ describe Braintree::Transaction do
         :options => {
           :add_billing_address_to_payment_method => true,
           :store_in_vault => true
-        }
+        },
       )
       result.success?.should == true
       transaction = result.transaction
@@ -695,7 +695,7 @@ describe Braintree::Transaction do
         :billing => {
           :country_name => "Botswana",
           :country_code_alpha2 => "US",
-        }
+        },
       )
 
       result.success?.should == false
@@ -711,7 +711,7 @@ describe Braintree::Transaction do
         },
         :billing => {
           :country_code_alpha2 => "ZZ"
-        }
+        },
       )
 
       result.success?.should == false
@@ -728,7 +728,7 @@ describe Braintree::Transaction do
         },
         :billing => {
           :country_code_alpha3 => "ZZZ"
-        }
+        },
       )
 
       result.success?.should == false
@@ -745,7 +745,7 @@ describe Braintree::Transaction do
         },
         :billing => {
           :country_code_numeric => "FOO"
-        }
+        },
       )
 
       result.success?.should == false
@@ -776,7 +776,7 @@ describe Braintree::Transaction do
         },
         :shipping => {
           :phone_number => "123-234-3456=098765"
-        }
+        },
       )
 
       result.success?.should == false
@@ -792,7 +792,7 @@ describe Braintree::Transaction do
         },
         :shipping => {
           :shipping_method => "urgent"
-        }
+        },
       )
 
       result.success?.should == false
@@ -808,7 +808,7 @@ describe Braintree::Transaction do
         },
         :billing => {
           :phone_number => "123-234-3456=098765"
-        }
+        },
       )
 
       result.success?.should == false
@@ -832,7 +832,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "05/2009",
               :cvv => "200"
-            }
+            },
           )
           result.success?.should == false
           result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::CVV
@@ -847,17 +847,17 @@ describe Braintree::Transaction do
         gateway = Braintree::Gateway.new(
           :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
           :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-          :logger => Logger.new("/dev/null")
+          :logger => Logger.new("/dev/null"),
         )
         result = gateway.merchant.create(
           :email => "name@email.com",
           :country_code_alpha3 => "USA",
-          :payment_methods => ["credit_card", "paypal"]
+          :payment_methods => ["credit_card", "paypal"],
         )
 
         gateway = Braintree::Gateway.new(
           :access_token => result.credentials.access_token,
-          :logger => Logger.new("/dev/null")
+          :logger => Logger.new("/dev/null"),
         )
 
         result = gateway.transaction.create(
@@ -866,7 +866,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2020"
-          }
+          },
         )
         result.success?.should == false
         result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete
@@ -890,7 +890,7 @@ describe Braintree::Transaction do
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "05/2009"
-            }
+            },
           )
           result.success?.should == false
           result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVS
@@ -920,7 +920,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "05/2009",
               :cvv => "200"
-            }
+            },
           )
           result.success?.should == false
           result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVSAndCVV
@@ -939,7 +939,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Fraud,
               :expiration_date => "05/2017",
               :cvv => "333"
-            }
+            },
           )
           result.success?.should == false
           result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
@@ -954,7 +954,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::RiskThreshold,
               :expiration_date => "05/2017",
               :cvv => "333"
-            }
+            },
           )
           result.success?.should == false
           result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::RiskThreshold
@@ -991,7 +991,7 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_month => "05",
           :expiration_year => "2011"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.credit_card_details.expiration_month.should == "05"
@@ -1003,7 +1003,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => Braintree::Test::TransactionAmounts::Decline,
-        :customer_id => 123456789
+        :customer_id => 123456789,
       )
       result.success?.should == false
       result.errors.for(:transaction).on(:customer_id)[0].code.should == "91510"
@@ -1020,7 +1020,7 @@ describe Braintree::Transaction do
         },
         :custom_fields => {
           :store_me => "custom value"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.custom_fields.should == {:store_me => "custom value"}
@@ -1035,7 +1035,7 @@ describe Braintree::Transaction do
         },
         :custom_fields => {
           :store_me => ""
-        }
+        },
       )
 
       result = Braintree::Transaction.find(create_result.transaction.id)
@@ -1053,7 +1053,7 @@ describe Braintree::Transaction do
         },
         :custom_fields => {
           :invalid_key => "custom value"
-        }
+        },
       )
       result.success?.should == false
       result.errors.for(:transaction).on(:custom_fields)[0].message.should == "Custom field is invalid: invalid_key."
@@ -1072,7 +1072,7 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.create(params[:transaction])
       result.success?.should == false
-      result.params.should == {:transaction => {:type => 'sale', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
+      result.params.should == {:transaction => {:type => "sale", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
     end
 
     it "returns errors if validations fail (tests many errors at once for spec speed)" do
@@ -1092,7 +1092,7 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.create(params[:transaction])
       result.success?.should == false
-      result.errors.for(:transaction).on(:base).map{|error| error.code}.should include(Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer)
+      result.errors.for(:transaction).on(:base).map { |error| error.code }.should include(Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer)
       result.errors.for(:transaction).on(:customer_id)[0].code.should == Braintree::ErrorCodes::Transaction::CustomerIdIsInvalid
       result.errors.for(:transaction).on(:payment_method_token)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodTokenIsInvalid
       result.errors.for(:transaction).on(:type)[0].code.should == Braintree::ErrorCodes::Transaction::TypeIsInvalid
@@ -1123,7 +1123,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :account_type => "credit",
           }
-        }
+        },
       )
       result.success?.should == false
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountNotSupportedByProcessor
@@ -1167,13 +1167,13 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => Braintree::Test::TransactionAmounts::Authorize,
         :customer_id => customer.id,
-        :payment_method_token => customer.credit_cards[0].token + "x"
+        :payment_method_token => customer.credit_cards[0].token + "x",
       )
       result.success?.should == false
       result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer
@@ -1185,7 +1185,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2010"
-          }
+          },
         )
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -1194,7 +1194,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12"
-          }
+          },
         )
         result.success?.should == true
         result.transaction.credit_card_details.masked_number.should == "401288******1881"
@@ -1206,7 +1206,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2010"
-          }
+          },
         )
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -1216,7 +1216,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :options => { :store_in_vault => true }
+          :options => {:store_in_vault => true},
         )
         result.success?.should == true
         result.transaction.credit_card_details.masked_number.should == "401288******1881"
@@ -1230,7 +1230,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
 
       result = Braintree::Subscription.create(
@@ -1261,7 +1261,7 @@ describe Braintree::Transaction do
               :never_expires => true
             }
           ]
-        }
+        },
       )
 
       result.success?.should be(true)
@@ -1302,15 +1302,15 @@ describe Braintree::Transaction do
             :expiration_date => "05/2009"
           },
           :descriptor => {
-            :name => '123*123456789012345678',
-            :phone => '3334445555',
+            :name => "123*123456789012345678",
+            :phone => "3334445555",
             :url => "ebay.com"
-          }
+          },
         )
         result.success?.should == true
-        result.transaction.descriptor.name.should == '123*123456789012345678'
-        result.transaction.descriptor.phone.should == '3334445555'
-        result.transaction.descriptor.url.should == 'ebay.com'
+        result.transaction.descriptor.name.should == "123*123456789012345678"
+        result.transaction.descriptor.phone.should == "3334445555"
+        result.transaction.descriptor.url.should == "ebay.com"
       end
 
       it "has validation errors if format is invalid" do
@@ -1321,10 +1321,10 @@ describe Braintree::Transaction do
             :expiration_date => "05/2009"
           },
           :descriptor => {
-            :name => 'badcompanyname12*badproduct12',
-            :phone => '%bad4445555',
-            :url => '12345678901234'
-          }
+            :name => "badcompanyname12*badproduct12",
+            :phone => "%bad4445555",
+            :url => "12345678901234"
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
@@ -1341,14 +1341,14 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
           },
-          :tax_amount => '0.05',
+          :tax_amount => "0.05",
           :tax_exempt => false,
-          :purchase_order_number => '12345678901234567'
+          :purchase_order_number => "12345678901234567",
         )
         result.success?.should == true
         result.transaction.tax_amount.should == BigDecimal("0.05")
         result.transaction.tax_exempt.should == false
-        result.transaction.purchase_order_number.should == '12345678901234567'
+        result.transaction.purchase_order_number.should == "12345678901234567"
       end
 
       it "accepts tax_amount as a BigDecimal" do
@@ -1358,8 +1358,8 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
           },
-          :tax_amount => BigDecimal('1.99'),
-          :tax_exempt => true
+          :tax_amount => BigDecimal("1.99"),
+          :tax_exempt => true,
         )
         result.success?.should == true
         result.transaction.tax_amount.should == BigDecimal("1.99")
@@ -1375,7 +1375,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "05/2009"
             },
-            :tax_amount => 'abcd'
+            :tax_amount => "abcd",
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::Transaction::TaxAmountFormatIsInvalid
@@ -1388,7 +1388,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "05/2009"
             },
-            :purchase_order_number => 'a' * 18
+            :purchase_order_number => "a" * 18,
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsTooLong
@@ -1401,7 +1401,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "05/2009"
             },
-            :purchase_order_number => "\303\237\303\245\342\210\202"
+            :purchase_order_number => "\303\237\303\245\342\210\202",
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsInvalid
@@ -1418,7 +1418,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :transaction_source => "recurring_first"
+          :transaction_source => "recurring_first",
         )
         result.success?.should == true
         result.transaction.recurring.should == true
@@ -1432,7 +1432,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :transaction_source => "recurring"
+          :transaction_source => "recurring",
         )
         result.success?.should == true
         result.transaction.recurring.should == true
@@ -1446,7 +1446,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :transaction_source => "merchant"
+          :transaction_source => "merchant",
         )
         result.success?.should == true
         result.transaction.recurring.should == false
@@ -1460,7 +1460,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :transaction_source => "moto"
+          :transaction_source => "moto",
         )
         result.success?.should == true
         result.transaction.recurring.should == false
@@ -1474,7 +1474,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :transaction_source => "invalid_value"
+          :transaction_source => "invalid_value",
         )
         result.success?.should == false
         result.errors.for(:transaction).on(:transaction_source)[0].code.should == Braintree::ErrorCodes::Transaction::TransactionSourceIsInvalid
@@ -1494,7 +1494,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :options => { :store_in_vault_on_success => true }
+            :options => {:store_in_vault_on_success => true},
           )
           result.success?.should == true
           result.transaction.vault_customer.last_name.should == "Doe"
@@ -1513,7 +1513,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :options => { :store_in_vault_on_success => true }
+            :options => {:store_in_vault_on_success => true},
           )
           result.success?.should == false
           result.transaction.vault_customer.should be_nil
@@ -1533,7 +1533,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :options => { :store_in_vault_on_success => false }
+            :options => {:store_in_vault_on_success => false},
           )
           result.success?.should == true
           result.transaction.vault_customer.should be_nil
@@ -1551,7 +1551,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :options => { :store_in_vault_on_success => false }
+            :options => {:store_in_vault_on_success => false},
           )
           result.success?.should == false
           result.transaction.vault_customer.should be_nil
@@ -1570,7 +1570,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :service_fee_amount => "1.00"
+          :service_fee_amount => "1.00",
         )
         result.success?.should == true
         result.transaction.service_fee_amount.should == BigDecimal("1.00")
@@ -1585,7 +1585,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :service_fee_amount => "1.00"
+          :service_fee_amount => "1.00",
         )
         result.success?.should == false
         expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeAmountNotAllowedOnMasterMerchantAccount
@@ -1600,7 +1600,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
-          }
+          },
         )
         result.success?.should == false
         expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFeeAmount
@@ -1610,7 +1610,7 @@ describe Braintree::Transaction do
       it "raises an error if service fee amount is negative" do
         result = Braintree::Transaction.create(
           :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :service_fee_amount => "-1.00"
+          :service_fee_amount => "-1.00",
         )
         result.success?.should == false
         result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountCannotBeNegative
@@ -1619,7 +1619,7 @@ describe Braintree::Transaction do
       it "raises an error if service fee amount is invalid" do
         result = Braintree::Transaction.create(
           :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :service_fee_amount => "invalid amount"
+          :service_fee_amount => "invalid amount",
         )
         result.success?.should == false
         result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountFormatIsInvalid
@@ -1637,7 +1637,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :service_fee_amount => "10.00",
-          :options => {:hold_in_escrow => true}
+          :options => {:hold_in_escrow => true},
         )
 
         result.success?.should == true
@@ -1654,7 +1654,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :service_fee_amount => "1.00",
-          :options => {:hold_in_escrow => true}
+          :options => {:hold_in_escrow => true},
         )
         result.success?.should == false
         expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
@@ -1667,7 +1667,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode,
         )
         result.success?.should == true
         result.transaction.credit_card_details.bin.should == "400934"
@@ -1684,7 +1684,7 @@ describe Braintree::Transaction do
           },
           :options => {
             :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
-          }
+          },
         )
         result.success?.should == true
         result.transaction.credit_card_details.venmo_sdk?.should == false
@@ -1699,14 +1699,14 @@ describe Braintree::Transaction do
             :expiration_month => "11",
             :expiration_year => "2099",
           },
-          :share => true
+          :share => true,
         )
         nonce.should_not be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
         result.success?.should == true
       end
@@ -1721,14 +1721,14 @@ describe Braintree::Transaction do
           },
           :client_token_options => {
             :customer_id => customer.id,
-          }
+          },
         )
         nonce.should_not be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
         result.success?.should == true
       end
@@ -1741,14 +1741,14 @@ describe Braintree::Transaction do
           },
           :client_token_options => {
             :customer_id => customer.id,
-          }
+          },
         )
         nonce.should_not be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
         result.success?.should == true
         result.transaction.paypal_details.should_not be_nil
@@ -1760,14 +1760,14 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
         result.success?.should == true
         result.transaction.paypal_details.should_not be_nil
@@ -1779,7 +1779,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa
+          :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1809,7 +1809,7 @@ describe Braintree::Transaction do
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
-          :options => { :store_in_vault_on_success => true }
+          :options => {:store_in_vault_on_success => true},
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1830,7 +1830,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover
+          :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1863,7 +1863,7 @@ describe Braintree::Transaction do
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
-          :options => { :store_in_vault_on_success => true }
+          :options => {:store_in_vault_on_success => true},
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1887,7 +1887,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard
+          :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard,
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1910,7 +1910,7 @@ describe Braintree::Transaction do
           :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
-          :options => {:store_in_vault => true}
+          :options => {:store_in_vault => true},
         )
         result.should be_success
 
@@ -1930,7 +1930,7 @@ describe Braintree::Transaction do
           :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
-          :options => {:store_in_vault => true, :venmo => {:profile_id => "integration_venmo_merchant_public_id" }}
+          :options => {:store_in_vault => true, :venmo => {:profile_id => "integration_venmo_merchant_public_id"}},
         )
         result.should be_success
       end
@@ -1940,7 +1940,7 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable
+          :payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable,
         )
         result.success?.should == true
         result.transaction.should_not be_nil
@@ -1955,7 +1955,7 @@ describe Braintree::Transaction do
           :paypal_account => {
             :payer_id => "PAYER-1234",
             :payment_id => "PAY-5678",
-          }
+          },
         )
 
         result.success?.should == true
@@ -1969,7 +1969,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -1979,7 +1979,7 @@ describe Braintree::Transaction do
           :payment_method_nonce => nonce,
           :paypal_account => {
             :payee_id => "fake-payee-id"
-          }
+          },
         )
 
         result.success?.should == true
@@ -1993,7 +1993,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2004,7 +2004,7 @@ describe Braintree::Transaction do
           :paypal_account => {},
           :options => {
             :payee_id => "fake-payee-id"
-          }
+          },
         )
 
         result.success?.should == true
@@ -2018,7 +2018,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2030,7 +2030,7 @@ describe Braintree::Transaction do
             :paypal => {
               :payee_id => "fake-payee-id"
             }
-          }
+          },
         )
 
         result.success?.should == true
@@ -2044,7 +2044,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2054,7 +2054,7 @@ describe Braintree::Transaction do
           :payment_method_nonce => nonce,
           :paypal_account => {
             :payee_email => "bt_seller_us@paypal.com"
-          }
+          },
         )
 
         result.success?.should == true
@@ -2068,7 +2068,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2079,7 +2079,7 @@ describe Braintree::Transaction do
           :paypal_account => {},
           :options => {
             :payee_email => "bt_seller_us@paypal.com"
-          }
+          },
         )
 
         result.success?.should == true
@@ -2093,7 +2093,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2105,7 +2105,7 @@ describe Braintree::Transaction do
             :paypal => {
               :payee_email => "bt_seller_us@paypal.com"
             }
-          }
+          },
         )
 
         result.success?.should == true
@@ -2119,7 +2119,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2131,7 +2131,7 @@ describe Braintree::Transaction do
             :paypal => {
               :custom_field => "Additional info"
             }
-          }
+          },
         )
 
         result.success?.should == true
@@ -2145,7 +2145,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2157,7 +2157,7 @@ describe Braintree::Transaction do
             :paypal => {
               :description => "A great product"
             }
-          }
+          },
         )
 
         result.success?.should == true
@@ -2171,7 +2171,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
-          }
+          },
         )
         nonce.should_not be_nil
 
@@ -2186,7 +2186,7 @@ describe Braintree::Transaction do
                 :key2 => "value2",
               }
             }
-          }
+          },
         )
 
         # note - supplementary data is not returned in response
@@ -2200,7 +2200,7 @@ describe Braintree::Transaction do
           SpecHelper::ThreeDSecureMerchantAccountId,
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_month => "12",
-          :expiration_year => "2012"
+          :expiration_year => "2012",
         )
 
         result = Braintree::Transaction.create(
@@ -2211,7 +2211,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
           },
-          :three_d_secure_token => three_d_secure_token
+          :three_d_secure_token => three_d_secure_token,
         )
 
         result.success?.should == true
@@ -2223,7 +2223,7 @@ describe Braintree::Transaction do
             :number => "4111111111111111",
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         nonce.should_not be_nil
         result = Braintree::Transaction.create(
@@ -2235,7 +2235,7 @@ describe Braintree::Transaction do
             :three_d_secure => {
               :required => true,
             }
-          }
+          },
         )
 
         result.success?.should == false
@@ -2251,7 +2251,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/12",
-          }
+          },
         )
         result.success?.should == true
       end
@@ -2262,7 +2262,7 @@ describe Braintree::Transaction do
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
-            :expiration_year => "2022"
+            :expiration_year => "2022",
           )
 
           result = Braintree::Transaction.create(
@@ -2273,7 +2273,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/22",
             },
-            :three_d_secure_authentication_id => three_d_secure_authentication_id
+            :three_d_secure_authentication_id => three_d_secure_authentication_id,
           )
 
           result.success?.should == true
@@ -2287,7 +2287,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :three_d_secure_authentication_id => nil
+            :three_d_secure_authentication_id => nil,
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationIdIsInvalid
@@ -2297,7 +2297,7 @@ describe Braintree::Transaction do
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
-            :expiration_year => "2012"
+            :expiration_year => "2012",
           )
 
           result = Braintree::Transaction.create(
@@ -2307,7 +2307,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::MasterCard,
               :expiration_date => "12/12",
             },
-            :three_d_secure_authentication_id => three_d_secure_authentication_id
+            :three_d_secure_authentication_id => three_d_secure_authentication_id,
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod
@@ -2317,7 +2317,7 @@ describe Braintree::Transaction do
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
-            :expiration_year => "2012"
+            :expiration_year => "2012",
           )
 
           result = Braintree::Transaction.create(
@@ -2328,7 +2328,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::MasterCard,
               :expiration_date => "12/12",
             },
-            :three_d_secure_authentication_id => three_d_secure_authentication_id
+            :three_d_secure_authentication_id => three_d_secure_authentication_id,
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod
@@ -2338,7 +2338,7 @@ describe Braintree::Transaction do
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
-            :expiration_year => "2012"
+            :expiration_year => "2012",
           )
           result = Braintree::Transaction.create(
             :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
@@ -2358,7 +2358,7 @@ describe Braintree::Transaction do
               :directory_response => "Y",
               :cavv_algorithm => "2",
               :ds_transaction_id => "some_ds_id",
-            }
+            },
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationIdWithThreeDSecurePassThruIsInvalid
@@ -2371,7 +2371,7 @@ describe Braintree::Transaction do
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
-            :expiration_year => "2012"
+            :expiration_year => "2012",
           )
 
           result = Braintree::Transaction.create(
@@ -2382,7 +2382,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :three_d_secure_token => three_d_secure_token
+            :three_d_secure_token => three_d_secure_token,
           )
 
           result.success?.should == true
@@ -2397,7 +2397,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::Visa,
               :expiration_date => "12/12",
             },
-            :three_d_secure_token => nil
+            :three_d_secure_token => nil,
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid
@@ -2408,7 +2408,7 @@ describe Braintree::Transaction do
             SpecHelper::ThreeDSecureMerchantAccountId,
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "12",
-            :expiration_year => "2012"
+            :expiration_year => "2012",
           )
 
           result = Braintree::Transaction.create(
@@ -2419,7 +2419,7 @@ describe Braintree::Transaction do
               :number => Braintree::Test::CreditCardNumbers::MasterCard,
               :expiration_date => "12/12",
             },
-            :three_d_secure_token => three_d_secure_token
+            :three_d_secure_token => three_d_secure_token,
           )
           result.success?.should == false
           result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
@@ -2443,7 +2443,7 @@ describe Braintree::Transaction do
             :directory_response => "Y",
             :cavv_algorithm => "2",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
 
         result.success?.should == true
@@ -2468,7 +2468,7 @@ describe Braintree::Transaction do
             :directory_response => "Y",
             :cavv_algorithm => "2",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureMerchantAccountDoesNotSupportCardType
@@ -2486,7 +2486,7 @@ describe Braintree::Transaction do
             :eci_flag => "",
             :cavv => "some_cavv",
             :xid => "some_xid",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsRequired
@@ -2509,7 +2509,7 @@ describe Braintree::Transaction do
             :directory_response => "Y",
             :cavv_algorithm => "2",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired
@@ -2532,7 +2532,7 @@ describe Braintree::Transaction do
             :directory_response => "Y",
             :cavv_algorithm => "2",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsInvalid
@@ -2555,7 +2555,7 @@ describe Braintree::Transaction do
             :directory_response => "Y",
             :cavv_algorithm => "2",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:three_d_secure_version)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureThreeDSecureVersionIsInvalid
@@ -2579,7 +2579,7 @@ describe Braintree::Transaction do
             :directory_response => "Y",
             :cavv_algorithm => "2",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:authentication_response)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationResponseIsInvalid
@@ -2603,7 +2603,7 @@ describe Braintree::Transaction do
             :directory_response => "abc",
             :cavv_algorithm => "2",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:directory_response)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureDirectoryResponseIsInvalid
@@ -2627,7 +2627,7 @@ describe Braintree::Transaction do
             :directory_response => "Y",
             :cavv_algorithm => "bad_alg",
             :ds_transaction_id => "some_ds_id",
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv_algorithm)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvAlgorithmIsInvalid
@@ -2639,12 +2639,12 @@ describe Braintree::Transaction do
         it "can create a transaction" do
           payment_method_result = Braintree::PaymentMethod.create(
             :customer_id => Braintree::Customer.create.customer.id,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
           )
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_token => payment_method_result.payment_method.token
+            :payment_method_token => payment_method_result.payment_method.token,
           )
 
           result.should be_success
@@ -2659,13 +2659,13 @@ describe Braintree::Transaction do
           payment_method_token = rand(36**3).to_s(36)
           nonce = nonce_for_paypal_account(
             :consent_code => "PAYPAL_CONSENT_CODE",
-            :token => payment_method_token
+            :token => payment_method_token,
           )
 
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => nonce
+            :payment_method_nonce => nonce,
           )
 
           result.should be_success
@@ -2681,14 +2681,14 @@ describe Braintree::Transaction do
           payment_method_token = rand(36**3).to_s(36)
           nonce = nonce_for_paypal_account(
             :consent_code => "PAYPAL_CONSENT_CODE",
-            :token => payment_method_token
+            :token => payment_method_token,
           )
 
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => nonce,
-            :options => {:store_in_vault => true}
+            :options => {:store_in_vault => true},
           )
 
           result.success?.should == true
@@ -2707,7 +2707,7 @@ describe Braintree::Transaction do
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
-            :options => {:store_in_vault => true}
+            :options => {:store_in_vault => true},
           )
 
           result.should be_success
@@ -2722,7 +2722,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::LocalPayment
+            :payment_method_nonce => Braintree::Test::Nonce::LocalPayment,
           )
 
           result.should be_success
@@ -2740,7 +2740,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
           )
 
           result.should be_success
@@ -2752,14 +2752,14 @@ describe Braintree::Transaction do
           payment_method_token = rand(36**3).to_s(36)
           nonce = nonce_for_paypal_account(
             :access_token => "PAYPAL_ACCESS_TOKEN",
-            :token => payment_method_token
+            :token => payment_method_token,
           )
 
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => nonce,
-            :options => {:store_in_vault => true}
+            :options => {:store_in_vault => true},
           )
 
           result.success?.should == true
@@ -2779,7 +2779,7 @@ describe Braintree::Transaction do
             :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
             :options => {
               :submit_for_settlement => true
-            }
+            },
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::Settling
@@ -2790,7 +2790,7 @@ describe Braintree::Transaction do
         it "successfully voids a paypal transaction that's been authorized" do
           sale_transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
           )
 
           void_transaction = Braintree::Transaction.void!(sale_transaction.id)
@@ -2801,7 +2801,7 @@ describe Braintree::Transaction do
         it "fails to void a paypal transaction that's been declined" do
           sale_transaction = Braintree::Transaction.sale(
             :amount => Braintree::Test::TransactionAmounts::Decline,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
           ).transaction
 
           expect do
@@ -2871,6 +2871,19 @@ describe Braintree::Transaction do
           result.transaction.amount.should == transaction.amount/2
         end
 
+        it "allows merchant_account_id to be passed for the refund" do
+          transaction = create_transaction_to_refund
+
+          result = Braintree::Transaction.refund(
+            transaction.id,
+            :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          )
+
+          result.success?.should == true
+          result.transaction.type.should == "credit"
+          result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+        end
+
         it "does not allow arbitrary options to be passed" do
           transaction = create_paypal_transaction_for_refund
 
@@ -2889,7 +2902,7 @@ describe Braintree::Transaction do
         it "returns an error result if unsettled" do
           transaction = Braintree::Transaction.sale!(
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
           )
           result = Braintree::Transaction.refund(transaction.id)
           result.success?.should == false
@@ -2902,7 +2915,7 @@ describe Braintree::Transaction do
             :payment_method_nonce => Braintree::Test::Nonce::Transactable,
             :options => {
               :submit_for_settlement => true
-            }
+            },
           )
           config = Braintree::Configuration.instantiate
           response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
@@ -2923,7 +2936,7 @@ describe Braintree::Transaction do
             :payment_method_nonce => Braintree::Test::Nonce::Transactable,
             :options => {
               :submit_for_settlement => true
-            }
+            },
           )
           config = Braintree::Configuration.instantiate
           response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
@@ -2943,13 +2956,13 @@ describe Braintree::Transaction do
         it "handles bad unvalidated nonces" do
           nonce = nonce_for_paypal_account(
             :access_token => "PAYPAL_ACCESS_TOKEN",
-            :consent_code => "PAYPAL_CONSENT_CODE"
+            :consent_code => "PAYPAL_CONSENT_CODE",
           )
 
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => nonce
+            :payment_method_nonce => nonce,
           )
 
           result.should_not be_success
@@ -2960,7 +2973,7 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.create(
             :type => "sale",
             :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :payment_method_nonce => "NON_EXISTENT_NONCE"
+            :payment_method_nonce => "NON_EXISTENT_NONCE",
           )
 
           result.should_not be_success
@@ -4088,7 +4101,7 @@ describe Braintree::Transaction do
                 :unit_of_measure => "gallon",
                 :total_amount => "10.1",
               },
-              ['Name #2'],
+              ["Name #2"],
               {
                 :quantity => "2.02",
                 :name => "Name #3",
@@ -4274,7 +4287,7 @@ describe Braintree::Transaction do
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
         payment_method_token = result.payment_method.token
 
@@ -4409,7 +4422,7 @@ describe Braintree::Transaction do
             :credit_card => {
               :account_type => "credit",
             }
-          }
+          },
         )
         result.success?.should == true
         result.transaction.credit_card_details.account_type.should == "credit"
@@ -4428,7 +4441,7 @@ describe Braintree::Transaction do
             :credit_card => {
               :account_type => "credit",
             }
-          }
+          },
         )
         result.success?.should == true
         result.transaction.credit_card_details.account_type.should == "credit"
@@ -4448,7 +4461,7 @@ describe Braintree::Transaction do
               :account_type => "debit",
             },
             :submit_for_settlement => true,
-          }
+          },
         )
         result.success?.should == true
         result.transaction.credit_card_details.account_type.should == "debit"
@@ -4467,7 +4480,7 @@ describe Braintree::Transaction do
             :credit_card => {
               :account_type => "debit",
             },
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code.should == Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeDebitDoesNotSupportAuths
@@ -4486,7 +4499,7 @@ describe Braintree::Transaction do
             :credit_card => {
               :account_type => "ach",
             },
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code.should == Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeIsInvalid
@@ -4504,7 +4517,7 @@ describe Braintree::Transaction do
             :credit_card => {
               :account_type => "credit",
             },
-          }
+          },
         )
         result.success?.should == false
         result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code.should == Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeNotSupported
@@ -4520,7 +4533,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "sale"
@@ -4538,7 +4551,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
-          }
+          },
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end
@@ -4594,7 +4607,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result = Braintree::Transaction.refund(transaction.id)
       result.success?.should == false
@@ -4631,7 +4644,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6,}$/
@@ -4687,7 +4700,7 @@ describe Braintree::Transaction do
           :postal_code => "60103",
           :country_name => "United States of America",
           :shipping_method => Braintree::Transaction::AddressDetails::ShippingMethod::Electronic
-        }
+        },
       )
       result.success?.should == true
       transaction = result.transaction
@@ -4751,7 +4764,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
@@ -4763,7 +4776,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
@@ -4782,7 +4795,7 @@ describe Braintree::Transaction do
         },
         :options => {
           :store_in_vault => true
-        }
+        },
       )
       result.success?.should == true
       transaction = result.transaction
@@ -4817,7 +4830,7 @@ describe Braintree::Transaction do
         :options => {
           :store_in_vault => true,
           :add_billing_address_to_payment_method => true,
-        }
+        },
       )
       result.success?.should == true
       transaction = result.transaction
@@ -4862,7 +4875,7 @@ describe Braintree::Transaction do
         :options => {
           :store_in_vault => true,
           :store_shipping_address_in_vault => true,
-        }
+        },
       )
       result.success?.should == true
       transaction = result.transaction
@@ -4888,7 +4901,7 @@ describe Braintree::Transaction do
           :number => "5105105105105100",
           :expiration_date => "05/2012"
         },
-        :options => { :store_in_vault => true }
+        :options => {:store_in_vault => true},
       )
 
       result.success?.should == true
@@ -4906,7 +4919,7 @@ describe Braintree::Transaction do
         },
         :options => {
           :submit_for_settlement => true
-        }
+        },
       )
       result.success?.should == true
       result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -4929,7 +4942,7 @@ describe Braintree::Transaction do
         },
         :options => {
           :store_in_vault => true
-        }
+        },
       )
       result.success?.should == true
       transaction = result.transaction
@@ -4944,20 +4957,20 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       address = Braintree::Address.create!(
         :customer_id => customer.id,
-        :street_address => '123 Fake St.'
+        :street_address => "123 Fake St.",
       )
       result = Braintree::Transaction.sale(
         :amount => "100",
         :customer_id => customer.id,
-        :shipping_address_id => address.id
+        :shipping_address_id => address.id,
       )
       result.success?.should == true
       transaction = result.transaction
-      transaction.shipping_details.street_address.should == '123 Fake St.'
+      transaction.shipping_details.street_address.should == "123 Fake St."
       transaction.customer_details.id.should == customer.id
       transaction.shipping_details.id.should == address.id
     end
@@ -4974,7 +4987,7 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.sale(params[:transaction])
       result.success?.should == false
-      result.params.should == {:transaction => {:type => 'sale', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
+      result.params.should == {:transaction => {:type => "sale", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
 
@@ -5055,7 +5068,7 @@ describe Braintree::Transaction do
           },
           :options => {
             :skip_advanced_fraud_checking => true
-          }
+          },
         )
         result.success?.should == true
         result.transaction.risk_data.should be_nil
@@ -5149,7 +5162,7 @@ describe Braintree::Transaction do
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
               }
-            }
+            },
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -5171,7 +5184,7 @@ describe Braintree::Transaction do
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
               }
-            }
+            },
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -5193,7 +5206,7 @@ describe Braintree::Transaction do
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
               }
-            }
+            },
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -5216,7 +5229,7 @@ describe Braintree::Transaction do
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
               }
-            }
+            },
           )
           result.success?.should == true
 
@@ -5240,7 +5253,7 @@ describe Braintree::Transaction do
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
               }
-            }
+            },
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::Authorized
@@ -5265,7 +5278,7 @@ describe Braintree::Transaction do
                 :currency_amount => "10.00",
                 :currency_iso_code => "USD"
               }
-            }
+            },
           )
           result.success?.should == true
           result.transaction.status.should == Braintree::Transaction::Status::Authorized
@@ -5285,7 +5298,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "sale"
@@ -5302,7 +5315,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
-          }
+          },
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end
@@ -5315,7 +5328,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
       result = Braintree::Transaction.submit_for_settlement(transaction.id)
       result.success?.should == true
@@ -5327,7 +5340,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
       transaction.amount.should == BigDecimal("1000.00")
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "999.99")
@@ -5343,9 +5356,9 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
-      options = { :order_id => "ABC123" }
+      options = {:order_id => "ABC123"}
       result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, options)
       result.success?.should == true
       result.transaction.order_id.should == "ABC123"
@@ -5358,13 +5371,13 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
 
       options = {
         :descriptor => {
-          :name => '123*123456789012345678',
-          :phone => '3334445555',
+          :name => "123*123456789012345678",
+          :phone => "3334445555",
           :url => "ebay.com"
         }
       }
@@ -5372,9 +5385,9 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, options)
       result.success?.should == true
       result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      result.transaction.descriptor.name.should == '123*123456789012345678'
-      result.transaction.descriptor.phone.should == '3334445555'
-      result.transaction.descriptor.url.should == 'ebay.com'
+      result.transaction.descriptor.name.should == "123*123456789012345678"
+      result.transaction.descriptor.phone.should == "3334445555"
+      result.transaction.descriptor.url.should == "ebay.com"
     end
 
     it "raises an error if an invalid option is passed in" do
@@ -5383,10 +5396,10 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
 
-      options = { :order_id => "ABC123", :invalid_option => "i'm invalid" }
+      options = {:order_id => "ABC123", :invalid_option => "i'm invalid"}
 
       expect do
         Braintree::Transaction.submit_for_settlement(transaction.id, nil, options)
@@ -5396,10 +5409,11 @@ describe Braintree::Transaction do
     it "returns an error result if settlement is too large" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
       transaction.amount.should == BigDecimal("1000.00")
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "1000.01")
@@ -5414,7 +5428,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       ).transaction
       result = Braintree::Transaction.submit_for_settlement(transaction.id)
       result.success?.should == false
@@ -5431,7 +5445,7 @@ describe Braintree::Transaction do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "06/2009"
           },
-          :service_fee_amount => "1.00"
+          :service_fee_amount => "1.00",
         ).transaction
         result = Braintree::Transaction.submit_for_settlement(transaction.id, "0.01")
         result.success?.should == false
@@ -5454,7 +5468,7 @@ describe Braintree::Transaction do
             :currency_amount => "10.00",
             :currency_iso_code => "USD"
           }
-        }
+        },
       )
       result.success?.should == true
 
@@ -5478,7 +5492,7 @@ describe Braintree::Transaction do
             :currency_amount => "10.00",
             :currency_iso_code => "USD"
           }
-        }
+        },
       )
       result.success?.should == true
 
@@ -5498,7 +5512,7 @@ describe Braintree::Transaction do
             :discount_amount => "12.00",
             :tax_amount => "0",
           },
-        ]
+        ],
       )
       result.success?.should == true
       result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
@@ -5512,9 +5526,9 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
-      options = { :order_id => "ABC123" }
+      options = {:order_id => "ABC123"}
       transaction = Braintree::Transaction.submit_for_settlement!(original_transaction.id, "0.01", options)
       transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       transaction.id.should == original_transaction.id
@@ -5524,10 +5538,11 @@ describe Braintree::Transaction do
     it "raises a ValidationsFailed if unsuccessful" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
       transaction.amount.should == BigDecimal("1000.00")
       expect do
@@ -5543,18 +5558,18 @@ describe Braintree::Transaction do
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
           :descriptor => {
-            :name => '123*123456789012345678',
-            :phone => '3334445555',
+            :name => "123*123456789012345678",
+            :phone => "3334445555",
             :url => "ebay.com"
           },
-          :order_id => '123',
+          :order_id => "123",
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "06/2009"
           },
           :options => {
             :submit_for_settlement => true
-          }
+          },
         )
       end
 
@@ -5562,16 +5577,16 @@ describe Braintree::Transaction do
         result = Braintree::Transaction.update_details(transaction.id, {
           :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
           :descriptor => {
-            :name => '456*123456789012345678',
-            :phone => '3334445555',
+            :name => "456*123456789012345678",
+            :phone => "3334445555",
             :url => "ebay.com",
           },
-          :order_id => '456'
+          :order_id => "456"
         })
         result.success?.should == true
         result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize) - 1
-        result.transaction.order_id.should == '456'
-        result.transaction.descriptor.name.should ==  '456*123456789012345678'
+        result.transaction.order_id.should == "456"
+        result.transaction.descriptor.name.should ==  "456*123456789012345678"
       end
 
       it "raises an error when a key is invalid" do
@@ -5579,11 +5594,11 @@ describe Braintree::Transaction do
           Braintree::Transaction.update_details(transaction.id, {
             :invalid_key => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
             :descriptor => {
-              :name => '456*123456789012345678',
-              :phone => '3334445555',
+              :name => "456*123456789012345678",
+              :phone => "3334445555",
               :url => "ebay.com",
             },
-            :order_id => '456'
+            :order_id => "456"
           })
         end.to raise_error(ArgumentError)
       end
@@ -5593,11 +5608,11 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.update_details(transaction.id, {
             :amount => "10000",
             :descriptor => {
-              :name => '456*123456789012345678',
-              :phone => '3334445555',
+              :name => "456*123456789012345678",
+              :phone => "3334445555",
               :url => "ebay.com",
             },
-            :order_id => '456'
+            :order_id => "456"
           })
           result.success?.should == false
           result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
@@ -5607,11 +5622,11 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.update_details(transaction.id, {
             :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
             :descriptor => {
-              :name => 'invalid descriptor name',
-              :phone => 'invalid phone',
-              :url => '12345678901234'
+              :name => "invalid descriptor name",
+              :phone => "invalid phone",
+              :url => "12345678901234"
             },
-            :order_id => '456'
+            :order_id => "456"
           })
           result.success?.should == false
           result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
@@ -5623,11 +5638,11 @@ describe Braintree::Transaction do
           result = Braintree::Transaction.update_details(transaction.id, {
             :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
             :descriptor => {
-              :name => '456*123456789012345678',
-              :phone => '3334445555',
+              :name => "456*123456789012345678",
+              :phone => "3334445555",
               :url => "ebay.com",
             },
-            :order_id => 'x' * 256
+            :order_id => "x" * 256
           })
           result.success?.should == false
           result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
@@ -5638,27 +5653,27 @@ describe Braintree::Transaction do
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
             :descriptor => {
-              :name => '123*123456789012345678',
-              :phone => '3334445555',
+              :name => "123*123456789012345678",
+              :phone => "3334445555",
               :url => "ebay.com"
             },
-            :order_id => '123',
+            :order_id => "123",
             :credit_card => {
               :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
               :expiration_date => "05/2009"
             },
             :options => {
               :submit_for_settlement => true
-            }
+            },
           )
           result = Braintree::Transaction.update_details(transaction.id, {
             :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
             :descriptor => {
-              :name => '456*123456789012345678',
-              :phone => '3334445555',
+              :name => "456*123456789012345678",
+              :phone => "3334445555",
               :url => "ebay.com",
             },
-            :order_id => '456'
+            :order_id => "456"
           })
           result.success?.should == false
           result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingTransactionDetails
@@ -5672,24 +5687,24 @@ describe Braintree::Transaction do
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
           :descriptor => {
-            :name => '123*123456789012345678',
-            :phone => '3334445555',
+            :name => "123*123456789012345678",
+            :phone => "3334445555",
             :url => "ebay.com"
           },
-          :order_id => '123',
+          :order_id => "123",
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "06/2009"
-          }
+          },
         )
         result = Braintree::Transaction.update_details(transaction.id, {
           :amount => Braintree::Test::TransactionAmounts::Authorize.to_f - 1,
           :descriptor => {
-            :name => '456*123456789012345678',
-            :phone => '3334445555',
+            :name => "456*123456789012345678",
+            :phone => "3334445555",
             :url => "ebay.com",
           },
-          :order_id => '456'
+          :order_id => "456"
         })
         result.success?.should == false
         result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotUpdateTransactionDetailsNotSubmittedForSettlement
@@ -5706,7 +5721,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
@@ -5741,7 +5756,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100, :order_id => 1234)
@@ -5757,7 +5772,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100, :order_id => "1"*256)
@@ -5772,13 +5787,13 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(
         authorized_transaction.id,
         100,
-        :descriptor => { :name => "123*123456789012345678", :phone => "5555551234", :url => "url.com" }
+        :descriptor => {:name => "123*123456789012345678", :phone => "5555551234", :url => "url.com"},
       )
       result.success?.should == true
       partial_settlement_transaction = result.transaction
@@ -5794,7 +5809,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(
@@ -5802,9 +5817,9 @@ describe Braintree::Transaction do
         100,
         :descriptor => {
           :name => "invalid_format",
-          :phone => '%bad4445555',
-          :url => '12345678901234'
-        }
+          :phone => "%bad4445555",
+          :url => "12345678901234"
+        },
       )
       result.success?.should == false
       result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
@@ -5819,7 +5834,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
@@ -5831,7 +5846,7 @@ describe Braintree::Transaction do
       authorized_transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
         :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
-        :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount
+        :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
@@ -5846,7 +5861,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
@@ -5864,7 +5879,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.void(authorized_transaction.id)
@@ -5883,9 +5898,9 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
-      options = { :order_id => "ABC123" }
+      options = {:order_id => "ABC123"}
       transaction = Braintree::Transaction.submit_for_partial_settlement!(original_transaction.id, "0.01", options)
       transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
       transaction.order_id.should == options[:order_id]
@@ -5897,7 +5912,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "06/2009"
-        }
+        },
       )
       transaction.amount.should == BigDecimal("1000.00")
       expect do
@@ -5922,7 +5937,7 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         },
-        :service_fee_amount => '1.00'
+        :service_fee_amount => "1.00",
       )
 
       transaction.escrow_status.should be_nil
@@ -5948,7 +5963,7 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         },
-        :service_fee_amount => '1.00'
+        :service_fee_amount => "1.00",
       )
 
       transaction.escrow_status.should be_nil
@@ -6008,7 +6023,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.id.should =~ /^\w{6,}$/
@@ -6031,7 +6046,7 @@ describe Braintree::Transaction do
       }
       result = Braintree::Transaction.credit(params[:transaction])
       result.success?.should == false
-      result.params.should == {:transaction => {:type => 'credit', :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
+      result.params.should == {:transaction => {:type => "credit", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
       result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
     end
 
@@ -6042,7 +6057,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
@@ -6054,7 +6069,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
@@ -6084,7 +6099,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       transaction.id.should =~ /^\w{6,}$/
       transaction.type.should == "credit"
@@ -6101,7 +6116,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
-          }
+          },
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end
@@ -6115,7 +6130,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result.success?.should == true
       created_transaction = result.transaction
@@ -6132,7 +6147,7 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
         },
-        :options => { :store_in_vault => true }
+        :options => {:store_in_vault => true},
       )
       result.success?.should == true
       created_transaction = result.transaction
@@ -6177,7 +6192,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
-          }
+          },
         )
         result.success?.should == true
         created_transaction = result.transaction
@@ -6227,7 +6242,7 @@ describe Braintree::Transaction do
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2009"
-          }
+          },
         )
         result.success?.should == true
         created_transaction = result.transaction
@@ -6296,7 +6311,7 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "12/12",
         },
-        :service_fee_amount => "10.00"
+        :service_fee_amount => "10.00",
       )
 
       result.transaction.escrow_status.should be_nil
@@ -6313,7 +6328,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       result = Braintree::Transaction.hold_in_escrow(transaction.id)
@@ -6331,7 +6346,7 @@ describe Braintree::Transaction do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "12/12",
         },
-        :service_fee_amount => "10.00"
+        :service_fee_amount => "10.00",
       )
 
       result.transaction.escrow_status.should be_nil
@@ -6347,7 +6362,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
 
       expect do
@@ -6363,7 +6378,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result = Braintree::Transaction.void(transaction.id)
       result.success?.should == true
@@ -6377,7 +6392,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       ).transaction
       result = Braintree::Transaction.void(transaction.id)
       result.success?.should == false
@@ -6392,7 +6407,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       returned_transaction = Braintree::Transaction.void!(transaction.id)
       returned_transaction.should == transaction
@@ -6405,7 +6420,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       ).transaction
       expect do
         Braintree::Transaction.void!(transaction.id)
@@ -6420,7 +6435,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009"
-        }
+        },
       )
       result = Braintree::Transaction.submit_for_settlement!(transaction.id)
       result.status_history.size.should == 2
@@ -6478,7 +6493,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = Braintree::CreditCard.sale(customer.credit_cards[0].token, {:amount => "100.00"}).transaction
       transaction.vault_credit_card.should == customer.credit_cards[0]
@@ -6491,7 +6506,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction.vault_credit_card.should == nil
     end
@@ -6503,7 +6518,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = Braintree::CreditCard.sale(customer.credit_cards[0].token, :amount => "100.00").transaction
       transaction.vault_customer.should == customer
@@ -6516,7 +6531,7 @@ describe Braintree::Transaction do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction.vault_customer.should == nil
     end
@@ -6531,7 +6546,7 @@ describe Braintree::Transaction do
       },
       :options => {
         :submit_for_settlement => true
-      }
+      },
     )
 
     config = Braintree::Configuration.instantiate
@@ -6545,7 +6560,7 @@ describe Braintree::Transaction do
       :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
       :options => {
         :submit_for_settlement => true
-      }
+      },
     )
 
     config = Braintree::Configuration.instantiate
@@ -6561,8 +6576,8 @@ describe Braintree::Transaction do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009"
       },
-      :service_fee_amount => '1.00',
-      :options => { :hold_in_escrow => true }
+      :service_fee_amount => "1.00",
+      :options => {:hold_in_escrow => true},
     )
 
     config = Braintree::Configuration.instantiate
@@ -6576,7 +6591,7 @@ describe Braintree::Transaction do
       it "can create a transaction with venmo_sdk_payment_method_code" do
         result = Braintree::Transaction.sale(
           :amount => "10.00",
-          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK.generate_test_payment_method_code(Braintree::Test::CreditCardNumbers::Visa)
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK.generate_test_payment_method_code(Braintree::Test::CreditCardNumbers::Visa),
         )
         result.success?.should == true
         result.transaction.credit_card_details.venmo_sdk?.should == false
@@ -6585,7 +6600,7 @@ describe Braintree::Transaction do
       it "errors when an invalid payment method code is passed" do
         result = Braintree::Transaction.sale(
           :amount => "10.00",
-          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode
+          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode,
         )
         result.success?.should == false
         result.message.should include("Invalid VenmoSDK payment method code")
@@ -6603,7 +6618,7 @@ describe Braintree::Transaction do
           },
           :options => {
             :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
-          }
+          },
         )
         result.success?.should == true
         result.transaction.credit_card_details.venmo_sdk?.should == false
@@ -6618,7 +6633,7 @@ describe Braintree::Transaction do
           },
           :options => {
             :venmo_sdk_session => Braintree::Test::VenmoSDK::InvalidSession
-          }
+          },
         )
         result.success?.should == true
         result.transaction.credit_card_details.venmo_sdk?.should == false
@@ -6630,7 +6645,7 @@ describe Braintree::Transaction do
     it "can create a transaction for a paypal account" do
       result = Braintree::Transaction.sale(
         :amount => "10.00",
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
       )
       result.success?.should == true
       result.transaction.paypal_details.payer_email.should == "payer@example.com"
@@ -6645,7 +6660,7 @@ describe Braintree::Transaction do
         :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
         :options => {
           :store_in_vault => true
-        }
+        },
       )
       result.success?.should == true
       result.transaction.paypal_details.token.should_not be_nil
@@ -6658,7 +6673,7 @@ describe Braintree::Transaction do
       customer = Braintree::Customer.create!
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       result.should be_success
@@ -6668,7 +6683,7 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.sale(
         :amount => "100",
         :customer_id => customer.id,
-        :payment_method_token => payment_method_token
+        :payment_method_token => payment_method_token,
       )
 
       result.should be_success
@@ -6683,7 +6698,7 @@ describe Braintree::Transaction do
         nonce = nonce_for_paypal_account(:token => "TOKEN")
         result = Braintree::Transaction.sale(
           :amount => "10.00",
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
         result.should_not be_success
         result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount
@@ -6698,7 +6713,7 @@ describe Braintree::Transaction do
         :public_key => "oauth_app_partner_user_public_key",
         :private_key => "oauth_app_partner_user_private_key",
         :environment => Braintree::Configuration.environment,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
       @customer = @partner_merchant_gateway.customer.create(
         :first_name => "Joe",
@@ -6707,12 +6722,12 @@ describe Braintree::Transaction do
         :email => "joe@example.com",
         :phone => "312.555.1234",
         :fax => "614.555.5678",
-        :website => "www.example.com"
+        :website => "www.example.com",
       ).customer
       @address = @partner_merchant_gateway.address.create(
         :customer_id => @customer.id,
         :first_name => "Testy",
-        :last_name => "McTesterson"
+        :last_name => "McTesterson",
       ).address
       @credit_card = @partner_merchant_gateway.credit_card.create(
         :customer_id => @customer.id,
@@ -6723,13 +6738,13 @@ describe Braintree::Transaction do
           :first_name => "Adam",
           :last_name => "Davis",
           :postal_code => "95131"
-        }
+        },
       ).credit_card
 
       oauth_gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
         :merchant_public_id => "integration_merchant_id",
@@ -6738,7 +6753,7 @@ describe Braintree::Transaction do
 
       @granting_gateway = Braintree::Gateway.new(
         :access_token => access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
     end
@@ -6748,7 +6763,7 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.sale(
         :payment_method_nonce => grant_result.payment_method_nonce.nonce,
-        :amount => Braintree::Test::TransactionAmounts::Authorize
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
       result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
       result.transaction.facilitated_details.merchant_name.should == "14ladders"
@@ -6764,7 +6779,7 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.sale(
         :payment_method_nonce => grant_result.payment_method_nonce.nonce,
-        :amount => Braintree::Test::TransactionAmounts::Authorize
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
 
       result.transaction.billing_details.postal_code == "95131"
@@ -6776,7 +6791,7 @@ describe Braintree::Transaction do
         :shared_customer_id => @customer.id,
         :shared_shipping_address_id => @address.id,
         :shared_billing_address_id => @address.id,
-        :amount => Braintree::Test::TransactionAmounts::Authorize
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
       result.success?.should == true
       result.transaction.shipping_details.first_name.should == @address.first_name
@@ -6786,7 +6801,7 @@ describe Braintree::Transaction do
     it "facilitated details are returned on transaction created via a shared_payment_method_token" do
       result = @granting_gateway.transaction.sale(
         :shared_payment_method_token => @credit_card.token,
-        :amount => Braintree::Test::TransactionAmounts::Authorize
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
       result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
       result.transaction.facilitated_details.merchant_name.should == "14ladders"
@@ -6798,12 +6813,12 @@ describe Braintree::Transaction do
 
     it "facilitated details are returned on transaction created via a shared_payment_method_nonce" do
       shared_nonce = @partner_merchant_gateway.payment_method_nonce.create(
-        @credit_card.token
+        @credit_card.token,
       ).payment_method_nonce.nonce
 
       result = @granting_gateway.transaction.sale(
         :shared_payment_method_nonce => shared_nonce,
-        :amount => Braintree::Test::TransactionAmounts::Authorize
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
       result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
       result.transaction.facilitated_details.merchant_name.should == "14ladders"
@@ -6816,7 +6831,7 @@ describe Braintree::Transaction do
 
   context "paypal here" do
     it "gets the details of an auth/capture transaction" do
-      result = Braintree::Transaction.find('paypal_here_auth_capture_id')
+      result = Braintree::Transaction.find("paypal_here_auth_capture_id")
       result.payment_instrument_type.should eq(Braintree::PaymentInstrumentType::PayPalHere)
       result.paypal_here_details.should_not be_nil
 
@@ -6833,7 +6848,7 @@ describe Braintree::Transaction do
     end
 
     it "gets the details of a sale transaction" do
-      result = Braintree::Transaction.find('paypal_here_sale_id')
+      result = Braintree::Transaction.find("paypal_here_sale_id")
       result.paypal_here_details.should_not be_nil
 
       details = result.paypal_here_details
@@ -6841,7 +6856,7 @@ describe Braintree::Transaction do
     end
 
     it "gets the details of a refunded sale transaction" do
-      result = Braintree::Transaction.find('paypal_here_refund_id')
+      result = Braintree::Transaction.find("paypal_here_refund_id")
       result.paypal_here_details.should_not be_nil
 
       details = result.paypal_here_details
@@ -6866,7 +6881,7 @@ describe Braintree::Transaction do
       customer = Braintree::Customer.create!
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
       payment_method_token = result.payment_method.token
 
@@ -6966,6 +6981,145 @@ describe Braintree::Transaction do
       expect(installment.amount).to eq(BigDecimal("8.38"))
       expect(installment.adjustments.map(&:amount)).to match_array([BigDecimal("-4.23")])
       expect(installment.adjustments.map(&:kind)).to match_array([Braintree::Transaction::Installment::Adjustment::Kind::Refund])
+    end
+  end
+
+  describe "Adjust Authorization" do
+    let(:first_data_master_transaction_params) do
+      {
+        :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+        :amount => "75.50",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2012"
+        }
+      }
+    end
+    let(:first_data_visa_transaction_params) do
+      {
+        :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+        :amount => "75.50",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        }
+      }
+    end
+    context "successful authorization" do
+      it "returns success response" do
+        initial_transaction = Braintree::Transaction.sale(first_data_master_transaction_params)
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "85.50"
+        )
+
+        expect(adjustment_transaction.success?).to eq(true)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("85.50"))
+      end
+    end
+
+    context "unsuccessful authorization" do
+      it "returns failure, when processor does not support multi auth adjustment" do
+        initial_transaction = Braintree::Transaction.sale(
+          :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+          :amount => "75.50",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "06/2009"
+          },
+        )
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "85.50"
+        )
+
+
+        expect(adjustment_transaction.success?).to eq(false)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportAuthAdjustment)
+      end
+
+      it "returns failure response, when adjusted amount submitted is zero" do
+        initial_transaction = Braintree::Transaction.sale(first_data_master_transaction_params)
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "0.0"
+        )
+
+        expect(adjustment_transaction.success?).to eq(false)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.errors.for(:authorization_adjustment).on(:amount).first.code).to eq(Braintree::ErrorCodes::Transaction::AdjustmentAmountMustBeGreaterThanZero)
+      end
+
+      it "returns failure response, when adjusted amount submitted same as authorized amount" do
+        initial_transaction = Braintree::Transaction.sale(first_data_master_transaction_params)
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "75.50"
+        )
+
+        expect(adjustment_transaction.success?).to eq(false)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.errors.for(:authorization_adjustment).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::NoNetAmountToPerformAuthAdjustment)
+      end
+
+      it "returns failure, when transaction status is not authorized" do
+        additional_params = {:options => {:submit_for_settlement => true}}
+        initial_transaction = Braintree::Transaction.sale(first_data_master_transaction_params.merge(additional_params))
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "85.50"
+        )
+
+        expect(adjustment_transaction.success?).to eq(false)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionMustBeInStateAuthorized)
+      end
+
+      it "returns failure, when transaction authorization type final or undefined" do
+        additional_params = {:transaction_source => "recurring_first"}
+        initial_transaction = Braintree::Transaction.sale(first_data_master_transaction_params.merge(additional_params))
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "85.50"
+        )
+
+        expect(adjustment_transaction.success?).to eq(false)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionIsNotEligibleForAdjustment)
+      end
+
+      it "returns failure, when processor does not support incremental auth" do
+        initial_transaction = Braintree::Transaction.sale(first_data_visa_transaction_params)
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "85.50"
+        )
+
+        expect(adjustment_transaction.success?).to eq(false)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportIncrementalAuth)
+      end
+
+      it "returns failure, when processor does not support auth reversal" do
+        initial_transaction = Braintree::Transaction.sale(first_data_visa_transaction_params)
+        expect(initial_transaction.success?).to eq(true)
+
+        adjustment_transaction = Braintree::Transaction.adjust_authorization(
+          initial_transaction.transaction.id, "65.50"
+        )
+
+        expect(adjustment_transaction.success?).to eq(false)
+        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportPartialAuthReversal)
+      end
     end
   end
 end

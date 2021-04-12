@@ -21,7 +21,7 @@ describe Braintree::UsBankAccountVerification, "search" do
       :customer_id => customer.id,
       :options => {
         :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-      }
+      },
     ).payment_method
     verification = payment_method.verifications.first
 
@@ -70,7 +70,7 @@ describe Braintree::UsBankAccountVerification, "search" do
         :customer_id => customer.id,
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        }
+        },
       ).payment_method
       verification1 = payment_method1.verifications.first
 
@@ -79,7 +79,7 @@ describe Braintree::UsBankAccountVerification, "search" do
         :customer_id => customer.id,
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        }
+        },
       ).payment_method
       verification2 = payment_method2.verifications.first
 
@@ -100,7 +100,7 @@ describe Braintree::UsBankAccountVerification, "search" do
         :customer_id => customer.id,
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        }
+        },
       ).payment_method
       verification = payment_method.verifications.first
 
@@ -110,7 +110,7 @@ describe Braintree::UsBankAccountVerification, "search" do
         search.id.is verification.id
         search.created_at.between(
           created_at - 60,
-          created_at + 60
+          created_at + 60,
         )
       end
 
@@ -137,7 +137,7 @@ describe Braintree::UsBankAccountVerification, "search" do
         search.id.is verification.id
         search.created_at.between(
           created_at - 300,
-          created_at - 100
+          created_at - 100,
         )
       end
 
@@ -162,7 +162,7 @@ describe Braintree::UsBankAccountVerification, "search" do
         :customer_id => customer.id,
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        }
+        },
       ).payment_method
       verification = payment_method.verifications.first
 

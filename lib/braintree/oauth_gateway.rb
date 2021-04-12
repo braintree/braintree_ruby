@@ -22,7 +22,7 @@ module Braintree
       })
       if response[:credentials]
         Braintree::SuccessfulResult.new(
-          :credentials => OAuthCredentials._new(response[:credentials])
+          :credentials => OAuthCredentials._new(response[:credentials]),
         )
       elsif response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
@@ -47,10 +47,10 @@ module Braintree
       user_params = _sub_query(params, :user)
       business_params = _sub_query(params, :business)
       payment_methods = _sub_array_query(params, :payment_methods)
-      query = params.to_a.
-        concat(user_params).
-        concat(business_params).
-        concat(payment_methods)
+      query = params.to_a
+        .concat(user_params)
+        .concat(business_params)
+        .concat(payment_methods)
 
       query_string = query.map { |k, v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join("&")
       "#{@config.base_url}/oauth/connect?#{query_string}"

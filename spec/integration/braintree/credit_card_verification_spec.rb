@@ -242,7 +242,7 @@ describe Braintree::CreditCardVerification, "search" do
           :cardholder_name => cardholder_name,
           :expiration_date => "05/2012",
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
-          :cvv => '200',
+          :cvv => "200",
           :options => {
             :verify_card => true
         }

@@ -38,8 +38,8 @@ module Braintree
     end
 
     def expiring_between(start_date, end_date, options = {})
-      formatted_start_date = start_date.strftime('%m%Y')
-      formatted_end_date = end_date.strftime('%m%Y')
+      formatted_start_date = start_date.strftime("%m%Y")
+      formatted_end_date = end_date.strftime("%m%Y")
       response = @config.http.post("#{@config.base_merchant_path}/payment_methods/all/expiring_ids?start=#{formatted_start_date}&end=#{formatted_end_date}")
       ResourceCollection.new(response) { |ids| _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) }
     end
@@ -145,7 +145,7 @@ module Braintree
     def _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) # :nodoc:
       response = @config.http.post(
         "#{@config.base_merchant_path}/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
-        :search => {:ids => ids}
+        :search => {:ids => ids},
       )
       attributes = response[:payment_methods]
       Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(@gateway, attrs) }

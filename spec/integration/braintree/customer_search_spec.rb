@@ -36,7 +36,7 @@ describe Braintree::Transaction, "search" do
             :postal_code => "60622",
             :country_name => "United States of America"
           }
-        }
+        },
       )
 
       customer = Braintree::Customer.find(customer.id)
@@ -96,7 +96,7 @@ describe Braintree::Transaction, "search" do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Maestro,
           :expiration_date => "05/2012"
-        }
+        },
       ).customer
 
       joe = Braintree::Customer.create(
@@ -104,7 +104,7 @@ describe Braintree::Transaction, "search" do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Maestro,
           :expiration_date => "05/2012"
-        }
+        },
       ).customer
 
       collection = Braintree::Customer.search do |search|
@@ -118,7 +118,7 @@ describe Braintree::Transaction, "search" do
     it "can search by created_at" do
       company = "Company #{rand(1_000_000)}"
       customer = Braintree::Customer.create!(
-        :company => company
+        :company => company,
       )
 
       created_at = customer.created_at
@@ -128,7 +128,7 @@ describe Braintree::Transaction, "search" do
         search.company.is company
         search.created_at.between(
           created_at - 60,
-          created_at + 60
+          created_at + 60,
         )
       end
 
@@ -155,7 +155,7 @@ describe Braintree::Transaction, "search" do
         search.company.is customer.company
         search.created_at.between(
           created_at - 300,
-          created_at - 100
+          created_at - 100,
         )
       end
 
@@ -175,13 +175,13 @@ describe Braintree::Transaction, "search" do
     paypal_token = rand(36**3).to_s(36)
     nonce = nonce_for_paypal_account(
       :consent_code => "PAYPAL_CONSENT_CODE",
-      :token => paypal_token
+      :token => paypal_token,
     )
 
     customer_id = "UNIQUE_CUSTOMER_ID_" + rand(36**3).to_s(36)
     customer = Braintree::Customer.create!(
       :payment_method_nonce => nonce,
-      :id => customer_id
+      :id => customer_id,
     )
 
     collection = Braintree::Customer.search do |search|

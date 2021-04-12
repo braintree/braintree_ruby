@@ -5,7 +5,7 @@ describe "OAuth" do
     @gateway = Braintree::Gateway.new(
       :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
       :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-      :logger => Logger.new("/dev/null")
+      :logger => Logger.new("/dev/null"),
     )
   end
 
@@ -18,7 +18,7 @@ describe "OAuth" do
 
       result = @gateway.oauth.create_token_from_code(
         :code => code,
-        :scope => "read_write"
+        :scope => "read_write",
       )
 
       result.should be_success
@@ -32,7 +32,7 @@ describe "OAuth" do
     it "returns validation errors for bad params" do
       result = @gateway.oauth.create_token_from_code(
         :code => "bad_code",
-        :scope => "read_write"
+        :scope => "read_write",
       )
 
       result.should_not be_success
@@ -43,13 +43,13 @@ describe "OAuth" do
     it "raises with a helpful error if client_id and client_secret are not set" do
       gateway = Braintree::Gateway.new(
         :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       expect do
         gateway.oauth.create_token_from_code(
           :code => "some code",
-          :scope => "read_write"
+          :scope => "read_write",
         )
       end.to raise_error(Braintree::ConfigurationError, /client_id and client_secret are required/);
     end
@@ -63,12 +63,12 @@ describe "OAuth" do
       })
       refresh_token = @gateway.oauth.create_token_from_code(
         :code => code,
-        :scope => "read_write"
+        :scope => "read_write",
       ).credentials.refresh_token
 
       result = @gateway.oauth.create_token_from_refresh_token(
         :refresh_token => refresh_token,
-        :scope => "read_write"
+        :scope => "read_write",
       )
 
       result.should be_success
@@ -88,7 +88,7 @@ describe "OAuth" do
       })
       access_token = @gateway.oauth.create_token_from_code(
         :code => code,
-        :scope => "read_write"
+        :scope => "read_write",
       ).credentials.access_token
 
       result = @gateway.oauth.revoke_access_token(access_token)
@@ -96,7 +96,7 @@ describe "OAuth" do
 
       gateway = Braintree::Gateway.new(
         :access_token => access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       expect do
@@ -146,7 +146,7 @@ describe "OAuth" do
           :currency => "USD",
           :website => "http://example.com"
         },
-        :payment_methods => ["credit_card", "paypal"]
+        :payment_methods => ["credit_card", "paypal"],
       )
 
       uri = URI.parse(url)
@@ -201,7 +201,7 @@ describe "OAuth" do
         :redirect_uri => "http://bar.example.com",
         :scope => "read_write",
         :state => "baz_state",
-        :payment_methods => ["credit_card", "paypal"]
+        :payment_methods => ["credit_card", "paypal"],
       )
 
       uri = URI.parse(url)

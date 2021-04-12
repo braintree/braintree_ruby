@@ -54,7 +54,7 @@ describe Braintree::Http do
             :customer_id => customer.id,
             :cardholder_name => "Sam Jones",
             :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2009"
+            :expiration_date => "05/2009",
           )
           result.success?.should == true
           utc_or_gmt = Time.now.utc.strftime("%Z")
@@ -156,7 +156,7 @@ describe Braintree::Http do
           # Random CA root file from a different certificate authority
           config = Braintree::Configuration.instantiate
           config.stub(:ca_file).and_return(
-            File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "ssl", "geotrust_global.crt"))
+            File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "ssl", "geotrust_global.crt")),
           )
           config.stub(:ssl?).and_return(true)
           config.stub(:port).and_return(SSL_TEST_PORT)

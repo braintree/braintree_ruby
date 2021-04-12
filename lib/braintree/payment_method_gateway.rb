@@ -82,7 +82,7 @@ module Braintree
       if  options.class == Hash
         grant_options = options
       elsif [true, false].include?(options)
-        grant_options = { :allow_vaulting => options }
+        grant_options = {:allow_vaulting => options}
       else
         raise ArgumentError
       end
@@ -91,7 +91,7 @@ module Braintree
         "/payment_methods/grant",
         :payment_method => {
           :shared_payment_method_token => token,
-        }.merge(grant_options)
+        }.merge(grant_options),
       )
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"
@@ -115,7 +115,7 @@ module Braintree
         "/payment_methods/revoke",
         :payment_method => {
           :shared_payment_method_token => token
-        }
+        },
       )
     rescue NotFoundError
       raise NotFoundError, "payment method with token #{token.inspect} not found"

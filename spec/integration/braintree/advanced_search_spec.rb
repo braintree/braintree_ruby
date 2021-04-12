@@ -6,7 +6,7 @@ describe Braintree::AdvancedSearch do
       :credit_card => {
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2010"
-      }
+      },
     ).credit_cards[0]
   end
 
@@ -16,13 +16,13 @@ describe Braintree::AdvancedSearch do
       subscription1 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription1_#{id}"
+        :id => "subscription1_#{id}",
       ).subscription
 
       subscription2 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription2_#{id}"
+        :id => "subscription2_#{id}",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -39,14 +39,14 @@ describe Braintree::AdvancedSearch do
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
         :price => "11",
-        :id => "subscription1_#{id}"
+        :id => "subscription1_#{id}",
       ).subscription
 
       subscription2 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
         :price => "11",
-        :id => "subscription2_#{id}"
+        :id => "subscription2_#{id}",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -63,13 +63,13 @@ describe Braintree::AdvancedSearch do
       subscription1 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription1_#{id}"
+        :id => "subscription1_#{id}",
       ).subscription
 
       subscription2 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription2_#{id}"
+        :id => "subscription2_#{id}",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -85,13 +85,13 @@ describe Braintree::AdvancedSearch do
       subscription1 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription1_#{id}"
+        :id => "subscription1_#{id}",
       ).subscription
 
       subscription2 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription2_#{id}"
+        :id => "subscription2_#{id}",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -107,13 +107,13 @@ describe Braintree::AdvancedSearch do
       subscription1 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription1_#{id}"
+        :id => "subscription1_#{id}",
       ).subscription
 
       subscription2 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :id => "subscription2_#{id}"
+        :id => "subscription2_#{id}",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -131,13 +131,13 @@ describe Braintree::AdvancedSearch do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "12"
+          :price => "12",
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "12"
+          :price => "12",
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
@@ -155,13 +155,13 @@ describe Braintree::AdvancedSearch do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "13"
+          :price => "13",
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "13"
+          :price => "13",
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
@@ -179,13 +179,13 @@ describe Braintree::AdvancedSearch do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "14"
+          :price => "14",
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "14"
+          :price => "14",
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
@@ -204,13 +204,13 @@ describe Braintree::AdvancedSearch do
           subscription1 = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
             :plan_id => SpecHelper::TriallessPlan[:id],
-            :price => "15"
+            :price => "15",
           ).subscription
 
           subscription2 = Braintree::Subscription.create(
             :payment_method_token => @credit_card.token,
             :plan_id => SpecHelper::TriallessPlan[:id],
-            :price => "15"
+            :price => "15",
           ).subscription
 
           Braintree::Subscription.cancel(subscription2.id)
@@ -229,13 +229,13 @@ describe Braintree::AdvancedSearch do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "16"
+          :price => "16",
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "16"
+          :price => "16",
         ).subscription
 
         Braintree::Subscription.cancel(subscription2.id)
@@ -266,19 +266,19 @@ describe Braintree::AdvancedSearch do
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "17"
+          :price => "17",
         ).subscription
 
         subscription2 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
-          :price => "17"
+          :price => "17",
         ).subscription
 
         subscription3 = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::AddOnDiscountPlan[:id],
-          :price => "17"
+          :price => "17",
         ).subscription
 
         plan_ids = [SpecHelper::TriallessPlan[:id], SpecHelper::TrialPlan[:id]]
@@ -307,13 +307,13 @@ describe Braintree::AdvancedSearch do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "18"
+          :price => "18",
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
-          :price => "18"
+          :price => "18",
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
@@ -331,13 +331,13 @@ describe Braintree::AdvancedSearch do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "19"
+          :price => "19",
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
-          :price => "19"
+          :price => "19",
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
@@ -355,13 +355,13 @@ describe Braintree::AdvancedSearch do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "20"
+          :price => "20",
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
-          :price => "20"
+          :price => "20",
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
@@ -379,13 +379,13 @@ describe Braintree::AdvancedSearch do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "21"
+          :price => "21",
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
-          :price => "21"
+          :price => "21",
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
@@ -403,13 +403,13 @@ describe Braintree::AdvancedSearch do
         trialless_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
-          :price => "22"
+          :price => "22",
         ).subscription
 
         trial_subscription = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
-          :price => "22"
+          :price => "22",
         ).subscription
 
         collection = Braintree::Subscription.search do |search|
@@ -428,13 +428,13 @@ describe Braintree::AdvancedSearch do
       subscription_500 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :price => "5.00"
+        :price => "5.00",
       ).subscription
 
       subscription_501 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "5.01"
+        :price => "5.01",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -449,19 +449,19 @@ describe Braintree::AdvancedSearch do
       subscription_499 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "4.99"
+        :price => "4.99",
       ).subscription
 
       subscription_500 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :price => "5.00"
+        :price => "5.00",
       ).subscription
 
       subscription_501 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "5.01"
+        :price => "5.01",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -477,19 +477,19 @@ describe Braintree::AdvancedSearch do
       subscription_499 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "999.99"
+        :price => "999.99",
       ).subscription
 
       subscription_500 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :price => "1000.00"
+        :price => "1000.00",
       ).subscription
 
       subscription_501 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "1000.01"
+        :price => "1000.01",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|
@@ -505,19 +505,19 @@ describe Braintree::AdvancedSearch do
       subscription_499 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "4.99"
+        :price => "4.99",
       ).subscription
 
       subscription_500 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TriallessPlan[:id],
-        :price => "5.00"
+        :price => "5.00",
       ).subscription
 
       subscription_502 = Braintree::Subscription.create(
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
-        :price => "5.02"
+        :price => "5.02",
       ).subscription
 
       collection = Braintree::Subscription.search do |search|

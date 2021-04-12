@@ -21,7 +21,7 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :options => {
               :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
-            }
+            },
           )
 
           result.should be_success
@@ -59,7 +59,7 @@ describe Braintree::PaymentMethod do
               :options => {
                 :us_bank_account_verification_method => method,
                 :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
-              }
+              },
             )
 
             result.should be_success
@@ -103,7 +103,7 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :options => {
               :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
-            }
+            },
           )
 
           result.should be_success
@@ -136,7 +136,7 @@ describe Braintree::PaymentMethod do
               :options => {
                 :us_bank_account_verification_method => method,
                 :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
-              }
+              },
             )
 
             result.should be_success
@@ -167,7 +167,7 @@ describe Braintree::PaymentMethod do
         customer = Braintree::Customer.create.customer
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => generate_invalid_us_bank_account_nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         result.should_not be_success
@@ -193,7 +193,7 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :options => {
               :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-            }
+            },
           )
 
           result.should be_success
@@ -230,7 +230,7 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :options => {
               :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-            }
+            },
           )
 
           result.should be_success
@@ -260,7 +260,7 @@ describe Braintree::PaymentMethod do
         customer = Braintree::Customer.create.customer
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => generate_invalid_us_bank_account_nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         result.should_not be_success
@@ -356,7 +356,7 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :options => {
               :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-            }
+            },
           ).payment_method
         end
 

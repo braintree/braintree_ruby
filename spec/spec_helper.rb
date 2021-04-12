@@ -40,6 +40,7 @@ unless defined?(SPEC_HELPER_LOADED)
     AdyenMerchantAccountId = "adyen_ma"
     HiperBRLMerchantAccountId = "hiper_brl"
     CardProcessorBRLMerchantAccountId = "card_processor_brl"
+    FakeFirstDataMerchantAccountId = "fake_first_data_merchant_account"
 
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",
@@ -88,13 +89,13 @@ unless defined?(SPEC_HELPER_LOADED)
                                                       :environment => Braintree::Configuration.environment,
                                                       :merchant_id => "test_merchant_id",
                                                       :public_key => "test_public_key",
-                                                      :private_key => "test_private_key"
+                                                      :private_key => "test_private_key",
                                                       )
 
     def self.make_past_due(subscription, number_of_days_past_due = 1)
       config = Braintree::Configuration.instantiate
       config.http.put(
-        "#{config.base_merchant_path}/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}"
+        "#{config.base_merchant_path}/subscriptions/#{subscription.id}/make_past_due?days_past_due=#{number_of_days_past_due}",
       )
     end
 
@@ -113,7 +114,7 @@ unless defined?(SPEC_HELPER_LOADED)
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       gateway.merchant.create({

@@ -23,7 +23,7 @@ describe Braintree::ThreeDSecureInfo do
       :lookup => {
         :trans_status => "lookupstatus",
         :trans_status_reason => "lookupstatusreason"
-      }
+      },
     )
   }
 

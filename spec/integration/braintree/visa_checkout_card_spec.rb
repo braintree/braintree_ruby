@@ -7,7 +7,7 @@ describe Braintree::VisaCheckoutCard do
 
     result = Braintree::PaymentMethod.create(
       :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutDiscover,
-      :customer_id => customer.id
+      :customer_id => customer.id,
     )
     result.should be_success
 
@@ -53,7 +53,7 @@ describe Braintree::VisaCheckoutCard do
     result = Braintree::PaymentMethod.create(
       :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutDiscover,
       :customer_id => customer.id,
-      :options => { :verify_card => true }
+      :options => {:verify_card => true},
     )
     result.should be_success
     result.payment_method.verification.status.should == Braintree::CreditCardVerification::Status::Verified
@@ -62,7 +62,7 @@ describe Braintree::VisaCheckoutCard do
   it "can search for transactions" do
     transaction_create_result = Braintree::Transaction.sale(
       :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutDiscover,
-      :amount => '47.00',
+      :amount => "47.00",
     )
     transaction_create_result.should be_success
     transaction_id = transaction_create_result.transaction.id
@@ -80,8 +80,8 @@ describe Braintree::VisaCheckoutCard do
     result = Braintree::Transaction.sale(
       :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutDiscover,
       :customer_id => customer.id,
-      :amount => '47.00',
-      :options => { :store_in_vault => true },
+      :amount => "47.00",
+      :options => {:store_in_vault => true},
     )
     result.should be_success
 

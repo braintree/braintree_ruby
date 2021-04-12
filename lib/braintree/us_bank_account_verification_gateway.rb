@@ -18,7 +18,7 @@ module Braintree
         ErrorResult.new(@gateway, response[:api_error_response])
       else
         SuccessfulResult.new(
-          :us_bank_account_verification => UsBankAccountVerification._new(response[:us_bank_account_verification])
+          :us_bank_account_verification => UsBankAccountVerification._new(response[:us_bank_account_verification]),
         )
       end
     rescue NotFoundError

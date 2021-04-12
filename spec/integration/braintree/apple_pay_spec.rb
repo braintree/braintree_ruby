@@ -5,18 +5,18 @@ describe Braintree::ApplePayGateway do
     gateway = Braintree::Gateway.new(
       :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
       :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-      :logger => Logger.new("/dev/null")
+      :logger => Logger.new("/dev/null"),
     )
 
     result = gateway.merchant.create(
       :email => "name@email.com",
       :country_code_alpha3 => "USA",
-      :payment_methods => ["credit_card", "paypal"]
+      :payment_methods => ["credit_card", "paypal"],
     )
 
     @gateway = Braintree::Gateway.new(
       :access_token => result.credentials.access_token,
-      :logger => Logger.new("/dev/null")
+      :logger => Logger.new("/dev/null"),
     )
   end
 

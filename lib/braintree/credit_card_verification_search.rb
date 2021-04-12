@@ -6,7 +6,7 @@ module Braintree
        :customer_email,
        :customer_id,
        :id,
-       :payment_method_token
+       :payment_method_token,
      )
 
     equality_fields :credit_card_expiration_date

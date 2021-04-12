@@ -11,14 +11,14 @@ describe Braintree::Dispute do
 
   let(:transaction) do
     result = Braintree::Transaction.sale(
-      :amount => '10.00',
+      :amount => "10.00",
       :credit_card => {
-        :expiration_date => '01/2020',
+        :expiration_date => "01/2020",
         :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback
       },
       :options => {
         :submit_for_settlement => true
-      }
+      },
     )
 
     result.transaction
@@ -50,7 +50,7 @@ describe Braintree::Dispute do
     it "raises a NotFound exception if the dispute cannot be found" do
       expect do
         Braintree::Dispute.accept("invalid-id")
-      end.to raise_error(Braintree::NotFoundError, 'dispute with id invalid-id not found')
+      end.to raise_error(Braintree::NotFoundError, "dispute with id invalid-id not found")
     end
   end
 
@@ -141,7 +141,7 @@ describe Braintree::Dispute do
     end
 
     it "creates text evidence for the dispute with optional parameters" do
-      result = Braintree::Dispute.add_text_evidence(dispute.id, { content: "123456789", category: "REFUND_ID", sequence_number: 7 })
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "123456789", category: "REFUND_ID", sequence_number: 7})
 
       result.success?.should == true
       result.evidence.category.should == "REFUND_ID"
@@ -174,7 +174,7 @@ describe Braintree::Dispute do
     it "raises a NotFound exception if the dispute cannot be found" do
       expect do
         Braintree::Dispute.finalize("invalid-id")
-      end.to raise_error(Braintree::NotFoundError, 'dispute with id invalid-id not found')
+      end.to raise_error(Braintree::NotFoundError, "dispute with id invalid-id not found")
     end
   end
 

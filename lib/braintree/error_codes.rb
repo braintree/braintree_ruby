@@ -271,6 +271,7 @@ module Braintree
     end
 
     module Transaction
+      AdjustmentAmountMustBeGreaterThanZero = "95605"
       AmountCannotBeNegative = "81501"
       AmountDoesNotMatch3DSecureAmount = "91585"
       AmountFormatIsInvalid = "81503" # Keep for backwards compatibility
@@ -322,6 +323,7 @@ module Braintree
       MerchantAccountIdDoesNotMatchSubscription = "915180"
       MerchantAccountIdIsInvalid = "91513"
       MerchantAccountIsSuspended = "91514"
+      NoNetAmountToPerformAuthAdjustment = "95606"
       OrderIdIsTooLong = "91501"
       PayPalAuthExpired = "91579"
       PayPalNotEnabled = "91576"
@@ -343,8 +345,11 @@ module Braintree
       ProcessorAuthorizationCodeCannotBeSet = "91519"
       ProcessorAuthorizationCodeIsInvalid = "81520"
       ProcessorDoesNotSupportAuths = "915104"
+      ProcessorDoesNotSupportAuthAdjustment = "915222"
       ProcessorDoesNotSupportCredits = "91546"
+      ProcessorDoesNotSupportIncrementalAuth = "915220"
       ProcessorDoesNotSupportMotoForCardType = "915195"
+      ProcessorDoesNotSupportPartialAuthReversal = "915221"
       ProcessorDoesNotSupportPartialSettlement = "915102"
       ProcessorDoesNotSupportUpdatingDescriptor = "915108"
       ProcessorDoesNotSupportUpdatingOrderId = "915107"
@@ -398,6 +403,8 @@ module Braintree
       ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod = "915197"
       ThreeDSecureXidIsRequired = "915115"
       TooManyLineItems = "915157"
+      TransactionIsNotEligibleForAdjustment = "915219"
+      TransactionMustBeInStateAuthorized = "915218"
       TransactionSourceIsInvalid = "915133"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"

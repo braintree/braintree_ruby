@@ -65,7 +65,7 @@ describe Braintree::MerchantAccount do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       code = Braintree::OAuthTestHelper.create_grant(gateway, {
@@ -75,12 +75,12 @@ describe Braintree::MerchantAccount do
 
       result = gateway.oauth.create_token_from_code(
         :code => code,
-        :scope => "read_write"
+        :scope => "read_write",
       )
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant_account.all
@@ -92,18 +92,18 @@ describe Braintree::MerchantAccount do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant.create(
         :email => "name@email.com",
         :country_code_alpha3 => "USA",
-        :payment_methods => ["credit_card", "paypal"]
+        :payment_methods => ["credit_card", "paypal"],
       )
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant_account.all
@@ -118,7 +118,7 @@ describe Braintree::MerchantAccount do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       code = Braintree::OAuthTestHelper.create_grant(gateway, {
@@ -128,12 +128,12 @@ describe Braintree::MerchantAccount do
 
       result = gateway.oauth.create_token_from_code(
         :code => code,
-        :scope => "read_only"
+        :scope => "read_only",
       )
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant_account.all
@@ -164,8 +164,8 @@ describe Braintree::MerchantAccount do
       sub_merchant_account_id = "sub_merchant_account_id#{random_number}"
       result = Braintree::MerchantAccount.create(
         VALID_APPLICATION_PARAMS.merge(
-          :id => sub_merchant_account_id
-        )
+          :id => sub_merchant_account_id,
+        ),
       )
 
       result.should be_success
@@ -182,7 +182,7 @@ describe Braintree::MerchantAccount do
 
     it "requires all fields" do
       result = Braintree::MerchantAccount.create(
-        :master_merchant_account_id => "sandbox_master_merchant_account"
+        :master_merchant_account_id => "sandbox_master_merchant_account",
       )
       result.should_not be_success
       result.errors.for(:merchant_account).on(:tos_accepted).first.code.should == Braintree::ErrorCodes::MerchantAccount::TosAcceptedIsRequired
@@ -233,11 +233,11 @@ describe Braintree::MerchantAccount do
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "JPY"
+        :currency => "JPY",
       )
       result.should be_success
       result.merchant_account.currency_iso_code.should == "JPY"
@@ -249,16 +249,16 @@ describe Braintree::MerchantAccount do
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "USD"
+        :currency => "USD",
       )
       result.should be_success
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "USD"
+        :currency => "USD",
       )
       result.should_not be_success
 
@@ -272,11 +272,11 @@ describe Braintree::MerchantAccount do
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => nil
+        :currency => nil,
       )
       result.should_not be_success
 
@@ -296,11 +296,11 @@ describe Braintree::MerchantAccount do
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "FAKE_CURRENCY"
+        :currency => "FAKE_CURRENCY",
       )
       result.should_not be_success
 
@@ -314,13 +314,13 @@ describe Braintree::MerchantAccount do
 
       gateway = Braintree::Gateway.new(
         :access_token => result.credentials.access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       merchant = result.merchant
       result = gateway.merchant_account.create_for_currency(
         :currency => "USD",
-        :id => merchant.merchant_accounts.first.id
+        :id => merchant.merchant_accounts.first.id,
       )
       result.should_not be_success
 
@@ -338,7 +338,6 @@ describe Braintree::MerchantAccount do
       id = result.merchant_account.id
       merchant_account = Braintree::MerchantAccount.find(id)
 
-      merchant_account.status.should == Braintree::MerchantAccount::Status::Active
       merchant_account.individual_details.first_name.should == VALID_APPLICATION_PARAMS[:individual][:first_name]
       merchant_account.individual_details.last_name.should == VALID_APPLICATION_PARAMS[:individual][:last_name]
     end
@@ -352,7 +351,7 @@ describe Braintree::MerchantAccount do
     it "raises a NotFoundError exception if merchant account cannot be found" do
       expect do
         Braintree::MerchantAccount.find("non-existant")
-      end.to raise_error(Braintree::NotFoundError, 'Merchant account with id non-existant not found')
+      end.to raise_error(Braintree::NotFoundError, "Merchant account with id non-existant not found")
     end
   end
 
@@ -412,7 +411,7 @@ describe Braintree::MerchantAccount do
     end
 
     it "does not require all fields" do
-      result = Braintree::MerchantAccount.update("sandbox_sub_merchant_account", { :individual => { :first_name => "Jose" } })
+      result = Braintree::MerchantAccount.update("sandbox_sub_merchant_account", {:individual => {:first_name => "Jose"}})
       result.should be_success
     end
 

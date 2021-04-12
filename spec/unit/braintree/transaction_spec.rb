@@ -45,6 +45,14 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "self.adjust_authorization" do
+    it "raises an ArgumentError if transaction_id is an invalid format" do
+      expect do
+        Braintree::Transaction.adjust_authorization("invalid-transaction-id", "10.00")
+      end.to raise_error(ArgumentError, "transaction_id is invalid")
+    end
+  end
+
   describe "self.update_details" do
     it "raises an ArgumentError if transaction_id is an invalid format" do
       expect do
@@ -66,7 +74,7 @@ describe Braintree::Transaction do
           :website => "lednerllc.com",
           :phone => "1-999-652-4189 x56883",
           :fax => "012-161-8055"
-        }
+        },
       )
       transaction.customer_details.id.should == "123"
       transaction.customer_details.first_name.should == "Adam"
@@ -88,7 +96,7 @@ describe Braintree::Transaction do
           :settlement_currency_exchange_rate => "1",
           :funds_held => false,
           :success => true
-        }
+        },
       )
       disbursement = transaction.disbursement_details
       disbursement.disbursement_date.should == Date.parse("2013-04-03")
@@ -119,7 +127,7 @@ describe Braintree::Transaction do
           :product_id => "Unknown",
           :country_of_issuance => "Narnia",
           :issuing_bank => "Mr Tumnus"
-        }
+        },
       )
       transaction.credit_card_details.token.should == "mzg2"
       transaction.credit_card_details.bin.should == "411111"
@@ -147,7 +155,7 @@ describe Braintree::Transaction do
           :liability_shifted => true,
           :liability_shift_possible => true,
           :status => "authenticate_successful",
-        }
+        },
       )
 
       transaction.three_d_secure_info.enrolled.should == "Y"
@@ -161,9 +169,9 @@ describe Braintree::Transaction do
       transaction = Braintree::Transaction._new(
         :gateway,
         :status_history => [
-          { :timestamp => time, :amount => "12.00", :transaction_source => "API",
-            :user => "larry", :status => Braintree::Transaction::Status::Authorized },
-          { :timestamp => Time.utc(2010,1,15), :amount => "12.00", :transaction_source => "API",
+          {:timestamp => time, :amount => "12.00", :transaction_source => "API",
+            :user => "larry", :status => Braintree::Transaction::Status::Authorized},
+          {:timestamp => Time.utc(2010,1,15), :amount => "12.00", :transaction_source => "API",
             :user => "curly", :status => "scheduled_for_settlement"}
         ])
       transaction.status_history.size.should == 2
@@ -180,8 +188,8 @@ describe Braintree::Transaction do
       transaction = Braintree::Transaction._new(
         :gateway,
         :authorization_adjustments => [
-          { :timestamp => timestamp, :processor_response_code => "1000", :processor_response_text => "Approved", :amount => "12.00", :success => true },
-          { :timestamp => timestamp, :processor_response_code => "3000", :processor_response_text => "Processor Network Unavailable - Try Again", :amount => "12.34", :success => false },
+          {:timestamp => timestamp, :processor_response_code => "1000", :processor_response_text => "Approved", :amount => "12.00", :success => true},
+          {:timestamp => timestamp, :processor_response_code => "3000", :processor_response_text => "Processor Network Unavailable - Try Again", :amount => "12.34", :success => false},
         ])
       transaction.authorization_adjustments.size.should == 2
       transaction.authorization_adjustments[0].amount.should == "12.00"
@@ -199,7 +207,7 @@ describe Braintree::Transaction do
     it "handles receiving custom as an empty string" do
       transaction = Braintree::Transaction._new(
         :gateway,
-        :custom => "\n    "
+        :custom => "\n    ",
       )
     end
 
@@ -217,7 +225,7 @@ describe Braintree::Transaction do
     it "handles nil risk_data" do
       transaction = Braintree::Transaction._new(
         :gateway,
-        :risk_data => nil
+        :risk_data => nil,
       )
       transaction.risk_data.should be_nil
     end
@@ -225,7 +233,7 @@ describe Braintree::Transaction do
     it "accepts network_transaction_id" do
       transaction = Braintree::Transaction._new(
         :gateway,
-        :network_transaction_id => "123456789012345"
+        :network_transaction_id => "123456789012345",
       )
       transaction.network_transaction_id.should == "123456789012345"
     end
@@ -307,8 +315,8 @@ describe Braintree::Transaction do
   end
 
   describe "sale" do
-    let(:mock_response) { {:transaction => {}}}
-    let(:http_stub) { double('http_stub').as_null_object }
+    let(:mock_response) { {:transaction => {}} }
+    let(:http_stub) { double("http_stub").as_null_object }
 
     RSpec::Matchers.define :skip_advanced_fraud_check_value_is do |value|
         match { |params| params[:transaction][:options][:skip_advanced_fraud_checking] == value }
@@ -326,7 +334,7 @@ describe Braintree::Transaction do
         },
         :options => {
           :skip_advanced_fraud_checking => true
-        }
+        },
       )
     end
 
@@ -342,7 +350,7 @@ describe Braintree::Transaction do
         },
         :options => {
           :skip_advanced_fraud_checking => false
-        }
+        },
       )
     end
 
@@ -358,7 +366,7 @@ describe Braintree::Transaction do
         },
         :options => {
           :submit_for_settlement => false
-        }
+        },
       )
     end
   end

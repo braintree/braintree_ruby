@@ -40,12 +40,12 @@ module Braintree
     ]
 
     class << self
-      attr_writer *WRITABLE_ATTRIBUTES
-      attr_reader *NON_REQUIRED_READABLE_ATTRIBUTES
+      attr_writer(*WRITABLE_ATTRIBUTES)
+      attr_reader(*NON_REQUIRED_READABLE_ATTRIBUTES)
     end
-    attr_reader *READABLE_ATTRIBUTES
-    attr_reader *NON_REQUIRED_READABLE_ATTRIBUTES
-    attr_writer *WRITABLE_ATTRIBUTES
+    attr_reader(*READABLE_ATTRIBUTES)
+    attr_reader(*NON_REQUIRED_READABLE_ATTRIBUTES)
+    attr_writer(*WRITABLE_ATTRIBUTES)
 
     def self.expectant_reader(*attributes) # :nodoc:
       attributes.each do |attribute|
@@ -56,7 +56,7 @@ module Braintree
         end
       end
     end
-    expectant_reader *READABLE_ATTRIBUTES
+    expectant_reader(*READABLE_ATTRIBUTES)
 
     # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
@@ -86,7 +86,7 @@ module Braintree
         :proxy_port => proxy_port,
         :proxy_user => proxy_user,
         :proxy_pass => proxy_pass,
-        :ssl_version => ssl_version
+        :ssl_version => ssl_version,
       )
     end
 
@@ -205,7 +205,7 @@ module Braintree
     def port # :nodoc:
       case @environment
       when :development, :integration
-        ENV['GATEWAY_PORT'] || 3000
+        ENV["GATEWAY_PORT"] || 3000
       when :production, :qa, :sandbox
         443
       end
@@ -214,7 +214,7 @@ module Braintree
     def graphql_port # :nodoc:
       case @environment
       when :development, :integration
-        ENV['GRAPHQL_PORT'] || 8080
+        ENV["GRAPHQL_PORT"] || 8080
       when :production, :qa, :sandbox
         443
       end
@@ -235,7 +235,7 @@ module Braintree
     def server # :nodoc:
       case @environment
       when :development, :integration
-        ENV['GATEWAY_HOST'] || "localhost"
+        ENV["GATEWAY_HOST"] || "localhost"
       when :production
         "#{endpoint}.braintreegateway.com"
       when :qa
@@ -248,7 +248,7 @@ module Braintree
     def graphql_server # :nodoc:
       case @environment
       when :development, :integration
-        ENV['GRAPHQL_HOST'] || "graphql.bt.local"
+        ENV["GRAPHQL_HOST"] || "graphql.bt.local"
       when :production
         "payments.braintree-api.com"
       when :qa

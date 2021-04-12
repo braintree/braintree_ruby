@@ -37,7 +37,8 @@ module Braintree
       :shipping_locality,
       :shipping_postal_code,
       :shipping_region,
-      :shipping_street_address
+      :shipping_street_address,
+      :store_id,
     )
 
     equality_fields :credit_card_expiration_date
@@ -59,6 +60,7 @@ module Braintree
     multiple_value_field :status, :allows => Transaction::Status::All
     multiple_value_field :source
     multiple_value_field :type, :allows => Transaction::Type::All
+    multiple_value_field :store_ids
 
     key_value_fields :refund
 

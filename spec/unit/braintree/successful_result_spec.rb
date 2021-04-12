@@ -5,7 +5,7 @@ describe Braintree::SuccessfulResult do
     it "sets instance variables from the values in the hash" do
       result = Braintree::SuccessfulResult.new(
         :transaction => "transaction_value",
-        :credit_card => "credit_card_value"
+        :credit_card => "credit_card_value",
       )
       result.success?.should == true
       result.transaction.should == "transaction_value"

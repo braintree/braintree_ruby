@@ -8,7 +8,7 @@ module Braintree
       @config.assert_has_access_token_or_keys
     end
 
-    def create(payment_method_token, args = { payment_method_nonce: {} })
+    def create(payment_method_token, args = {payment_method_nonce: {}})
       Util.verify_keys(PaymentMethodNonceGateway._create_signature, args)
 
       response = @config.http.post("#{@config.base_merchant_path}/payment_methods/#{payment_method_token}/nonces", args)

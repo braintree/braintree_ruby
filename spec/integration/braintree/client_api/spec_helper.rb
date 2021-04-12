@@ -1,4 +1,4 @@
-require 'json'
+require "json"
 
 def decode_client_token(raw_client_token)
   decoded_client_token_string = Base64.decode64(raw_client_token)
@@ -20,7 +20,7 @@ def _initialize_client(options)
   ClientApiHttp.new(Braintree::Configuration.instantiate,
     :authorization_fingerprint => client_token["authorizationFingerprint"],
     :shared_customer_identifier => "fake_identifier",
-    :shared_customer_identifier_type => "testing"
+    :shared_customer_identifier_type => "testing",
   )
 end
 
@@ -42,7 +42,7 @@ def nonce_for_paypal_account(paypal_account_details)
   raw_client_token = Braintree::ClientToken.generate
   client_token = decode_client_token(raw_client_token)
   client = ClientApiHttp.new(Braintree::Configuration.instantiate,
-    :authorization_fingerprint => client_token["authorizationFingerprint"]
+    :authorization_fingerprint => client_token["authorizationFingerprint"],
   )
 
   response = client.create_paypal_account(paypal_account_details)
@@ -283,7 +283,7 @@ class ClientApiHttp
     params.merge!(
       :authorization_fingerprint => @options[:authorization_fingerprint],
       :shared_customer_identifier => "fake_identifier",
-      :shared_customer_identifier_type => "testing"
+      :shared_customer_identifier_type => "testing",
     )
 
     post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/credit_cards", params)
@@ -292,7 +292,7 @@ class ClientApiHttp
   def create_paypal_account(params)
     params = {:paypal_account => params}
     params.merge!(
-      :authorization_fingerprint => @options[:authorization_fingerprint]
+      :authorization_fingerprint => @options[:authorization_fingerprint],
     )
 
     post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/paypal_accounts", params)

@@ -17,20 +17,20 @@ describe Braintree::PaymentMethod do
         config,
         :authorization_fingerprint => authorization_fingerprint,
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.create_credit_card(
         :number => 4111111111111111,
         :expirationMonth => 12,
-        :expirationYear => 2020
+        :expirationYear => 2020,
       )
       response.code.should == "201"
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       result.should be_success
@@ -51,21 +51,21 @@ describe Braintree::PaymentMethod do
         config,
         :authorization_fingerprint => authorization_fingerprint,
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.create_credit_card(
         :number => "4111111111111111",
         :expirationMonth => "12",
         :expirationYear => "2020",
-        :options => {:validate => false}
+        :options => {:validate => false},
       )
       response.code.should == "202"
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       result.should be_success
@@ -82,7 +82,7 @@ describe Braintree::PaymentMethod do
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
         :customer_id => customer.id,
-        :token => token
+        :token => token,
       )
 
       result.should be_success
@@ -107,7 +107,7 @@ describe Braintree::PaymentMethod do
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
         :customer_id => customer.id,
-        :token => token
+        :token => token,
       )
 
       result.should be_success
@@ -135,7 +135,7 @@ describe Braintree::PaymentMethod do
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard,
         :customer_id => customer.id,
-        :token => token
+        :token => token,
       )
 
       result.should be_success
@@ -163,7 +163,7 @@ describe Braintree::PaymentMethod do
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
         :customer_id => customer.id,
-        :token => token
+        :token => token,
       )
 
       result.should be_success
@@ -185,7 +185,7 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
-        :cvv => "100"
+        :cvv => "100",
       )
       result.success?.should == true
       original_payment_method = result.credit_card
@@ -195,7 +195,7 @@ describe Braintree::PaymentMethod do
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
         :customer_id => customer.id,
-        :options => {:make_default => true}
+        :options => {:make_default => true},
       )
 
       result.should be_success
@@ -210,12 +210,12 @@ describe Braintree::PaymentMethod do
       second_token = make_token
       nonce = nonce_for_paypal_account(
         :consent_code => "PAYPAL_CONSENT_CODE",
-        :token => first_token
+        :token => first_token,
       )
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
         :customer_id => customer.id,
-        :token => second_token
+        :token => second_token,
       )
 
       result.should be_success
@@ -229,7 +229,7 @@ describe Braintree::PaymentMethod do
           :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
           :expiration_month => "11",
           :expiration_year => "2099",
-        }
+        },
       )
       customer = Braintree::Customer.create!
       result = Braintree::PaymentMethod.create(
@@ -238,7 +238,7 @@ describe Braintree::PaymentMethod do
         :options => {
           :verify_card => true,
           :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
-        }
+        },
       )
 
       result.should_not be_success
@@ -254,7 +254,7 @@ describe Braintree::PaymentMethod do
           :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
           :expiration_month => "11",
           :expiration_year => "2099",
-        }
+        },
       )
       customer = Braintree::Customer.create!
       result = Braintree::PaymentMethod.create(
@@ -263,7 +263,7 @@ describe Braintree::PaymentMethod do
         :options => {
           :verify_card => true,
           :verification_amount => "100.00"
-        }
+        },
       )
 
       result.should_not be_success
@@ -279,16 +279,16 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => '02',
-          :cavv => 'some_cavv',
-          :xid => 'some_xid',
-          :three_d_secure_version => 'xx',
-          :authentication_response => 'Y',
-          :directory_response => 'Y',
-          :cavv_algorithm => '2',
-          :ds_transaction_id => 'some_ds_transaction_id',
+          :eci_flag => "02",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "xx",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
         },
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
       expect(result).not_to be_success
       error = result.errors.for(:verification).first
@@ -302,16 +302,16 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => '02',
-          :cavv => 'some_cavv',
-          :xid => 'some_xid',
-          :three_d_secure_version => '1.0.2',
-          :authentication_response => 'Y',
-          :directory_response => 'Y',
-          :cavv_algorithm => '2',
-          :ds_transaction_id => 'some_ds_transaction_id',
+          :eci_flag => "02",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "1.0.2",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
         },
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
 
       expect(result).to be_success
@@ -343,7 +343,7 @@ describe Braintree::PaymentMethod do
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       result.should be_success
 
@@ -351,14 +351,14 @@ describe Braintree::PaymentMethod do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2012"
-        }
+        },
       )
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
         :customer_id => customer.id,
         :options => {
           :fail_on_duplicate_payment_method => true
-        }
+        },
       )
 
       result.should_not be_success
@@ -375,14 +375,14 @@ describe Braintree::PaymentMethod do
         config,
         :authorization_fingerprint => authorization_fingerprint,
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.create_credit_card(
         :number => "4111111111111111",
         :expirationMonth => "12",
         :expirationYear => "2020",
-        :options => {:validate => false}
+        :options => {:validate => false},
       )
       response.code.should == "202"
 
@@ -392,7 +392,7 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :billing_address => {
           :street_address => "123 Abc Way"
-        }
+        },
       )
 
       result.should be_success
@@ -414,14 +414,14 @@ describe Braintree::PaymentMethod do
         config,
         :authorization_fingerprint => authorization_fingerprint,
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.create_credit_card(
         :number => "4111111111111111",
         :expirationMonth => "12",
         :expirationYear => "2020",
-        :options => {:validate => false}
+        :options => {:validate => false},
       )
       response.code.should == "202"
 
@@ -431,7 +431,7 @@ describe Braintree::PaymentMethod do
       result = Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
         :customer_id => customer.id,
-        :billing_address_id => address.id
+        :billing_address_id => address.id,
       )
 
       result.should be_success
@@ -454,7 +454,7 @@ describe Braintree::PaymentMethod do
         config,
         :authorization_fingerprint => authorization_fingerprint,
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.create_credit_card(
@@ -464,7 +464,7 @@ describe Braintree::PaymentMethod do
         :options => {:validate => false},
         :billing_address => {
           :street_address => "456 Xyz Way"
-        }
+        },
       )
       response.code.should == "202"
 
@@ -474,7 +474,7 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :billing_address => {
           :street_address => "123 Abc Way"
-        }
+        },
       )
 
       result.should be_success
@@ -496,7 +496,7 @@ describe Braintree::PaymentMethod do
         config,
         :authorization_fingerprint => authorization_fingerprint,
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.create_credit_card(
@@ -505,7 +505,7 @@ describe Braintree::PaymentMethod do
         :expirationYear => 2020,
         :billing_address => {
           :street_address => "456 Xyz Way"
-        }
+        },
       )
       response.code.should == "201"
 
@@ -515,7 +515,7 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :billing_address => {
           :street_address => "123 Abc Way"
-        }
+        },
       )
 
       result.should be_success
@@ -534,7 +534,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Hiper,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -544,7 +544,7 @@ describe Braintree::PaymentMethod do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
             :verification_account_type => "debit",
-          }
+          },
         )
 
         result.should be_success
@@ -557,7 +557,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Hiper,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -567,7 +567,7 @@ describe Braintree::PaymentMethod do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
             :verification_account_type => "credit",
-          }
+          },
         )
 
         result.should be_success
@@ -580,7 +580,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Hiper,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -590,7 +590,7 @@ describe Braintree::PaymentMethod do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
             :verification_account_type => "ach",
-          }
+          },
         )
 
         result.should_not be_success
@@ -603,7 +603,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -612,7 +612,7 @@ describe Braintree::PaymentMethod do
           :options => {
             :verify_card => true,
             :verification_account_type => "credit",
-          }
+          },
         )
 
         result.should_not be_success
@@ -626,7 +626,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :cvv => "123",
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         )
         update_result = Braintree::PaymentMethod.update(credit_card.token,
           :cardholder_name => "New Holder",
@@ -650,7 +650,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :cvv => "123",
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         )
         update_result = Braintree::PaymentMethod.update(credit_card.token,
           :cardholder_name => "New Holder",
@@ -674,7 +674,7 @@ describe Braintree::PaymentMethod do
         customer = Braintree::Customer.create.customer
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         result.should be_success
@@ -751,7 +751,7 @@ describe Braintree::PaymentMethod do
         nonce = nonce_for_paypal_account(:access_token => "PAYPAL_ACCESS_TOKEN")
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         result.should_not be_success
@@ -766,7 +766,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :billing_address => {
             :street_address => "123 Abc Way"
-          }
+          },
         )
 
         result.should be_success
@@ -784,7 +784,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
           :customer_id => customer.id,
-          :billing_address_id => "address_id"
+          :billing_address_id => "address_id",
         )
 
         result.should be_success
@@ -801,7 +801,7 @@ describe Braintree::PaymentMethod do
         nonce = nonce_for_paypal_account(:token => "PAYPAL_TOKEN")
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         result.should_not be_success
@@ -815,7 +815,7 @@ describe Braintree::PaymentMethod do
         original_token = random_payment_method_token
         nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
-          :token => original_token
+          :token => original_token,
         )
 
         result = Braintree::PaymentMethod.create(
@@ -825,7 +825,7 @@ describe Braintree::PaymentMethod do
             :verify_card => true,
             :fail_on_duplicate_payment_method => true,
             :verification_merchant_account_id => "not_a_real_merchant_account_id"
-          }
+          },
         )
 
         result.should be_success
@@ -839,7 +839,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable,
           :customer_id => customer.id,
-          :token => token
+          :token => token,
         )
 
         result.should be_success
@@ -857,7 +857,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -866,7 +866,7 @@ describe Braintree::PaymentMethod do
           :options => {
             :verify_card => true,
             :verification_currency_iso_code => "USD"
-          }
+          },
         )
 
         result.should be_success
@@ -879,7 +879,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -889,7 +889,7 @@ describe Braintree::PaymentMethod do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
             :verification_currency_iso_code => "USD"
-          }
+          },
         )
 
         result.should be_success
@@ -904,7 +904,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -913,7 +913,7 @@ describe Braintree::PaymentMethod do
           :options => {
             :verify_card => true,
             :verification_currency_iso_code => "GBP"
-          }
+          },
         )
         result.should_not be_success
         result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
@@ -925,7 +925,7 @@ describe Braintree::PaymentMethod do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
@@ -935,7 +935,7 @@ describe Braintree::PaymentMethod do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
             :verification_currency_iso_code => "GBP"
-          }
+          },
         )
 
         result.should_not be_success
@@ -955,20 +955,20 @@ describe Braintree::PaymentMethod do
         config,
         :authorization_fingerprint => authorization_fingerprint,
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.create_credit_card(
         :number => 4111111111111111,
         :expirationMonth => 12,
-        :expirationYear => 2020
+        :expirationYear => 2020,
       )
       response.code.should == "201"
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       payment_method = Braintree::PaymentMethod.create!(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       payment_method.should be_a(Braintree::CreditCard)
@@ -986,7 +986,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::CreditCard.create(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         )
         result.success?.should == true
 
@@ -1002,13 +1002,13 @@ describe Braintree::PaymentMethod do
         credit_card = Braintree::CreditCard.create(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         ).credit_card
 
         subscription = Braintree::Subscription.create(
           :payment_method_token => credit_card.token,
           :plan_id => "integration_trialless_plan",
-          :price => "1.00"
+          :price => "1.00",
         ).subscription
 
         found_card = Braintree::PaymentMethod.find(credit_card.token)
@@ -1025,11 +1025,11 @@ describe Braintree::PaymentMethod do
         payment_method_token = make_token
         nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
-          :token => payment_method_token
+          :token => payment_method_token,
         )
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
         result.should be_success
 
@@ -1048,7 +1048,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
           :customer_id => customer.id,
-          :token => payment_method_token
+          :token => payment_method_token,
         )
         result.should be_success
 
@@ -1073,7 +1073,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
           :customer_id => customer.id,
-          :token => payment_method_token
+          :token => payment_method_token,
         )
         result.should be_success
 
@@ -1083,8 +1083,8 @@ describe Braintree::PaymentMethod do
         venmo_account.token.should == payment_method_token
         venmo_account.default.should == true
         venmo_account.image_url.should =~ /venmo/
-        venmo_account.username.should == 'venmojoe'
-        venmo_account.venmo_user_id.should == 'Venmo-Joe-1'
+        venmo_account.username.should == "venmojoe"
+        venmo_account.venmo_user_id.should == "Venmo-Joe-1"
         venmo_account.source_description.should == "Venmo Account: venmojoe"
         venmo_account.customer_id.should == customer.id
       end
@@ -1097,7 +1097,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
           :customer_id => customer.id,
-          :token => payment_method_token
+          :token => payment_method_token,
         )
         result.should be_success
 
@@ -1125,7 +1125,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard,
           :customer_id => customer.id,
-          :token => payment_method_token
+          :token => payment_method_token,
         )
         result.should be_success
 
@@ -1155,7 +1155,7 @@ describe Braintree::PaymentMethod do
         result = Braintree::PaymentMethod.create(
           :payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable,
           :customer_id => customer.id,
-          :token => payment_method_token
+          :token => payment_method_token,
         )
         result.should be_success
 
@@ -1181,7 +1181,7 @@ describe Braintree::PaymentMethod do
 
       create_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       token = create_result.payment_method.token
@@ -1202,7 +1202,7 @@ describe Braintree::PaymentMethod do
 
       create_result = Braintree::PaymentMethod.create(
         :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
       token = create_result.payment_method.token
 
@@ -1223,11 +1223,11 @@ describe Braintree::PaymentMethod do
 
       nonce = nonce_for_paypal_account(
         :consent_code => "PAYPAL_CONSENT_CODE",
-        :token => paypal_account_token
+        :token => paypal_account_token,
       )
       Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       paypal_account = Braintree::PaymentMethod.find(paypal_account_token)
@@ -1256,7 +1256,7 @@ describe Braintree::PaymentMethod do
 
       Braintree::PaymentMethod.create(
         :payment_method_nonce => nonce,
-        :customer_id => customer.id
+        :customer_id => customer.id,
       )
 
       result = Braintree::PaymentMethod.delete(token)
@@ -1293,14 +1293,14 @@ describe Braintree::PaymentMethod do
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "06/2013",
           :three_d_secure_pass_thru => {
-            :eci_flag => '02',
-            :cavv => 'some_cavv',
-            :xid => 'some_xid',
-            :three_d_secure_version => 'xx',
-            :authentication_response => 'Y',
-            :directory_response => 'Y',
-            :cavv_algorithm => '2',
-            :ds_transaction_id => 'some_ds_transaction_id',
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "xx",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
           },
           :options => {:verify_card => true},
         )
@@ -1324,14 +1324,14 @@ describe Braintree::PaymentMethod do
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "06/2013",
           :three_d_secure_pass_thru => {
-            :eci_flag => '02',
-            :cavv => 'some_cavv',
-            :xid => 'some_xid',
-            :three_d_secure_version => '1.0.2',
-            :authentication_response => 'Y',
-            :directory_response => 'Y',
-            :cavv_algorithm => '2',
-            :ds_transaction_id => 'some_ds_transaction_id',
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "1.0.2",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
           },
           :options => {:verify_card => true},
         )
@@ -1351,13 +1351,13 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :cvv => "123",
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         )
         update_result = Braintree::PaymentMethod.update(credit_card.token,
           :cardholder_name => "New Holder",
           :cvv => "456",
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
-          :expiration_date => "06/2013"
+          :expiration_date => "06/2013",
         )
         update_result.success?.should == true
         update_result.payment_method.should == credit_card
@@ -1376,14 +1376,14 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :cvv => "123",
             :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2012"
+            :expiration_date => "05/2012",
           )
           update_result = Braintree::PaymentMethod.update(credit_card.token,
                                                           :cardholder_name => "New Holder",
                                                           :cvv => "456",
                                                           :number => Braintree::Test::CreditCardNumbers::MasterCard,
                                                           :expiration_date => "06/2013",
-                                                          :options => {:verify_card => true, :verification_currency_iso_code => "USD"}
+                                                          :options => {:verify_card => true, :verification_currency_iso_code => "USD"},
                                                          )
           update_result.success?.should == true
           update_result.payment_method.verification.currency_iso_code  == "USD"
@@ -1396,14 +1396,14 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :cvv => "123",
             :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2012"
+            :expiration_date => "05/2012",
           )
           update_result = Braintree::PaymentMethod.update(credit_card.token,
                                                           :cardholder_name => "New Holder",
                                                           :cvv => "456",
                                                           :number => Braintree::Test::CreditCardNumbers::MasterCard,
                                                           :expiration_date => "06/2013",
-                                                          :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "USD"}
+                                                          :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "USD"},
                                                          )
           update_result.success?.should == true
           update_result.payment_method.verification.currency_iso_code  == "USD"
@@ -1417,14 +1417,14 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :cvv => "123",
             :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2012"
+            :expiration_date => "05/2012",
           )
           update_result = Braintree::PaymentMethod.update(credit_card.token,
                                                           :cardholder_name => "New Holder",
                                                           :cvv => "456",
                                                           :number => Braintree::Test::CreditCardNumbers::MasterCard,
                                                           :expiration_date => "06/2013",
-                                                          :options => {:verify_card => true, :verification_currency_iso_code => "GBP"}
+                                                          :options => {:verify_card => true, :verification_currency_iso_code => "GBP"},
                                                          )
           expect(update_result).to_not be_success
           update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
@@ -1437,14 +1437,14 @@ describe Braintree::PaymentMethod do
             :customer_id => customer.id,
             :cvv => "123",
             :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2012"
+            :expiration_date => "05/2012",
           )
           update_result = Braintree::PaymentMethod.update(credit_card.token,
                                                           :cardholder_name => "New Holder",
                                                           :cvv => "456",
                                                           :number => Braintree::Test::CreditCardNumbers::MasterCard,
                                                           :expiration_date => "06/2013",
-                                                          :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "GBP"}
+                                                          :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "GBP"},
                                                          )
           expect(update_result).to_not be_success
           update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
@@ -1461,12 +1461,12 @@ describe Braintree::PaymentMethod do
             :expiration_date => "05/2012",
             :billing_address => {
               :street_address => "123 Nigeria Ave"
-            }
+            },
           )
           update_result = Braintree::PaymentMethod.update(credit_card.token,
             :billing_address => {
               :region => "IL"
-            }
+            },
           )
           update_result.success?.should == true
           updated_credit_card = update_result.payment_method
@@ -1483,13 +1483,13 @@ describe Braintree::PaymentMethod do
             :expiration_date => "05/2012",
             :billing_address => {
               :street_address => "123 Nigeria Ave"
-            }
+            },
           )
           update_result = Braintree::PaymentMethod.update(credit_card.token,
             :billing_address => {
               :region => "IL",
               :options => {:update_existing => true}
-            }
+            },
           )
           update_result.success?.should == true
           updated_credit_card = update_result.payment_method
@@ -1506,7 +1506,7 @@ describe Braintree::PaymentMethod do
             :expiration_date => "05/2012",
             :billing_address => {
               :street_address => "123 Nigeria Ave"
-            }
+            },
           )
           update_result = Braintree::PaymentMethod.update(credit_card.token,
             :billing_address => {
@@ -1515,7 +1515,7 @@ describe Braintree::PaymentMethod do
               :country_code_alpha3 => "ASM",
               :country_code_numeric => "016",
               :options => {:update_existing => true}
-            }
+            },
           )
           update_result.success?.should == true
           updated_credit_card = update_result.payment_method
@@ -1531,12 +1531,12 @@ describe Braintree::PaymentMethod do
         credit_card = Braintree::CreditCard.create!(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         )
         update_result = Braintree::PaymentMethod.update(credit_card.token,
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_month => "07",
-          :expiration_year => "2011"
+          :expiration_year => "2011",
         )
         update_result.success?.should == true
         update_result.payment_method.should == credit_card
@@ -1552,14 +1552,14 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :cvv => "123",
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         )
         update_result = Braintree::PaymentMethod.update(credit_card.token,
           :cardholder_name => "New Holder",
           :cvv => "456",
           :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
           :expiration_date => "06/2013",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         update_result.success?.should == false
         update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
@@ -1573,11 +1573,11 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :cvv => "123",
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2020"
+          :expiration_date => "05/2020",
         )
         update_result = Braintree::PaymentMethod.update(credit_card.token,
           :payment_method_nonce => Braintree::Test::Nonce::ProcessorDeclinedMasterCard,
-          :options => {:verify_card => true, :verification_amount => "2.34"}
+          :options => {:verify_card => true, :verification_amount => "2.34"},
         )
         update_result.success?.should == false
         update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
@@ -1603,7 +1603,7 @@ describe Braintree::PaymentMethod do
             :region => "Old State",
             :postal_code => "12345",
             :country_name => "Canada"
-          }
+          },
         )
         result = Braintree::PaymentMethod.update(credit_card.token,
           :options => {:verify_card => false},
@@ -1617,7 +1617,7 @@ describe Braintree::PaymentMethod do
             :region => "New State",
             :postal_code => "56789",
             :country_name => "United States of America"
-          }
+          },
         )
         result.success?.should == true
         address = result.payment_method.billing_address
@@ -1638,12 +1638,12 @@ describe Braintree::PaymentMethod do
           :cardholder_name => "Original Holder",
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2012"
+          :expiration_date => "05/2012",
         )
         update_result = Braintree::PaymentMethod.update(credit_card.token,
           :cardholder_name => "New Holder",
           :number => "invalid",
-          :expiration_date => "05/2014"
+          :expiration_date => "05/2014",
         )
         update_result.success?.should == false
         update_result.errors.for(:credit_card).on(:number)[0].message.should == "Credit card number must be 12-19 digits."
@@ -1654,12 +1654,12 @@ describe Braintree::PaymentMethod do
         card1 = Braintree::CreditCard.create(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
+          :expiration_date => "05/2009",
         ).credit_card
         card2 = Braintree::CreditCard.create(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
+          :expiration_date => "05/2009",
         ).credit_card
 
         card1.should be_default
@@ -1678,17 +1678,17 @@ describe Braintree::PaymentMethod do
         original_token = random_payment_method_token
         nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
-          :token => original_token
+          :token => original_token,
         )
         original_result = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         updated_token = make_token
         updated_result = Braintree::PaymentMethod.update(
           original_token,
-          :token => updated_token
+          :token => updated_token,
         )
 
         updated_paypal_account = Braintree::PayPalAccount.find(updated_token)
@@ -1705,19 +1705,19 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009",
-          :options => {:make_default => true}
+          :options => {:make_default => true},
         )
         result.should be_success
 
         nonce = nonce_for_paypal_account(:consent_code => "consent-code")
         original_token = Braintree::PaymentMethod.create(
           :payment_method_nonce => nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         ).payment_method.token
 
         updated_result = Braintree::PaymentMethod.update(
           original_token,
-          :options => {:make_default => true}
+          :options => {:make_default => true},
         )
 
         updated_paypal_account = Braintree::PayPalAccount.find(original_token)
@@ -1731,25 +1731,25 @@ describe Braintree::PaymentMethod do
 
         first_nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
-          :token => first_token
+          :token => first_token,
         )
         first_result = Braintree::PaymentMethod.create(
           :payment_method_nonce => first_nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         second_nonce = nonce_for_paypal_account(
           :consent_code => "consent-code",
-          :token => second_token
+          :token => second_token,
         )
         second_result = Braintree::PaymentMethod.create(
           :payment_method_nonce => second_nonce,
-          :customer_id => customer.id
+          :customer_id => customer.id,
         )
 
         updated_result = Braintree::PaymentMethod.update(
           first_token,
-          :token => second_token
+          :token => second_token,
         )
 
         updated_result.should_not be_success
@@ -1766,13 +1766,13 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :cvv => "123",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       payment_method = Braintree::PaymentMethod.update!(credit_card.token,
         :cardholder_name => "New Holder",
         :cvv => "456",
         :number => Braintree::Test::CreditCardNumbers::MasterCard,
-        :expiration_date => "06/2013"
+        :expiration_date => "06/2013",
       )
       payment_method.should == credit_card
       payment_method.cardholder_name.should == "New Holder"
@@ -1789,7 +1789,7 @@ describe Braintree::PaymentMethod do
         :public_key => "oauth_app_partner_user_public_key",
         :private_key => "oauth_app_partner_user_private_key",
         :environment => Braintree::Configuration.environment,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
       customer = @partner_merchant_gateway.customer.create(
         :first_name => "Joe",
@@ -1798,19 +1798,19 @@ describe Braintree::PaymentMethod do
         :email => "joe@example.com",
         :phone => "312.555.1234",
         :fax => "614.555.5678",
-        :website => "www.example.com"
+        :website => "www.example.com",
       ).customer
       @credit_card = @partner_merchant_gateway.credit_card.create(
         :customer_id => customer.id,
         :cardholder_name => "Adam Davis",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
+        :expiration_date => "05/2009",
       ).credit_card
 
       @oauth_gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
       access_token = Braintree::OAuthTestHelper.create_token(@oauth_gateway, {
         :merchant_public_id => "integration_merchant_id",
@@ -1819,7 +1819,7 @@ describe Braintree::PaymentMethod do
 
       @granting_gateway = Braintree::Gateway.new(
         :access_token => access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
     end
 
@@ -1835,13 +1835,13 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::Transaction.sale(
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
-          :amount => Braintree::Test::TransactionAmounts::Authorize
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
         )
         result.should be_success
 
         result2 = Braintree::Transaction.sale(
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
-          :amount => Braintree::Test::TransactionAmounts::Authorize
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
         )
         result2.should_not be_success
       end
@@ -1853,7 +1853,7 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::PaymentMethod.create(
           :customer_id => customer_result.customer.id,
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
         result.should_not be_success
       end
@@ -1865,7 +1865,7 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::PaymentMethod.create(
           :customer_id => customer_result.customer.id,
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
         result.should be_success
       end
@@ -1900,7 +1900,7 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::PaymentMethod.create(
           :customer_id => customer_result.customer.id,
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
         result.should_not be_success
       end
@@ -1914,7 +1914,7 @@ describe Braintree::PaymentMethod do
 
         result = Braintree::PaymentMethod.create(
           :customer_id => customer_result.customer.id,
-          :payment_method_nonce => grant_result.payment_method_nonce.nonce
+          :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
         result.should_not be_success
       end

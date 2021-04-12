@@ -14,13 +14,13 @@ module Braintree
         else
           url_encode(full_key) + "=" + url_encode(value)
         end
-      end.sort * '&'
+      end.sort * "&"
     end
 
     def self.parse_query_string(qs)
-      qs.split('&').inject({}) do |result, couplet|
-        pair = couplet.split('=')
-        result[CGI.unescape(pair[0]).to_sym] = CGI.unescape(pair[1] || '')
+      qs.split("&").inject({}) do |result, couplet|
+        pair = couplet.split("=")
+        result[CGI.unescape(pair[0]).to_sym] = CGI.unescape(pair[1] || "")
         result
       end
     end

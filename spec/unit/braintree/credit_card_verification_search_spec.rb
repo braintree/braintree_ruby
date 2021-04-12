@@ -9,7 +9,7 @@ module Braintree
 
         lambda do
           search.credit_card_card_type.in(
-            *Braintree::CreditCard::CardType::All
+            *Braintree::CreditCard::CardType::All,
           )
         end.should_not raise_error
       end

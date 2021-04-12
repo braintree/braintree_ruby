@@ -7,6 +7,11 @@ task :dev_console do
   sh "irb -I lib -rubygems -r braintree -r env/development"
 end
 
+task :lint do
+  puts "Running rubocop for linting, you can autocorrect by running `rubocop -a`"
+  sh "rubocop"
+end
+
 namespace :test do
 
   # Usage:
@@ -14,7 +19,7 @@ namespace :test do
   #   rake test:unit[configuration_spec]
   #   rake test:unit[configuration_spec,"accepts merchant credentials"]
   desc "Run unit tests"
-  task :unit, [:file_name, :test_name] do |task, args|
+  task :unit, [:file_name, :test_name] => [:lint] do |task, args|
     if args.file_name.nil?
       sh "rspec --pattern spec/unit/**/*_spec.rb"
     elsif args.test_name.nil?
@@ -29,7 +34,7 @@ namespace :test do
   #   rake test:integration[plan_spec]
   #   rake test:integration[plan_spec,"gets all plans"]
   desc "Run integration tests"
-  task :integration, [:file_name, :test_name] do |task, args|
+  task :integration, [:file_name, :test_name] => [:lint] do |task, args|
     if args.file_name.nil?
       sh "rspec --pattern spec/integration/**/*_spec.rb"
     elsif args.test_name.nil?
@@ -45,14 +50,14 @@ end
 task :test => "test:all"
 
 task :gem do
-  exec('gem build braintree.gemspec')
+  exec("gem build braintree.gemspec")
 end
 
 require File.dirname(__FILE__) + "/lib/braintree/configuration.rb"
 
-desc 'Cleans generated files'
+desc "Cleans generated files"
 task :clean do
-  rm_f Dir.glob('*.gem').join(" ")
+  rm_f Dir.glob("*.gem").join(" ")
   rm_rf "rdoc"
   rm_rf "bt_rdoc"
 end

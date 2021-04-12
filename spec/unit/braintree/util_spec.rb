@@ -11,12 +11,12 @@ describe Braintree::Util do
     end
 
     it "symbolizes nested keys" do
-      hash = {"a" => {"b" => {"c" => "d" }}}
+      hash = {"a" => {"b" => {"c" => "d"}}}
       Braintree::Util.symbolize_keys(hash).should == {:a => {:b => {:c => "d"}}}
     end
 
     it "symbolizes nested keys in arrays" do
-      hash = {"a" => ["b" => {"c" => "d" }]}
+      hash = {"a" => ["b" => {"c" => "d"}]}
       Braintree::Util.symbolize_keys(hash).should == {:a => [:b => {:c => "d"}]}
     end
   end
@@ -44,7 +44,7 @@ describe Braintree::Util do
             :nested_allowed => "ok",
             :nested_allowed2 => "also ok",
             :nested_invalid => "bad"
-          }
+          },
         )
       end.to raise_error(ArgumentError, "invalid keys: nested[nested_invalid], top_level_invalid")
     end
@@ -57,7 +57,7 @@ describe Braintree::Util do
           :custom_fields => {
             :custom_allowed => "ok",
             :custom_allowed2 => "also ok",
-          }
+          },
         )
       end.to_not raise_error
     end
@@ -70,7 +70,7 @@ describe Braintree::Util do
             :custom_fields => {
               :bad_nesting => "very bad"
             }
-          }
+          },
         )
       end.to raise_error(ArgumentError, "invalid keys: allowed[custom_fields][bad_nesting]")
     end
@@ -89,7 +89,7 @@ describe Braintree::Util do
               :super_deep_allowed => "yep",
               :real_deep_invalid => "nope"
             }
-          }
+          },
         )
       end.to raise_error(ArgumentError, "invalid keys: nested[deeply_allowed][real_deep_invalid], nested[nested_invalid], top_level_invalid")
     end
@@ -101,7 +101,7 @@ describe Braintree::Util do
           :add_ons => {
             :update => [{:amount => 10}],
             :add => [{:amount => 5}]
-          }
+          },
         )
       end.to_not raise_error
     end
@@ -113,7 +113,7 @@ describe Braintree::Util do
           :add_ons => {
             :update => [{:foo => 10}],
             :add => [{:bar => 5}]
-          }
+          },
         )
       end.to raise_error(ArgumentError, /invalid keys: add_ons\[add\]\[bar\], add_ons\[update\]\[foo\]/)
     end
@@ -127,7 +127,7 @@ describe Braintree::Util do
         :custom_fields => {
           :custom_allowed => "ok",
           :custom_allowed2 => "also ok",
-        }
+        },
       )
       expect(response).to eq(true)
     end
@@ -147,7 +147,7 @@ describe Braintree::Util do
         :add_ons => {
           :update => [{:foo => 10}],
           :add => [{:bar => 5}]
-        }
+        },
       )
       expect(response).to eq(false)
     end
@@ -165,7 +165,7 @@ describe Braintree::Util do
             :super_deep_allowed => "yep",
             :real_deep_invalid => "nope"
           }
-        }
+        },
       )
       expect(response).to eq(false)
     end
@@ -200,13 +200,13 @@ describe Braintree::Util do
   describe "self._flatten_valid_keys" do
     it "flattens hash keys" do
       Braintree::Util._flatten_valid_keys(
-        [:top_level, {:nested => [:nested_allowed, :nested_allowed2]}]
+        [:top_level, {:nested => [:nested_allowed, :nested_allowed2]}],
       ).should == ["nested[nested_allowed2]", "nested[nested_allowed]", "top_level"]
     end
 
     it "allows wildcards with the :_any_key_ symbol" do
       Braintree::Util._flatten_valid_keys(
-        [:top_level, {:nested => :_any_key_}]
+        [:top_level, {:nested => :_any_key_}],
       ).should == ["nested[_any_key_]", "top_level"]
     end
   end
@@ -236,11 +236,11 @@ describe Braintree::Util do
       result.should == []
     end
 
-		it "raises an UnexpectedError if nil data is provided" do
-			expect do
-				Braintree::Util.extract_attribute_as_array(nil, :abc)
-			end.to raise_error(Braintree::UnexpectedError, /Unprocessable entity due to an invalid request/)
-		end
+    it "raises an UnexpectedError if nil data is provided" do
+      expect do
+        Braintree::Util.extract_attribute_as_array(nil, :abc)
+      end.to raise_error(Braintree::UnexpectedError, /Unprocessable entity due to an invalid request/)
+    end
   end
 
   describe "self.hash_to_query_string" do

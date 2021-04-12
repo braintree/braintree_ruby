@@ -8,7 +8,7 @@ describe Braintree::Customer do
       customers = Braintree::Customer.all
       customers.maximum_size.should > 100
 
-      customer_ids = customers.map {|c| c.id }.uniq.compact
+      customer_ids = customers.map { |c| c.id }.uniq.compact
       customer_ids.size.should == customers.maximum_size
     end
   end
@@ -17,7 +17,7 @@ describe Braintree::Customer do
     it "deletes the customer with the given id" do
      create_result = Braintree::Customer.create(
         :first_name => "Joe",
-        :last_name => "Cool"
+        :last_name => "Cool",
       )
       create_result.success?.should == true
       customer = create_result.customer
@@ -39,7 +39,7 @@ describe Braintree::Customer do
         :email => "bill@microsoft.com",
         :phone => "312.555.1234",
         :fax => "614.555.5678",
-        :website => "www.microsoft.com"
+        :website => "www.microsoft.com",
       )
       result.success?.should == true
       result.customer.id.should =~ /^\d{6,}$/
@@ -58,7 +58,7 @@ describe Braintree::Customer do
       oauth_gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
       access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
         :merchant_public_id => "integration_merchant_id",
@@ -67,7 +67,7 @@ describe Braintree::Customer do
 
       gateway = Braintree::Gateway.new(
         :access_token => access_token,
-        :logger => Logger.new("/dev/null")
+        :logger => Logger.new("/dev/null"),
       )
 
       result = gateway.customer.create(
@@ -77,7 +77,7 @@ describe Braintree::Customer do
         :email => "joe@example.com",
         :phone => "312.555.1234",
         :fax => "614.555.5678",
-        :website => "www.example.com"
+        :website => "www.example.com",
       )
       result.success?.should == true
       result.customer.id.should =~ /^\d{6,}$/
@@ -92,7 +92,7 @@ describe Braintree::Customer do
           :expiration_date => "05/2010",
           :cvv => "100",
           :device_data => "device_data",
-        }
+        },
       )
 
       result.should be_success
@@ -108,7 +108,7 @@ describe Braintree::Customer do
         :risk_data => {
           :customer_browser => "IE5",
           :customer_ip => "192.168.0.1"
-        }
+        },
       )
 
       result.should be_success
@@ -134,21 +134,21 @@ describe Braintree::Customer do
         found_customer.last_name.should == last_name
       else
         result.customer.first_name.should == "José"
-        result.customer.first_name.bytes.map {|b| b.to_s(8)}.should == ["112", "157", "163", "303", "251"]
+        result.customer.first_name.bytes.map { |b| b.to_s(8) }.should == ["112", "157", "163", "303", "251"]
         result.customer.last_name.should == "Muñoz"
-        result.customer.last_name.bytes.map {|b| b.to_s(8)}.should == ["115", "165", "303", "261", "157", "172"]
+        result.customer.last_name.bytes.map { |b| b.to_s(8) }.should == ["115", "165", "303", "261", "157", "172"]
 
         found_customer = Braintree::Customer.find(result.customer.id)
         found_customer.first_name.should == "José"
-        found_customer.first_name.bytes.map {|b| b.to_s(8)}.should == ["112", "157", "163", "303", "251"]
+        found_customer.first_name.bytes.map { |b| b.to_s(8) }.should == ["112", "157", "163", "303", "251"]
         found_customer.last_name.should == "Muñoz"
-        found_customer.last_name.bytes.map {|b| b.to_s(8)}.should == ["115", "165", "303", "261", "157", "172"]
+        found_customer.last_name.bytes.map { |b| b.to_s(8) }.should == ["115", "165", "303", "261", "157", "172"]
       end
     end
 
     it "returns an error response if invalid" do
       result = Braintree::Customer.create(
-        :email => "@invalid.com"
+        :email => "@invalid.com",
       )
       result.success?.should == false
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
@@ -162,7 +162,7 @@ describe Braintree::Customer do
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "05/2010",
           :cvv => "100"
-        }
+        },
       )
 
       result.success?.should == true
@@ -182,7 +182,7 @@ describe Braintree::Customer do
           :email => "other@example.com",
           :billing_agreement_id => "B-123456",
           :options => {:make_default => true}
-        }
+        },
       )
 
       result.success?.should == true
@@ -200,7 +200,7 @@ describe Braintree::Customer do
           :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
           :expiration_date => "05/2010",
           :options => {:verify_card => true}
-        }
+        },
       )
       result.success?.should == false
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
@@ -214,7 +214,7 @@ describe Braintree::Customer do
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "05/2019",
           :options => {:verify_card => true, :verification_amount => "2.00"}
-        }
+        },
       )
       result.success?.should == true
     end
@@ -224,7 +224,7 @@ describe Braintree::Customer do
       Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2015"
+        :expiration_date => "05/2015",
       )
 
       result = Braintree::Customer.create(
@@ -234,7 +234,7 @@ describe Braintree::Customer do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2015",
           :options => {:fail_on_duplicate_payment_method => true}
-        }
+        },
       )
       result.success?.should == false
       result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Duplicate card exists in the vault."
@@ -251,7 +251,7 @@ describe Braintree::Customer do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
           }
-        }
+        },
       )
       result.success?.should == false
       result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
@@ -269,7 +269,7 @@ describe Braintree::Customer do
             :verify_card => true,
             :verification_currency_iso_code => "USD"
           }
-        }
+        },
       )
 
       result.success?.should == true
@@ -294,7 +294,7 @@ describe Braintree::Customer do
             :verify_card => true,
             :verification_currency_iso_code => "GBP"
           }
-        }
+        },
       )
       expect(result).to_not be_success
       expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
@@ -312,7 +312,7 @@ describe Braintree::Customer do
             :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
             :verification_currency_iso_code => "USD"
           }
-        }
+        },
       )
       result.success?.should == true
       result.customer.credit_cards[0].verification.currency_iso_code == "USD"
@@ -336,7 +336,7 @@ describe Braintree::Customer do
             :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
             :verification_currency_iso_code => "GBP"
           }
-        }
+        },
       )
       expect(result).to_not be_success
       expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
@@ -358,7 +358,7 @@ describe Braintree::Customer do
             :postal_code => "60622",
             :country_name => "United States of America"
           }
-        }
+        },
       )
       result.success?.should == true
       result.customer.first_name.should == "Mike"
@@ -389,7 +389,7 @@ describe Braintree::Customer do
             :country_code_alpha3 => "COM",
             :country_code_numeric => "174"
           }
-        }
+        },
       )
       result.success?.should == true
       result.customer.addresses[0].country_name.should == "Comoros"
@@ -404,7 +404,7 @@ describe Braintree::Customer do
         :last_name => "Gates",
         :custom_fields => {
           :store_me => "custom value"
-        }
+        },
       )
       result.success?.should == true
       result.customer.custom_fields[:store_me].should == "custom value"
@@ -414,7 +414,7 @@ describe Braintree::Customer do
       result = Braintree::Customer.create(
         :first_name => "Bill",
         :last_name => "Gates",
-        :custom_fields => { :store_me => "" }
+        :custom_fields => {:store_me => ""},
       )
       result.success?.should == true
       result.customer.custom_fields.should == {}
@@ -428,7 +428,7 @@ describe Braintree::Customer do
           :billing_address => {
             :country_name => "invalid"
           }
-        }
+        },
       )
       result.success?.should == false
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
@@ -448,10 +448,10 @@ describe Braintree::Customer do
             :country_code_alpha2 => "US",
             :country_code_alpha3 => "COM",
           }
-        }
+        },
       )
       result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:base).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
     end
 
     it "returns an error if country code alpha2 is invalid" do
@@ -464,10 +464,10 @@ describe Braintree::Customer do
           :billing_address => {
             :country_code_alpha2 => "zz",
           }
-        }
+        },
       )
       result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha2).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha2).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
     end
 
     it "returns an error if country code alpha3 is invalid" do
@@ -480,10 +480,10 @@ describe Braintree::Customer do
           :billing_address => {
             :country_code_alpha3 => "zzz",
           }
-        }
+        },
       )
       result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha3).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha3).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
     end
 
     it "returns an error if country code numeric is invalid" do
@@ -496,10 +496,10 @@ describe Braintree::Customer do
           :billing_address => {
             :country_code_numeric => "zzz",
           }
-        }
+        },
       )
       result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_numeric).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
+      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_numeric).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
     it "returns errors if custom_fields are not registered" do
@@ -508,7 +508,7 @@ describe Braintree::Customer do
         :last_name => "Kennedy",
         :custom_fields => {
           :spouse_name => "Jacqueline"
-        }
+        },
       )
       result.success?.should == false
       result.errors.for(:customer).on(:custom_fields)[0].message.should == "Custom field is invalid: spouse_name."
@@ -521,7 +521,7 @@ describe Braintree::Customer do
           :last_name => "Hamlin",
           :credit_card => {
             :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
-          }
+          },
         )
         result.success?.should == true
         result.customer.credit_cards.first.bin.should == "400934"
@@ -538,7 +538,7 @@ describe Braintree::Customer do
             :options => {
               :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
             }
-          }
+          },
         )
         result.success?.should == true
         result.customer.credit_cards.first.venmo_sdk?.should == false
@@ -553,13 +553,13 @@ describe Braintree::Customer do
             :expiration_month => "11",
             :expiration_year => "2099",
           },
-          :share => true
+          :share => true,
         )
 
         result = Braintree::Customer.create(
           :credit_card => {
             :payment_method_nonce => nonce
-          }
+          },
         )
 
         result.success?.should == true
@@ -589,7 +589,7 @@ describe Braintree::Customer do
             :number => Braintree::Test::CreditCardNumbers::Hiper,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         result = Braintree::Customer.create(
           :payment_method_nonce => nonce,
@@ -599,7 +599,7 @@ describe Braintree::Customer do
               :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
               :verification_account_type => "debit",
             }
-          }
+          },
         )
 
         expect(result).to be_success
@@ -611,7 +611,7 @@ describe Braintree::Customer do
             :number => Braintree::Test::CreditCardNumbers::Hiper,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         result = Braintree::Customer.create(
           :payment_method_nonce => nonce,
@@ -621,7 +621,7 @@ describe Braintree::Customer do
               :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
               :verification_account_type => "credit",
             }
-          }
+          },
         )
 
         expect(result).to be_success
@@ -633,7 +633,7 @@ describe Braintree::Customer do
             :number => Braintree::Test::CreditCardNumbers::Hiper,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         result = Braintree::Customer.create(
           :payment_method_nonce => nonce,
@@ -643,7 +643,7 @@ describe Braintree::Customer do
               :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
               :verification_account_type => "ach",
             }
-          }
+          },
         )
 
         expect(result).to_not be_success
@@ -656,7 +656,7 @@ describe Braintree::Customer do
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_month => "11",
             :expiration_year => "2099",
-          }
+          },
         )
         result = Braintree::Customer.create(
           :payment_method_nonce => nonce,
@@ -665,7 +665,7 @@ describe Braintree::Customer do
               :verify_card => true,
               :verification_account_type => "credit",
             }
-          }
+          },
         )
 
         expect(result).to_not be_success
@@ -678,7 +678,7 @@ describe Braintree::Customer do
     it "returns the customer if successful" do
       customer = Braintree::Customer.create!(
         :first_name => "Jim",
-        :last_name => "Smith"
+        :last_name => "Smith",
       )
       customer.id.should =~ /\d+/
       customer.first_name.should == "Jim"
@@ -703,7 +703,7 @@ describe Braintree::Customer do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       result = Braintree::Customer.credit(customer.id, :amount => "100.00")
       result.success?.should == true
@@ -723,7 +723,7 @@ describe Braintree::Customer do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = Braintree::Customer.credit!(customer.id, :amount => "100.00")
       transaction.amount.should == BigDecimal("100.00")
@@ -742,7 +742,7 @@ describe Braintree::Customer do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       result = Braintree::Customer.sale(customer.id, :amount => "100.00")
       result.success?.should == true
@@ -762,7 +762,7 @@ describe Braintree::Customer do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = Braintree::Customer.sale!(customer.id, :amount => "100.00")
       transaction.amount.should == BigDecimal("100.00")
@@ -781,7 +781,7 @@ describe Braintree::Customer do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = Braintree::Customer.sale!(customer.id, :amount => "100.00")
       collection = Braintree::Customer.transactions(customer.id)
@@ -795,10 +795,10 @@ describe Braintree::Customer do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       result = customer.credit(
-        :amount => "100.00"
+        :amount => "100.00",
       )
       result.success?.should == true
       result.transaction.amount.should == BigDecimal("100.00")
@@ -817,7 +817,7 @@ describe Braintree::Customer do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = customer.credit!(:amount => "100.00")
       transaction.amount.should == BigDecimal("100.00")
@@ -834,7 +834,7 @@ describe Braintree::Customer do
     it "deletes the customer" do
      result = Braintree::Customer.create(
         :first_name => "Joe",
-        :last_name => "Cool"
+        :last_name => "Cool",
       )
       result.success?.should == true
 
@@ -851,7 +851,7 @@ describe Braintree::Customer do
     it "finds the customer with the given id" do
       result = Braintree::Customer.create(
         :first_name => "Joe",
-        :last_name => "Cool"
+        :last_name => "Cool",
       )
       result.success?.should == true
 
@@ -867,13 +867,13 @@ describe Braintree::Customer do
       credit_card = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       ).credit_card
 
       subscription = Braintree::Subscription.create(
         :payment_method_token => credit_card.token,
         :plan_id => "integration_trialless_plan",
-        :price => "1.00"
+        :price => "1.00",
       ).subscription
 
       found_customer = Braintree::Customer.find(customer.id)
@@ -888,7 +888,7 @@ describe Braintree::Customer do
         customer = Braintree::Customer.create(
           :custom_fields => {
             :store_me => "custom value"
-          }
+          },
         ).customer
         credit_card = Braintree::CreditCard.create(
           :customer_id => customer.id,
@@ -900,13 +900,13 @@ describe Braintree::Customer do
             :region => "Illinois",
             :postal_code => "60622",
             :country_name => "United States of America"
-          }
+          },
         ).credit_card
 
         subscription = Braintree::Subscription.create(
           :payment_method_token => credit_card.token,
           :plan_id => "integration_trialless_plan",
-          :price => "1.00"
+          :price => "1.00",
         ).subscription
 
         found_customer = Braintree::Customer.find(customer.id, {
@@ -922,7 +922,7 @@ describe Braintree::Customer do
         customer = Braintree::Customer.create(
           :custom_fields => {
             :store_me => "custom value"
-          }
+          },
         ).customer
         credit_card = Braintree::CreditCard.create(
           :customer_id => customer.id,
@@ -934,13 +934,13 @@ describe Braintree::Customer do
             :region => "Illinois",
             :postal_code => "60622",
             :country_name => "United States of America"
-          }
+          },
         ).credit_card
 
         subscription = Braintree::Subscription.create(
           :payment_method_token => credit_card.token,
           :plan_id => "integration_trialless_plan",
-          :price => "1.00"
+          :price => "1.00",
         ).subscription
 
         found_customer = Braintree::Customer.find(customer.id, {
@@ -958,7 +958,7 @@ describe Braintree::Customer do
 
     it "returns associated ApplePayCards" do
       result = Braintree::Customer.create(
-        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
       )
       result.success?.should == true
 
@@ -973,7 +973,7 @@ describe Braintree::Customer do
 
     it "returns associated google pay proxy cards" do
       result = Braintree::Customer.create(
-        :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover
+        :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
       )
       result.success?.should == true
 
@@ -989,7 +989,7 @@ describe Braintree::Customer do
 
     it "returns associated google pay network tokens" do
       result = Braintree::Customer.create(
-        :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard
+        :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard,
       )
       result.success?.should == true
 
@@ -1005,7 +1005,7 @@ describe Braintree::Customer do
 
     it "returns associated venmo accounts" do
       result = Braintree::Customer.create(
-        :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount
+        :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
       )
       result.success?.should == true
 
@@ -1025,7 +1025,7 @@ describe Braintree::Customer do
           :options => {
             :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
           }
-        }
+        },
       )
       result.should be_success
 
@@ -1071,7 +1071,7 @@ describe Braintree::Customer do
       it "updates the credit card with three_d_secure pass thru params" do
         customer = Braintree::Customer.create!(
           :first_name => "Joe",
-          :last_name => "Cool"
+          :last_name => "Cool",
         )
         result = Braintree::Customer.update(
           customer.id,
@@ -1084,17 +1084,17 @@ describe Braintree::Customer do
             :number => 4111111111111111,
             :expiration_date => "05/2060",
             :three_d_secure_pass_thru => {
-              :eci_flag => '02',
-              :cavv => 'some_cavv',
-              :xid => 'some_xid',
-              :three_d_secure_version => '1.0.2',
-              :authentication_response => 'Y',
-              :directory_response => 'Y',
-              :cavv_algorithm => '2',
-              :ds_transaction_id => 'some_ds_transaction_id',
+              :eci_flag => "02",
+              :cavv => "some_cavv",
+              :xid => "some_xid",
+              :three_d_secure_version => "1.0.2",
+              :authentication_response => "Y",
+              :directory_response => "Y",
+              :cavv_algorithm => "2",
+              :ds_transaction_id => "some_ds_transaction_id",
             },
             :options => {:verify_card => true},
-          }
+          },
         )
         result.success?.should == true
         result.customer.id.should == customer.id
@@ -1106,7 +1106,7 @@ describe Braintree::Customer do
       it "validates the presence of three_d_secure_version while passing three_d_secure_pass_thru in update" do
         customer = Braintree::Customer.create!(
           :first_name => "Joe",
-          :last_name => "Cool"
+          :last_name => "Cool",
         )
         result = Braintree::Customer.update(
           customer.id,
@@ -1119,16 +1119,16 @@ describe Braintree::Customer do
             :number => 4111111111111111,
             :expiration_date => "05/2060",
             :three_d_secure_pass_thru => {
-              :eci_flag => '02',
-              :cavv => 'some_cavv',
-              :xid => 'some_xid',
-              :authentication_response => 'Y',
-              :directory_response => 'Y',
-              :cavv_algorithm => '2',
-              :ds_transaction_id => 'some_ds_transaction_id',
+              :eci_flag => "02",
+              :cavv => "some_cavv",
+              :xid => "some_xid",
+              :authentication_response => "Y",
+              :directory_response => "Y",
+              :cavv_algorithm => "2",
+              :ds_transaction_id => "some_ds_transaction_id",
             },
             options: {:verify_card => true}
-          }
+          },
         )
         expect(result).to_not be_success
         error = result.errors.for(:verification).first
@@ -1139,7 +1139,7 @@ describe Braintree::Customer do
     it "updates the customer with the given id if successful" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
-        :last_name => "Cool"
+        :last_name => "Cool",
       )
       result = Braintree::Customer.update(
         customer.id,
@@ -1147,7 +1147,7 @@ describe Braintree::Customer do
         :last_name => "Super Cool",
         :custom_fields => {
           :store_me => "a value"
-        }
+        },
       )
       result.success?.should == true
       result.customer.id.should == customer.id
@@ -1161,7 +1161,7 @@ describe Braintree::Customer do
         :credit_card => {
           :number => 4111111111111111,
           :expiration_date => "05/2010",
-        }
+        },
       )
       result = Braintree::Customer.update(
         customer.id,
@@ -1171,7 +1171,7 @@ describe Braintree::Customer do
           :options=> {
             :fail_on_duplicate_payment_method => true
           }
-        }
+        },
       )
       result.success?.should == false
       result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Duplicate card exists in the vault."
@@ -1180,7 +1180,7 @@ describe Braintree::Customer do
     it "updates the default payment method" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
-        :last_name => "Brown"
+        :last_name => "Brown",
       )
 
       token1 = random_payment_method_token
@@ -1188,7 +1188,7 @@ describe Braintree::Customer do
       payment_method1 = Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
-        :token => token1
+        :token => token1,
       )
 
       payment_method1 = Braintree::PaymentMethod.find(token1)
@@ -1199,11 +1199,11 @@ describe Braintree::Customer do
       payment_method2 = Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableMasterCard,
-        :token => token2
+        :token => token2,
       )
 
       Braintree::Customer.update(customer.id,
-        :default_payment_method_token => token2
+        :default_payment_method_token => token2,
       )
 
       payment_method2 = Braintree::PaymentMethod.find(token2)
@@ -1213,7 +1213,7 @@ describe Braintree::Customer do
     it "updates the default payment method in the options" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
-        :last_name => "Brown"
+        :last_name => "Brown",
       )
 
       token1 = random_payment_method_token
@@ -1221,7 +1221,7 @@ describe Braintree::Customer do
       payment_method1 = Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
-        :token => token1
+        :token => token1,
       )
 
       payment_method1 = Braintree::PaymentMethod.find(token1)
@@ -1232,7 +1232,7 @@ describe Braintree::Customer do
       payment_method2 = Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableMasterCard,
-        :token => token2
+        :token => token2,
       )
 
       Braintree::Customer.update(customer.id,
@@ -1241,7 +1241,7 @@ describe Braintree::Customer do
             :update_existing_token => token2,
             :make_default => true
           }
-        }
+        },
       )
 
       payment_method2 = Braintree::PaymentMethod.find(token2)
@@ -1251,7 +1251,7 @@ describe Braintree::Customer do
     it "can use any country code" do
       customer = Braintree::Customer.create!(
         :first_name => "Alex",
-        :last_name => "Matterson"
+        :last_name => "Matterson",
       )
       result = Braintree::Customer.update(
         customer.id,
@@ -1266,7 +1266,7 @@ describe Braintree::Customer do
             :country_code_alpha3 => "FJI",
             :country_code_numeric => "242"
           }
-        }
+        },
       )
       result.success?.should == true
       result.customer.addresses[0].country_name.should == "Fiji"
@@ -1285,7 +1285,7 @@ describe Braintree::Customer do
             :first_name => "Joe",
             :postal_code => "60622"
           }
-        }
+        },
       )
 
       result = Braintree::Customer.update(
@@ -1293,13 +1293,13 @@ describe Braintree::Customer do
         :first_name => "New Joe",
         :credit_card => {
           :cardholder_name => "New Joe Cardholder",
-          :options => { :update_existing_token => customer.credit_cards.first.token },
+          :options => {:update_existing_token => customer.credit_cards.first.token},
           :billing_address => {
             :last_name => "Cool",
             :postal_code => "60666",
-            :options => { :update_existing => true }
+            :options => {:update_existing => true}
           }
-        }
+        },
       )
       result.success?.should == true
       result.customer.id.should == customer.id
@@ -1317,7 +1317,7 @@ describe Braintree::Customer do
 
     it "can update the customer and verify_card with a specific verification_amount" do
       customer = Braintree::Customer.create!(
-        :first_name => "Joe"
+        :first_name => "Joe",
       )
 
       result = Braintree::Customer.update(
@@ -1327,8 +1327,8 @@ describe Braintree::Customer do
           :cardholder_name => "New Joe Cardholder",
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "12/2009",
-          :options => { :verify_card => true, :verification_amount => "2.00" }
-        }
+          :options => {:verify_card => true, :verification_amount => "2.00"}
+        },
       )
       result.success?.should == true
     end
@@ -1338,17 +1338,17 @@ describe Braintree::Customer do
         :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
         :credit_card => {
           :three_d_secure_pass_thru => {
-            :eci_flag => '02',
-            :cavv => 'some_cavv',
-            :xid => 'some_xid',
-            :three_d_secure_version => 'xx',
-            :authentication_response => 'Y',
-            :directory_response => 'Y',
-            :cavv_algorithm => '2',
-            :ds_transaction_id => 'some_ds_transaction_id',
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "xx",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
           },
           :options => {:verify_card => true}
-        }
+        },
       )
 
       expect(result).not_to be_success
@@ -1362,17 +1362,17 @@ describe Braintree::Customer do
         :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
         :credit_card => {
           :three_d_secure_pass_thru => {
-            :eci_flag => '02',
-            :cavv => 'some_cavv',
-            :xid => 'some_xid',
-            :three_d_secure_version => '2.2.1',
-            :authentication_response => 'Y',
-            :directory_response => 'Y',
-            :cavv_algorithm => '2',
-            :ds_transaction_id => 'some_ds_transaction_id',
+            :eci_flag => "02",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "2.2.1",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
           },
           :options => {:verify_card => true}
-        }
+        },
       )
 
       expect(result).to be_success
@@ -1383,7 +1383,7 @@ describe Braintree::Customer do
         :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
         :credit_card => {
           :options => {:verify_card => true}
-        }
+        },
       )
       result.success?.should == true
 
@@ -1405,7 +1405,7 @@ describe Braintree::Customer do
       address = Braintree::Address.create!(
         :customer_id => customer.id,
         :first_name => "John",
-        :last_name => "Doe"
+        :last_name => "Doe",
       )
 
       customer = Braintree::Customer.update(
@@ -1414,7 +1414,7 @@ describe Braintree::Customer do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "12/2009",
           :billing_address_id => address.id
-        }
+        },
       ).customer
 
       billing_address = customer.credit_cards.first.billing_address
@@ -1427,7 +1427,7 @@ describe Braintree::Customer do
       customer = Braintree::Customer.create!(:email => "valid@email.com")
       result = Braintree::Customer.update(
         customer.id,
-        :email => "@invalid.com"
+        :email => "@invalid.com",
       )
       result.success?.should == false
       result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
@@ -1436,7 +1436,7 @@ describe Braintree::Customer do
     context "verification_currency_iso_code" do
       it "can update the customer after validating verification_currency_iso_code" do
         customer = Braintree::Customer.create!(
-          :first_name => "Joe"
+          :first_name => "Joe",
         )
 
         result = Braintree::Customer.update(
@@ -1446,8 +1446,8 @@ describe Braintree::Customer do
             :cardholder_name => "New Joe Cardholder",
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/2009",
-            :options => { :verify_card => true, :verification_currency_iso_code => "USD" }
-          }
+            :options => {:verify_card => true, :verification_currency_iso_code => "USD"}
+          },
         )
         result.success?.should == true
         result.customer.credit_cards[0].verification.currency_iso_code == "USD"
@@ -1455,7 +1455,7 @@ describe Braintree::Customer do
 
       it "can update the customer after validating verification_currency_iso_code against the given verification_merchant_account_id" do
         customer = Braintree::Customer.create!(
-          :first_name => "Joe"
+          :first_name => "Joe",
         )
 
         result = Braintree::Customer.update(
@@ -1465,8 +1465,8 @@ describe Braintree::Customer do
             :cardholder_name => "New Joe Cardholder",
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/2009",
-            :options => { :verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "USD" }
-          }
+            :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "USD"}
+          },
         )
         result.success?.should == true
         result.customer.credit_cards[0].verification.currency_iso_code == "USD"
@@ -1475,7 +1475,7 @@ describe Braintree::Customer do
 
       it "throws error due to verification_currency_iso_code not matching against the currency configured in default merchant account" do
         customer = Braintree::Customer.create!(
-          :first_name => "Joe"
+          :first_name => "Joe",
         )
 
         result = Braintree::Customer.update(
@@ -1485,8 +1485,8 @@ describe Braintree::Customer do
             :cardholder_name => "New Joe Cardholder",
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/2009",
-            :options => { :verify_card => true, :verification_currency_iso_code => "GBP" }
-          }
+            :options => {:verify_card => true, :verification_currency_iso_code => "GBP"}
+          },
         )
         result.success?.should == false
         expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
@@ -1495,7 +1495,7 @@ describe Braintree::Customer do
 
       it "throws error due to verification_currency_iso_code not matching against the currency configured in the given verification merchant account" do
         customer = Braintree::Customer.create!(
-          :first_name => "Joe"
+          :first_name => "Joe",
         )
 
         result = Braintree::Customer.update(
@@ -1505,8 +1505,8 @@ describe Braintree::Customer do
             :cardholder_name => "New Joe Cardholder",
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "12/2009",
-            :options => { :verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "GBP" }
-          }
+            :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "GBP"}
+          },
         )
         result.success?.should == false
         expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
@@ -1529,7 +1529,7 @@ describe Braintree::Customer do
               :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
               :verification_account_type => "credit",
             },
-          }
+          },
         )
         expect(update_result).to be_success
       end
@@ -1548,7 +1548,7 @@ describe Braintree::Customer do
               :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
               :verification_account_type => "debit",
             },
-          }
+          },
         )
         expect(update_result).to be_success
       end
@@ -1559,12 +1559,12 @@ describe Braintree::Customer do
     it "returns the updated customer if successful" do
       customer = Braintree::Customer.create!(
         :first_name => "Joe",
-        :last_name => "Cool"
+        :last_name => "Cool",
       )
       updated_customer = Braintree::Customer.update!(
         customer.id,
         :first_name => "Mr. Joe",
-        :last_name => "Super Cool"
+        :last_name => "Super Cool",
       )
       updated_customer.first_name.should == "Mr. Joe"
       updated_customer.last_name.should == "Super Cool"
@@ -1588,7 +1588,7 @@ describe Braintree::Customer do
           :options => {
             :make_default => false
           }
-        }
+        },
       )
 
       default_payment_method = Braintree::CreditCard.create!(
@@ -1597,7 +1597,7 @@ describe Braintree::Customer do
         :expiration_date => "11/2015",
         :options => {
           :make_default => true
-        }
+        },
       )
 
       customer = Braintree::Customer.find(customer.id)
@@ -1610,7 +1610,7 @@ describe Braintree::Customer do
     context "future" do
       it "creates a customer with a future paypal account" do
         result = Braintree::Customer.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
         )
 
         result.should be_success
@@ -1624,7 +1624,7 @@ describe Braintree::Customer do
             :options => {
               :make_default => true
             }
-          }
+          },
         )
 
         paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
@@ -1633,12 +1633,12 @@ describe Braintree::Customer do
           :token => paypal_account_token,
           :options => {
             :make_default => true
-          }
+          },
         )
 
         result = Braintree::Customer.update(
           customer.id,
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
 
         result.should be_success
@@ -1654,7 +1654,7 @@ describe Braintree::Customer do
           :token => paypal_account_token,
           :options => {
             :make_default => true
-          }
+          },
         )
 
         result = Braintree::Customer.create(
@@ -1690,7 +1690,7 @@ describe Braintree::Customer do
             :options => {
               :make_default => true
             }
-          }
+          },
         )
 
         paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
@@ -1699,7 +1699,7 @@ describe Braintree::Customer do
           :token => paypal_account_token,
           :options => {
             :make_default => true
-          }
+          },
         )
 
         result = Braintree::Customer.update(
@@ -1733,7 +1733,7 @@ describe Braintree::Customer do
     context "onetime" do
       it "does not create a customer with a onetime paypal account" do
         result = Braintree::Customer.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
         )
 
         result.should_not be_success
@@ -1749,7 +1749,7 @@ describe Braintree::Customer do
             :options => {
               :make_default => true
             }
-          }
+          },
         )
 
         paypal_account_token = "PAYPAL_ACCOUNT_TOKEN_#{rand(36**3).to_s(36)}"
@@ -1758,12 +1758,12 @@ describe Braintree::Customer do
           :token => paypal_account_token,
           :options => {
             :make_default => true
-          }
+          },
         )
 
         result = Braintree::Customer.update(
           customer.id,
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
 
         result.should_not be_success

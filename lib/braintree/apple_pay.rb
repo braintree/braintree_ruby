@@ -11,7 +11,7 @@ module Braintree
     end
 
     def self._new(*args) # :nodoc:
-      self.new *args
+      self.new(*args)
     end
 
     def self.register_domain(domain)

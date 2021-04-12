@@ -2,7 +2,7 @@ require "securerandom"
 
 unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   INTEGRATION_SPEC_HELPER_LOADED = true
-  SSL_TEST_PORT = ENV['SSL_TEST_PORT'] || 8444
+  SSL_TEST_PORT = ENV["SSL_TEST_PORT"] || 8444
 
   require File.dirname(__FILE__) + "/../spec_helper"
 
@@ -14,7 +14,7 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
     `#{command} #{web_server_pid_file}`
     TCPSocket.new("127.0.0.1",SSL_TEST_PORT)
 
-    10.times { unless File.exists?(web_server_pid_file); sleep 1; end }
+    10.times { unless File.exist?(web_server_pid_file); sleep 1; end }
   ensure
     Process.kill "INT", File.read(web_server_pid_file).to_i
   end

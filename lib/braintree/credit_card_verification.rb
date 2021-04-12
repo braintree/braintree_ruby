@@ -17,10 +17,10 @@ module Braintree
     end
 
     module Status
-      Failed = 'failed'
-      GatewayRejected = 'gateway_rejected'
-      ProcessorDeclined = 'processor_declined'
-      Verified = 'verified'
+      Failed = "failed"
+      GatewayRejected = "gateway_rejected"
+      ProcessorDeclined = "processor_declined"
+      Verified = "verified"
 
       All = [Failed, GatewayRejected, ProcessorDeclined, Verified]
     end
@@ -92,7 +92,7 @@ module Braintree
     end
 
     def self._new(*args) # :nodoc:
-      self.new *args
+      self.new(*args)
     end
 
     def self.find(*args)

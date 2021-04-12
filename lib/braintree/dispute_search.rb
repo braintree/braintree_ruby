@@ -5,7 +5,7 @@ module Braintree
       :customer_id,
       :id,
       :reference_number,
-      :transaction_id
+      :transaction_id,
     )
 
     multiple_value_field :kind, :allows => Dispute::Kind::All
@@ -21,7 +21,7 @@ module Braintree
       :disbursement_date,
       :effective_date,
       :received_date,
-      :reply_by_date
+      :reply_by_date,
     )
   end
 end

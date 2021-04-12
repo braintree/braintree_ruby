@@ -75,7 +75,7 @@ module Braintree
           @config.proxy_address,
           @config.proxy_port,
           @config.proxy_user,
-          @config.proxy_pass
+          @config.proxy_pass,
         )
       else
         connection = Net::HTTP.new(server, port)
@@ -127,7 +127,7 @@ module Braintree
               form_params.push(_add_form_field(k, v))
             end
             form_params.push(_add_file_part("file", file))
-            request.body = form_params.collect {|p| "--" + boundary + "#{LINE_FEED}" + p}.join("") + "--" + boundary + "--"
+            request.body = form_params.collect { |p| "--" + boundary + "#{LINE_FEED}" + p }.join("") + "--" + boundary + "--"
             @config.logger.debug _format_and_sanitize_body_for_log(_build_xml(body))
           else
             request.body = body
@@ -187,7 +187,7 @@ module Braintree
     def _format_and_sanitize_body_for_log(input_xml)
       formatted_xml = input_xml.gsub(/^/, "[Braintree] ")
       formatted_xml = formatted_xml.gsub(/<number>(.{6}).+?(.{4})<\/number>/m, '<number>\1******\2</number>')
-      formatted_xml = formatted_xml.gsub(/<cvv>.+?<\/cvv>/m, '<cvv>***</cvv>')
+      formatted_xml = formatted_xml.gsub(/<cvv>.+?<\/cvv>/m, "<cvv>***</cvv>")
       formatted_xml
     end
 

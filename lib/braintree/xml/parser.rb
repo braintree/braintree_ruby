@@ -2,7 +2,7 @@
 # under the MIT license, copyright (c) 2005-2009 David Heinemeier Hansson
 module Braintree
   module Xml # :nodoc:
-    CONTENT_ROOT = '__content__'
+    CONTENT_ROOT = "__content__"
 
     module Parser # :nodoc:
       XML_PARSING = {
@@ -20,9 +20,9 @@ module Braintree
       # Transform into standard Ruby types and convert all keys to snake_case instead of dash-case
       def self._transform_xml(value)
         case value.class.to_s
-          when 'Hash'
-            if value['type'] == 'array'
-              child_key, entries = value.detect { |k,v| k != 'type' }   # child_key is throwaway
+          when "Hash"
+            if value["type"] == "array"
+              child_key, entries = value.detect { |k,v| k != "type" }   # child_key is throwaway
               if entries.nil? || ((c = value[CONTENT_ROOT]) && c.strip.empty?)
                 []
               else
@@ -37,21 +37,21 @@ module Braintree
               end
             elsif value.has_key?(CONTENT_ROOT)
               content = value[CONTENT_ROOT]
-              if parser = XML_PARSING[value["type"]]
+              if (parser = XML_PARSING[value["type"]])
                 XML_PARSING[value["type"]].call(content)
               else
                 content
               end
-            elsif value['type'] == 'string' && value['nil'] != 'true'
+            elsif value["type"] == "string" && value["nil"] != "true"
               ""
             elsif value == {}
               ""
-            elsif value.nil? || value['nil'] == 'true'
+            elsif value.nil? || value["nil"] == "true"
               nil
             # If the type is the only element which makes it then
             # this still makes the value nil, except if type is
             # a XML node(where type['value'] is a Hash)
-            elsif value['type'] && value.size == 1 && !value['type'].is_a?(::Hash)
+            elsif value["type"] && value.size == 1 && !value["type"].is_a?(::Hash)
               raise "is this needed?"
               nil
             else
@@ -61,14 +61,14 @@ module Braintree
               end
               xml_value
             end
-          when 'Array'
+          when "Array"
             value.map! { |i| _transform_xml(i) }
             case value.length
               when 0 then nil
               when 1 then value.first
               else value
             end
-          when 'String'
+          when "String"
             value
           else
             raise "can't transform #{value.class.name} - #{value.inspect}"

@@ -27,7 +27,7 @@ describe Braintree::Transaction::PayPalDetails do
         :seller_protection_status => "seller-protection-status",
         :token => "token",
         :transaction_fee_amount => "2.00",
-        :transaction_fee_currency_iso_code => "123"
+        :transaction_fee_currency_iso_code => "123",
       )
 
       expect(details.authorization_id).to eq("id")

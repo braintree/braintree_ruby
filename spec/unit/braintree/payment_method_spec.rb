@@ -28,7 +28,7 @@ describe Braintree::PaymentMethod do
   end
 
   describe "delete" do
-    let(:http_stub) { double('http_stub').as_null_object }
+    let(:http_stub) { double("http_stub").as_null_object }
     it "accepts revoke_all_grants option with value true" do
       Braintree::Http.stub(:new).and_return http_stub
       http_stub.should_receive(:delete).with("/merchants/integration_merchant_id/payment_methods/any/some_token?revoke_all_grants=true")

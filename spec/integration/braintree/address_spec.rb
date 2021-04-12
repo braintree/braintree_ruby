@@ -15,7 +15,7 @@ describe Braintree::Address do
         :locality => "Chicago",
         :region => "Illinois",
         :postal_code => "60622",
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       result.success?.should == true
       result.address.customer_id.should == customer.id
@@ -39,7 +39,7 @@ describe Braintree::Address do
         :customer_id => customer.id,
         :country_code_alpha2 => "AS",
         :country_code_alpha3 => "ASM",
-        :country_code_numeric => "16"
+        :country_code_numeric => "16",
       )
       result.success?.should == true
       result.address.country_name.should == "American Samoa"
@@ -52,7 +52,7 @@ describe Braintree::Address do
       customer = Braintree::Customer.create!
       result = Braintree::Address.create(
         :customer_id => customer.id,
-        :country_name => "Åland"
+        :country_name => "Åland",
       )
       result.success?.should == true
       result.address.country_name.should == "Åland"
@@ -63,47 +63,47 @@ describe Braintree::Address do
       result = Braintree::Address.create(
         :customer_id => customer.id,
         :country_code_alpha2 => "AS",
-        :country_code_alpha3 => "USA"
+        :country_code_alpha3 => "USA",
       )
       result.success?.should == false
-      result.errors.for(:address).on(:base).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+      result.errors.for(:address).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
     end
 
     it "returns an error response given an invalid country_code_alpha2" do
       customer = Braintree::Customer.create!
       result = Braintree::Address.create(
         :customer_id => customer.id,
-        :country_code_alpha2 => "zz"
+        :country_code_alpha2 => "zz",
       )
       result.success?.should == false
-      result.errors.for(:address).on(:country_code_alpha2).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
+      result.errors.for(:address).on(:country_code_alpha2).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
     end
 
     it "returns an error response given an invalid country_code_alpha3" do
       customer = Braintree::Customer.create!
       result = Braintree::Address.create(
         :customer_id => customer.id,
-        :country_code_alpha3 => "zzz"
+        :country_code_alpha3 => "zzz",
       )
       result.success?.should == false
-      result.errors.for(:address).on(:country_code_alpha3).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
+      result.errors.for(:address).on(:country_code_alpha3).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
     end
 
     it "returns an error response given an invalid country_code_numeric" do
       customer = Braintree::Customer.create!
       result = Braintree::Address.create(
         :customer_id => customer.id,
-        :country_code_numeric => "zz"
+        :country_code_numeric => "zz",
       )
       result.success?.should == false
-      result.errors.for(:address).on(:country_code_numeric).map {|e| e.code}.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
+      result.errors.for(:address).on(:country_code_numeric).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
     it "returns an error response if invalid" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
       result = Braintree::Address.create(
         :customer_id => customer.id,
-        :country_name => "United States of Invalid"
+        :country_name => "United States of Invalid",
       )
       result.success?.should == false
       result.errors.for(:address).on(:country_name)[0].message.should == "Country name is not an accepted country."
@@ -132,7 +132,7 @@ describe Braintree::Address do
         :locality => "Bartlett",
         :region => "IL",
         :postal_code => "60623",
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       address.customer_id.should == customer.id
       address.street_address.should == "1812 E Main St"
@@ -148,7 +148,7 @@ describe Braintree::Address do
       expect do
         Braintree::Address.create!(
           :customer_id => customer.id,
-          :country_name => "United States of Invalid"
+          :country_name => "United States of Invalid",
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end
@@ -226,7 +226,7 @@ describe Braintree::Address do
         :locality => "Old Chicago",
         :region => "IL",
         :postal_code => "60620",
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       result = Braintree::Address.update(
         customer.id,
@@ -236,7 +236,7 @@ describe Braintree::Address do
         :locality => "Chicago",
         :region => "Illinois",
         :postal_code => "60621",
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       result.success?.should == true
       result.address.street_address.should == "123 E New St"
@@ -254,12 +254,12 @@ describe Braintree::Address do
       customer = Braintree::Customer.create!(:last_name => "Miller")
       address = Braintree::Address.create!(
         :customer_id => customer.id,
-        :country_name => "Angola"
+        :country_name => "Angola",
       )
       result = Braintree::Address.update(
         customer.id,
         address.id,
-        :country_name => "Azerbaijan"
+        :country_name => "Azerbaijan",
       )
 
       result.success?.should == true
@@ -273,13 +273,13 @@ describe Braintree::Address do
       customer = Braintree::Customer.create!(:last_name => "Miller")
       address = Braintree::Address.create!(
         :customer_id => customer.id,
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       result = Braintree::Address.update(
         customer.id,
         address.id,
         :street_address => "123 E New St",
-        :country_name => "United States of Invalid"
+        :country_name => "United States of Invalid",
       )
       result.success?.should == false
       result.errors.for(:address).on(:country_name)[0].message.should == "Country name is not an accepted country."
@@ -304,7 +304,7 @@ describe Braintree::Address do
         :locality => "Old Chicago",
         :region => "IL",
         :postal_code => "60620",
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       updated_address = Braintree::Address.update!(
         customer.id,
@@ -314,7 +314,7 @@ describe Braintree::Address do
         :locality => "Chicago",
         :region => "Illinois",
         :postal_code => "60621",
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       updated_address.should == address
       updated_address.street_address.should == "123 E New St"
@@ -329,14 +329,14 @@ describe Braintree::Address do
       customer = Braintree::Customer.create!(:last_name => "Miller")
       address = Braintree::Address.create!(
         :customer_id => customer.id,
-        :country_name => "United States of America"
+        :country_name => "United States of America",
       )
       expect do
         Braintree::Address.update!(
           customer.id,
           address.id,
           :street_address => "123 E New St",
-          :country_name => "United States of Invalid"
+          :country_name => "United States of Invalid",
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end

@@ -30,7 +30,7 @@ describe Braintree::CreditCardVerification do
         :cvv_response_code => "I",
         :processor_response_code => "2000",
         :processor_response_text => "Do Not Honor",
-        :merchant_account_id => "some_id"
+        :merchant_account_id => "some_id",
       )
 
       verification.status.should == Braintree::CreditCardVerification::Status::Verified
@@ -44,7 +44,7 @@ describe Braintree::CreditCardVerification do
 
   it "accepts network_transaction_id" do
     verification = Braintree::CreditCardVerification._new(
-      :network_transaction_id => "123456789012345"
+      :network_transaction_id => "123456789012345",
     )
     expect(verification.network_transaction_id).to eq "123456789012345"
   end

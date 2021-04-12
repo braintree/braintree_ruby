@@ -1,4 +1,4 @@
-require 'stringio'
+require "stringio"
 
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
@@ -22,26 +22,26 @@ describe Braintree::Configuration do
   describe "initialize" do
     it "accepts merchant credentials" do
       config = Braintree::Configuration.new(
-        :merchant_id => 'merchant_id',
-        :public_key => 'public_key',
-        :private_key => 'private_key'
+        :merchant_id => "merchant_id",
+        :public_key => "public_key",
+        :private_key => "private_key",
       )
 
-      config.merchant_id.should == 'merchant_id'
-      config.public_key.should == 'public_key'
-      config.private_key.should == 'private_key'
+      config.merchant_id.should == "merchant_id"
+      config.public_key.should == "public_key"
+      config.private_key.should == "private_key"
     end
 
     it "accepts partner credentials" do
       config = Braintree::Configuration.new(
-        :partner_id => 'partner_id',
-        :public_key => 'public_key',
-        :private_key => 'private_key'
+        :partner_id => "partner_id",
+        :public_key => "public_key",
+        :private_key => "private_key",
       )
 
-      config.merchant_id.should == 'partner_id'
-      config.public_key.should == 'public_key'
-      config.private_key.should == 'private_key'
+      config.merchant_id.should == "partner_id"
+      config.public_key.should == "public_key"
+      config.private_key.should == "private_key"
     end
 
     it "raises if combining client_id/secret with access_token" do
@@ -49,7 +49,7 @@ describe Braintree::Configuration do
         Braintree::Configuration.new(
           :client_id => "client_id$development$integration_client_id",
           :client_secret => "client_secret$development$integration_client_secret",
-          :access_token => "access_token$development$integration_merchant_id$fb27c79dd"
+          :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
         )
       end.to raise_error(Braintree::ConfigurationError, /mixed credential types/)
     end
@@ -62,7 +62,7 @@ describe Braintree::Configuration do
           :merchant_id => "merchant_id",
           :public_key => "public_key",
           :private_key => "private_key",
-          :environment => "development"
+          :environment => "development",
         )
       end.to raise_error(Braintree::ConfigurationError, /mixed credential types/)
     end
@@ -96,21 +96,21 @@ describe Braintree::Configuration do
 
     it "accepts proxy params" do
       config = Braintree::Configuration.new(
-        :proxy_address => 'localhost',
+        :proxy_address => "localhost",
         :proxy_port => 8080,
-        :proxy_user => 'user',
-        :proxy_pass => 'test'
+        :proxy_user => "user",
+        :proxy_pass => "test",
       )
 
-      config.proxy_address.should == 'localhost'
+      config.proxy_address.should == "localhost"
       config.proxy_port.should == 8080
-      config.proxy_user.should == 'user'
-      config.proxy_pass.should == 'test'
+      config.proxy_user.should == "user"
+      config.proxy_pass.should == "test"
     end
 
     it "accepts ssl version" do
       config = Braintree::Configuration.new(
-        :ssl_version => :TLSv1_2
+        :ssl_version => :TLSv1_2,
       )
 
       config.ssl_version.should == :TLSv1_2
@@ -146,14 +146,14 @@ describe Braintree::Configuration do
       Braintree::Configuration.environment = :sandbox
       ca_file = Braintree::Configuration.instantiate.ca_file
       ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
-      File.exists?(ca_file).should == true
+      File.exist?(ca_file).should == true
     end
 
     it "production" do
       Braintree::Configuration.environment = :production
       ca_file = Braintree::Configuration.instantiate.ca_file
       ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
-      File.exists?(ca_file).should == true
+      File.exist?(ca_file).should == true
     end
   end
 
@@ -238,12 +238,12 @@ describe Braintree::Configuration do
 
     it "allows the environment to be set with a string value" do
       expect do
-        Braintree::Configuration.environment = 'sandbox'
+        Braintree::Configuration.environment = "sandbox"
       end.not_to raise_error
     end
 
     it "sets the environment as a symbol" do
-      Braintree::Configuration.environment = 'sandbox'
+      Braintree::Configuration.environment = "sandbox"
       expect(Braintree::Configuration.environment).to eq :sandbox
     end
   end
@@ -326,15 +326,15 @@ describe Braintree::Configuration do
 
     it "is 3000 or GATEWAY_PORT environment variable for development" do
       Braintree::Configuration.environment = :development
-      old_gateway_port = ENV['GATEWAY_PORT']
+      old_gateway_port = ENV["GATEWAY_PORT"]
       begin
-        ENV['GATEWAY_PORT'] = nil
+        ENV["GATEWAY_PORT"] = nil
         Braintree::Configuration.instantiate.port.should == 3000
 
-        ENV['GATEWAY_PORT'] = '1234'
-        Braintree::Configuration.instantiate.port.should == '1234'
+        ENV["GATEWAY_PORT"] = "1234"
+        Braintree::Configuration.instantiate.port.should == "1234"
       ensure
-        ENV['GATEWAY_PORT'] = old_gateway_port
+        ENV["GATEWAY_PORT"] = old_gateway_port
       end
     end
   end
@@ -359,15 +359,15 @@ describe Braintree::Configuration do
   describe "graphql_server" do
     it "is localhost or GRAPHQL_HOST environment variable for development" do
       Braintree::Configuration.environment = :development
-      old_gateway_url = ENV['GRAPHQL_HOST']
+      old_gateway_url = ENV["GRAPHQL_HOST"]
       begin
-        ENV['GRAPHQL_HOST'] = nil
+        ENV["GRAPHQL_HOST"] = nil
         Braintree::Configuration.instantiate.graphql_server.should == "graphql.bt.local"
 
-        ENV['GRAPHQL_HOST'] = 'gateway'
-        Braintree::Configuration.instantiate.graphql_server.should == 'gateway'
+        ENV["GRAPHQL_HOST"] = "gateway"
+        Braintree::Configuration.instantiate.graphql_server.should == "gateway"
       ensure
-        ENV['GRAPHQL_HOST'] = old_gateway_url
+        ENV["GRAPHQL_HOST"] = old_gateway_url
       end
     end
   end
@@ -375,15 +375,15 @@ describe Braintree::Configuration do
   describe "server" do
     it "is localhost or GATEWAY_HOST environment variable for development" do
       Braintree::Configuration.environment = :development
-      old_gateway_url = ENV['GATEWAY_HOST']
+      old_gateway_url = ENV["GATEWAY_HOST"]
       begin
-        ENV['GATEWAY_HOST'] = nil
+        ENV["GATEWAY_HOST"] = nil
         Braintree::Configuration.instantiate.server.should == "localhost"
 
-        ENV['GATEWAY_HOST'] = 'gateway'
-        Braintree::Configuration.instantiate.server.should == 'gateway'
+        ENV["GATEWAY_HOST"] = "gateway"
+        Braintree::Configuration.instantiate.server.should == "gateway"
       ensure
-        ENV['GATEWAY_HOST'] = old_gateway_url
+        ENV["GATEWAY_HOST"] = old_gateway_url
       end
     end
 
@@ -468,7 +468,7 @@ describe Braintree::Configuration do
     it "masks the private_key" do
       config = Braintree::Configuration.new(:private_key => "secret_key")
       config.inspect.should include('@private_key="[FILTERED]"')
-      config.inspect.should_not include('secret_key')
+      config.inspect.should_not include("secret_key")
     end
   end
 

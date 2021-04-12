@@ -12,7 +12,7 @@ module Braintree
     class << self
       protected :new
       def _new(*args) # :nodoc:
-        self.new *args
+        self.new(*args)
       end
     end
 

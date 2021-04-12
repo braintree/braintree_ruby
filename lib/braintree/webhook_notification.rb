@@ -1,12 +1,17 @@
-require 'ostruct'
+require "ostruct"
 
 module Braintree
   class WebhookNotification
     include BaseModule
 
     module Kind
+
+      AccountUpdaterDailyReport = "account_updater_daily_report"
+
       Check = "check"
 
+      ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
+      ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
       Disbursement = "disbursement"
       DisbursementException = "disbursement_exception"
 
@@ -16,6 +21,23 @@ module Braintree
       DisputeAccepted = "dispute_accepted"
       DisputeDisputed = "dispute_disputed"
       DisputeExpired = "dispute_expired"
+
+      GrantedPaymentInstrumentRevoked = "granted_payment_instrument_revoked"
+
+      GrantorUpdatedGrantedPaymentMethod = "grantor_updated_granted_payment_method"
+
+      LocalPaymentCompleted = "local_payment_completed"
+      LocalPaymentReversed = "local_payment_reversed"
+
+      OAuthAccessRevoked = "oauth_access_revoked"
+
+      PartnerMerchantConnected = "partner_merchant_connected"
+      PartnerMerchantDisconnected = "partner_merchant_disconnected"
+      PartnerMerchantDeclined = "partner_merchant_declined"
+
+      PaymentMethodRevokedByCustomer = "payment_method_revoked_by_customer"
+
+      RecipientUpdatedGrantedPaymentMethod = "recipient_updated_granted_payment_method"
 
       SubscriptionCanceled = "subscription_canceled"
       SubscriptionChargedSuccessfully = "subscription_charged_successfully"
@@ -27,25 +49,10 @@ module Braintree
 
       SubMerchantAccountApproved = "sub_merchant_account_approved"
       SubMerchantAccountDeclined = "sub_merchant_account_declined"
+
       TransactionDisbursed = "transaction_disbursed"
       TransactionSettlementDeclined = "transaction_settlement_declined"
       TransactionSettled = "transaction_settled"
-      PartnerMerchantConnected = "partner_merchant_connected"
-      PartnerMerchantDisconnected = "partner_merchant_disconnected"
-      PartnerMerchantDeclined = "partner_merchant_declined"
-
-      AccountUpdaterDailyReport = "account_updater_daily_report"
-
-      OAuthAccessRevoked = "oauth_access_revoked"
-      ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
-      ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
-
-      GrantorUpdatedGrantedPaymentMethod = "grantor_updated_granted_payment_method"
-      RecipientUpdatedGrantedPaymentMethod = "recipient_updated_granted_payment_method"
-      GrantedPaymentInstrumentRevoked = "granted_payment_instrument_revoked"
-      PaymentMethodRevokedByCustomer = "payment_method_revoked_by_customer"
-
-      LocalPaymentCompleted = "local_payment_completed"
     end
 
     attr_reader :account_updater_daily_report
@@ -57,6 +64,7 @@ module Braintree
     attr_reader :revoked_payment_method_metadata
     attr_reader :kind
     attr_reader :local_payment_completed
+    attr_reader :local_payment_reversed
     attr_reader :oauth_access_revocation
     attr_reader :partner_merchant
     attr_reader :source_merchant_id
@@ -88,7 +96,8 @@ module Braintree
       @connected_merchant_paypal_status_changed = ConnectedMerchantPayPalStatusChanged._new(@subject[:connected_merchant_paypal_status_changed]) if @subject.has_key?(:connected_merchant_paypal_status_changed)
       @granted_payment_instrument_update = GrantedPaymentInstrumentUpdate._new(@subject[:granted_payment_instrument_update]) if @subject.has_key?(:granted_payment_instrument_update)
       @revoked_payment_method_metadata = RevokedPaymentMethodMetadata._new(gateway, @subject) if [Kind::GrantedPaymentInstrumentRevoked, Kind::PaymentMethodRevokedByCustomer].include?(@kind)
-      @local_payment_completed = LocalPaymentCompleted._new(@subject[:local_payment]) if @subject.has_key?(:local_payment)
+      @local_payment_completed = LocalPaymentCompleted._new(@subject[:local_payment]) if @subject.has_key?(:local_payment) && Kind::LocalPaymentCompleted == @kind
+      @local_payment_reversed = LocalPaymentReversed._new(@subject[:local_payment_reversed]) if @subject.has_key?(:local_payment_reversed) && Kind::LocalPaymentReversed == @kind
     end
 
     def merchant_account
@@ -110,7 +119,7 @@ module Braintree
     class << self
       protected :new
       def _new(*args) # :nodoc:
-        self.new *args
+        self.new(*args)
       end
     end
   end

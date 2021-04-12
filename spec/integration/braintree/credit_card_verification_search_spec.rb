@@ -108,7 +108,7 @@ describe Braintree::CreditCardVerification, "search" do
         search.id.is verification.id
         search.created_at.between(
           created_at - 60,
-          created_at + 60
+          created_at + 60,
         )
       end
 
@@ -135,7 +135,7 @@ describe Braintree::CreditCardVerification, "search" do
         search.id.is verification.id
         search.created_at.between(
           created_at - 300,
-          created_at - 100
+          created_at - 100,
         )
       end
 

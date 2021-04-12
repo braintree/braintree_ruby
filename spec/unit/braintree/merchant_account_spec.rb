@@ -13,7 +13,7 @@ describe Braintree::MerchantAccount do
         nil,
         :id => "merchant_account",
         :status => "active",
-        :master_merchant_account => {:id => "master_merchant_account", :status => "active", :master_merchant_account => nil}
+        :master_merchant_account => {:id => "master_merchant_account", :status => "active", :master_merchant_account => nil},
       )
 
       master_merchant_account = "#<Braintree::MerchantAccount: id: \"master_merchant_account\", status: \"active\", master_merchant_account: nil>"

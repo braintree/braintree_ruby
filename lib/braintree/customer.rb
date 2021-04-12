@@ -42,7 +42,7 @@ module Braintree
     end
 
     def self.credit!(customer_id, transaction_attributes)
-       return_object_or_raise(:transaction){ credit(customer_id, transaction_attributes) }
+       return_object_or_raise(:transaction) { credit(customer_id, transaction_attributes) }
     end
 
     def self.delete(*args)
@@ -142,7 +142,7 @@ module Braintree
     end
 
     def self._new(*args) # :nodoc:
-      self.new *args
+      self.new(*args)
     end
 
     def self._attributes # :nodoc:

@@ -12,7 +12,7 @@ describe Braintree::UsBankAccount do
         :customer_id => customer.id,
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        }
+        },
       )
       result.should be_success
 
@@ -44,14 +44,14 @@ describe Braintree::UsBankAccount do
         :customer_id => customer.id,
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        }
+        },
       )
       result.should be_success
 
       result = Braintree::UsBankAccount.sale(
         result.payment_method.token,
         :merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        :amount => "100.00"
+        :amount => "100.00",
       )
 
       result.success?.should == true
@@ -78,14 +78,14 @@ describe Braintree::UsBankAccount do
         :customer_id => customer.id,
         :options => {
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        }
+        },
       )
       result.should be_success
 
       transaction = Braintree::UsBankAccount.sale!(
         result.payment_method.token,
         :merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-        :amount => "100.00"
+        :amount => "100.00",
       )
 
       transaction.amount.should == BigDecimal("100.00")
@@ -105,7 +105,7 @@ describe Braintree::UsBankAccount do
         Braintree::UsBankAccount.sale!(
           generate_invalid_us_bank_account_nonce,
           :merchant_account_id => SpecHelper::UsBankMerchantAccountId,
-          :amount => "100.00"
+          :amount => "100.00",
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end

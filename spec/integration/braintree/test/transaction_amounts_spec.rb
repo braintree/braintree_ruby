@@ -8,7 +8,7 @@ describe Braintree::Test::TransactionAmounts do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "12/2012"
-        }
+        },
       )
       transaction.status.should == Braintree::Transaction::Status::Authorized
     end
@@ -21,7 +21,7 @@ describe Braintree::Test::TransactionAmounts do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "12/2012"
-        }
+        },
       )
       result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
     end

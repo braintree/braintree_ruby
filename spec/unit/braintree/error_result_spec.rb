@@ -10,7 +10,7 @@ describe Braintree::ErrorResult do
           :params => "params",
           :errors => {:errors => []},
           :extra => "is ignored",
-          :message => "foo bar"
+          :message => "foo bar",
         )
       end.to_not raise_error
     end
@@ -36,7 +36,7 @@ describe Braintree::ErrorResult do
         :params => "params",
         :errors => {},
         :verification => {},
-        :transaction => nil
+        :transaction => nil,
       )
       result.inspect.should include("credit_card_verification: #<Braintree::CreditCardVerification status: ")
     end
@@ -47,7 +47,7 @@ describe Braintree::ErrorResult do
         :params => "params",
         :errors => {},
         :verification => nil,
-        :transaction => nil
+        :transaction => nil,
       )
       result.inspect.should_not include("credit_card_verification")
     end
@@ -58,7 +58,7 @@ describe Braintree::ErrorResult do
         :params => "params",
         :errors => {},
         :verification => nil,
-        :transaction => {}
+        :transaction => {},
       )
       result.inspect.should include("transaction: #<Braintree::Transaction id: ")
     end
@@ -69,7 +69,7 @@ describe Braintree::ErrorResult do
         :params => "params",
         :errors => {},
         :verification => nil,
-        :transaction => nil
+        :transaction => nil,
       )
       result.inspect.should_not include("transaction")
     end

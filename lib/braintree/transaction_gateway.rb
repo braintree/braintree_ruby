@@ -53,7 +53,7 @@ module Braintree
     end
 
     def credit(attributes)
-      create(attributes.merge(:type => 'credit'))
+      create(attributes.merge(:type => "credit"))
     end
 
     def credit!(*args)
@@ -72,7 +72,7 @@ module Braintree
       options = if amount_or_options.is_a?(Hash)
                   amount_or_options
                 else
-                  { :amount => amount_or_options }
+                  {:amount => amount_or_options}
                 end
 
       Util.verify_keys(TransactionGateway._refund_signature, options)
@@ -97,7 +97,7 @@ module Braintree
     end
 
     def sale(attributes)
-      create(attributes.merge(:type => 'sale'))
+      create(attributes.merge(:type => "sale"))
     end
 
     def sale!(*args)
@@ -137,6 +137,18 @@ module Braintree
 
     def submit_for_settlement!(*args)
       return_object_or_raise(:transaction) { submit_for_settlement(*args) }
+    end
+
+    def adjust_authorization(transaction_id, amount)
+      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      Util.verify_keys(TransactionGateway._adjust_authorization_signature, {})
+      transaction_params = {:amount => amount}
+      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/adjust_authorization", :transaction => transaction_params)
+      _handle_transaction_response(response)
+    end
+
+    def adjust_authorization!(*args)
+      return_object_or_raise(:transaction) { adjust_authorization(*args) }
     end
 
     def update_details(transaction_id, options = {})
@@ -265,6 +277,12 @@ module Braintree
       ]
     end
 
+    def self._adjust_authorization_signature
+      [
+        :amount
+      ]
+    end
+
     def self._update_details_signature # :nodoc:
       [
         :amount,
@@ -276,7 +294,8 @@ module Braintree
     def self._refund_signature
       [
         :amount,
-        :order_id
+        :merchant_account_id,
+        :order_id,
       ]
     end
 

@@ -12,7 +12,8 @@ describe Braintree::Gateway do
   end
 
   describe "query" do
-    it "makes valid GraphQL queries when given a definition" do
+    # we are temporarily skipping this test until we have a more stable CI env
+    xit "makes valid GraphQL queries when given a definition" do
       definition = <<-GRAPHQL
       mutation ExampleServerSideSingleUseToken($input: TokenizeCreditCardInput!) {
         tokenizeCreditCard(input: $input) {

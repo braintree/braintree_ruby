@@ -19,7 +19,7 @@ module Braintree
       :payment_method_token,
       :paypal_account_email,
       :phone,
-      :website
+      :website,
     )
 
     is_fields :payment_method_token_with_duplicates

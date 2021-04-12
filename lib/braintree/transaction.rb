@@ -4,18 +4,18 @@ module Braintree
     include Braintree::Util::IdEquality
 
     module CreatedUsing
-      FullInformation = 'full_information'
-      Token = 'token'
-      Unrecognized = 'unrecognized'
+      FullInformation = "full_information"
+      Token = "token"
+      Unrecognized = "unrecognized"
     end
 
     module EscrowStatus
-      HoldPending    = 'hold_pending'
-      Held           = 'held'
-      ReleasePending = 'release_pending'
-      Released       = 'released'
-      Refunded       = 'refunded'
-      Unrecognized   = 'unrecognized'
+      HoldPending    = "hold_pending"
+      Held           = "held"
+      ReleasePending = "release_pending"
+      Released       = "released"
+      Refunded       = "refunded"
+      Unrecognized   = "unrecognized"
     end
 
     module GatewayRejectionReason
@@ -32,20 +32,20 @@ module Braintree
     end
 
     module Status
-      AuthorizationExpired   = 'authorization_expired'
-      Authorizing            = 'authorizing'
-      Authorized             = 'authorized'
-      GatewayRejected        = 'gateway_rejected'
-      Failed                 = 'failed'
-      ProcessorDeclined      = 'processor_declined'
-      Settled                = 'settled'
-      SettlementConfirmed    = 'settlement_confirmed'
-      SettlementDeclined     = 'settlement_declined'
-      SettlementPending      = 'settlement_pending'
-      Settling               = 'settling'
-      SubmittedForSettlement = 'submitted_for_settlement'
-      Voided                 = 'voided'
-      Unrecognized           = 'unrecognized'
+      AuthorizationExpired   = "authorization_expired"
+      Authorizing            = "authorizing"
+      Authorized             = "authorized"
+      GatewayRejected        = "gateway_rejected"
+      Failed                 = "failed"
+      ProcessorDeclined      = "processor_declined"
+      Settled                = "settled"
+      SettlementConfirmed    = "settlement_confirmed"
+      SettlementDeclined     = "settlement_declined"
+      SettlementPending      = "settlement_pending"
+      Settling               = "settling"
+      SubmittedForSettlement = "submitted_for_settlement"
+      Voided                 = "voided"
+      Unrecognized           = "unrecognized"
 
       All = constants.map { |c| const_get(c) }
     end
@@ -168,6 +168,14 @@ module Braintree
     attr_reader :venmo_account_details
     attr_reader :visa_checkout_card_details
     attr_reader :voice_referral_number
+
+    def self.adjust_authorization(*args)
+      Configuration.gateway.transaction.adjust_authorization(*args)
+    end
+
+    def self.adjust_authorization!(*args)
+      Configuration.gateway.transaction.adjust_authorization!(*args)
+    end
 
     def self.create(*args)
       Configuration.gateway.transaction.create(*args)
@@ -386,7 +394,7 @@ module Braintree
     class << self
       protected :new
       def _new(*args) # :nodoc:
-        self.new *args
+        self.new(*args)
       end
     end
 

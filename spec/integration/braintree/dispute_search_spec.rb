@@ -18,16 +18,16 @@ describe Braintree::Dispute, "search" do
 
   let(:transaction) do
     result = Braintree::Transaction.sale(
-      :amount => '10.00',
+      :amount => "10.00",
       :credit_card => {
-        :expiration_date => '01/2020',
+        :expiration_date => "01/2020",
         :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback,
       },
       :customer_id => customer.id,
       :merchant_account_id => "14LaddersLLC_instant",
       :options => {
         :submit_for_settlement => true,
-      }
+      },
     )
 
     result.transaction

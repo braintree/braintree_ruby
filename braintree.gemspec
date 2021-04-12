@@ -1,5 +1,5 @@
 $:.push File.expand_path("../lib", __FILE__)
-require 'braintree/version'
+require "braintree/version"
 
 Gem::Specification.new do |s|
   s.name = "braintree"

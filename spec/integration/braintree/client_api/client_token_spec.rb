@@ -12,7 +12,7 @@ describe Braintree::ClientToken do
         config,
         :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.get_payment_methods
@@ -49,7 +49,7 @@ describe Braintree::ClientToken do
         :customer_id => result.customer.id,
         :options => {
           :verify_card => true
-        }
+        },
       )
       client_token = decode_client_token(raw_client_token)
 
@@ -57,7 +57,7 @@ describe Braintree::ClientToken do
         config,
         :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.add_payment_method(
@@ -65,7 +65,7 @@ describe Braintree::ClientToken do
           :number => "4000111111111115",
           :expiration_month => "11",
           :expiration_year => "2099"
-        }
+        },
       )
 
       response.code.should == "422"
@@ -79,7 +79,7 @@ describe Braintree::ClientToken do
         :customer_id => customer_id,
         :options => {
           :make_default => true
-        }
+        },
       )
       client_token = decode_client_token(raw_client_token)
 
@@ -87,7 +87,7 @@ describe Braintree::ClientToken do
         config,
         :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.add_payment_method(
@@ -95,7 +95,7 @@ describe Braintree::ClientToken do
           :number => "4111111111111111",
           :expiration_month => "11",
           :expiration_year => "2099"
-        }
+        },
       )
 
       response.code.should == "201"
@@ -105,7 +105,7 @@ describe Braintree::ClientToken do
           :number => "4005519200000004",
           :expiration_month => "11",
           :expiration_year => "2099"
-        }
+        },
       )
 
       response.code.should == "201"
@@ -119,7 +119,7 @@ describe Braintree::ClientToken do
       result = Braintree::Customer.create
       customer_id = result.customer.id
       raw_client_token = Braintree::ClientToken.generate(
-        :customer_id => customer_id
+        :customer_id => customer_id,
       )
       client_token = decode_client_token(raw_client_token)
 
@@ -127,7 +127,7 @@ describe Braintree::ClientToken do
         config,
         :authorization_fingerprint => client_token["authorizationFingerprint"],
         :shared_customer_identifier => "fake_identifier",
-        :shared_customer_identifier_type => "testing"
+        :shared_customer_identifier_type => "testing",
       )
 
       response = http.add_payment_method(
@@ -135,7 +135,7 @@ describe Braintree::ClientToken do
           :number => "4111111111111111",
           :expiration_month => "11",
           :expiration_year => "2099"
-        }
+        },
       )
 
       response.code.should == "201"
@@ -144,7 +144,7 @@ describe Braintree::ClientToken do
         :customer_id => customer_id,
         :options => {
           :fail_on_duplicate_payment_method => true
-        }
+        },
       )
       second_client_token = decode_client_token(second_raw_client_token)
 
@@ -155,7 +155,7 @@ describe Braintree::ClientToken do
           :number => "4111111111111111",
           :expiration_month => "11",
           :expiration_year => "2099"
-        }
+        },
       )
 
       response.code.should == "422"
@@ -165,7 +165,7 @@ describe Braintree::ClientToken do
       merchant_account_id = SpecHelper::NonDefaultMerchantAccountId
 
       raw_client_token = Braintree::ClientToken.generate(
-        :merchant_account_id => merchant_account_id
+        :merchant_account_id => merchant_account_id,
       )
       client_token = decode_client_token(raw_client_token)
 

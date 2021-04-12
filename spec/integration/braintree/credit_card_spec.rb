@@ -46,7 +46,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_month => "05",
-        :expiration_year => "2012"
+        :expiration_year => "2012",
       )
       result.success?.should == true
       credit_card = result.credit_card
@@ -63,7 +63,7 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
         :cvv => "100",
-        :token => token
+        :token => token,
       )
       result.success?.should == true
       credit_card = result.credit_card
@@ -81,7 +81,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
         :expiration_date => "05/2009",
-        :billing_address_id => address.id
+        :billing_address_id => address.id,
       ).credit_card
 
       credit_card.billing_address.id.should == address.id
@@ -95,7 +95,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
         :expiration_date => "05/2009",
-        :options => {}
+        :options => {},
       )
       result.success?.should == true
     end
@@ -106,7 +106,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
         :expiration_date => "05/2009",
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
       result.success?.should == false
       result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
@@ -124,7 +124,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
         :expiration_date => "05/2009",
-        :options => {:verify_card => true, :verification_amount => "100.00"}
+        :options => {:verify_card => true, :verification_amount => "100.00"},
       )
       result.success?.should == false
       result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
@@ -145,14 +145,14 @@ describe Braintree::CreditCard do
           :cvv => "123",
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2020",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         verification = credit_card.verification
         verification.risk_data.id.should_not be_nil
         verification.risk_data.decision.should_not be_nil
         verification.risk_data.decision_reasons.should_not be_nil
-        verification.risk_data.device_data_captured.should_not be_nil
-        verification.risk_data.fraud_service_provider.should_not be_nil
+        expect(verification.risk_data).to respond_to(:device_data_captured)
+        expect(verification.risk_data).to respond_to(:fraud_service_provider)
         expect(verification.risk_data).to respond_to(:transaction_risk_score)
       end
     end
@@ -173,7 +173,7 @@ describe Braintree::CreditCard do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2009",
           :cvv => "200",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         result.success?.should == false
         result.credit_card_verification.gateway_rejection_reason.should == Braintree::CreditCardVerification::GatewayRejectionReason::CVV
@@ -190,7 +190,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
         :expiration_date => "05/2009",
-        :options => {:verify_card => true, :verification_amount => "1.01"}
+        :options => {:verify_card => true, :verification_amount => "1.01"},
       )
       result.success?.should == false
       result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
@@ -211,7 +211,7 @@ describe Braintree::CreditCard do
         :options => {
           :verify_card => true,
           :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
-        }
+        },
       )
       result.success?.should == false
       result.credit_card_verification.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
@@ -223,7 +223,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::Visa,
         :expiration_date => "05/2009",
-        :options => {:verify_card => false}
+        :options => {:verify_card => false},
       )
       result.success?.should == true
     end
@@ -234,15 +234,15 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => '02',
-          :cavv => 'some_cavv',
-          :xid => 'some_xid',
-          :authentication_response => 'Y',
-          :directory_response => 'Y',
-          :cavv_algorithm => '2',
-          :ds_transaction_id => 'some_ds_transaction_id',
+          :eci_flag => "02",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
         },
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
       expect(result).not_to be_success
       error = result.errors.for(:verification).first
@@ -256,16 +256,16 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => '02',
-          :cavv => 'some_cavv',
-          :xid => 'some_xid',
-          :three_d_secure_version => '1.0.2',
-          :authentication_response => 'Y',
-          :directory_response => 'Y',
-          :cavv_algorithm => '2',
-          :ds_transaction_id => 'some_ds_transaction_id',
+          :eci_flag => "02",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "1.0.2",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
         },
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
       result.success?.should == true
 
@@ -276,7 +276,7 @@ describe Braintree::CreditCard do
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
       result.success?.should == true
 
@@ -304,7 +304,7 @@ describe Braintree::CreditCard do
           :locality => "Chicago",
           :region => "Illinois",
           :postal_code => "60622"
-        }
+        },
       )
       result.success?.should == true
       credit_card = result.credit_card
@@ -323,7 +323,7 @@ describe Braintree::CreditCard do
           :country_code_alpha2 => "US",
           :country_code_alpha3 => "USA",
           :country_code_numeric => "840"
-        }
+        },
       )
       result.success?.should == true
       credit_card = result.credit_card
@@ -342,7 +342,7 @@ describe Braintree::CreditCard do
         :billing_address => {
           :country_name => "Mexico",
           :country_code_alpha2 => "US"
-        }
+        },
       )
       result.success?.should == false
       result.errors.for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
@@ -353,7 +353,7 @@ describe Braintree::CreditCard do
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "invalid_date"
+        :expiration_date => "invalid_date",
       )
       result.success?.should == false
       result.errors.for(:credit_card).on(:expiration_date)[0].message.should == "Expiration date is invalid."
@@ -364,7 +364,7 @@ describe Braintree::CreditCard do
       card1 = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
+        :expiration_date => "05/2009",
       ).credit_card
       card1.should be_default
 
@@ -374,7 +374,7 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
         :options => {
           :make_default => true
-        }
+        },
       ).credit_card
       card2.should be_default
 
@@ -403,7 +403,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Prepaid,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Yes
@@ -415,7 +415,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Healthcare,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.healthcare.should == Braintree::CreditCard::Healthcare::Yes
@@ -428,7 +428,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::DurbinRegulated,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
@@ -440,7 +440,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::CountryOfIssuance,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.country_of_issuance.should == Braintree::Test::CreditCardDefaults::CountryOfIssuance
@@ -452,7 +452,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::IssuingBank,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.issuing_bank.should == Braintree::Test::CreditCardDefaults::IssuingBank
@@ -464,7 +464,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Payroll,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.payroll.should == Braintree::CreditCard::Payroll::Yes
@@ -477,7 +477,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Debit,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.debit.should == Braintree::CreditCard::Debit::Yes
@@ -489,7 +489,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Commercial,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.commercial.should == Braintree::CreditCard::Commercial::Yes
@@ -501,7 +501,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::No,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.prepaid.should == Braintree::CreditCard::Prepaid::No
@@ -519,7 +519,7 @@ describe Braintree::CreditCard do
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Unknown,
           :expiration_date => "05/2014",
-          :options => {:verify_card => true}
+          :options => {:verify_card => true},
         )
         credit_card = result.credit_card
         credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Unknown
@@ -540,7 +540,7 @@ describe Braintree::CreditCard do
           customer = Braintree::Customer.create!
           result = Braintree::CreditCard.create(
             :customer_id => customer.id,
-            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
+            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode,
           )
           result.success?.should == true
           result.credit_card.venmo_sdk?.should == false
@@ -552,7 +552,7 @@ describe Braintree::CreditCard do
           customer = Braintree::Customer.create!
           result = Braintree::CreditCard.create(
             :customer_id => customer.id,
-            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode
+            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode,
           )
 
           result.success?.should == false
@@ -571,7 +571,7 @@ describe Braintree::CreditCard do
             :cvv => "100",
             :options => {
               :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
-            }
+            },
           )
           result.success?.should == true
           result.credit_card.venmo_sdk?.should == false
@@ -586,7 +586,7 @@ describe Braintree::CreditCard do
             :cvv => "100",
             :options => {
               :venmo_sdk_session => Braintree::Test::VenmoSDK::InvalidSession
-            }
+            },
           )
           result.success?.should == true
           result.credit_card.venmo_sdk?.should == false
@@ -602,12 +602,12 @@ describe Braintree::CreditCard do
             :expiration_month => "11",
             :expiration_year => "2099",
           },
-          :share => true
+          :share => true,
         )
         customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
           :customer_id => customer.id,
-          :payment_method_nonce => nonce
+          :payment_method_nonce => nonce,
         )
 
         result.success?.should == true
@@ -644,7 +644,7 @@ describe Braintree::CreditCard do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
             :verification_account_type => "debit",
-          }
+          },
         )
 
         expect(result).to be_success
@@ -661,7 +661,7 @@ describe Braintree::CreditCard do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
             :verification_account_type => "credit",
-          }
+          },
         )
 
         expect(result).to be_success
@@ -677,7 +677,7 @@ describe Braintree::CreditCard do
             :verify_card => true,
             :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
             :verification_account_type => "ach",
-          }
+          },
         )
 
         expect(result).to_not be_success
@@ -693,7 +693,7 @@ describe Braintree::CreditCard do
           :options => {
             :verify_card => true,
             :verification_account_type => "credit",
-          }
+          },
         )
 
         expect(result).to_not be_success
@@ -709,7 +709,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :cardholder_name => "Adam Davis",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
+        :expiration_date => "05/2009",
       )
       credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
       credit_card.cardholder_name.should == "Adam Davis"
@@ -723,7 +723,7 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.create!(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "invalid_date"
+          :expiration_date => "invalid_date",
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end
@@ -735,11 +735,11 @@ describe Braintree::CreditCard do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       result = Braintree::CreditCard.credit(
         customer.credit_cards[0].token,
-        :amount => "100.00"
+        :amount => "100.00",
       )
       result.success?.should == true
       result.transaction.amount.should == BigDecimal("100.00")
@@ -758,11 +758,11 @@ describe Braintree::CreditCard do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = Braintree::CreditCard.credit!(
         customer.credit_cards[0].token,
-        :amount => "100.00"
+        :amount => "100.00",
       )
       transaction.amount.should == BigDecimal("100.00")
       transaction.type.should == "credit"
@@ -782,13 +782,13 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :cvv => "123",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       update_result = Braintree::CreditCard.update(credit_card.token,
         :cardholder_name => "New Holder",
         :cvv => "456",
         :number => Braintree::Test::CreditCardNumbers::MasterCard,
-        :expiration_date => "06/2013"
+        :expiration_date => "06/2013",
       )
       update_result.success?.should == true
       update_result.credit_card.should == credit_card
@@ -806,20 +806,20 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :cvv => "123",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       result = Braintree::CreditCard.update(credit_card.token,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => '02',
-          :cavv => 'some_cavv',
-          :xid => 'some_xid',
-          :authentication_response => 'Y',
-          :directory_response => 'Y',
-          :cavv_algorithm => '2',
-          :ds_transaction_id => 'some_ds_transaction_id',
+          :eci_flag => "02",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
         },
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
       expect(result).not_to be_success
       error = result.errors.for(:verification).first
@@ -834,21 +834,21 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :cvv => "123",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       result = Braintree::CreditCard.update(credit_card.token,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => '02',
-          :cavv => 'some_cavv',
+          :eci_flag => "02",
+          :cavv => "some_cavv",
           :three_d_secure_version=> "2.1.0",
-          :xid => 'some_xid',
-          :authentication_response => 'Y',
-          :directory_response => 'Y',
-          :cavv_algorithm => '2',
-          :ds_transaction_id => 'some_ds_transaction_id',
+          :xid => "some_xid",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
         },
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
 
       result.success?.should == true
@@ -864,12 +864,12 @@ describe Braintree::CreditCard do
           :expiration_date => "05/2012",
           :billing_address => {
             :street_address => "123 Nigeria Ave"
-          }
+          },
         )
         update_result = Braintree::CreditCard.update(credit_card.token,
           :billing_address => {
             :region => "IL"
-          }
+          },
         )
         update_result.success?.should == true
         updated_credit_card = update_result.credit_card
@@ -886,13 +886,13 @@ describe Braintree::CreditCard do
           :expiration_date => "05/2012",
           :billing_address => {
             :street_address => "123 Nigeria Ave"
-          }
+          },
         )
         update_result = Braintree::CreditCard.update(credit_card.token,
           :billing_address => {
             :region => "IL",
             :options => {:update_existing => true}
-          }
+          },
         )
         update_result.success?.should == true
         updated_credit_card = update_result.credit_card
@@ -909,7 +909,7 @@ describe Braintree::CreditCard do
           :expiration_date => "05/2012",
           :billing_address => {
             :street_address => "123 Nigeria Ave"
-          }
+          },
         )
         update_result = Braintree::CreditCard.update(credit_card.token,
           :billing_address => {
@@ -918,7 +918,7 @@ describe Braintree::CreditCard do
             :country_code_alpha3 => "ASM",
             :country_code_numeric => "016",
             :options => {:update_existing => true}
-          }
+          },
         )
         update_result.success?.should == true
         updated_credit_card = update_result.credit_card
@@ -934,12 +934,12 @@ describe Braintree::CreditCard do
       credit_card = Braintree::CreditCard.create!(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       update_result = Braintree::CreditCard.update(credit_card.token,
         :number => Braintree::Test::CreditCardNumbers::MasterCard,
         :expiration_month => "07",
-        :expiration_year => "2011"
+        :expiration_year => "2011",
       )
       update_result.success?.should == true
       update_result.credit_card.should == credit_card
@@ -955,14 +955,14 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :cvv => "123",
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       update_result = Braintree::CreditCard.update(credit_card.token,
         :cardholder_name => "New Holder",
         :cvv => "456",
         :number => Braintree::Test::CreditCardNumbers::FailsSandboxVerification::MasterCard,
         :expiration_date => "06/2013",
-        :options => {:verify_card => true}
+        :options => {:verify_card => true},
       )
       update_result.success?.should == false
       update_result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
@@ -987,7 +987,7 @@ describe Braintree::CreditCard do
           :region => "Old State",
           :postal_code => "12345",
           :country_name => "Canada"
-        }
+        },
       )
       result = Braintree::CreditCard.update(credit_card.token,
         :options => {:verify_card => false},
@@ -1001,7 +1001,7 @@ describe Braintree::CreditCard do
           :region => "New State",
           :postal_code => "56789",
           :country_name => "United States of America"
-        }
+        },
       )
       result.success?.should == true
       address = result.credit_card.billing_address
@@ -1022,12 +1022,12 @@ describe Braintree::CreditCard do
         :cardholder_name => "Original Holder",
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       update_result = Braintree::CreditCard.update(credit_card.token,
         :cardholder_name => "New Holder",
         :number => "invalid",
-        :expiration_date => "05/2014"
+        :expiration_date => "05/2014",
       )
       update_result.success?.should == false
       update_result.errors.for(:credit_card).on(:number)[0].message.should == "Credit card number must be 12-19 digits."
@@ -1038,12 +1038,12 @@ describe Braintree::CreditCard do
       card1 = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
+        :expiration_date => "05/2009",
       ).credit_card
       card2 = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
+        :expiration_date => "05/2009",
       ).credit_card
 
       card1.should be_default
@@ -1101,12 +1101,12 @@ describe Braintree::CreditCard do
         :cardholder_name => "Original Holder",
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       updated_credit_card = Braintree::CreditCard.update!(credit_card.token,
         :cardholder_name => "New Holder",
         :number => Braintree::Test::CreditCardNumbers::MasterCard,
-        :expiration_date => "06/2013"
+        :expiration_date => "06/2013",
       )
       updated_credit_card.token.should == credit_card.token
       updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
@@ -1122,13 +1122,13 @@ describe Braintree::CreditCard do
         :cardholder_name => "Original Holder",
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       expect do
         Braintree::CreditCard.update!(credit_card.token,
           :cardholder_name => "New Holder",
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
-          :expiration_date => "invalid/date"
+          :expiration_date => "invalid/date",
         )
       end.to raise_error(Braintree::ValidationsFailed)
     end
@@ -1140,7 +1140,7 @@ describe Braintree::CreditCard do
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
 
       result.success?.should == true
@@ -1160,7 +1160,7 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.create!(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "01/#{Time.now.year - 3}"
+          :expiration_date => "01/#{Time.now.year - 3}",
         )
       end
 
@@ -1191,14 +1191,14 @@ describe Braintree::CreditCard do
         Braintree::CreditCard.create!(
           :customer_id => customer.id,
           :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "01/2010"
+          :expiration_date => "01/2010",
         )
       end
 
       collection = Braintree::CreditCard.expiring_between(Time.mktime(2010, 1, 1), Time.mktime(2010,3, 1))
       collection.maximum_size.should > 100
 
-      credit_card_ids = collection.map {|c| c.token }.uniq.compact
+      credit_card_ids = collection.map { |c| c.token }.uniq.compact
       credit_card_ids.size.should == collection.maximum_size
     end
   end
@@ -1209,7 +1209,7 @@ describe Braintree::CreditCard do
       result = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
       result.success?.should == true
       credit_card = Braintree::CreditCard.find(result.credit_card.token)
@@ -1224,13 +1224,13 @@ describe Braintree::CreditCard do
       credit_card = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       ).credit_card
 
       subscription = Braintree::Subscription.create(
         :payment_method_token => credit_card.token,
         :plan_id => "integration_trialless_plan",
-        :price => "1.00"
+        :price => "1.00",
       ).subscription
 
       found_card = Braintree::CreditCard.find(credit_card.token)
@@ -1274,7 +1274,7 @@ describe Braintree::CreditCard do
           :expiration_month => "11",
           :expiration_year => "2099",
         },
-        :client_token_options => {:customer_id => customer.id}
+        :client_token_options => {:customer_id => customer.id},
       )
 
       credit_card = Braintree::CreditCard.from_nonce(nonce)
@@ -1288,7 +1288,7 @@ describe Braintree::CreditCard do
           :number => "4111111111111111",
           :expiration_month => "11",
           :expiration_year => "2099",
-        }
+        },
       )
       expect do
         Braintree::CreditCard.from_nonce(nonce)
@@ -1303,7 +1303,7 @@ describe Braintree::CreditCard do
           :expiration_month => "11",
           :expiration_year => "2099",
         },
-        :client_token_options => {:customer_id => customer.id}
+        :client_token_options => {:customer_id => customer.id},
       )
 
       Braintree::CreditCard.from_nonce(nonce)
@@ -1319,7 +1319,7 @@ describe Braintree::CreditCard do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       result = Braintree::CreditCard.sale(customer.credit_cards[0].token, :amount => "100.00")
 
@@ -1338,13 +1338,13 @@ describe Braintree::CreditCard do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       result = Braintree::CreditCard.sale(customer.credit_cards[0].token,
         :amount => "100.00",
         :credit_card => {
           :cvv => "301"
-        }
+        },
       )
 
       result.success?.should == true
@@ -1362,7 +1362,7 @@ describe Braintree::CreditCard do
         :credit_card => {
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2010"
-        }
+        },
       )
       transaction = Braintree::CreditCard.sale!(customer.credit_cards[0].token, :amount => "100.00")
       transaction.amount.should == BigDecimal("100.00")
@@ -1382,7 +1382,7 @@ describe Braintree::CreditCard do
         :cardholder_name => "Original Holder",
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2012"
+        :expiration_date => "05/2012",
       )
 
       credit_card.nonce.should_not be_nil
@@ -1400,7 +1400,7 @@ describe Braintree::CreditCard do
       credit_card = Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
+        :expiration_date => "05/2009",
       ).credit_card
       credit_card_vaulted = Braintree::CreditCard.find(credit_card.token)
       credit_card_vaulted.is_network_tokenized?.should == false
