@@ -14,6 +14,7 @@ describe Braintree::Address do
         :extended_address => "Suite 200",
         :locality => "Chicago",
         :region => "Illinois",
+        :phone_number => "5551231234",
         :postal_code => "60622",
         :country_name => "United States of America",
       )
@@ -26,6 +27,7 @@ describe Braintree::Address do
       result.address.extended_address.should == "Suite 200"
       result.address.locality.should == "Chicago"
       result.address.region.should == "Illinois"
+      result.address.phone_number.should == "5551231234"
       result.address.postal_code.should == "60622"
       result.address.country_name.should == "United States of America"
       result.address.country_code_alpha2.should == "US"
@@ -131,6 +133,7 @@ describe Braintree::Address do
         :extended_address => "Suite 201",
         :locality => "Bartlett",
         :region => "IL",
+        :phone_number => "5551231234",
         :postal_code => "60623",
         :country_name => "United States of America",
       )
@@ -139,6 +142,7 @@ describe Braintree::Address do
       address.extended_address.should == "Suite 201"
       address.locality.should == "Bartlett"
       address.region.should == "IL"
+      address.phone_number.should == "5551231234"
       address.postal_code.should == "60623"
       address.country_name.should == "United States of America"
     end

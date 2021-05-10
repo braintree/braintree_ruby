@@ -17,14 +17,19 @@ Or add to your Gemfile:
 gem 'braintree'
 ```
 
+Optionally, you may also include LibXML for more performant XML parsing. If LibXML is not present, REXML will be used instead.
+
+```ruby
+gem 'libxml-ruby'
+```
+
 ## Dependencies
 
 * builder
-* libxml-ruby
 
-The Braintree Ruby SDK is tested against Ruby versions 2.5.8 and 2.7.2.
+The Braintree Ruby SDK is tested against Ruby versions 2.6, 2.7 and 3.0.
 
-_The Ruby core development community has released [End-of-Life branches](https://www.ruby-lang.org/en/downloads/branches/) for Ruby versions lower than 2.5, and are no longer receiving security updates. As a result, Braintree no longer supports these versions of Ruby. **We have updated our gem specifications to reflect these updates.**_
+_The Ruby core development community has released [End-of-Life branches](https://www.ruby-lang.org/en/downloads/branches/) for Ruby versions lower than 2.6, which are no longer receiving security updates. As a result, Braintree no longer supports these versions of Ruby. **We have updated our gem specifications to reflect these updates.**_
 
 ## Versions
 
@@ -32,7 +37,8 @@ Braintree employs a deprecation policy for our SDKs. For more information on the
 
 | Major version number | Status      | Released      | Deprecated   | Unsupported  |
 | -------------------- | ----------- | ------------- | ------------ | ------------ |
-| 3.x.x                | Active      | October 2020  | TBA          | TBA          |
+| 4.x.x                | Active      | May 2021      | TBA          | TBA          |
+| 3.x.x                | Inactive    | October 2020  | May 2023     | May 2024     |
 | 2.x.x                | Inactive    | April 2010    | October 2022 | October 2023 |
 
 ## Documentation
@@ -116,6 +122,10 @@ The `Makefile` and `Dockerfile` will build an image containing the dependencies 
 ```
 make
 ```
+
+## Linting
+
+The Rakefile includes commands to run [Rubocop](https://github.com/rubocop/rubocop). To run the linter commands use rake: `rake lint`.
 
 ## Tests
 

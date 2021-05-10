@@ -517,8 +517,6 @@ module Braintree
       end
 
       module ExternalVault
-        # NEXT_MAJOR_VERSION remove this validation error as it is no longer returned by the gateway
-        CardTypeIsInvalid = "915178"
         PreviousNetworkTransactionIdIsInvalid = "915179"
         StatusIsInvalid = "915175"
         StatusWithPreviousNetworkTransactionIdIsInvalid = "915177"
@@ -786,8 +784,6 @@ module Braintree
     end
 
     module RiskData
-      # NEXT_MAJOR_VERSION Remove CustomerBrowserIsTooLong (this validation is no longer applied)
-      CustomerBrowserIsTooLong = "94701"
       CustomerDeviceIdIsTooLong = "94702"
       CustomerLocationZipInvalidCharacters = "94703"
       CustomerLocationZipIsInvalid = "94704"

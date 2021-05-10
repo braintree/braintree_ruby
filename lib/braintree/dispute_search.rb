@@ -8,6 +8,7 @@ module Braintree
       :transaction_id,
     )
 
+    multiple_value_field :chargeback_protection_level, :allows => Dispute::ChargebackProtectionLevel::All
     multiple_value_field :kind, :allows => Dispute::Kind::All
     multiple_value_field :merchant_account_id
     multiple_value_field :reason, :allows => Dispute::Reason::All

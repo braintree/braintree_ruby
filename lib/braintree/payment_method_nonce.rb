@@ -25,7 +25,7 @@ module Braintree
       @gateway = gateway
       @nonce = attributes.fetch(:nonce)
       @type = attributes.fetch(:type)
-      @details = attributes.fetch(:details)
+      @details = PaymentMethodNonceDetails.new(attributes[:details]) if attributes[:details]
       @authentication_insight = attributes.fetch(:authentication_insight, nil)
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
       @bin_data = BinData.new(attributes[:bin_data]) if attributes[:bin_data]

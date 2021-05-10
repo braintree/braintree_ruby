@@ -14,6 +14,7 @@ module Braintree
     attr_reader :id
     attr_reader :last_name
     attr_reader :locality
+    attr_reader :phone_number
     attr_reader :postal_code
     attr_reader :region
     attr_reader :street_address

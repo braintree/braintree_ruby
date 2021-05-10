@@ -79,33 +79,24 @@ describe Braintree::PaymentMethodNonce do
       result.should be_success
       nonce.nonce.should == "fake-valid-nonce"
       nonce.type.should == "CreditCard"
-      nonce.details.fetch(:last_two).should == "81"
-      nonce.details.fetch(:card_type).should == "Visa"
+      nonce.details.bin.should == "401288"
+      nonce.details.card_type.should == "Visa"
+      nonce.details.expiration_month.should == "12"
+      nonce.details.expiration_year.should == "2022"
+      nonce.details.is_network_tokenized?.should be_nil
+      nonce.details.last_two.should == "81"
+      nonce.details.payer_info.should be_nil
     end
 
     it "return paypal details if details exist" do
       result = Braintree::PaymentMethodNonce.find("fake-paypal-one-time-nonce")
       nonce = result.payment_method_nonce
-
-      nonce.details.fetch(:cobranded_card_label).should_not be_nil
-      nonce.details.fetch(:shipping_option_id).should_not be_nil
-      nonce.details.fetch(:billing_address).fetch(:recipient_name).should_not be_nil
-      nonce.details.fetch(:shipping_address).fetch(:recipient_name).should_not be_nil
-
-      nonce.details.fetch(:payer_info).fetch(:first_name).should_not be_nil
-      nonce.details.fetch(:payer_info).fetch(:last_name).should_not be_nil
-      nonce.details.fetch(:payer_info).fetch(:email).should_not be_nil
-      nonce.details.fetch(:payer_info).fetch(:payer_id).should_not be_nil
-    end
-
-    it "return venmo details if details exist" do
-      result = Braintree::PaymentMethodNonce.find("fake-venmo-account-nonce")
-
-      nonce = result.payment_method_nonce
-
-      nonce.details.fetch(:last_two).should == "99"
-      nonce.details.fetch(:username).should == "venmojoe"
-      nonce.details.fetch(:venmo_user_id).should == "Venmo-Joe-1"
+      nonce.details.payer_info.billing_agreement_id.should be_nil
+      nonce.details.payer_info.country_code.should be_nil
+      nonce.details.payer_info.email.should_not be_nil
+      nonce.details.payer_info.first_name.should_not be_nil
+      nonce.details.payer_info.last_name.should_not be_nil
+      nonce.details.payer_info.payer_id.should_not be_nil
     end
 
     it "returns null 3ds_info if there isn't any" do
@@ -131,7 +122,7 @@ describe Braintree::PaymentMethodNonce do
       nonce = result.payment_method_nonce
       result.should be_success
       nonce.details.should_not be_nil
-      nonce.details[:bin].should == "401288"
+      nonce.details.bin.should == "401288"
     end
 
     it "returns bin_data with commercial set to Yes" do

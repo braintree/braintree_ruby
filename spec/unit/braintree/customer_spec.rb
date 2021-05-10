@@ -31,6 +31,7 @@ describe Braintree::Customer do
       output.should include(%q(addresses: []))
       output.should include(%q(credit_cards: []))
       output.should include(%q(paypal_accounts: []))
+      output.should include(%q(tax_identifiers: []))
       output.should include(%Q(created_at: #{customer.created_at.inspect}))
       output.should include(%Q(updated_at: #{customer.updated_at.inspect}))
     end
@@ -133,6 +134,10 @@ describe Braintree::Customer do
           :billing_agreement_id,
           {:options => [:make_default]},
         ]},
+        {:tax_identifiers => [
+          :country_code,
+          :identifier
+        ]},
         {:options =>
           [:paypal => [
             :payee_email,
@@ -226,6 +231,10 @@ describe Braintree::Customer do
             :cavv_algorithm,
             :ds_transaction_id,
           ]},
+        ]},
+        {:tax_identifiers => [
+          :country_code,
+          :identifier
         ]},
         {:options =>
           [:paypal => [

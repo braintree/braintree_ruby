@@ -3,6 +3,7 @@ unless defined?(SPEC_HELPER_LOADED)
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
   require "bundler/setup"
+  require "libxml"
   require "rspec"
   require "pry"
 

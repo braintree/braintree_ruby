@@ -41,6 +41,7 @@ describe Braintree::DisputeSearch do
   end
 
   [
+    :chargeback_protection_level,
     :kind,
     :reason,
     :status,

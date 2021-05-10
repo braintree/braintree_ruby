@@ -40,6 +40,7 @@ describe Braintree::Customer do
         :phone => "312.555.1234",
         :fax => "614.555.5678",
         :website => "www.microsoft.com",
+        :tax_identifiers => [{:country_code => "US", :identifier => "987654321"}],
       )
       result.success?.should == true
       result.customer.id.should =~ /^\d{6,}$/
@@ -109,6 +110,17 @@ describe Braintree::Customer do
           :customer_browser => "IE5",
           :customer_ip => "192.168.0.1"
         },
+      )
+
+      result.should be_success
+    end
+
+    it "supports creation with tax_identifiers" do
+      result = Braintree::Customer.create(
+        :tax_identifiers => [
+          {:country_code => "US", :identifier => "987654321"},
+          {:country_code => "CL", :identifier => "123456789"}
+        ],
       )
 
       result.should be_success
@@ -1329,6 +1341,21 @@ describe Braintree::Customer do
           :expiration_date => "12/2009",
           :options => {:verify_card => true, :verification_amount => "2.00"}
         },
+      )
+      result.success?.should == true
+    end
+
+    it "can update a tax_identifier" do
+      customer = Braintree::Customer.create!(
+        :tax_identifiers => [
+          {:country_code => "US", :identifier => "987654321"},
+          {:country_code => "CL", :identifier => "123456789"}
+        ],
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :tax_identifiers => [{:country_code => "US", :identifier => "567891234"}],
       )
       result.success?.should == true
     end

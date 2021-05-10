@@ -80,6 +80,7 @@ module Braintree
         {:risk_data => [:customer_browser, :customer_ip]},
         {:credit_card => credit_card_signature},
         {:paypal_account => paypal_account_signature},
+        {:tax_identifiers => [:country_code, :identifier]},
         {:options => options},
         {:custom_fields => :_any_key_}
       ]
@@ -141,6 +142,7 @@ module Braintree
         :company, :email, :fax, :first_name, :id, :last_name, :phone, :website,
         :device_data, :payment_method_nonce, :default_payment_method_token,
         {:credit_card => credit_card_signature},
+        {:tax_identifiers => [:country_code, :identifier]},
         {:options => options},
         {:custom_fields => :_any_key_}
       ]

@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.0.0
+* Breaking Changes
+  * Update gemspec to require ruby >= 2.6.0
+  * Remove `ExternalVault::CardTypeIsInvalid` error code
+  * Remove `RiskData::CustomerBrowserIsTooLong` error code
+  * Remove `paypal_vault_without_upgrade` parameter from `PaymentMethod#create`
+  * Add `PaymentMethodNonceDetails` and `PaymentMethodNonceDetailsPayerInfo`
+    * `PaymentMethodNonce#details` is now an instance of `PaymentMethodNonceDetails` rather than a hash
+    * `PaymentMethodNonceDetails#payer_info` is now an instance of `PaymentMethodNonceDetailsPayerInfo` rather than a hash
+* Add `phone_number` to `Address`
+* Add `paypal_messages` to `Dispute`
+* Add `tax_identifiers` parameter to `Customer.create` and `Customer.update`
+* Add `chargeback_protection_level` into dispute search 
+* Make libxml-ruby an optional dependency instead of required (addresses JRuby incompatibility issues raised in #203 and #205)
+
 ## 3.4.0
 * Add `local_payment_reversed` webhook notification 
 * Add `Transaction.adjust_authorization` method to support for multiple authorizations for a single transaction

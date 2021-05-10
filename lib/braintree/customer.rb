@@ -19,6 +19,7 @@ module Braintree
     attr_reader :paypal_accounts
     attr_reader :phone
     attr_reader :samsung_pay_cards
+    attr_reader :tax_identifiers
     attr_reader :updated_at
     attr_reader :us_bank_accounts
     attr_reader :venmo_accounts
@@ -90,6 +91,7 @@ module Braintree
       @visa_checkout_cards = (@visa_checkout_cards|| []).map { |pm| VisaCheckoutCard._new gateway, pm }
       @samsung_pay_cards = (@samsung_pay_cards|| []).map { |pm| SamsungPayCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
+      @tax_identifiers = (@tax_identifiers || []).map { |addr| TaxIdentifier._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
     end
 
@@ -124,7 +126,7 @@ module Braintree
 
     def inspect # :nodoc:
       first = [:id]
-      last = [:addresses, :credit_cards, :paypal_accounts]
+      last = [:addresses, :credit_cards, :paypal_accounts, :tax_identifiers]
       order = first + (self.class._attributes - first - last) + last
       nice_attributes = order.map do |attr|
         "#{attr}: #{send(attr).inspect}"
@@ -148,7 +150,7 @@ module Braintree
     def self._attributes # :nodoc:
       [
         :addresses, :company, :credit_cards, :email, :fax, :first_name, :id, :last_name, :phone, :website,
-        :created_at, :updated_at
+        :created_at, :updated_at, :tax_identifiers
       ]
     end
 

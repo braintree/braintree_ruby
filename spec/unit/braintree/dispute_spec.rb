@@ -46,7 +46,14 @@ describe Braintree::Dispute do
         :order_id => nil,
         :purchase_order_number => "po",
         :payment_instrument_subtype => "Visa",
-      }
+      },
+      :paypal_messages => [
+        {
+          :message => "message",
+          :sender => "seller",
+          :sent_at => Time.utc(2009, 3, 9, 10, 50, 39),
+        }
+      ]
     }
   end
 
@@ -348,12 +355,30 @@ describe Braintree::Dispute do
       evidence2.url.should == nil
     end
 
+    it "converts paypal_messages hash into an array of Dispute::PayPalMessage objects" do
+      dispute = Braintree::Dispute._new(attributes)
+
+      dispute.paypal_messages.length.should == 1
+      paypal_message_1 = dispute.paypal_messages.first
+      paypal_message_1.message.should == "message"
+      paypal_message_1.sender.should == "seller"
+      paypal_message_1.sent_at.should == Time.utc(2009, 3, 9, 10, 50, 39)
+    end
+
     it "handles nil evidence" do
       attributes.delete(:evidence)
 
       dispute = Braintree::Dispute._new(attributes)
 
       dispute.evidence.should == nil
+    end
+
+    it "handles nil paypal_messages" do
+      attributes.delete(:paypal_messages)
+
+      dispute = Braintree::Dispute._new(attributes)
+
+      dispute.paypal_messages.should == nil
     end
 
     it "sets the older webhook fields for backwards compatibility" do

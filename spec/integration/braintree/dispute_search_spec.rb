@@ -78,6 +78,31 @@ describe Braintree::Dispute, "search" do
       dispute = collection.disputes.first
     end
 
+    it "correctly returns chargeback protected disputes" do
+      collection = Braintree::Dispute.search do |search|
+        search.case_number.is "CASE-CHARGEBACK-PROTECTED"
+      end
+
+      expect(collection.disputes.count).to eq(1)
+      dispute = collection.disputes.first
+
+      expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
+      expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
+    end
+
+    it "correctly returns disputes by chargeback protection level flag" do
+      collection = Braintree::Dispute.search do |search|
+        search.chargeback_protection_level.in [
+          Braintree::Dispute::ChargebackProtectionLevel::Effortless
+        ]
+      end
+      expect(collection.disputes.count).to eq(1)
+      dispute = collection.disputes.first
+
+      expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
+      expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
+    end
+
     it "correctly returns disputes by effective_date range" do
       effective_date = transaction.disputes.first.status_history.first.effective_date
 

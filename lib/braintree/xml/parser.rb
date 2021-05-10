@@ -11,10 +11,20 @@ module Braintree
         "boolean"  => Proc.new { |boolean| %w(1 true).include?(boolean.strip) },
       }
 
-      def self.hash_from_xml(xml)
-        standardized_hash_structure = ::Braintree::Xml::Libxml.parse(xml)
+      def self.hash_from_xml(xml, parser = _determine_parser)
+        standardized_hash_structure = parser.parse(xml)
         transformed_xml = _transform_xml(standardized_hash_structure)
         Util.symbolize_keys(transformed_xml)
+      end
+
+      def self._determine_parser
+        # If LibXML is not available, we fall back to REXML
+        # This allows us to be compatible with JRuby, which LibXML does not support
+        if defined?(::LibXML::XML) && ::LibXML::XML.respond_to?(:default_keep_blanks=)
+          ::Braintree::Xml::Libxml
+        else
+          ::Braintree::Xml::Rexml
+        end
       end
 
       # Transform into standard Ruby types and convert all keys to snake_case instead of dash-case
