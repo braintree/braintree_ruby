@@ -115,6 +115,46 @@ describe Braintree::Customer do
       result.should be_success
     end
 
+    it "includes risk data when skip_advanced_fraud_checking is false" do
+      with_fraud_protection_enterprise_merchant do
+        result = Braintree::Customer.create(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "05/2010",
+            :cvv => "100",
+            :options => {
+              :skip_advanced_fraud_checking => false,
+              :verify_card => true,
+            },
+          },
+        )
+
+        expect(result).to be_success
+        verification = result.customer.credit_cards.first.verification
+        expect(verification.risk_data).not_to be_nil
+      end
+    end
+
+    it "does not include risk data when skip_advanced_fraud_checking is true" do
+      with_fraud_protection_enterprise_merchant do
+        result = Braintree::Customer.create(
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "05/2010",
+            :cvv => "100",
+            :options => {
+              :skip_advanced_fraud_checking => true,
+              :verify_card => true,
+            },
+          },
+        )
+
+        expect(result).to be_success
+        verification = result.customer.credit_cards.first.verification
+        expect(verification.risk_data).to be_nil
+      end
+    end
+
     it "supports creation with tax_identifiers" do
       result = Braintree::Customer.create(
         :tax_identifiers => [
@@ -1343,6 +1383,56 @@ describe Braintree::Customer do
         },
       )
       result.success?.should == true
+    end
+
+    it "includes risk data when skip_advanced_fraud_checking is false" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe",
+        )
+
+        updated_result = Braintree::Customer.update(
+          customer.id,
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2009",
+            :options => {
+              :skip_advanced_fraud_checking => false,
+              :verify_card => true,
+            },
+          },
+        )
+
+        expect(updated_result).to be_success
+        verification = updated_result.customer.credit_cards.first.verification
+        expect(verification.risk_data).not_to be_nil
+      end
+    end
+
+    it "does not include risk data when skip_advanced_fraud_checking is true" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!(
+          :first_name => "Joe",
+        )
+
+        updated_result = Braintree::Customer.update(
+          customer.id,
+          :credit_card => {
+            :cardholder_name => "New Joe Cardholder",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/2009",
+            :options => {
+              :skip_advanced_fraud_checking => true,
+              :verify_card => true,
+            },
+          },
+        )
+
+        expect(updated_result).to be_success
+        verification = updated_result.customer.credit_cards.first.verification
+        expect(verification.risk_data).to be_nil
+      end
     end
 
     it "can update a tax_identifier" do

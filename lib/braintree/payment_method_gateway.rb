@@ -148,10 +148,15 @@ module Braintree
       billing_address_params = AddressGateway._shared_signature
       paypal_options_shipping_signature = AddressGateway._shared_signature
       options = [
-        :make_default, :verification_merchant_account_id, :verify_card, :venmo_sdk_session,
-        :verification_amount, :us_bank_account_verification_method,
+        :make_default,
+        :skip_advanced_fraud_checking,
+        :us_bank_account_verification_method,
+        :venmo_sdk_session,
         :verification_account_type,
+        :verification_amount,
         :verification_currency_iso_code,
+        :verification_merchant_account_id,
+        :verify_card,
         :paypal => [
           :payee_email,
           :order_id,

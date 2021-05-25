@@ -703,13 +703,13 @@ module Braintree
     end
 
     module PaymentMethod
-      CannotForwardPaymentMethodType = "93107"
+      CannotForwardPaymentMethodType = "93106"
       CustomerIdIsInvalid = "93105"
       CustomerIdIsRequired = "93104"
       NonceIsInvalid = "93102"
       NonceIsRequired = "93103"
       PaymentMethodNoLongerSupported = "93117"
-      PaymentMethodNonceConsumed = "93106"
+      PaymentMethodNonceConsumed = "93107"
       PaymentMethodNonceLocked = "93109"
       PaymentMethodNonceUnknown = "93108"
       PaymentMethodParamsAreRequired = "93101"

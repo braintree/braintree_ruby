@@ -527,6 +527,58 @@ describe Braintree::PaymentMethod do
       found_credit_card.billing_address.street_address.should == "456 Xyz Way"
     end
 
+    it "includes risk data when skip_advanced_fraud_checking is false" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!
+
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009",
+          },
+        )
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :skip_advanced_fraud_checking => false,
+          },
+        )
+
+        expect(result).to be_success
+        verification = result.payment_method.verification
+        expect(verification.risk_data).not_to be_nil
+      end
+    end
+
+    it "does not include risk data when skip_advanced_fraud_checking is true" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!
+
+        nonce = nonce_for_new_payment_method(
+          :credit_card => {
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009",
+          },
+        )
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => nonce,
+          :customer_id => customer.id,
+          :options => {
+            :verify_card => true,
+            :skip_advanced_fraud_checking => true,
+          },
+        )
+
+        expect(result).to be_success
+        verification = result.payment_method.verification
+        expect(verification.risk_data).to be_nil
+      end
+    end
+
     context "account_type" do
       it "verifies card with account_type debit" do
         nonce = nonce_for_new_payment_method(
@@ -1366,6 +1418,58 @@ describe Braintree::PaymentMethod do
         updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
         updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
         updated_credit_card.expiration_date.should == "06/2013"
+      end
+
+      it "includes risk data when skip_advanced_fraud_checking is false" do
+        with_fraud_protection_enterprise_merchant do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :customer_id => customer.id,
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+          )
+          update_result = Braintree::PaymentMethod.update(
+            credit_card.token,
+            :cvv => "456",
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "06/2013",
+            :options => {
+              :verify_card => true,
+              :skip_advanced_fraud_checking => false
+            },
+          )
+
+          expect(update_result).to be_success
+          verification = update_result.payment_method.verification
+          expect(verification.risk_data).not_to be_nil
+        end
+      end
+
+      it "does not include risk data when skip_advanced_fraud_checking is true" do
+        with_fraud_protection_enterprise_merchant do
+          customer = Braintree::Customer.create!
+          credit_card = Braintree::CreditCard.create!(
+            :customer_id => customer.id,
+            :cvv => "123",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2012",
+          )
+          update_result = Braintree::PaymentMethod.update(
+            credit_card.token,
+            :cvv => "456",
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+            :expiration_date => "06/2013",
+            :options => {
+              :verify_card => true,
+              :skip_advanced_fraud_checking => true
+            },
+          )
+
+          expect(update_result).to be_success
+          verification = update_result.payment_method.verification
+          expect(verification.risk_data).to be_nil
+        end
       end
 
       context "verification_currency_iso_code" do

@@ -11,7 +11,7 @@ describe Braintree::CreditCard do
 
   describe "self.create_signature" do
     it "should be what we expect" do
-      Braintree::CreditCardGateway._create_signature.should == [
+      expect(Braintree::CreditCardGateway._create_signature).to match([
         :billing_address_id,
         :cardholder_name,
         :cvv,
@@ -24,7 +24,7 @@ describe Braintree::CreditCard do
         :device_data,
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
-        {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code]},
+        {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -51,13 +51,13 @@ describe Braintree::CreditCard do
           :ds_transaction_id,
         ]},
         :customer_id,
-      ]
+      ])
     end
   end
 
   describe "self.update_signature" do
     it "should be what we expect" do
-      Braintree::CreditCardGateway._update_signature.should == [
+      expect(Braintree::CreditCardGateway._update_signature).to match([
         :billing_address_id,
         :cardholder_name,
         :cvv,
@@ -70,7 +70,7 @@ describe Braintree::CreditCard do
         :device_data,
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
-        {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code]},
+        {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -97,7 +97,7 @@ describe Braintree::CreditCard do
           :cavv_algorithm,
           :ds_transaction_id,
         ]},
-      ]
+      ])
     end
   end
 

@@ -157,6 +157,48 @@ describe Braintree::CreditCard do
       end
     end
 
+    it "includes risk data when skip_advanced_fraud_checking is false" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2020",
+          :options => {
+            :skip_advanced_fraud_checking => false,
+            :verify_card => true,
+          },
+        )
+
+        expect(result).to be_success
+        verification = result.credit_card.verification
+        expect(verification.risk_data).not_to be_nil
+      end
+    end
+
+    it "does not include risk data when skip_advanced_fraud_checking is true" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2020",
+          :options => {
+            :skip_advanced_fraud_checking => true,
+            :verify_card => true,
+          },
+        )
+
+        expect(result).to be_success
+        verification = result.credit_card.verification
+        expect(verification.risk_data).to be_nil
+      end
+    end
+
     it "exposes the gateway rejection reason on verification" do
       old_merchant = Braintree::Configuration.merchant_id
       old_public_key = Braintree::Configuration.public_key
@@ -852,7 +894,54 @@ describe Braintree::CreditCard do
       )
 
       result.success?.should == true
+    end
 
+    it "includes risk data when skip_advanced_fraud_checking is false" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2020",
+        )
+        updated_result = Braintree::CreditCard.update(credit_card.token,
+          :expiration_date => "05/2021",
+          :options => {
+            :verify_card => true,
+            :skip_advanced_fraud_checking => false,
+          },
+        )
+
+        expect(updated_result).to be_success
+        verification = updated_result.credit_card.verification
+        expect(verification.risk_data).not_to be_nil
+      end
+    end
+
+    it "does not include risk data when skip_advanced_fraud_checking is true" do
+      with_fraud_protection_enterprise_merchant do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :cardholder_name => "Original Holder",
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2020",
+        )
+        updated_result = Braintree::CreditCard.update(credit_card.token,
+          :expiration_date => "05/2021",
+          :options => {
+            :verify_card => true,
+            :skip_advanced_fraud_checking => true,
+          },
+        )
+
+        expect(updated_result).to be_success
+        verification = updated_result.credit_card.verification
+        expect(verification.risk_data).to be_nil
+      end
     end
 
     context "billing address" do

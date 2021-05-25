@@ -4386,7 +4386,7 @@ describe Braintree::Transaction do
             :amount => "10.00",
           )
           result.success?.should == true
-          result.transaction.network_transaction_id.should be_nil
+          result.transaction.network_transaction_id.should_not be_nil
         end
 
         it "accepts blank previous_network_transaction_id" do
@@ -4403,7 +4403,7 @@ describe Braintree::Transaction do
             :amount => "10.00",
           )
           result.success?.should == true
-          result.transaction.network_transaction_id.should be_nil
+          result.transaction.network_transaction_id.should_not be_nil
         end
       end
     end
@@ -6981,6 +6981,42 @@ describe Braintree::Transaction do
       expect(installment.amount).to eq(BigDecimal("8.38"))
       expect(installment.adjustments.map(&:amount)).to match_array([BigDecimal("-4.23")])
       expect(installment.adjustments.map(&:kind)).to match_array([Braintree::Transaction::Installment::Adjustment::Kind::Refund])
+    end
+  end
+
+  describe "Manual Key Entry" do
+    context "with correct encrypted payment reader card details" do
+      it "returns a success response" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :credit_card => {
+            :payment_reader_card_details => {
+              :encrypted_card_data => "8F34DFB312DC79C24FD5320622F3E11682D79E6B0C0FD881",
+              :key_serial_number => "FFFFFF02000572A00005",
+            },
+          },
+        )
+
+        expect(result).to be_success
+      end
+    end
+
+    context "with invalid encrypted payment reader card details" do
+      it "returns a failure response" do
+        result = Braintree::Transaction.sale(
+          :amount => "10.00",
+          :credit_card => {
+            :payment_reader_card_details => {
+              :encrypted_card_data => "invalid",
+              :key_serial_number => "invalid",
+            },
+          },
+        )
+
+        expect(result).not_to be_success
+        expect(result.errors.for(:transaction).first.code)
+          .to eq(Braintree::ErrorCodes::Transaction::PaymentInstrumentNotSupportedByMerchantAccount)
+      end
     end
   end
 

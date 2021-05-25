@@ -611,6 +611,22 @@ describe Braintree::WebhookNotification do
         metadata.token.should == "venmo_token"
         metadata.revoked_payment_method.class.should == Braintree::VenmoAccount
       end
+
+      it "builds a sample notification for a GrantedPaymentMethodRevoked webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::GrantedPaymentMethodRevoked,
+          "my_id",
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+        expect(notification.kind).to eq Braintree::WebhookNotification::Kind::GrantedPaymentMethodRevoked
+
+        metadata = notification.revoked_payment_method_metadata
+
+        expect(metadata.customer_id).to eq "venmo_customer_id"
+        expect(metadata.token).to eq "my_id"
+        expect(metadata.revoked_payment_method.class).to eq Braintree::VenmoAccount
+      end
     end
   end
 

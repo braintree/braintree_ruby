@@ -82,6 +82,8 @@ module Braintree
         _granted_payment_instrument_update_sample_xml(id)
       when Braintree::WebhookNotification::Kind::RecipientUpdatedGrantedPaymentMethod
         _granted_payment_instrument_update_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::GrantedPaymentMethodRevoked
+        _granted_payment_method_revoked_xml(id)
       when Braintree::WebhookNotification::Kind::PaymentMethodRevokedByCustomer
         _payment_method_revoked_by_customer_sample_xml(id)
       when Braintree::WebhookNotification::Kind::LocalPaymentCompleted
@@ -874,6 +876,24 @@ module Braintree
             <item>expiration-year</item>
           </updated-fields>
         </granted-payment-instrument-update>
+      XML
+    end
+
+    def _granted_payment_method_revoked_xml(id)
+      <<-XML
+        <venmo-account>
+          <created-at type='dateTime'>2018-10-11T21:28:37Z</created-at>
+          <updated-at type='dateTime'>2018-10-11T21:28:37Z</updated-at>
+          <default type='boolean'>true</default>
+          <image-url>https://assets.braintreegateway.com/payment_method_logo/venmo.png?environment=test</image-url>
+          <token>#{id}</token>
+          <source-description>Venmo Account: venmojoe</source-description>
+          <username>venmojoe</username>
+          <venmo-user-id>456</venmo-user-id>
+          <subscriptions type='array'/>
+          <customer-id>venmo_customer_id</customer-id>
+          <global-id>cGF5bWVudG1ldGhvZF92ZW5tb2FjY291bnQ</global-id>
+        </venmo-account>
       XML
     end
 

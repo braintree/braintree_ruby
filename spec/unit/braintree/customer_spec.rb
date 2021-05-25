@@ -76,7 +76,7 @@ describe Braintree::Customer do
 
   describe "self.create_signature" do
     it "should be what we expect" do
-      Braintree::CustomerGateway._create_signature.should == [
+      expect(Braintree::CustomerGateway._create_signature).to match([
         :company,
         :email,
         :fax,
@@ -101,7 +101,7 @@ describe Braintree::Customer do
           :device_data,
           :payment_method_nonce,
           {:external_vault=>[:network_transaction_id]},
-          {:options => [:make_default, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code]},
+          {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
           {:billing_address => [
             :company,
             :country_code_alpha2,
@@ -163,13 +163,13 @@ describe Braintree::Customer do
           ]]
         },
         {:custom_fields => :_any_key_}
-      ]
+      ])
     end
   end
 
   describe "self.update_signature" do
     it "should be what we expect" do
-      Braintree::CustomerGateway._update_signature.should == [
+      expect(Braintree::CustomerGateway._update_signature).to match([
         :company,
         :email,
         :fax,
@@ -194,8 +194,9 @@ describe Braintree::Customer do
           :device_data,
           :payment_method_nonce,
           {:external_vault=>[:network_transaction_id]},
-          {:options => [
+          {:options => match_array([
             :make_default,
+            :skip_advanced_fraud_checking,
             :verification_merchant_account_id,
             :verify_card,
             :verification_amount,
@@ -204,7 +205,7 @@ describe Braintree::Customer do
             :verification_account_type,
             :verification_currency_iso_code,
             :update_existing_token
-          ]},
+          ])},
           {:billing_address => [
             :company,
             :country_code_alpha2,
@@ -261,7 +262,7 @@ describe Braintree::Customer do
           ]]
         },
         {:custom_fields => :_any_key_}
-      ]
+      ])
     end
   end
 
