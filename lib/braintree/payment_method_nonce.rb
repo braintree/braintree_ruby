@@ -29,6 +29,8 @@ module Braintree
       @authentication_insight = attributes.fetch(:authentication_insight, nil)
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
       @bin_data = BinData.new(attributes[:bin_data]) if attributes[:bin_data]
+
+      define_method 'default?', {|_| attributes.fetch(:default)}
     end
 
     def to_s # :nodoc:
