@@ -5058,6 +5058,22 @@ describe Braintree::Transaction do
       result.errors.for(:transaction).on(:currency_iso_code)[0].code.should == Braintree::ErrorCodes::Transaction::CurrencyCodeNotSupportedByMerchantAccount
     end
 
+    it "validates tax_amount for Aib domestic sweden transaction and returns error" do
+      params = {
+          :transaction => {
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :merchant_account_id => SpecHelper::AibSwedenMaMerchantAccountId,
+              :credit_card => {
+                  :number => Braintree::Test::CreditCardNumbers::Visa,
+                  :expiration_date => "05/2030"
+              }
+          }
+      }
+      result = Braintree::Transaction.sale(params[:transaction])
+      result.success?.should == false
+      result.errors.for(:transaction).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::Transaction::TaxAmountIsRequiredForAibSwedish
+    end
+
     it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
       with_advanced_fraud_kount_integration_merchant do
         result = Braintree::Transaction.sale(

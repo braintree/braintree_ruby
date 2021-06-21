@@ -1,7 +1,7 @@
 module Braintree
   module Version
     Major = 4
-    Minor = 1
+    Minor = 2
     Tiny = 0
 
     String = "#{Major}.#{Minor}.#{Tiny}"

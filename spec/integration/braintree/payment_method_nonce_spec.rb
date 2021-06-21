@@ -32,6 +32,7 @@ describe Braintree::PaymentMethodNonce do
       result.payment_method_nonce.should_not be_nil
       result.payment_method_nonce.nonce.should_not be_nil
       result.payment_method_nonce.details.should_not be_nil
+      result.payment_method_nonce.default?.should be_truthy
     end
 
     it "correctly raises and exception for a non existent token" do
@@ -67,6 +68,7 @@ describe Braintree::PaymentMethodNonce do
       payment_method_nonce.should_not be_nil
       payment_method_nonce.nonce.should_not be_nil
       payment_method_nonce.details.should_not be_nil
+      payment_method_nonce.default?.should be_truthy
     end
   end
 
