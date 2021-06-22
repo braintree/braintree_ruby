@@ -61,7 +61,7 @@ module Braintree
     end
 
     def find(id)
-      raise ArgumentError if id.nil? || id.strip.to_s == ""
+      raise ArgumentError, "id can not be empty" if id.nil? || id.strip.to_s == ""
       response = @config.http.get("#{@config.base_merchant_path}/transactions/#{id}")
       Transaction._new(@gateway, response[:transaction])
     rescue NotFoundError
