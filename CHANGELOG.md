@@ -1,3 +1,6 @@
+# Unreleased
+* Add a log message to the `ArgumentError` at `TransactionGateway.find`
+
 # Changelog
 
 ## 4.2.0
