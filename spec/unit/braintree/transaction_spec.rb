@@ -21,19 +21,19 @@ describe Braintree::Transaction do
     it "raises error if passed empty string" do
       expect do
         Braintree::Transaction.find("")
-      end.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError, "id can not be empty")
     end
 
     it "raises error if passed empty string wth space" do
       expect do
         Braintree::Transaction.find(" ")
-      end.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError, "id can not be empty")
     end
 
     it "raises error if passed nil" do
       expect do
         Braintree::Transaction.find(nil)
-      end.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError, "id can not be empty")
     end
   end
 
