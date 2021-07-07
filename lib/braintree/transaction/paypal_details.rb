@@ -27,6 +27,8 @@ module Braintree
       attr_reader :token
       attr_reader :transaction_fee_amount
       attr_reader :transaction_fee_currency_iso_code
+      attr_reader :tax_id
+      attr_reader :tax_id_type
 
       def initialize(attributes)
         set_instance_variables_from_hash attributes unless attributes.nil?
