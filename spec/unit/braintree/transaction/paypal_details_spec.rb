@@ -28,6 +28,8 @@ describe Braintree::Transaction::PayPalDetails do
         :token => "token",
         :transaction_fee_amount => "2.00",
         :transaction_fee_currency_iso_code => "123",
+        :tax_id => '232323232323',
+        :tax_id_type => 'BR_CPF'
       )
 
       expect(details.authorization_id).to eq("id")
@@ -54,6 +56,8 @@ describe Braintree::Transaction::PayPalDetails do
       expect(details.token).to eq("token")
       expect(details.transaction_fee_amount).to eq("2.00")
       expect(details.transaction_fee_currency_iso_code).to eq("123")
+      expect(details.tax_id).to eq("232323232323")
+      expect(details.tax_id_type).to eq("BR_CPF")
     end
   end
 end
