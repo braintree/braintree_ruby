@@ -24,6 +24,8 @@ module Braintree
       attr_reader :refund_from_transaction_fee_currency_iso_code
       attr_reader :refund_id
       attr_reader :seller_protection_status
+      attr_reader :tax_id
+      attr_reader :tax_id_type
       attr_reader :token
       attr_reader :transaction_fee_amount
       attr_reader :transaction_fee_currency_iso_code

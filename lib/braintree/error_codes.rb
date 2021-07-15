@@ -312,6 +312,7 @@ module Braintree
       DiscountAmountCannotBeNegative = "915160"
       DiscountAmountFormatIsInvalid = "915159"
       DiscountAmountIsTooLarge = "915161"
+      ExchangeRateQuoteIdTooLong = "915229"
       FailedAuthAdjustmentAllowRetry = "95603"
       FailedAuthAdjustmentHardDecline = "95602"
       FinalAuthSubmitForSettlementForDifferentAmount = "95601"

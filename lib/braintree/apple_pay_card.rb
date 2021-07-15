@@ -12,15 +12,24 @@ module Braintree
 
     attr_reader :bin
     attr_reader :card_type
+    attr_reader :commercial
+    attr_reader :country_of_issuance
     attr_reader :created_at
     attr_reader :customer_id
+    attr_reader :debit
     attr_reader :default
+    attr_reader :durbin_regulated
     attr_reader :expiration_month
     attr_reader :expiration_year
     attr_reader :expired
+    attr_reader :healthcare
     attr_reader :image_url
+    attr_reader :issuing_bank
     attr_reader :last_4
     attr_reader :payment_instrument_name
+    attr_reader :payroll
+    attr_reader :prepaid
+    attr_reader :product_id
     attr_reader :source_description
     attr_reader :subscriptions
     attr_reader :token

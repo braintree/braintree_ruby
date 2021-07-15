@@ -41,7 +41,7 @@ VALID_APPLICATION_PARAMS = {
   :business => {
     :legal_name => "Joe's Bloggs",
     :dba_name => "Joe's Junkyard",
-    :tax_id => "123456789",
+    :tax_id => "423456789",
     :address => {
       :street_address => "456 Fake St",
       :postal_code => "48104",
@@ -371,7 +371,7 @@ describe Braintree::MerchantAccount do
       params[:individual][:address][:postal_code] = "60622"
       params[:business][:dba_name] = "James's Bloggs"
       params[:business][:legal_name] = "James's Bloggs Inc"
-      params[:business][:tax_id] = "123456789"
+      params[:business][:tax_id] = "423456789"
       params[:business][:address][:street_address] = "999 Fake St"
       params[:business][:address][:locality] = "Miami"
       params[:business][:address][:region] = "FL"
@@ -397,7 +397,7 @@ describe Braintree::MerchantAccount do
       result.merchant_account.individual_details.address_details.postal_code.should == "60622"
       result.merchant_account.business_details.dba_name.should == "James's Bloggs"
       result.merchant_account.business_details.legal_name.should == "James's Bloggs Inc"
-      result.merchant_account.business_details.tax_id.should == "123456789"
+      result.merchant_account.business_details.tax_id.should == "423456789"
       result.merchant_account.business_details.address_details.street_address.should == "999 Fake St"
       result.merchant_account.business_details.address_details.locality.should == "Miami"
       result.merchant_account.business_details.address_details.region.should == "FL"

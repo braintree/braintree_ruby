@@ -99,6 +99,15 @@ describe Braintree::PaymentMethod do
       apple_pay_card.expiration_month.to_i.should > 0
       apple_pay_card.expiration_year.to_i.should > 0
       apple_pay_card.customer_id.should == customer.id
+      apple_pay_card.commercial.should_not be_nil
+      apple_pay_card.country_of_issuance.should_not be_nil
+      apple_pay_card.debit.should_not be_nil
+      apple_pay_card.durbin_regulated.should_not be_nil
+      apple_pay_card.healthcare.should_not be_nil
+      apple_pay_card.issuing_bank.should_not be_nil
+      apple_pay_card.payroll.should_not be_nil
+      apple_pay_card.prepaid.should_not be_nil
+      apple_pay_card.product_id.should_not be_nil
     end
 
     it "creates a payment method from a fake google pay proxy card nonce" do
@@ -127,6 +136,15 @@ describe Braintree::PaymentMethod do
       google_pay_card.google_transaction_id.should == "google_transaction_id"
       google_pay_card.source_description.should == "Discover 1111"
       google_pay_card.customer_id.should == customer.id
+      google_pay_card.commercial.should_not be_nil
+      google_pay_card.country_of_issuance.should_not be_nil
+      google_pay_card.debit.should_not be_nil
+      google_pay_card.durbin_regulated.should_not be_nil
+      google_pay_card.healthcare.should_not be_nil
+      google_pay_card.issuing_bank.should_not be_nil
+      google_pay_card.payroll.should_not be_nil
+      google_pay_card.prepaid.should_not be_nil
+      google_pay_card.product_id.should_not be_nil
     end
 
     it "creates a payment method from a google pay network token nonce" do
@@ -155,6 +173,15 @@ describe Braintree::PaymentMethod do
       google_pay_card.google_transaction_id.should == "google_transaction_id"
       google_pay_card.source_description.should == "MasterCard 4444"
       google_pay_card.customer_id.should == customer.id
+      google_pay_card.commercial.should_not be_nil
+      google_pay_card.country_of_issuance.should_not be_nil
+      google_pay_card.debit.should_not be_nil
+      google_pay_card.durbin_regulated.should_not be_nil
+      google_pay_card.healthcare.should_not be_nil
+      google_pay_card.issuing_bank.should_not be_nil
+      google_pay_card.payroll.should_not be_nil
+      google_pay_card.prepaid.should_not be_nil
+      google_pay_card.product_id.should_not be_nil
     end
 
     it "creates a payment method from venmo account nonce" do

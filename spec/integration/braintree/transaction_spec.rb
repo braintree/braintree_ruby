@@ -999,6 +999,34 @@ describe Braintree::Transaction do
       result.transaction.credit_card_details.expiration_date.should == "05/2011"
     end
 
+    it "accepts exchange_rate_quote_id" do
+      result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+          },
+          :exchange_rate_quote_id => "dummyExchangeRateQuoteId-Brainree-Ruby",
+      )
+      result.success?.should == true
+      result.transaction.credit_card_details.expiration_date.should == "05/2009"
+    end
+
+    it "returns an error if provided invalid exchange_rate_quote_id" do
+      result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2009"
+          },
+          :exchange_rate_quote_id => "a" * 4010,
+      )
+      result.success?.should == false
+      result.errors.for(:transaction).on(:exchange_rate_quote_id)[0].code.should == Braintree::ErrorCodes::Transaction::ExchangeRateQuoteIdTooLong
+    end
+
     it "returns some error if customer_id is invalid" do
       result = Braintree::Transaction.create(
         :type => "sale",

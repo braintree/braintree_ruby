@@ -25,6 +25,8 @@ describe Braintree::Transaction::PayPalDetails do
         :refund_from_transaction_fee_currency_iso_code => "123",
         :refund_id => "refund-id",
         :seller_protection_status => "seller-protection-status",
+        :tax_id => "tax-id",
+        :tax_id_type => "tax-id-type",
         :token => "token",
         :transaction_fee_amount => "2.00",
         :transaction_fee_currency_iso_code => "123",
@@ -51,6 +53,8 @@ describe Braintree::Transaction::PayPalDetails do
       expect(details.refund_from_transaction_fee_currency_iso_code).to eq("123")
       expect(details.refund_id).to eq("refund-id")
       expect(details.seller_protection_status).to eq("seller-protection-status")
+      expect(details.tax_id).to eq("tax-id")
+      expect(details.tax_id_type).to eq("tax-id-type")
       expect(details.token).to eq("token")
       expect(details.transaction_fee_amount).to eq("2.00")
       expect(details.transaction_fee_currency_iso_code).to eq("123")

@@ -1021,6 +1021,15 @@ describe Braintree::Customer do
       apple_pay_card.token.should_not be_nil
       apple_pay_card.expiration_year.should_not be_nil
       apple_pay_card.payment_instrument_name.should == "AmEx 41002"
+      apple_pay_card.commercial.should_not be_nil
+      apple_pay_card.country_of_issuance.should_not be_nil
+      apple_pay_card.debit.should_not be_nil
+      apple_pay_card.durbin_regulated.should_not be_nil
+      apple_pay_card.healthcare.should_not be_nil
+      apple_pay_card.issuing_bank.should_not be_nil
+      apple_pay_card.payroll.should_not be_nil
+      apple_pay_card.prepaid.should_not be_nil
+      apple_pay_card.product_id.should_not be_nil
     end
 
     it "returns associated google pay proxy cards" do
@@ -1037,6 +1046,15 @@ describe Braintree::Customer do
       google_pay_card.token.should_not be_nil
       google_pay_card.expiration_year.should_not be_nil
       google_pay_card.is_network_tokenized?.should == false
+      google_pay_card.commercial.should_not be_nil
+      google_pay_card.country_of_issuance.should_not be_nil
+      google_pay_card.debit.should_not be_nil
+      google_pay_card.durbin_regulated.should_not be_nil
+      google_pay_card.healthcare.should_not be_nil
+      google_pay_card.issuing_bank.should_not be_nil
+      google_pay_card.payroll.should_not be_nil
+      google_pay_card.prepaid.should_not be_nil
+      google_pay_card.product_id.should_not be_nil
     end
 
     it "returns associated google pay network tokens" do
@@ -1053,6 +1071,15 @@ describe Braintree::Customer do
       google_pay_card.token.should_not be_nil
       google_pay_card.expiration_year.should_not be_nil
       google_pay_card.is_network_tokenized?.should == true
+      google_pay_card.commercial.should_not be_nil
+      google_pay_card.country_of_issuance.should_not be_nil
+      google_pay_card.debit.should_not be_nil
+      google_pay_card.durbin_regulated.should_not be_nil
+      google_pay_card.healthcare.should_not be_nil
+      google_pay_card.issuing_bank.should_not be_nil
+      google_pay_card.payroll.should_not be_nil
+      google_pay_card.prepaid.should_not be_nil
+      google_pay_card.product_id.should_not be_nil
     end
 
     it "returns associated venmo accounts" do
