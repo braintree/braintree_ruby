@@ -1,5 +1,5 @@
 # Unreleased
-* Add a log message to the `ArgumentError` at `TransactionGateway.find`
+* Add a log message to the `ArgumentError` at `TransactionGateway.find` (thanks @BrianLima)
 
 # Changelog
 
