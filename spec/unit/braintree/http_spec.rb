@@ -25,6 +25,7 @@ END
   <last-name>Doe</last-name>
   <number>1234560000001234</number>
   <cvv>123</cvv>
+  <encrypted-card-data>8F34DFB312DC79C24FD5320622F3E11682D79E6B0C0FD881</encrypted-card-data>
 </customer>
       END
 
@@ -34,6 +35,7 @@ END
 [Braintree]   <last-name>Doe</last-name>
 [Braintree]   <number>123456******1234</number>
 [Braintree]   <cvv>***</cvv>
+[Braintree]   <encrypted-card-data>***</encrypted-card-data>
 [Braintree] </customer>
 END
       Braintree::Http.new(:config)._format_and_sanitize_body_for_log(input_xml).should == expected_xml

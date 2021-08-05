@@ -188,6 +188,7 @@ module Braintree
       formatted_xml = input_xml.gsub(/^/, "[Braintree] ")
       formatted_xml = formatted_xml.gsub(/<number>(.{6}).+?(.{4})<\/number>/m, '<number>\1******\2</number>')
       formatted_xml = formatted_xml.gsub(/<cvv>.+?<\/cvv>/m, "<cvv>***</cvv>")
+      formatted_xml = formatted_xml.gsub(/<encrypted-card-data>.+?<\/encrypted-card-data>/m, "<encrypted-card-data>***</encrypted-card-data>")
       formatted_xml
     end
 

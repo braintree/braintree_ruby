@@ -668,6 +668,40 @@ describe Braintree::WebhookNotification do
     end
   end
 
+  context "local_payment_expired" do
+    it "builds a sample notification for a local_payment_expired webhook" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::LocalPaymentExpired,
+        "my_id",
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      notification.kind.should == Braintree::WebhookNotification::Kind::LocalPaymentExpired
+
+      local_payment_expired = notification.local_payment_expired
+      local_payment_expired.payment_id.should == "PAY-XYZ123"
+      local_payment_expired.payment_context_id.should == "cG5b="
+    end
+  end
+
+  context "local_payment_funded" do
+    it "builds a sample notification for a local_payment_funded webhook" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::LocalPaymentFunded,
+        "my_id",
+      )
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      notification.kind.should == Braintree::WebhookNotification::Kind::LocalPaymentFunded
+
+      local_payment_funded = notification.local_payment_funded
+      local_payment_funded.payment_id.should == "PAY-XYZ123"
+      local_payment_funded.payment_context_id.should == "cG5b="
+      local_payment_funded.transaction.id.should == "my_id"
+      local_payment_funded.transaction.status.should == Braintree::Transaction::Status::Settled
+      local_payment_funded.transaction.amount.should == 49.99
+      local_payment_funded.transaction.order_id.should == "order4567"
+    end
+  end
 
   context "local_payment_reversed" do
     it "builds a sample notification for a local_payment webhook" do
@@ -675,7 +709,6 @@ describe Braintree::WebhookNotification do
         Braintree::WebhookNotification::Kind::LocalPaymentReversed,
         "my_id",
       )
-
       notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
       notification.kind.should == Braintree::WebhookNotification::Kind::LocalPaymentReversed
 

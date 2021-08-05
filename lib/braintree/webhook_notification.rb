@@ -28,6 +28,8 @@ module Braintree
       GrantedPaymentMethodRevoked = "granted_payment_method_revoked"
 
       LocalPaymentCompleted = "local_payment_completed"
+      LocalPaymentExpired = "local_payment_expired"
+      LocalPaymentFunded = "local_payment_funded"
       LocalPaymentReversed = "local_payment_reversed"
 
       OAuthAccessRevoked = "oauth_access_revoked"
@@ -65,6 +67,8 @@ module Braintree
     attr_reader :revoked_payment_method_metadata
     attr_reader :kind
     attr_reader :local_payment_completed
+    attr_reader :local_payment_expired
+    attr_reader :local_payment_funded
     attr_reader :local_payment_reversed
     attr_reader :oauth_access_revocation
     attr_reader :partner_merchant
@@ -98,6 +102,8 @@ module Braintree
       @granted_payment_instrument_update = GrantedPaymentInstrumentUpdate._new(@subject[:granted_payment_instrument_update]) if @subject.has_key?(:granted_payment_instrument_update)
       @revoked_payment_method_metadata = RevokedPaymentMethodMetadata._new(gateway, @subject) if [Kind::GrantedPaymentInstrumentRevoked, Kind::PaymentMethodRevokedByCustomer, Kind::GrantedPaymentMethodRevoked].include?(@kind)
       @local_payment_completed = LocalPaymentCompleted._new(@subject[:local_payment]) if @subject.has_key?(:local_payment) && Kind::LocalPaymentCompleted == @kind
+      @local_payment_expired = LocalPaymentExpired._new(@subject[:local_payment_expired]) if @subject.has_key?(:local_payment_expired) && Kind::LocalPaymentExpired == @kind
+      @local_payment_funded = LocalPaymentFunded._new(@subject[:local_payment_funded]) if @subject.has_key?(:local_payment_funded) && Kind::LocalPaymentFunded == @kind
       @local_payment_reversed = LocalPaymentReversed._new(@subject[:local_payment_reversed]) if @subject.has_key?(:local_payment_reversed) && Kind::LocalPaymentReversed == @kind
     end
 
