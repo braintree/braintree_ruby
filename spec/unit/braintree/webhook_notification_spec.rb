@@ -317,6 +317,24 @@ describe Braintree::WebhookNotification do
       end
     end
 
+    context "transaction review" do
+      it " builds a sample notification for a transaction reviewed webhook" do
+        sample_notification = Braintree::WebhookTesting.sample_notification(
+          Braintree::WebhookNotification::Kind::TransactionReviewed,
+          "my_id",
+        )
+
+        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+        expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::TransactionReviewed)
+        expect(notification.transaction_review.transaction_id).to eq("my_id")
+        expect(notification.transaction_review.decision).to eq("decision")
+        expect(notification.transaction_review.reviewer_email).to eq("hey@girl.com")
+        expect(notification.transaction_review.reviewer_note).to eq("i reviewed this")
+        expect(notification.transaction_review.reviewed_time).to_not be_nil
+      end
+    end
+
     context "us bank account transactions" do
       it "builds a sample notification for a settlement webhook" do
         sample_notification = Braintree::WebhookTesting.sample_notification(

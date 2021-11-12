@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Plan do
 
@@ -45,6 +46,87 @@ describe Braintree::Plan do
       gateway = Braintree::Gateway.new(SpecHelper::TestMerchantConfig)
       plans = gateway.plan.all
       plans.should == []
+    end
+  end
+
+  describe "self.create" do
+    let(:attributes) do
+      {
+        :billing_day_of_month => 12,
+        :billing_frequency => 1,
+        :currency_iso_code => "USD",
+        :description => "description on create",
+        :name => "my new plan name",
+        :number_of_billing_cycles => 1,
+        :price => "9.99",
+        :trial_period => false
+      }
+
+      it "is successful with given params" do
+        result = Braintree::Plan.create(attributes)
+        expect(result.success?).to be_truthy
+        expect(result.plan.billing_day_of_month).to eq 12
+        expect(result.plan.description).to eq "description on create"
+        expect(result.plan.name).to eq "my new plan name"
+        expect(result.plan.price).to eq "9.99"
+        expect(result.plan.billing_frequency).to eq 1
+      end
+    end
+  end
+
+  describe "self.find" do
+    it "finds a plan" do
+      plan = Braintree::Plan.create(
+        :billing_day_of_month => 12,
+        :billing_frequency => 1,
+        :currency_iso_code => "USD",
+        :description => "description on create",
+        :name => "my new plan name",
+        :number_of_billing_cycles => 1,
+        :price => "9.99",
+        :trial_period => false,
+      ).plan
+
+      found_plan = Braintree::Plan.find(plan.id)
+      expect(found_plan.name).to eq plan.name
+    end
+
+    it "raises Braintree::NotFoundError if it cannot find" do
+      expect {
+        Braintree::Plan.find("noSuchPlan")
+      }.to raise_error(Braintree::NotFoundError, 'plan with id "noSuchPlan" not found')
+    end
+  end
+
+  describe "self.update!" do
+    before(:each) do
+      @plan = Braintree::Plan.create(
+        :billing_day_of_month => 12,
+        :billing_frequency => 1,
+        :currency_iso_code => "USD",
+        :description => "description on create",
+        :name => "my new plan name",
+        :number_of_billing_cycles => 1,
+        :price => "9.99",
+        :trial_period => false,
+      ).plan
+    end
+
+    it "returns the updated plan if valid" do
+      new_id = rand(36**9).to_s(36)
+      plan = Braintree::Plan.update!(@plan.id,
+                                     :name => "updated name",
+                                     :price => 99.88,
+                                    )
+
+      expect(plan.name).to eq "updated name"
+      expect(plan.price).to eq BigDecimal("99.88")
+    end
+
+    it "raises a ValidationsFailed if invalid" do
+      expect do
+        Braintree::Plan.update!(@plan.id, :number_of_billing_cycles => "number of billing cycles")
+      end.to raise_error(Braintree::ValidationsFailed)
     end
   end
 

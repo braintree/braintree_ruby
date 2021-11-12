@@ -60,6 +60,8 @@ module Braintree
         _merchant_account_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionDisbursed
         _transaction_disbursed_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::TransactionReviewed
+        _transaction_reviewed_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionSettled
         _transaction_settled_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionSettlementDeclined
@@ -245,6 +247,19 @@ module Braintree
             <disbursement-date type="date">2013-07-09</disbursement-date>
           </disbursement-details>
         </transaction>
+      XML
+    end
+
+    def _transaction_reviewed_sample_xml(id)
+
+      <<-XML
+        <transaction-review>
+          <transaction-id>my_id</transaction-id>
+          <decision>decision</decision>
+          <reviewer-email>hey@girl.com</reviewer-email>
+          <reviewer-note>i reviewed this</reviewer-note>
+          <reviewed-time type="datetime">2017-06-16T20:44:41Z</reviewed-time>
+        </transaction-review>
       XML
     end
 

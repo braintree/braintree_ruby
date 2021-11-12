@@ -16,6 +16,7 @@ module Braintree
     attr_reader :payment_method
     attr_reader :payment_method_nonce
     attr_reader :paypal_account
+    attr_reader :plan
     attr_reader :settlement_batch_summary
     attr_reader :subscription
     attr_reader :supported_networks

@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.5.0
+* Add plan create/update/find API endpoint
+* Add support for `TransactionReview` webhook notification
+
 ## 4.4.0
 * Sanitize encrypted_card_data logs
 * Add `LocalPaymentExpired` and `LocalPaymentFunded` webhook notification support

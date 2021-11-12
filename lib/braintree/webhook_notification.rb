@@ -54,6 +54,7 @@ module Braintree
       SubMerchantAccountDeclined = "sub_merchant_account_declined"
 
       TransactionDisbursed = "transaction_disbursed"
+      TransactionReviewed = "transaction_reviewed"
       TransactionSettlementDeclined = "transaction_settlement_declined"
       TransactionSettled = "transaction_settled"
     end
@@ -76,6 +77,7 @@ module Braintree
     attr_reader :subscription
     attr_reader :timestamp
     attr_reader :transaction
+    attr_reader :transaction_review
 
     def self.parse(*args)
       Configuration.gateway.webhook_notification.parse(*args)
@@ -94,6 +96,7 @@ module Braintree
       @oauth_access_revocation = OpenStruct.new(@subject[:oauth_application_revocation]) if @subject.has_key?(:oauth_application_revocation)
       @subscription = Subscription._new(gateway, @subject[:subscription]) if @subject.has_key?(:subscription)
       @transaction = Transaction._new(gateway, @subject[:transaction]) if @subject.has_key?(:transaction)
+      @transaction_review = OpenStruct.new(@subject[:transaction_review]) if @subject.has_key?(:transaction_review)
       @disbursement = Disbursement._new(gateway, @subject[:disbursement]) if @subject.has_key?(:disbursement)
       @dispute = Dispute._new(@subject[:dispute]) if @subject.has_key?(:dispute)
       @account_updater_daily_report = AccountUpdaterDailyReport._new(@subject[:account_updater_daily_report]) if @subject.has_key?(:account_updater_daily_report)

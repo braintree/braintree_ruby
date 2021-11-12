@@ -33,6 +33,26 @@ module Braintree
 
     class << self
       protected :new
+
+      def create(*args)
+        Configuration.gateway.plan.create(*args)
+      end
+
+      def create!(*args)
+        Configuration.gateway.plan.create!(*args)
+      end
+
+      def find(*args)
+        Configuration.gateway.plan.find(*args)
+      end
+
+      def update(*args)
+        Configuration.gateway.plan.update(*args)
+      end
+
+      def update!(*args)
+        Configuration.gateway.plan.update!(*args)
+      end
     end
 
     def self._new(*args)
