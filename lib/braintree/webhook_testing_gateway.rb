@@ -96,6 +96,8 @@ module Braintree
         _local_payment_funded_sample_xml(id)
       when Braintree::WebhookNotification::Kind::LocalPaymentReversed
         _local_payment_reversed_sample_xml
+      when Braintree::WebhookNotification::Kind::PaymentMethodCustomerDataUpdated
+        _payment_method_customer_data_updated_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -899,21 +901,7 @@ module Braintree
     end
 
     def _granted_payment_method_revoked_xml(id)
-      <<-XML
-        <venmo-account>
-          <created-at type='dateTime'>2018-10-11T21:28:37Z</created-at>
-          <updated-at type='dateTime'>2018-10-11T21:28:37Z</updated-at>
-          <default type='boolean'>true</default>
-          <image-url>https://assets.braintreegateway.com/payment_method_logo/venmo.png?environment=test</image-url>
-          <token>#{id}</token>
-          <source-description>Venmo Account: venmojoe</source-description>
-          <username>venmojoe</username>
-          <venmo-user-id>456</venmo-user-id>
-          <subscriptions type='array'/>
-          <customer-id>venmo_customer_id</customer-id>
-          <global-id>cGF5bWVudG1ldGhvZF92ZW5tb2FjY291bnQ</global-id>
-        </venmo-account>
-      XML
+      _venmo_account_xml(id)
     end
 
     def _payment_method_revoked_by_customer_sample_xml(id)
@@ -985,6 +973,48 @@ module Braintree
           <payment-context-id>cG5b=</payment-context-id>
         </local-payment-reversed>
       XML
+    end
+
+    def _payment_method_customer_data_updated_sample_xml(id)
+      <<-XML
+        <payment-method-customer-data-updated-metadata>
+          <token>TOKEN-12345</token>
+          <payment-method>
+            #{_venmo_account_xml(id)}
+          </payment-method>
+          <datetime-updated type='dateTime'>2022-01-01T21:28:37Z</datetime-updated>
+          <enriched-customer-data>
+            <fields-updated type='array'>
+              <item>username</item>
+            </fields-updated>
+            <profile-data>
+              <username>venmo_username</username>
+              <first-name>John</first-name>
+              <last-name>Doe</last-name>
+              <phone-number>1231231234</phone-number>
+              <email>john.doe@paypal.com</email>
+            </profile-data>
+          </enriched-customer-data>
+        </payment-method-customer-data-updated-metadata>
+      XML
+    end
+
+    def _venmo_account_xml(id)
+      <<-XML
+        <venmo-account>
+          <created-at type='dateTime'>2018-10-11T21:28:37Z</created-at>
+          <updated-at type='dateTime'>2018-10-11T21:28:37Z</updated-at>
+          <default type='boolean'>true</default>
+          <image-url>https://assets.braintreegateway.com/payment_method_logo/venmo.png?environment=test</image-url>
+          <token>#{id}</token>
+          <source-description>Venmo Account: venmojoe</source-description>
+          <username>venmojoe</username>
+          <venmo-user-id>456</venmo-user-id>
+          <subscriptions type='array'/>
+          <customer-id>venmo_customer_id</customer-id>
+          <global-id>cGF5bWVudG1ldGhvZF92ZW5tb2FjY291bnQ</global-id>
+        </venmo-account>
+        XML
     end
   end
 end

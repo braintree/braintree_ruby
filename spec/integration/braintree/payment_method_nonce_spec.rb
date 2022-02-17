@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
+require "date"
 
 describe Braintree::PaymentMethodNonce do
   let(:config) { Braintree::Configuration.instantiate }
@@ -84,7 +85,7 @@ describe Braintree::PaymentMethodNonce do
       nonce.details.bin.should == "401288"
       nonce.details.card_type.should == "Visa"
       nonce.details.expiration_month.should == "12"
-      nonce.details.expiration_year.should == "2022"
+      nonce.details.expiration_year.should == Date.today.next_year.year.to_s
       nonce.details.is_network_tokenized?.should be_nil
       nonce.details.last_two.should == "81"
       nonce.details.payer_info.should be_nil

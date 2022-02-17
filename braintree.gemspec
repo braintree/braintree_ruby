@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
     "bug_tracker_uri" => "https://github.com/braintree/braintree_ruby/issues",
     "changelog_uri" => "https://github.com/braintree/braintree_ruby/blob/master/CHANGELOG.md",
     "source_code_uri" => "https://github.com/braintree/braintree_ruby",
-    "documentation_uri" => "https://developers.braintreepayments.com/"
+    "documentation_uri" => "https://developer.paypal.com/braintree/docs"
   }
 end
 

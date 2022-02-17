@@ -735,6 +735,32 @@ describe Braintree::WebhookNotification do
     end
   end
 
+  context "payment_method_customer_data_updated" do
+    it "builds a sample notification for a payment_method_customer_data_updated webhook" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::PaymentMethodCustomerDataUpdated,
+        "my_id",
+      )
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      notification.kind.should == Braintree::WebhookNotification::Kind::PaymentMethodCustomerDataUpdated
+
+      payment_method_customer_data_updated = notification.payment_method_customer_data_updated_metadata
+
+      payment_method_customer_data_updated.token.should eq("TOKEN-12345")
+      payment_method_customer_data_updated.datetime_updated.should eq("2022-01-01T21:28:37Z")
+
+      enriched_customer_data = payment_method_customer_data_updated.enriched_customer_data
+      enriched_customer_data.fields_updated.should eq(["username"])
+
+      profile_data = enriched_customer_data.profile_data
+      profile_data.first_name.should eq("John")
+      profile_data.last_name.should eq("Doe")
+      profile_data.username.should eq("venmo_username")
+      profile_data.phone_number.should eq("1231231234")
+      profile_data.email.should eq("john.doe@paypal.com")
+    end
+  end
+
   describe "parse" do
     it "raises InvalidSignature error when the signature is nil" do
       expect do

@@ -1,5 +1,10 @@
 # Changelog
 
+# 4.6.0
+
+* Add `PaymentMethodCustomerDataUpdated` webhook notification support
+
+
 ## 4.5.0
 * Add plan create/update/find API endpoint
 * Add support for `TransactionReview` webhook notification
