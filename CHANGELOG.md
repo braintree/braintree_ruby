@@ -1,9 +1,10 @@
 # Changelog
+## 4.7.0
+* Add `AchReturnCode` to transaction object
+* Add `retried` boolean to `Transaction`
 
-# 4.6.0
-
+## 4.6.0
 * Add `PaymentMethodCustomerDataUpdated` webhook notification support
-
 
 ## 4.5.0
 * Add plan create/update/find API endpoint

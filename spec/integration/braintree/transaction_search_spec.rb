@@ -419,6 +419,17 @@ describe Braintree::Transaction, "search" do
         collection.maximum_size.should == 0
       end
 
+      it "searches for settlement_confirmed transaction" do
+        transaction_id = "settlement_confirmed_txn"
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction_id
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == transaction_id
+      end
+
       it "finds expired authorizations by status" do
         collection = Braintree::Transaction.search do |search|
           search.status.in Braintree::Transaction::Status::AuthorizationExpired

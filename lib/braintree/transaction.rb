@@ -91,6 +91,7 @@ module Braintree
     end
 
     attr_reader :acquirer_reference_number
+    attr_reader :ach_return_code
     attr_reader :add_ons
     attr_reader :additional_processor_response          # The raw response from the processor.
     attr_reader :amount
@@ -146,6 +147,7 @@ module Braintree
     attr_reader :refund_ids
     attr_reader :refunded_transaction_id
     attr_reader :refunded_installments
+    attr_reader :retried
     attr_reader :retrieval_reference_number
     attr_reader :risk_data
     attr_reader :samsung_pay_card_details

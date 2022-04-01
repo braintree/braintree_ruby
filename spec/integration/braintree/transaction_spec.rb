@@ -1947,7 +1947,7 @@ describe Braintree::Transaction do
         venmo_account_details.should be_a(Braintree::Transaction::VenmoAccountDetails)
         venmo_account_details.token.should respond_to(:to_str)
         venmo_account_details.username.should == "venmojoe"
-        venmo_account_details.venmo_user_id.should == "Venmo-Joe-1"
+        venmo_account_details.venmo_user_id.should == "1234567891234567891"
         venmo_account_details.image_url.should include(".png")
         venmo_account_details.source_description.should == "Venmo Account: venmojoe"
       end
@@ -6938,6 +6938,39 @@ describe Braintree::Transaction do
 
       transaction.amount.should == BigDecimal("112.44")
       transaction.processed_with_network_token?.should == false
+    end
+  end
+
+  describe "retried flag presence in response" do
+    it "creates a retried transaction" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :payment_method_token => "network_tokenized_credit_card",
+      )
+      transaction = result.transaction
+      transaction.retried.should == true
+    end
+
+    it "creates a non-retried transaction" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :payment_method_token => "network_tokenized_credit_card",
+      )
+      transaction = result.transaction
+      transaction.retried.should == nil
+    end
+
+    it "creates a transaction that is ineligible for retries" do
+      result = Braintree::Transaction.sale(
+        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+      )
+      transaction = result.transaction
+      transaction.retried.should == nil
     end
   end
 

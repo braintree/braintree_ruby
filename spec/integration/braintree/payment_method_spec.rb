@@ -200,7 +200,7 @@ describe Braintree::PaymentMethod do
       venmo_account.default.should == true
       venmo_account.token.should == token
       venmo_account.username.should == "venmojoe"
-      venmo_account.venmo_user_id.should == "Venmo-Joe-1"
+      venmo_account.venmo_user_id.should == "1234567891234567891"
       venmo_account.image_url.should include(".png")
       venmo_account.source_description.should == "Venmo Account: venmojoe"
       venmo_account.customer_id.should == customer.id
@@ -1163,7 +1163,7 @@ describe Braintree::PaymentMethod do
         venmo_account.default.should == true
         venmo_account.image_url.should =~ /venmo/
         venmo_account.username.should == "venmojoe"
-        venmo_account.venmo_user_id.should == "Venmo-Joe-1"
+        venmo_account.venmo_user_id.should == "1234567891234567891"
         venmo_account.source_description.should == "Venmo Account: venmojoe"
         venmo_account.customer_id.should == customer.id
       end
