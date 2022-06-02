@@ -7,6 +7,12 @@ describe Braintree::ApplePayCard do
     end
   end
 
+  describe "cardholder_name" do
+    it "returns Apple pay card cardholder name" do
+      Braintree::ApplePayCard._new(:gateway, cardholder_name: "John Miller").cardholder_name.should == "John Miller"
+    end
+  end
+
   describe "default?" do
     it "is true if the Apple pay card is the default payment method for the customer" do
       Braintree::ApplePayCard._new(:gateway, :default => true).default?.should == true

@@ -1,4 +1,7 @@
 # Changelog
+## unreleased
+* Add `cardholder_name` attribute reader to `ApplePayCard`
+
 ## 4.7.0
 * Add `AchReturnCode` to transaction object
 * Add `retried` boolean to `Transaction`

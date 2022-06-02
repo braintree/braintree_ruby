@@ -12,6 +12,7 @@ module Braintree
 
     attr_reader :bin
     attr_reader :card_type
+    attr_reader :cardholder_name
     attr_reader :commercial
     attr_reader :country_of_issuance
     attr_reader :created_at
