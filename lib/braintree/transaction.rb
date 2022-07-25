@@ -170,6 +170,7 @@ module Braintree
     attr_reader :venmo_account_details
     attr_reader :visa_checkout_card_details
     attr_reader :voice_referral_number
+    attr_reader :ach_return_responses
 
     def self.adjust_authorization(*args)
       Configuration.gateway.transaction.adjust_authorization(*args)
@@ -290,38 +291,40 @@ module Braintree
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
+
       @amount = Util.to_big_decimal(amount)
-      @credit_card_details = CreditCardDetails.new(@credit_card)
-      @service_fee_amount = Util.to_big_decimal(service_fee_amount)
-      @subscription_details = SubscriptionDetails.new(@subscription)
-      @customer_details = CustomerDetails.new(@customer)
+      @apple_pay_details = ApplePayDetails.new(@apple_pay)
       @billing_details = AddressDetails.new(@billing)
-      @disbursement_details = DisbursementDetails.new(@disbursement_details)
-      @shipping_details = AddressDetails.new(@shipping)
-      @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
-      @tax_amount = Util.to_big_decimal(tax_amount)
+      @credit_card_details = CreditCardDetails.new(@credit_card)
+      @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
+      @customer_details = CustomerDetails.new(@customer)
       @descriptor = Descriptor.new(@descriptor)
+      @disbursement_details = DisbursementDetails.new(@disbursement_details)
+      @google_pay_details = GooglePayDetails.new(@google_pay_card)
       @local_payment_details = LocalPaymentDetails.new(@local_payment)
+      @payment_instrument_type = attributes[:payment_instrument_type]
       @paypal_details = PayPalDetails.new(@paypal)
       @paypal_here_details = PayPalHereDetails.new(@paypal_here)
-      @apple_pay_details = ApplePayDetails.new(@apple_pay)
-      @google_pay_details = GooglePayDetails.new(@google_pay_card)
-      @venmo_account_details = VenmoAccountDetails.new(@venmo_account)
-      disputes.map! { |attrs| Dispute._new(attrs) } if disputes
-      @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
-      add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
-      discounts.map! { |attrs| Discount._new(attrs) } if discounts
-      @payment_instrument_type = attributes[:payment_instrument_type]
-      @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
-      @facilitated_details = FacilitatedDetails.new(attributes[:facilitated_details]) if attributes[:facilitated_details]
-      @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]
-      @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
-      @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
-      @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
       @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card])
       @sca_exemption_requested = attributes[:sca_exemption_requested]
-      authorization_adjustments.map! { |attrs| AuthorizationAdjustment._new(attrs) } if authorization_adjustments
+      @service_fee_amount = Util.to_big_decimal(service_fee_amount)
+      @shipping_details = AddressDetails.new(@shipping)
+      @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
+      @subscription_details = SubscriptionDetails.new(@subscription)
+      @tax_amount = Util.to_big_decimal(tax_amount)
+      @venmo_account_details = VenmoAccountDetails.new(@venmo_account)
+      @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
 
+      @facilitated_details = FacilitatedDetails.new(attributes[:facilitated_details]) if attributes[:facilitated_details]
+      @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]
+      @risk_data = RiskData.new(attributes[:risk_data]) if attributes[:risk_data]
+      @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
+      @us_bank_account_details = UsBankAccountDetails.new(attributes[:us_bank_account]) if attributes[:us_bank_account]
+
+      add_ons.map! { |attrs| AddOn._new(attrs) } if add_ons
+      authorization_adjustments.map! { |attrs| AuthorizationAdjustment._new(attrs) } if authorization_adjustments
+      discounts.map! { |attrs| Discount._new(attrs) } if discounts
+      disputes.map! { |attrs| Dispute._new(attrs) } if disputes
       installments.map! { |attrs| Installment.new(attrs) } if installments
       refunded_installments.map! { |attrs| Installment.new(attrs) } if refunded_installments
     end

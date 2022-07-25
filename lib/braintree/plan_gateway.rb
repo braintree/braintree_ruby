@@ -106,10 +106,10 @@ module Braintree
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:plan]
         SuccessfulResult.new(:plan => Plan._new(@gateway, response[:plan]))
-      elsif response[:errors]
-        ErrorResult.new(@gateway, response[:errors])
+      elsif response[:api_error_response]
+        ErrorResult.new(@gateway, response[:api_error_response])
       else
-        raise UnexpectedError, "expected :plan or :errors"
+        raise UnexpectedError, "expected :plan or :api_error_response"
       end
     end
   end

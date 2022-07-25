@@ -50,6 +50,10 @@ module Braintree
       DocumentUploadGateway.new(self)
     end
 
+    def exchange_rate_quote
+      ExchangeRateQuoteGateway.new(self)
+    end
+
     def oauth
       OAuthGateway.new(self)
     end

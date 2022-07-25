@@ -61,12 +61,13 @@ module Braintree
     multiple_value_field :source
     multiple_value_field :type, :allows => Transaction::Type::All
     multiple_value_field :store_ids
+    multiple_value_field :reason_code
 
     key_value_fields :refund
 
     range_fields :amount, :created_at, :authorization_expired_at, :authorized_at,
                  :failed_at, :gateway_rejected_at, :processor_declined_at,
                  :settled_at, :submitted_for_settlement_at, :voided_at,
-                 :disbursement_date, :dispute_date
+                 :disbursement_date, :dispute_date, :ach_return_responses_created_at
   end
 end
