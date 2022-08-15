@@ -28,7 +28,6 @@ describe Braintree::GraphQLClient do
       definition = <<-GRAPHQL
 mutation CreateClientToken($input: CreateClientTokenInput!) {
   createClientToken(input: $input) {
-    clientMutationId
     clientToken
   }
 }
@@ -36,7 +35,6 @@ mutation CreateClientToken($input: CreateClientTokenInput!) {
 
       variables = {
         input: {
-          clientMutationId: "abc123",
           clientToken: {
             merchantAccountId: "ABC123"
           }

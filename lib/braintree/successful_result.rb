@@ -6,10 +6,12 @@ module Braintree
     attr_reader :apple_pay_options
     attr_reader :credentials
     attr_reader :credit_card
+    attr_reader :credit_card_verification
     attr_reader :customer
     attr_reader :disputes
     attr_reader :document_upload
     attr_reader :evidence
+    attr_reader :exchange_rate_quote_payload
     attr_reader :merchant
     attr_reader :merchant_account
     attr_reader :merchant_accounts
@@ -22,7 +24,6 @@ module Braintree
     attr_reader :supported_networks
     attr_reader :transaction
     attr_reader :us_bank_account_verification
-    attr_reader :credit_card_verification
 
     def initialize(attributes = {}) # :nodoc:
       @attrs = attributes.keys

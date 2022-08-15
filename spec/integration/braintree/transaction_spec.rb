@@ -133,13 +133,33 @@ describe Braintree::Transaction do
               :expiration_date => "05/2009"
             },
           )
-          result.transaction.risk_data.should be_a(Braintree::RiskData)
-          result.transaction.risk_data.id.should_not be_nil
-          result.transaction.risk_data.decision.should_not be_nil
-          result.transaction.risk_data.decision_reasons.should_not be_nil
+          expect(result.transaction.risk_data).to be_a(Braintree::RiskData)
+          expect(result.transaction.risk_data.id).not_to be_nil
+          expect(result.transaction.risk_data.decision).not_to be_nil
+          expect(result.transaction.risk_data.decision_reasons).not_to be_nil
           expect(result.transaction.risk_data).to respond_to(:device_data_captured)
           expect(result.transaction.risk_data).to respond_to(:fraud_service_provider)
           expect(result.transaction.risk_data).to respond_to(:transaction_risk_score)
+        end
+      end
+
+      it "returns decision, device_data_captured, id, liability_shift, and decision_reasons" do
+        with_chargeback_protection_merchant do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => 1_00,
+            :credit_card => {
+              :number => "4111111111111111",
+              :expiration_date => "05/2009"
+            },
+          )
+          expect(result.transaction.risk_data).to be_a(Braintree::RiskData)
+          expect(result.transaction.risk_data.id).not_to be_nil
+          expect(result.transaction.risk_data.decision).not_to be_nil
+          expect(result.transaction.risk_data.decision_reasons).not_to be_nil
+          expect(result.transaction.risk_data).to respond_to(:device_data_captured)
+          expect(result.transaction.risk_data).to respond_to(:fraud_service_provider)
+          expect(result.transaction.risk_data).to respond_to(:liability_shift)
         end
       end
 
@@ -160,7 +180,7 @@ describe Braintree::Transaction do
               :customer_tenure => "20#{"0" * 500}"
             },
           )
-          result.success?.should == false
+          expect(result.success?).to eq(false)
           result.errors.for(:transaction).for(:risk_data).on(:customer_device_id).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerDeviceIdIsTooLong
           result.errors.for(:transaction).for(:risk_data).on(:customer_location_zip).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerLocationZipInvalidCharacters
           result.errors.for(:transaction).for(:risk_data).on(:customer_tenure).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerTenureIsTooLong

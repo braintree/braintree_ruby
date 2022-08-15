@@ -174,6 +174,29 @@ describe Braintree::Transaction, "search" do
       collection.first.id.should == transaction_id
     end
 
+    it "searches on reason_code" do
+      transaction_id = "ach_txn_ret1"
+      reason_code = "R01"
+
+      collection = Braintree::Transaction.search do |search|
+        search.reason_code.in reason_code
+      end
+
+      collection.maximum_size.should == 1
+      collection.first.id.should == transaction_id
+      collection.first.ach_return_responses.first[:reason_code].should == "R01"
+    end
+
+    it "searches on reason_codes" do
+      reason_code = "any_reason_code"
+
+      collection = Braintree::Transaction.search do |search|
+        search.reason_code.is reason_code
+      end
+
+      collection.maximum_size.should == 2
+    end
+
     context "multiple value fields" do
       it "searches on created_using" do
         transaction = Braintree::Transaction.sale!(
@@ -532,6 +555,29 @@ describe Braintree::Transaction, "search" do
         collection.maximum_size.should == 1
         collection.first.id.should == transaction_id
       end
+
+      it "searches on reason_codes for 2 items" do
+        reason_code = ["R01", "R02"]
+
+        collection = Braintree::Transaction.search do |search|
+          search.reason_code.in reason_code
+        end
+
+        collection.maximum_size.should == 2
+      end
+
+      it "searches on a reason_code" do
+        reason_code = ["R01"]
+        transaction_id = "ach_txn_ret1"
+
+        collection = Braintree::Transaction.search do |search|
+          search.reason_code.in reason_code
+        end
+
+        collection.maximum_size.should == 1
+        collection.first.id.should == transaction_id
+      end
+
     end
 
     context "invalid search" do
@@ -733,6 +779,28 @@ describe Braintree::Transaction, "search" do
 
           collection.maximum_size.should == 1
           collection.first.id.should == transaction.id
+        end
+      end
+
+      context "ach return response created at" do
+        it "it finds records within date range of the custom field" do
+          reason_code = "any_reason_code"
+
+          date_search = Braintree::Transaction.search do |search|
+            search.ach_return_responses_created_at.between(DateTime.now - 1.0, DateTime.now + 1.0)
+          end
+
+          date_search.maximum_size.should == 2
+        end
+
+        it "it does not find records not within date range of the custom field" do
+          reason_code = "any_reason_code"
+
+          neg_date_search = Braintree::Transaction.search do |search|
+           search.ach_return_responses_created_at.between(DateTime.now + 1.0, DateTime.now - 1.0)
+          end
+
+          neg_date_search.maximum_size.should == 0
         end
       end
 
