@@ -1,3 +1,7 @@
+# Unreleased
+
+* Fix issue #223: Replace 'errors' with expected 'api_error_response'
+
 # Changelog
 
 ## unreleased
