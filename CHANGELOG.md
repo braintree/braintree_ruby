@@ -1,8 +1,8 @@
-# Unreleased
-
-* Fix issue #223: Replace 'errors' with expected 'api_error_response'
-
 # Changelog
+
+## Unreleased
+
+* Fix issue where validation errors from creating a plan were not surfaced (#223)
 
 ## 4.5.0
 * Add plan create/update/find API endpoint
