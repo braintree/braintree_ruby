@@ -7,6 +7,7 @@ describe Braintree::Dispute do
       :amount => "31.00",
       :amount_disputed => "500.00",
       :amount_won => "0.00",
+      :chargeback_protection_level => nil,
       :created_at => Time.utc(2009, 3, 9, 10, 50, 39),
       :processor_comments => "forwarded comments",
       :date_opened => "2009-03-09",
@@ -281,6 +282,45 @@ describe Braintree::Dispute do
 
       dispute.amount_disputed.should == 500.0
       dispute.amount_won.should == 0.0
+    end
+
+    it "returns 'Effortless Chargeback Protection tool' when initial chargeback_protection_level is effortless" do
+      attributes.merge!(:chargeback_protection_level => Braintree::Dispute::ChargebackProtectionLevel::Effortless)
+      dispute = Braintree::Dispute._new(attributes)
+
+      expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
+      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::EffortlessCBP)
+    end
+
+    it "returns 'Chargeback Protection tool' when initial chargeback_protection_level is standard" do
+      attributes.merge!(:chargeback_protection_level => Braintree::Dispute::ChargebackProtectionLevel::Standard)
+      dispute = Braintree::Dispute._new(attributes)
+
+      expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Standard)
+      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::StandardCBP)
+    end
+
+    it "returns 'No Protection' when initial chargeback_protection_level is nil" do
+      dispute = Braintree::Dispute._new(attributes)
+
+      expect(dispute.chargeback_protection_level).to eq(nil)
+      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::NoProtection)
+    end
+
+    it "returns 'No Protection' when initial chargeback_protection_level is empty" do
+      attributes.merge!(:chargeback_protection_level => "")
+      dispute = Braintree::Dispute._new(attributes)
+
+      expect(dispute.chargeback_protection_level).to eq("")
+      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::NoProtection)
+    end
+
+    it "returns 'No Protection' when initial chargeback_protection_level is not_protected" do
+      attributes.merge!(:chargeback_protection_level => Braintree::Dispute::ChargebackProtectionLevel::NotProtected)
+      dispute = Braintree::Dispute._new(attributes)
+
+      expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::NotProtected)
+      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::NoProtection)
     end
 
     [

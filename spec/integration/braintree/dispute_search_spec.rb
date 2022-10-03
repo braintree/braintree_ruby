@@ -86,7 +86,9 @@ describe Braintree::Dispute, "search" do
       expect(collection.disputes.count).to eq(1)
       dispute = collection.disputes.first
 
+      # NEXT_MAJOR_VERSION Remove this assertion when chargeback_protection_level is removed from the SDK
       expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
+      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::EffortlessCBP)
       expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
     end
 
@@ -99,7 +101,9 @@ describe Braintree::Dispute, "search" do
       expect(collection.disputes.count).to eq(1)
       dispute = collection.disputes.first
 
+      # NEXT_MAJOR_VERSION Remove this assertion when chargeback_protection_level is removed from the SDK
       expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
+      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::EffortlessCBP)
       expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
     end
 

@@ -41,7 +41,9 @@ describe Braintree::DisputeSearch do
   end
 
   [
+    # NEXT_MAJOR_VERSION Remove this assertion when chargeback_protection_level is removed from the SDK
     :chargeback_protection_level,
+    :protection_level,
     :kind,
     :reason,
     :status,

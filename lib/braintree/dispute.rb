@@ -7,7 +7,9 @@ module Braintree
     attr_reader :amount_disputed
     attr_reader :amount_won
     attr_reader :case_number
-    attr_reader :chargeback_protection_level
+    # NEXT_MAJOR_VERSION Remove this attribute
+    # DEPRECATED The chargeback_protection_level attribute is deprecated in favor of protection_level
+    attr_reader :chargeback_protection_level #Deprecated
     attr_reader :created_at
     attr_reader :currency_iso_code
     attr_reader :date_opened
@@ -20,6 +22,7 @@ module Braintree
     attr_reader :original_dispute_id
     attr_reader :paypal_messages
     attr_reader :processor_comments
+    attr_reader :protection_level
     attr_reader :reason
     attr_reader :reason_code
     attr_reader :reason_description
@@ -75,6 +78,14 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
+    module ProtectionLevel
+      EffortlessCBP = "Effortless Chargeback Protection tool"
+      StandardCBP = "Chargeback Protection tool"
+      NoProtection = "No Protection"
+
+      All = constants.map { |c| const_get(c) }
+    end
+
     class << self
       protected :new
       def _new(*args) # :nodoc:
@@ -119,6 +130,11 @@ module Braintree
       @amount = Util.to_big_decimal(amount)
       @amount_disputed = Util.to_big_decimal(amount_disputed)
       @amount_won = Util.to_big_decimal(amount_won)
+      if (ChargebackProtectionLevel::All - [ChargebackProtectionLevel::NotProtected]).include?(chargeback_protection_level)
+        @protection_level = Dispute.const_get("ProtectionLevel::#{chargeback_protection_level.capitalize}CBP")
+      else
+        @protection_level = ProtectionLevel::NoProtection
+      end
 
       @evidence = evidence.map do |record|
         Braintree::Dispute::Evidence.new(record)
