@@ -16,6 +16,7 @@ describe Braintree::Dispute do
       :received_date => "2009-03-09",
       :reply_by_date => nil,
       :updated_at => Time.utc(2009, 3, 9, 10, 50, 39),
+      :pre_dispute_program => Braintree::Dispute::PreDisputeProgram::None,
       :evidence => [
         {
           comment: nil,
@@ -427,6 +428,13 @@ describe Braintree::Dispute do
       dispute.amount.should == 31.00
       dispute.date_opened.should == Date.new(2009, 3, 9)
       dispute.date_won.should == Date.new(2009, 4, 15)
+    end
+
+    it "returns pre_dispute_program value" do
+      attributes.merge!(:pre_dispute_program => Braintree::Dispute::PreDisputeProgram::VisaRdr)
+      dispute = Braintree::Dispute._new(attributes)
+
+      expect(dispute.pre_dispute_program).to eq(Braintree::Dispute::PreDisputeProgram::VisaRdr)
     end
   end
 

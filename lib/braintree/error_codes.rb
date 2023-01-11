@@ -203,6 +203,12 @@ module Braintree
       TokenIsInUse = "92906"
     end
 
+    module SepaDirectDebitAccount
+      SepaDebitAccountPaymentMethodMandateTypeIsNotSupported = "87115"
+      SepaDebitAccountPaymentMethodCustomerIdIsInvalid = "87116"
+      SepaDebitAccountPaymentMethodCustomerIdIsRequired = "87117"
+    end
+
     module Subscription
       BillingDayOfMonthCannotBeUpdated = "91918"
       BillingDayOfMonthIsInvalid = "91914"

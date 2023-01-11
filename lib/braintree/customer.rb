@@ -19,6 +19,7 @@ module Braintree
     attr_reader :paypal_accounts
     attr_reader :phone
     attr_reader :samsung_pay_cards
+    attr_reader :sepa_direct_debit_accounts
     attr_reader :tax_identifiers
     attr_reader :updated_at
     attr_reader :us_bank_accounts
@@ -89,6 +90,7 @@ module Braintree
       @venmo_accounts = (@venmo_accounts || []).map { |pm| VenmoAccount._new gateway, pm }
       @us_bank_accounts = (@us_bank_accounts || []).map { |pm| UsBankAccount._new gateway, pm }
       @visa_checkout_cards = (@visa_checkout_cards|| []).map { |pm| VisaCheckoutCard._new gateway, pm }
+      @sepa_direct_debit_accounts = (@sepa_debit_accounts || []).map { |pm| SepaDirectDebitAccount._new gateway, pm }
       @samsung_pay_cards = (@samsung_pay_cards|| []).map { |pm| SamsungPayCard._new gateway, pm }
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @tax_identifiers = (@tax_identifiers || []).map { |addr| TaxIdentifier._new gateway, addr }
@@ -121,7 +123,8 @@ module Braintree
         @venmo_accounts +
         @us_bank_accounts +
         @visa_checkout_cards +
-        @samsung_pay_cards
+        @samsung_pay_cards +
+        @sepa_direct_debit_accounts
     end
 
     def inspect # :nodoc:

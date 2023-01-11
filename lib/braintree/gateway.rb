@@ -78,6 +78,10 @@ module Braintree
       UsBankAccountGateway.new(self)
     end
 
+    def sepa_direct_debit_account
+      SepaDirectDebitAccountGateway.new(self)
+    end
+
     def merchant
       MerchantGateway.new(self)
     end

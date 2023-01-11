@@ -47,6 +47,7 @@ describe Braintree::DisputeSearch do
     :kind,
     :reason,
     :status,
+    :pre_dispute_program,
   ].each do |field|
     it "raises if provided an unknown #{field} value" do
       search = Braintree::DisputeSearch.new

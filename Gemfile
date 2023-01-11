@@ -10,3 +10,7 @@ group :development do
   gem "rubocop", "~>1.12.0"
   gem "webrick", "~>1.7.0"
 end
+
+group :test do
+  gem "rspec_junit_formatter"
+end

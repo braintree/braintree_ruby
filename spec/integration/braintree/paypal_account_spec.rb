@@ -267,7 +267,7 @@ describe Braintree::PayPalAccount do
   context "self.sale" do
     it "creates a transaction using a paypal account and returns a result object" do
       customer = Braintree::Customer.create!(
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
       )
 
       result = Braintree::PayPalAccount.sale(customer.paypal_accounts[0].token, :amount => "100.00")
@@ -283,7 +283,7 @@ describe Braintree::PayPalAccount do
   context "self.sale!" do
     it "creates a transaction using a paypal account and returns a transaction" do
       customer = Braintree::Customer.create!(
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
       )
 
       transaction = Braintree::PayPalAccount.sale!(customer.paypal_accounts[0].token, :amount => "100.00")

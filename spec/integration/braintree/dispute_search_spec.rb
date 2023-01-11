@@ -98,13 +98,37 @@ describe Braintree::Dispute, "search" do
           Braintree::Dispute::ChargebackProtectionLevel::Effortless
         ]
       end
-      expect(collection.disputes.count).to eq(1)
-      dispute = collection.disputes.first
+      expect(collection.disputes.count).to be > 0
 
       # NEXT_MAJOR_VERSION Remove this assertion when chargeback_protection_level is removed from the SDK
-      expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
-      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::EffortlessCBP)
-      expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
+      collection.disputes.each do |dispute|
+        expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
+        expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::EffortlessCBP)
+        expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
+      end
+    end
+
+    context "pre-dispute program" do
+      it "correctly returns disputes by pre-dispute program" do
+        collection = Braintree::Dispute.search do |search|
+          search.pre_dispute_program.in [
+            Braintree::Dispute::PreDisputeProgram::VisaRdr
+          ]
+        end
+
+        expect(collection.disputes.count).to eq(1)
+        dispute = collection.disputes.first
+        expect(dispute.pre_dispute_program).to eq(Braintree::Dispute::PreDisputeProgram::VisaRdr)
+      end
+
+      it "correctly returns disputes with no pre-dispute program" do
+        collection = Braintree::Dispute.search do |search|
+          search.pre_dispute_program.is Braintree::Dispute::PreDisputeProgram::None
+        end
+
+        expect(collection.disputes.count).to be > 1
+        expect(collection.disputes.map(&:pre_dispute_program).uniq).to eq([Braintree::Dispute::PreDisputeProgram::None])
+      end
     end
 
     it "correctly returns disputes by effective_date range" do

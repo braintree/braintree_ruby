@@ -13,6 +13,7 @@ module Braintree
     multiple_value_field :protection_level, :allows => Dispute::ProtectionLevel::All
     multiple_value_field :kind, :allows => Dispute::Kind::All
     multiple_value_field :merchant_account_id
+    multiple_value_field :pre_dispute_program, :allows => Dispute::PreDisputeProgram::All
     multiple_value_field :reason, :allows => Dispute::Reason::All
     multiple_value_field :reason_code
     multiple_value_field :status, :allows => Dispute::Status::All

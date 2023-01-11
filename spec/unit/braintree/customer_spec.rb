@@ -301,6 +301,10 @@ describe Braintree::Customer do
           {:token => "paypal_1"},
           {:token => "paypal_2"}
         ],
+        :sepa_debit_accounts => [
+          {:token => "sepa_debit_1"},
+          {:token => "sepa_debit_2"}
+        ],
       )
 
       customer.credit_cards.size.should == 2
@@ -311,11 +315,17 @@ describe Braintree::Customer do
       customer.paypal_accounts[0].token.should == "paypal_1"
       customer.paypal_accounts[1].token.should == "paypal_2"
 
-      customer.payment_methods.count.should == 4
+      customer.sepa_direct_debit_accounts.size.should == 2
+      customer.sepa_direct_debit_accounts[0].token.should == "sepa_debit_1"
+      customer.sepa_direct_debit_accounts[1].token.should == "sepa_debit_2"
+
+      customer.payment_methods.count.should == 6
       customer.payment_methods.map(&:token).should include("credit_card_1")
       customer.payment_methods.map(&:token).should include("credit_card_2")
       customer.payment_methods.map(&:token).should include("paypal_1")
       customer.payment_methods.map(&:token).should include("paypal_2")
+      customer.payment_methods.map(&:token).should include("sepa_debit_1")
+      customer.payment_methods.map(&:token).should include("sepa_debit_2")
     end
   end
 

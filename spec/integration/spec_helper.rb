@@ -67,4 +67,10 @@ unless defined?(INTEGRATION_SPEC_HELPER_LOADED)
   def random_payment_method_token
     "payment-method-token-#{SecureRandom.hex(6)}"
   end
+
+  def with_duplicate_checking_merchant(&block)
+    with_other_merchant("dup_checking_integration_merchant_id", "dup_checking_integration_public_key", "dup_checking_integration_private_key") do
+      block.call
+    end
+  end
 end

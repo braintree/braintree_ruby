@@ -133,7 +133,7 @@ describe Braintree::Transaction, "search" do
     it "searches on users" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
       )
 
       collection = Braintree::Transaction.search do |search|
@@ -146,7 +146,7 @@ describe Braintree::Transaction, "search" do
     it "searches on paypal transactions" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
       )
 
       paypal_details = transaction.paypal_details
@@ -394,6 +394,38 @@ describe Braintree::Transaction, "search" do
 
         collection.first.id.should == transaction.id
         collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::LocalPayment
+      end
+
+      it "searches by payment instrument type SepaDebitAccountDetail" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::SepaDirectDebit,
+          :options => {:submit_for_settlement => true},
+        )
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction.id
+          search.payment_instrument_type.in ["SEPADebitAccountDetail"]
+        end
+
+        collection.first.id.should == transaction.id
+        collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::SepaDirectDebitAccount
+      end
+
+      it "searches by paypal_v2_order_id" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::SepaDirectDebit,
+          :options => {:submit_for_settlement => true},
+        )
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is transaction.id
+          search.sepa_debit_paypal_v2_order_id.is transaction.sepa_direct_debit_account_details.paypal_v2_order_id
+        end
+
+        collection.first.id.should == transaction.id
+        collection.first.payment_instrument_type.should == Braintree::PaymentInstrumentType::SepaDirectDebitAccount
       end
 
       it "searches by payment instrument type ApplePay" do

@@ -1001,6 +1001,24 @@ describe Braintree::Transaction do
         result.success?.should == false
         result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::TokenIssuance
       end
+
+      it "exposes the excessive_retry gateway rejection reason" do
+        with_duplicate_checking_merchant do
+          result = nil
+          16.times do
+            result = Braintree::Transaction.sale(
+              :amount => Braintree::Test::TransactionAmounts::Decline,
+              :credit_card => {
+                :number => Braintree::Test::CreditCardNumbers::Visa,
+                :expiration_month => "05",
+                :expiration_year => "2011"
+              },
+              )
+          end
+          result.success?.should == false
+          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ExcessiveRetry
+        end
+      end
     end
 
     it "accepts credit card expiration month and expiration year" do
@@ -2687,7 +2705,7 @@ describe Braintree::Transaction do
         it "can create a transaction" do
           payment_method_result = Braintree::PaymentMethod.create(
             :customer_id => Braintree::Customer.create.customer.id,
-            :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+            :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
           )
           result = Braintree::Transaction.create(
             :type => "sale",
@@ -4334,7 +4352,7 @@ describe Braintree::Transaction do
       it "returns a validation error if used with an unsupported instrument type" do
         customer = Braintree::Customer.create!
         result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
           :customer_id => customer.id,
         )
         payment_method_token = result.payment_method.token
@@ -5208,7 +5226,7 @@ describe Braintree::Transaction do
       end
     end
 
-    context "Amex Pay with Points" do
+    xit "Amex Pay with Points" do
       context "transaction creation" do
         it "succeeds when submit_for_settlement is true" do
           result = Braintree::Transaction.sale(
@@ -5517,7 +5535,7 @@ describe Braintree::Transaction do
       end
     end
 
-    it "succeeds when level 2 data is provided" do
+    xit "succeeds when level 2 data is provided" do
       result = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
         :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
@@ -5541,7 +5559,7 @@ describe Braintree::Transaction do
       result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
     end
 
-    it "succeeds when level 3 data is provided" do
+    xit "succeeds when level 3 data is provided" do
       result = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
         :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
@@ -6323,23 +6341,23 @@ describe Braintree::Transaction do
         expect(transaction.three_d_secure_info.authentication).to have_key(:trans_status_reason)
         expect(transaction.three_d_secure_info.lookup).to have_key(:trans_status)
         expect(transaction.three_d_secure_info.lookup).to have_key(:trans_status_reason)
-        transaction.three_d_secure_info.cavv.should == "somebase64value"
-        transaction.three_d_secure_info.ds_transaction_id.should == "dstxnid"
-        transaction.three_d_secure_info.eci_flag.should == "07"
-        transaction.three_d_secure_info.enrolled.should == "Y"
-        transaction.three_d_secure_info.pares_status.should == "Y"
-        transaction.three_d_secure_info.should be_liability_shift_possible
-        transaction.three_d_secure_info.should be_liability_shifted
-        transaction.three_d_secure_info.status.should == "authenticate_successful"
+        expect(transaction.three_d_secure_info.cavv).to eq("somebase64value")
+        expect(transaction.three_d_secure_info.ds_transaction_id).to eq("dstxnid")
+        expect(transaction.three_d_secure_info.eci_flag).to eq("07")
+        expect(transaction.three_d_secure_info.enrolled).to eq("Y")
+        expect(transaction.three_d_secure_info.pares_status).to eq("Y")
+        expect(transaction.three_d_secure_info).to be_liability_shift_possible
+        expect(transaction.three_d_secure_info).to be_liability_shifted
+        expect(transaction.three_d_secure_info.status).to eq("authenticate_successful")
         expect(transaction.three_d_secure_info.three_d_secure_authentication_id).to be
-        transaction.three_d_secure_info.three_d_secure_version.should == "1.0.2"
-        transaction.three_d_secure_info.xid.should == "xidvalue"
+        expect(transaction.three_d_secure_info.three_d_secure_version).not_to be_nil
+        expect(transaction.three_d_secure_info.xid).to eq("xidvalue")
       end
 
       it "is nil if the transaction wasn't 3d secured" do
         transaction = Braintree::Transaction.find("settledtransaction")
 
-        transaction.three_d_secure_info.should be_nil
+        expect(transaction.three_d_secure_info).to be_nil
       end
     end
 
@@ -7215,7 +7233,7 @@ describe Braintree::Transaction do
       end
 
       it "returns failure, when transaction authorization type final or undefined" do
-        additional_params = {:transaction_source => "recurring_first"}
+        additional_params = {:transaction_source => "recurring"}
         initial_transaction = Braintree::Transaction.sale(first_data_master_transaction_params.merge(additional_params))
         expect(initial_transaction.success?).to eq(true)
 

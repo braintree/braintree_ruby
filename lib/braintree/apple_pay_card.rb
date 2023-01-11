@@ -10,6 +10,7 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
+    attr_reader :billing_address
     attr_reader :bin
     attr_reader :card_type
     attr_reader :cardholder_name
@@ -39,6 +40,7 @@ module Braintree
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
+      @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
     end
 

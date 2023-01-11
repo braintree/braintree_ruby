@@ -19,6 +19,7 @@ module Braintree
       DisputeLost = "dispute_lost"
       DisputeWon = "dispute_won"
       DisputeAccepted = "dispute_accepted"
+      DisputeAutoAccepted = "dispute_auto_accepted"
       DisputeDisputed = "dispute_disputed"
       DisputeExpired = "dispute_expired"
 

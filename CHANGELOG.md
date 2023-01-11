@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.10.0
+* Add `billing_address` attribute reader to `ApplePayCard`
+* Add `pre_dispute_program` to `Dispute` and `DisputeSearch`
+* Add `AutoAccepted` status to `Dispute` 
+* Add `DisputeAutoAccepted` webhook to `WebhookNotification`
+* Add `ExcessiveRetry` to `GatewayRejectionReason`
+* Add `SEPADirectDebitAccount` payment method
+* Add `sepa_direct_debit_return_code` to `Transaction`
+* Add `sepa_direct_debit_account_details` to `Transaction`
+* Add `sepa_direct_debit_account_nonce_details` to `PaymentMethodNonceDetails`
+* Add `SEPA_DIRECT_DEBIT_ACCOUNT` to `PaymentInstrumentType`
+* Add `sepa_debit_paypal_v2_order_id` to `TransactionSearch`
+* Add `sepa_direct_debit_accounts` to `Customer`
+* Add SEPA Direct Debit specific error codes
+
 ## 4.9.0
 * Add `cardholder_name` attribute reader to `ApplePayCard` (Thanks @AxelTheGerman)
 * Deprecate `chargeback_protection_level` and add `protection_level` to `Dispute` and `DisputeSearch`

@@ -50,6 +50,8 @@ module Braintree
         GooglePayCard._new(@gateway, response[:android_pay_card])
       elsif response.has_key?(:venmo_account)
         VenmoAccount._new(@gateway, response[:venmo_account])
+      elsif response.has_key?(:sepa_debit_account)
+        SepaDirectDebitAccount._new(@gateway, response[:sepa_debit_account])
       else
         UnknownPaymentMethod._new(@gateway, response)
       end

@@ -4,6 +4,7 @@ module Braintree
       Transactable = "fake-valid-nonce"
       Consumed = "fake-consumed-nonce"
       PayPalOneTimePayment = "fake-paypal-one-time-nonce"
+      #NEXT_MAJOR_VERSION - no longer supported in the Gateway, remove this constant
       PayPalFuturePayment = "fake-paypal-future-nonce"
       PayPalBillingAgreement = "fake-paypal-billing-agreement-nonce"
       LocalPayment = "fake-local-payment-method-nonce"
@@ -68,6 +69,7 @@ module Braintree
       SamsungPayDiscover = "tokensam_fake_discover"
       SamsungPayMasterCard = "tokensam_fake_mastercard"
       SamsungPayVisa = "tokensam_fake_visa"
+      SepaDirectDebit = "fake-sepa-direct-debit-nonce"
     end
   end
 end

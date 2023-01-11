@@ -18,6 +18,8 @@ module Braintree
         VisaCheckoutCard._new(gateway, attributes[:visa_checkout_card])
       elsif attributes[:samsung_pay_card]
         SamsungPayCard._new(gateway, attributes[:samsung_pay_card])
+      elsif attributes[:sepa_debit_account]
+        SepaDirectDebitAccount._new(gateway, attributes[:sepa_debit_account])
       else
         UnknownPaymentMethod._new(gateway, attributes)
       end

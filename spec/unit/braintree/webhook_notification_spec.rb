@@ -200,6 +200,22 @@ describe Braintree::WebhookNotification do
           dispute.kind.should == Braintree::Dispute::Kind::Chargeback
         end
 
+        it "builds a sample notification for a dispute auto_accepted webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeAutoAccepted,
+            dispute_id,
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          notification.kind.should == Braintree::WebhookNotification::Kind::DisputeAutoAccepted
+
+          dispute = notification.dispute
+          dispute.status.should == Braintree::Dispute::Status::AutoAccepted
+          dispute.id.should == dispute_id
+          dispute.kind.should == Braintree::Dispute::Kind::Chargeback
+        end
+
         it "builds a sample notification for a dispute disputed webhook" do
           sample_notification = Braintree::WebhookTesting.sample_notification(
             Braintree::WebhookNotification::Kind::DisputeDisputed,

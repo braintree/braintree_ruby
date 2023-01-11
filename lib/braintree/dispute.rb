@@ -21,6 +21,7 @@ module Braintree
     attr_reader :merchant_account_id
     attr_reader :original_dispute_id
     attr_reader :paypal_messages
+    attr_reader :pre_dispute_program
     attr_reader :processor_comments
     attr_reader :protection_level
     attr_reader :reason
@@ -37,6 +38,7 @@ module Braintree
 
     module Status
       Accepted = "accepted"
+      AutoAccepted = "auto_accepted"
       Disputed = "disputed"
       Expired = "expired"
       Open = "open"
@@ -82,6 +84,13 @@ module Braintree
       EffortlessCBP = "Effortless Chargeback Protection tool"
       StandardCBP = "Chargeback Protection tool"
       NoProtection = "No Protection"
+
+      All = constants.map { |c| const_get(c) }
+    end
+
+    module PreDisputeProgram
+      None = "none"
+      VisaRdr = "visa_rdr"
 
       All = constants.map { |c| const_get(c) }
     end

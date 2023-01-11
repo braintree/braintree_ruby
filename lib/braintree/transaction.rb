@@ -24,6 +24,7 @@ module Braintree
       AVSAndCVV    = "avs_and_cvv"
       CVV          = "cvv"
       Duplicate    = "duplicate"
+      ExcessiveRetry = "excessive_retry"
       Fraud        = "fraud"
       RiskThreshold = "risk_threshold"
       ThreeDSecure = "three_d_secure"
@@ -153,6 +154,8 @@ module Braintree
     attr_reader :samsung_pay_card_details
     attr_reader :sca_exemption_requested
     attr_reader :service_fee_amount
+    attr_reader :sepa_direct_debit_account_details
+    attr_reader :sepa_direct_debit_return_code
     attr_reader :settlement_batch_id
     attr_reader :shipping_amount
     attr_reader :shipping_details
@@ -307,6 +310,7 @@ module Braintree
       @paypal_here_details = PayPalHereDetails.new(@paypal_here)
       @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card])
       @sca_exemption_requested = attributes[:sca_exemption_requested]
+      @sepa_direct_debit_account_details = SepaDirectDebitAccountDetails.new(@sepa_debit_account_detail)
       @service_fee_amount = Util.to_big_decimal(service_fee_amount)
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []

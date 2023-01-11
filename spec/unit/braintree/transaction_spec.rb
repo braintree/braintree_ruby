@@ -255,6 +255,29 @@ describe Braintree::Transaction do
       expect(transaction.network_response_code).to eq("00")
       expect(transaction.network_response_text).to eq("Successful approval/completion or V.I.P. PIN verification is successful")
     end
+
+    it "accepts sepa_direct_debit_return_code" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :sepa_direct_debit_return_code => "AM04",
+      )
+      expect(transaction.sepa_direct_debit_return_code).to eq("AM04")
+    end
+
+    it "accepts sepa_direct_debit_account_details" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :id => "123",
+        :type => "sale",
+        :amount => "12.34",
+        :status => "settled",
+        :sepa_debit_account_detail => {
+          :token => "1234",
+        },
+      )
+      details = transaction.sepa_direct_debit_account_details
+      details.token.should == "1234"
+    end
   end
 
   describe "inspect" do
@@ -388,6 +411,13 @@ describe Braintree::Transaction do
     it "is false if the transaction was not processed with a network token" do
       transaction = Braintree::Transaction._new(:gateway, :processed_with_network_token => false)
       transaction.processed_with_network_token?.should == false
+    end
+  end
+
+  describe "gateway rejection reason" do
+    it "verifies excessive_retry mapping" do
+      transaction = Braintree::Transaction._new(:gateway, :gateway_rejection_reason => "excessive_retry")
+      transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ExcessiveRetry
     end
   end
 end

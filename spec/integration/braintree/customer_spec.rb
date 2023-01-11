@@ -1754,7 +1754,7 @@ describe Braintree::Customer do
     context "future" do
       it "creates a customer with a future paypal account" do
         result = Braintree::Customer.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
         )
 
         result.should be_success

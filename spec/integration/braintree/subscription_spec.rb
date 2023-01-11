@@ -96,7 +96,7 @@ describe Braintree::Subscription do
       it "creates a subscription when given a paypal account payment_method_nonce" do
         customer = Braintree::Customer.create!
         payment_method_result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
+          :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
           :customer_id => customer.id,
         )
 
