@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Remove test and development files from the gem package.
+
 ## 4.10.0
 * Add `billing_address` attribute reader to `ApplePayCard`
 * Add `pre_dispute_program` to `Dispute` and `DisputeSearch`
