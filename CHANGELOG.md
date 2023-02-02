@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Use GitHub Actions to automatically run unit tests against all supported versions of Ruby. This workflow is triggered on git commit pushes and pull requests.
+
 ## 4.18.0
 
 - Add `process_debit_as_credit` to `credit_card` field in `options` field during Transaction create
