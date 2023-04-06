@@ -67,6 +67,10 @@ module Braintree
       def venmo_sdk?
         @venmo_sdk
       end
+
+      def is_network_tokenized?
+        @is_network_tokenized
+      end
     end
   end
 end

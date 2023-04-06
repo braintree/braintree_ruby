@@ -50,6 +50,26 @@ describe Braintree::SepaDirectDebitAccount do
         }.to raise_error(Braintree::NotFoundError)
       end
     end
+
+    context "subscriptions" do
+      it "returns subscriptions associated with a SEPA direct debit account" do
+        customer = Braintree::Customer.create!
+
+        subscription1 = Braintree::Subscription.create(
+          :payment_method_token => token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+        ).subscription
+
+        subscription2 = Braintree::Subscription.create(
+          :payment_method_token => token,
+          :plan_id => SpecHelper::TriallessPlan[:id],
+        ).subscription
+
+        sepa_debit_account = Braintree::SepaDirectDebitAccount.find(token)
+        subscription_ids = sepa_debit_account.subscriptions.map { |h| h[:id] }.sort
+        expect(subscription_ids).to eq([subscription1.id, subscription2.id].sort)
+      end
+    end
   end
 
   describe "self.delete" do

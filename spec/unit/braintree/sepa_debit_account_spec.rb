@@ -15,18 +15,19 @@ describe Braintree::SepaDirectDebitAccount do
     let(:params) do
       {
         bank_reference_token: "a-reference-token",
-        mandate_type: "ONE_OFF",
-        last_4: "4321",
-        merchant_or_partner_customer_id: "a-mp-customer-id",
-        customer_id: "a-customer-id",
+        created_at: Time.now,
         customer_global_id: "a-customer-global-id",
+        customer_id: "a-customer-id",
         default: true,
-        token: "a-token",
         global_id: "a-global-id",
         image_url: "a-image-url",
-        view_mandate_url: "a-view-mandate-url",
-        created_at: Time.now,
+        last_4: "4321",
+        mandate_type: "ONE_OFF",
+        merchant_or_partner_customer_id: "a-mp-customer-id",
+        subscriptions: [{price: "10.00"}],
+        token: "a-token",
         updated_at: Time.now,
+        view_mandate_url: "a-view-mandate-url",
       }
     end
 

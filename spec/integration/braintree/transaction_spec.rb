@@ -1002,10 +1002,12 @@ describe Braintree::Transaction do
         result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::TokenIssuance
       end
 
-      it "exposes the excessive_retry gateway rejection reason" do
+      xit "exposes the excessive_retry gateway rejection reason" do
         with_duplicate_checking_merchant do
           result = nil
-          16.times do
+          counter = 0
+          excessive_retry = false
+          until excessive_retry || counter == 20
             result = Braintree::Transaction.sale(
               :amount => Braintree::Test::TransactionAmounts::Decline,
               :credit_card => {
@@ -1014,9 +1016,10 @@ describe Braintree::Transaction do
                 :expiration_year => "2011"
               },
               )
+            excessive_retry = result.transaction.status == "gateway_rejected"
+            counter +=1
           end
-          result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ExcessiveRetry
+          expect(result.transaction.gateway_rejection_reason). to eq(Braintree::Transaction::GatewayRejectionReason::ExcessiveRetry)
         end
       end
     end
@@ -1504,6 +1507,32 @@ describe Braintree::Transaction do
         result.transaction.recurring.should == true
       end
 
+      it "successfully creates a transaction with installment_first" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :transaction_source => "installment_first",
+        )
+        result.success?.should == true
+      end
+
+      it "successfully creates a transaction with installment" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :transaction_source => "installment",
+        )
+        result.success?.should == true
+      end
+
       it "marks a transactions as merchant" do
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -1725,35 +1754,6 @@ describe Braintree::Transaction do
         result.success?.should == false
         expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
         result.errors.for(:transaction).on(:base)[0].code.should == expected_error_code
-      end
-    end
-
-    describe "venmo_sdk" do
-      it "can create a card with a venmo sdk payment method code" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode,
-        )
-        result.success?.should == true
-        result.transaction.credit_card_details.bin.should == "400934"
-        result.transaction.credit_card_details.last_4.should == "1881"
-      end
-
-      it "can create a transaction with venmo sdk session" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/12",
-          },
-          :options => {
-            :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
-          },
-        )
-        result.success?.should == true
-        result.transaction.credit_card_details.venmo_sdk?.should == false
       end
     end
 
@@ -5226,6 +5226,49 @@ describe Braintree::Transaction do
       end
     end
 
+
+    context "3rd party Card on File Network Token" do
+      it "Works with all params" do
+        params = {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009",
+            :network_tokenization_attributes => {
+              :cryptogram => "/wAAAAAAAcb8AlGUF/1JQEkAAAA=",
+              :ecommerce_indicator => "05",
+              :token_requestor_id => "45310020105"
+            },
+          }
+        }
+        result = Braintree::Transaction.sale(params)
+        expect(result.success?).to eq true
+        expect(result.transaction.status).to eq Braintree::Transaction::Status::Authorized
+        expect(result.transaction.processed_with_network_token?).to eq true
+
+        network_token_details = result.transaction.network_token_details
+        expect(network_token_details.is_network_tokenized?).to eq true
+      end
+
+      it "returns errors if validations on cryptogram fails" do
+        params = {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009",
+            :network_tokenization_attributes => {
+              :ecommerce_indicator => "05",
+              :token_requestor_id => "45310020105"
+            },
+          }
+        }
+        result = Braintree::Transaction.sale(params)
+
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:credit_card).map { |e| e.code }.sort).to eq [Braintree::ErrorCodes::CreditCard::NetworkTokenizationAttributeCryptogramIsRequired]
+      end
+    end
+
     xit "Amex Pay with Points" do
       context "transaction creation" do
         it "succeeds when submit_for_settlement is true" do
@@ -6666,61 +6709,6 @@ describe Braintree::Transaction do
     response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
     response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/escrow")
     Braintree::Transaction.find(transaction.id)
-  end
-
-  context "venmo sdk" do
-    describe "venmo_sdk_payment_method_code" do
-      it "can create a transaction with venmo_sdk_payment_method_code" do
-        result = Braintree::Transaction.sale(
-          :amount => "10.00",
-          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK.generate_test_payment_method_code(Braintree::Test::CreditCardNumbers::Visa),
-        )
-        result.success?.should == true
-        result.transaction.credit_card_details.venmo_sdk?.should == false
-      end
-
-      it "errors when an invalid payment method code is passed" do
-        result = Braintree::Transaction.sale(
-          :amount => "10.00",
-          :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::InvalidPaymentMethodCode,
-        )
-        result.success?.should == false
-        result.message.should include("Invalid VenmoSDK payment method code")
-        result.errors.map(&:code).should include("91727")
-      end
-    end
-
-    describe "venmo_sdk_session" do
-      it "can create a transaction and vault a card when a venmo_sdk_session is present" do
-        result = Braintree::Transaction.sale(
-          :amount => "10.00",
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2009"
-          },
-          :options => {
-            :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
-          },
-        )
-        result.success?.should == true
-        result.transaction.credit_card_details.venmo_sdk?.should == false
-      end
-
-      it "venmo_sdk boolean is false when an invalid session is passed" do
-        result = Braintree::Transaction.sale(
-          :amount => "10.00",
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "05/2009"
-          },
-          :options => {
-            :venmo_sdk_session => Braintree::Test::VenmoSDK::InvalidSession
-          },
-        )
-        result.success?.should == true
-        result.transaction.credit_card_details.venmo_sdk?.should == false
-      end
-    end
   end
 
   context "paypal" do

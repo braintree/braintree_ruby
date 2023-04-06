@@ -83,6 +83,7 @@ module Braintree
       ExpirationYearIsInvalid = "81713"
       InvalidParamsForCreditCardUpdate = "91745"
       InvalidVenmoSDKPaymentMethodCode = "91727"
+      NetworkTokenizationAttributeCryptogramIsRequired = "81762"
       NumberIsInvalid = "81715"
       NumberIsProhibited = "81750"
       NumberIsRequired = "81714"

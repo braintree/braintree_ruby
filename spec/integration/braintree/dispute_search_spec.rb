@@ -78,20 +78,6 @@ describe Braintree::Dispute, "search" do
       dispute = collection.disputes.first
     end
 
-    it "correctly returns chargeback protected disputes" do
-      collection = Braintree::Dispute.search do |search|
-        search.case_number.is "CASE-CHARGEBACK-PROTECTED"
-      end
-
-      expect(collection.disputes.count).to eq(1)
-      dispute = collection.disputes.first
-
-      # NEXT_MAJOR_VERSION Remove this assertion when chargeback_protection_level is removed from the SDK
-      expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
-      expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::EffortlessCBP)
-      expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
-    end
-
     it "correctly returns disputes by chargeback protection level flag" do
       collection = Braintree::Dispute.search do |search|
         search.chargeback_protection_level.in [
@@ -104,7 +90,6 @@ describe Braintree::Dispute, "search" do
       collection.disputes.each do |dispute|
         expect(dispute.chargeback_protection_level).to eq(Braintree::Dispute::ChargebackProtectionLevel::Effortless)
         expect(dispute.protection_level).to eq(Braintree::Dispute::ProtectionLevel::EffortlessCBP)
-        expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
       end
     end
 

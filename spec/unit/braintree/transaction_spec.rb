@@ -147,6 +147,48 @@ describe Braintree::Transaction do
       transaction.credit_card_details.issuing_bank.should == "Mr Tumnus"
     end
 
+    it "sets up network token attributes in network_token_details" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :network_token => {
+          :token => "mzg2",
+          :bin => "411111",
+          :last_4 => "1111",
+          :card_type => "Visa",
+          :expiration_month => "08",
+          :expiration_year => "2009",
+          :customer_location => "US",
+          :prepaid => "Yes",
+          :healthcare => "Yes",
+          :durbin_regulated => "Yes",
+          :debit => "Yes",
+          :commercial => "No",
+          :payroll => "Unknown",
+          :product_id => "Unknown",
+          :country_of_issuance => "Narnia",
+          :issuing_bank => "Mr Tumnus",
+          :is_network_tokenized => true
+        },
+      )
+      transaction.network_token_details.token.should == "mzg2"
+      transaction.network_token_details.bin.should == "411111"
+      transaction.network_token_details.last_4.should == "1111"
+      transaction.network_token_details.card_type.should == "Visa"
+      transaction.network_token_details.expiration_month.should == "08"
+      transaction.network_token_details.expiration_year.should == "2009"
+      transaction.network_token_details.customer_location.should == "US"
+      transaction.network_token_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+      transaction.network_token_details.healthcare.should == Braintree::CreditCard::Healthcare::Yes
+      transaction.network_token_details.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
+      transaction.network_token_details.debit.should == Braintree::CreditCard::Debit::Yes
+      transaction.network_token_details.commercial.should == Braintree::CreditCard::Commercial::No
+      transaction.network_token_details.payroll.should == Braintree::CreditCard::Payroll::Unknown
+      transaction.network_token_details.product_id.should == Braintree::CreditCard::ProductId::Unknown
+      transaction.network_token_details.country_of_issuance.should == "Narnia"
+      transaction.network_token_details.issuing_bank.should == "Mr Tumnus"
+      transaction.network_token_details.is_network_tokenized?.should == true
+    end
+
     it "sets up three_d_secure_info" do
       transaction = Braintree::Transaction._new(
         :gateway,

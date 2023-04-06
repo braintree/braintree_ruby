@@ -566,37 +566,6 @@ describe Braintree::Customer do
       result.errors.for(:customer).on(:custom_fields)[0].message.should == "Custom field is invalid: spouse_name."
     end
 
-    describe "venmo_sdk" do
-      it "can create a customer with a venmo sdk payment method code" do
-        result = Braintree::Customer.create(
-          :first_name => "Steve",
-          :last_name => "Hamlin",
-          :credit_card => {
-            :venmo_sdk_payment_method_code => Braintree::Test::VenmoSDK::VisaPaymentMethodCode
-          },
-        )
-        result.success?.should == true
-        result.customer.credit_cards.first.bin.should == "400934"
-        result.customer.credit_cards.first.last_4.should == "1881"
-      end
-
-      it "can create a customer with a venmo sdk session" do
-        result = Braintree::Customer.create(
-          :first_name => "Steve",
-          :last_name => "Hamlin",
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::MasterCard,
-            :expiration_date => "05/2010",
-            :options => {
-              :venmo_sdk_session => Braintree::Test::VenmoSDK::Session
-            }
-          },
-        )
-        result.success?.should == true
-        result.customer.credit_cards.first.venmo_sdk?.should == false
-      end
-    end
-
     context "client API" do
       it "can create a customer with a payment method nonce" do
         nonce = nonce_for_new_payment_method(

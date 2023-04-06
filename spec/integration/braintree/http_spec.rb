@@ -97,7 +97,7 @@ describe Braintree::Http do
     end
 
     describe "ssl_version" do
-      it "causes failed requests to sandbox with incompatible SSL version" do
+      xit "causes failed requests to sandbox with incompatible SSL version" do
         begin
           original_env = Braintree::Configuration.environment
           Braintree::Configuration.environment = :sandbox

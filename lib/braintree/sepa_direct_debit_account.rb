@@ -12,12 +12,14 @@ module Braintree
     attr_reader :last_4
     attr_reader :mandate_type
     attr_reader :merchant_or_partner_customer_id
+    attr_reader :subscriptions
     attr_reader :token
     attr_reader :updated_at
     attr_reader :view_mandate_url
 
     def initialize(gateway, attributes) # :nodoc:
       @gateway = gateway
+      @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
       set_instance_variables_from_hash(attributes)
     end
 

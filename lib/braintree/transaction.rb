@@ -129,6 +129,7 @@ module Braintree
     attr_reader :merchant_account_id
     attr_reader :network_response_code                  # Response code from the card network
     attr_reader :network_response_text                  # Response text from the card network
+    attr_reader :network_token_details
     attr_reader :network_transaction_id
     attr_reader :order_id
     attr_reader :partial_settlement_transaction_ids
@@ -299,6 +300,7 @@ module Braintree
       @apple_pay_details = ApplePayDetails.new(@apple_pay)
       @billing_details = AddressDetails.new(@billing)
       @credit_card_details = CreditCardDetails.new(@credit_card)
+      @network_token_details = CreditCardDetails.new(@network_token)
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}
       @customer_details = CustomerDetails.new(@customer)
       @descriptor = Descriptor.new(@descriptor)

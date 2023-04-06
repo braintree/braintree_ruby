@@ -46,4 +46,20 @@ describe Braintree::Transaction::CreditCardDetails do
       details.masked_number.should == "510510******5100"
     end
   end
+
+  describe "is_network_tokenized" do
+    it "returns true if is_network_tokenized is true" do
+      details = Braintree::Transaction::CreditCardDetails.new(
+        :is_network_tokenized => true,
+      )
+      details.is_network_tokenized?.should == true
+    end
+
+    it "returns false if is_network_tokenized is false" do
+      details = Braintree::Transaction::CreditCardDetails.new(
+        :is_network_tokenized => false,
+      )
+      details.is_network_tokenized?.should == false
+    end
+  end
 end

@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::CreditCardVerification, "search" do
 
@@ -11,7 +12,7 @@ describe Braintree::CreditCardVerification, "search" do
         },
         :options => {
           :amount => "10.00"
-        }
+        },
       }
 
       result = Braintree::CreditCardVerification.create(verification_params)
@@ -257,6 +258,128 @@ describe Braintree::CreditCardVerification, "search" do
         found_verification = Braintree::CreditCardVerification.find(verification_id)
         found_verification.credit_card[:prepaid].should == Braintree::CreditCard::Prepaid::Yes
       end
+    end
+  end
+
+  describe "intended transaction source" do
+    it "creates a new verification with intended transaction source installment" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2029",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+        :options => {
+          :amount => "10.00"
+        },
+        :intended_transaction_source => "installment"
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      result.should be_success
+      result.credit_card_verification.id.should =~ /^\w{6,}$/
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
+      result.credit_card_verification.processor_response_code.should == "1000"
+      result.credit_card_verification.processor_response_text.should == "Approved"
+      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
+    end
+  end
+
+  context "three_d_secure" do
+    it "can create a verification with a three_d_secure_authentication_id" do
+      three_d_secure_authentication_id = SpecHelper.create_3ds_verification(
+        SpecHelper::ThreeDSecureMerchantAccountId,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_month => "12",
+        :expiration_year => "2029",
+      )
+
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "12/2029",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+        :options => {
+          :amount => "10.00",
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+        },
+        :three_d_secure_authentication_id => three_d_secure_authentication_id,
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      result.should be_success
+      result.credit_card_verification.id.should =~ /^\w{6,}$/
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
+      result.credit_card_verification.processor_response_code.should == "1000"
+      result.credit_card_verification.processor_response_text.should == "Approved"
+      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
+    end
+
+    it "can create a verification with a payment_method_nonce" do
+      nonce = nonce_for_new_payment_method(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "11",
+          :expiration_year => "2099",
+        },
+      )
+      nonce.should_not be_nil
+
+      verification_params = {
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+        :options => {
+          :amount => "10.00",
+          :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
+        },
+        :payment_method_nonce => nonce,
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      result.should be_success
+      result.credit_card_verification.id.should =~ /^\w{6,}$/
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
+      result.credit_card_verification.processor_response_code.should == "1000"
+      result.credit_card_verification.processor_response_text.should == "Approved"
+      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
+    end
+
+    it "can create a verification with a verification_three_d_secure_pass_thru" do
+      verification_params = {
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/12",
+        },
+        :options => {
+          :amount => "10.00",
+        },
+        :three_d_secure_pass_thru => {
+          :eci_flag => "02",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "1.0.2",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_id",
+        },
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      result.should be_success
+      result.credit_card_verification.id.should =~ /^\w{6,}$/
+      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
+      result.credit_card_verification.processor_response_code.should == "1000"
+      result.credit_card_verification.processor_response_text.should == "Approved"
+      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
   end
 end

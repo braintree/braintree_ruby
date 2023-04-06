@@ -151,6 +151,33 @@ describe Braintree::Dispute do
       result.evidence.sent_to_processor_at.should == nil
       result.evidence.sequence_number.should == 7
     end
+
+    it "creates text evidence for the dispute with CARRIER_NAME shipping tracking" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "UPS", category: "CARRIER_NAME", sequence_number: 0})
+
+      result.success?.should == true
+      result.evidence.category.should == "CARRIER_NAME"
+      result.evidence.comment.should == "UPS"
+      result.evidence.sequence_number.should == 0
+    end
+
+    it "creates text evidence for the dispute with TRACKING_NUMBER shipping tracking" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "3", category: "TRACKING_NUMBER", sequence_number: 0})
+
+      result.success?.should == true
+      result.evidence.category.should == "TRACKING_NUMBER"
+      result.evidence.comment.should == "3"
+      result.evidence.sequence_number.should == 0
+    end
+
+    it "creates text evidence for the dispute with TRACKING_URL shipping tracking" do
+      result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "https://example.com/tracking-number/abc12345", category: "TRACKING_URL", sequence_number: 1})
+
+      result.success?.should == true
+      result.evidence.category.should == "TRACKING_URL"
+      result.evidence.comment.should == "https://example.com/tracking-number/abc12345"
+      result.evidence.sequence_number.should == 1
+    end
   end
 
   describe "self.finalize" do
