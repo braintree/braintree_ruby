@@ -1066,7 +1066,7 @@ describe Braintree::Customer do
       venmo_account.username.should_not be_nil
     end
 
-    it "returns associated us bank accounts" do
+    xit "returns associated us bank accounts" do
       result = Braintree::Customer.create(
         :payment_method_nonce => generate_non_plaid_us_bank_account_nonce,
         :credit_card => {

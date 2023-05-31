@@ -7261,4 +7261,19 @@ describe Braintree::Transaction do
       end
     end
   end
+
+  context "Merchant Advice Code" do
+    it "exposes MAC and MAC text" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Decline,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => DateTime.now.strftime("%m/%Y")
+        },
+      )
+      expect(result.transaction.merchant_advice_code).to eq("01")
+      expect(result.transaction.merchant_advice_code_text).to eq("New account information available")
+    end
+  end
 end

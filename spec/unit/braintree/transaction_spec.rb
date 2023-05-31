@@ -298,6 +298,16 @@ describe Braintree::Transaction do
       expect(transaction.network_response_text).to eq("Successful approval/completion or V.I.P. PIN verification is successful")
     end
 
+    it "accepts merchant_advice_code and merchant_advice_text" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :merchant_advice_code => "01",
+        :merchant_advice_code_text => "New account information available",
+      )
+      expect(transaction.merchant_advice_code).to eq("01")
+      expect(transaction.merchant_advice_code_text).to eq("New account information available")
+    end
+
     it "accepts sepa_direct_debit_return_code" do
       transaction = Braintree::Transaction._new(
         :gateway,
