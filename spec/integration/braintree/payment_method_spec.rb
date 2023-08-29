@@ -110,6 +110,42 @@ describe Braintree::PaymentMethod do
       apple_pay_card.product_id.should_not be_nil
     end
 
+    it "creates a payment method from a fake apple pay mpan nonce" do
+      customer = Braintree::Customer.create.customer
+      token = SecureRandom.hex(16)
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayMpan,
+        :customer_id => customer.id,
+        :token => token,
+      )
+
+      result.should be_success
+      apple_pay_card = result.payment_method
+      apple_pay_card.should be_a(Braintree::ApplePayCard)
+      apple_pay_card.should_not be_nil
+      apple_pay_card.bin.should_not be_nil
+      apple_pay_card.token.should == token
+      apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::Visa
+      apple_pay_card.payment_instrument_name.should == "Visa 8886"
+      apple_pay_card.source_description.should == "Visa 8886"
+      apple_pay_card.default.should == true
+      apple_pay_card.image_url.should =~ /apple_pay/
+      apple_pay_card.expiration_month.to_i.should > 0
+      apple_pay_card.expiration_year.to_i.should > 0
+      apple_pay_card.customer_id.should == customer.id
+      apple_pay_card.commercial.should_not be_nil
+      apple_pay_card.country_of_issuance.should_not be_nil
+      apple_pay_card.debit.should_not be_nil
+      apple_pay_card.durbin_regulated.should_not be_nil
+      apple_pay_card.healthcare.should_not be_nil
+      apple_pay_card.issuing_bank.should_not be_nil
+      apple_pay_card.payroll.should_not be_nil
+      apple_pay_card.prepaid.should_not be_nil
+      apple_pay_card.product_id.should_not be_nil
+      apple_pay_card.merchant_token_identifier.should_not be_nil
+      apple_pay_card.source_card_last4.should_not be_nil
+    end
+
     it "creates a payment method from a fake google pay proxy card nonce" do
       customer = Braintree::Customer.create.customer
       token = SecureRandom.hex(16)
@@ -1142,6 +1178,31 @@ describe Braintree::PaymentMethod do
         apple_pay_card.expiration_year.to_i.should > 0
         apple_pay_card.source_description.should == "AmEx 41002"
         apple_pay_card.customer_id.should == customer.id
+      end
+
+      it "finds the payment method with the given mpan token" do
+        customer = Braintree::Customer.create!
+        payment_method_token = make_token
+        result = Braintree::PaymentMethod.create(
+          :payment_method_nonce => Braintree::Test::Nonce::ApplePayMpan,
+          :customer_id => customer.id,
+          :token => payment_method_token,
+        )
+        result.should be_success
+
+        apple_pay_card = Braintree::PaymentMethod.find(payment_method_token)
+        apple_pay_card.should be_a(Braintree::ApplePayCard)
+        apple_pay_card.should_not be_nil
+        apple_pay_card.token.should == payment_method_token
+        apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::Visa
+        apple_pay_card.default.should == true
+        apple_pay_card.image_url.should =~ /apple_pay/
+        apple_pay_card.expiration_month.to_i.should > 0
+        apple_pay_card.expiration_year.to_i.should > 0
+        apple_pay_card.source_description.should == "Visa 8886"
+        apple_pay_card.customer_id.should == customer.id
+        apple_pay_card.merchant_token_identifier == "DNITHE302308980427388297"
+        apple_pay_card.source_card_last4 == "2006"
       end
     end
 

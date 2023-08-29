@@ -451,6 +451,235 @@ describe Braintree::Transaction do
           result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative]
           result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::FareAmountCannotBeNegative]
         end
+
+        [Braintree::Test::CreditCardNumbers::Discover, Braintree::Test::CreditCardNumbers::Visa].each do |card_number|
+          it "accepts valid industry data for card : #{card_number} " do
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+              :amount => 1_00,
+              :credit_card => {
+              :number => card_number,
+              :expiration_date => "05/2029"
+              },
+              :options => {
+                :submit_for_settlement => true
+              },
+              :industry => {
+                :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+                :data => {
+                  :passenger_first_name => "John",
+                  :passenger_last_name => "Doe",
+                  :passenger_middle_initial => "M",
+                  :passenger_title => "Mr.",
+                  :issued_date => Date.new(2018, 1, 1),
+                  :travel_agency_name => "Expedia",
+                  :travel_agency_code => "12345678",
+                  :ticket_number => "ticket-number",
+                  :issuing_carrier_code => "AA",
+                  :customer_code => "customer-code",
+                  :fare_amount => 70_00,
+                  :fee_amount => 10_00,
+                  :tax_amount => 20_00,
+                  :ticket_issuer_address => "Tkt-issuer-adr",
+                  :arrival_date => Date.new(2018, 1, 2),
+                  :restricted_ticket => false,
+                  :legs => [
+                    {
+                      :conjunction_ticket => "CJ0001",
+                      :exchange_ticket => "ET0001",
+                      :coupon_number => "1",
+                      :service_class => "Y",
+                      :carrier_code => "AA",
+                      :fare_basis_code => "W",
+                      :flight_number => "AA100",
+                      :departure_date => Date.new(2018, 1, 2),
+                      :departure_airport_code => "MDW",
+                      :departure_time => "08:00",
+                      :arrival_airport_code => "AUS",
+                      :arrival_time => "10:00",
+                      :stopover_permitted => false,
+                      :fare_amount => 35_00,
+                      :fee_amount => 5_00,
+                      :tax_amount => 10_00,
+                      :endorsement_or_restrictions => "NOT REFUNDABLE"
+                    }
+                  ]
+                }
+              },
+            )
+            result.success?.should be(true)
+          end
+
+
+          it "2 step should be processed with AID(Airline Industry data) in step 1" do
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+              :amount => 1_00,
+              :credit_card => {
+                :number => card_number,
+                :expiration_date => "05/2029"
+              },
+              :industry => {
+                :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+                :data => {
+                  :passenger_first_name => "John",
+                  :passenger_last_name => "Doe",
+                  :passenger_middle_initial => "M",
+                  :passenger_title => "Mr.",
+                  :issued_date => Date.new(2020, 1, 1),
+                  :travel_agency_name => "Expedia",
+                  :travel_agency_code => "12345678",
+                  :ticket_number => "ticket-number",
+                  :issuing_carrier_code => "AA",
+                  :customer_code => "customer-code",
+                  :fare_amount => 70_00,
+                  :fee_amount => 10_00,
+                  :tax_amount => 20_00,
+                  :ticket_issuer_address => "Tkt-issuer-adr",
+                  :arrival_date => Date.new(2020, 1, 1),
+                  :restricted_ticket => false,
+                  :legs => [
+                    {
+                      :conjunction_ticket => "CJ0001",
+                      :exchange_ticket => "ET0001",
+                      :coupon_number => "1",
+                      :service_class => "Y",
+                      :carrier_code => "AA",
+                      :fare_basis_code => "W",
+                      :flight_number => "AA100",
+                      :departure_date => Date.new(2018, 1, 2),
+                      :departure_airport_code => "MDW",
+                      :departure_time => "08:00",
+                      :arrival_airport_code => "ABC",
+                      :arrival_time => "10:00",
+                      :stopover_permitted => false,
+                      :fare_amount => 35_00,
+                      :fee_amount => 5_00,
+                      :tax_amount => 10_00,
+                      :endorsement_or_restrictions => "NOT REFUNDABLE"
+                    }
+                  ]
+                }
+              },
+            )
+            result.success?.should be(true)
+            result.transaction.status.should == Braintree::Transaction::Status::Authorized
+
+            result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
+
+            result.success?.should == true
+            result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          end
+
+          it "2 step should be processed with AID in step 2" do
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+              :amount => 1_00,
+              :credit_card => {
+                :number => card_number,
+                :expiration_date => "05/2029",
+              },
+            )
+
+            result.success?.should be(true)
+            result.transaction.status.should == Braintree::Transaction::Status::Authorized
+
+            options = {:industry => {
+              :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+              :data => {
+                :passenger_first_name => "John",
+                :passenger_last_name => "Doe",
+                :passenger_middle_initial => "M",
+                :passenger_title => "Mr.",
+                :issued_date => Date.new(2018, 1, 1),
+                :travel_agency_name => "Expedia",
+                :travel_agency_code => "12345678",
+                :ticket_number => "ticket-number",
+                :issuing_carrier_code => "AA",
+                :customer_code => "customer-code",
+                :fare_amount => 70_00,
+                :fee_amount => 10_00,
+                :tax_amount => 20_00,
+                :ticket_issuer_address => "Tkt-issuer-adr",
+                :arrival_date => Date.new(2020, 1, 1),
+                :restricted_ticket => false,
+                :legs => [
+                  {
+                    :conjunction_ticket => "CJ0001",
+                    :exchange_ticket => "ET0001",
+                    :coupon_number => "1",
+                    :service_class => "Y",
+                    :carrier_code => "AA",
+                    :fare_basis_code => "W",
+                    :flight_number => "AA100",
+                    :departure_date => Date.new(2018, 1, 2),
+                    :departure_airport_code => "MDW",
+                    :departure_time => "08:00",
+                    :arrival_airport_code => "ABC",
+                    :arrival_time => "10:00",
+                    :stopover_permitted => false,
+                    :fare_amount => 35_00,
+                    :fee_amount => 5_00,
+                    :tax_amount => 10_00,
+                    :endorsement_or_restrictions => "NOT REFUNDABLE"
+                  }
+                ]
+              }
+            }
+            }
+
+            result = Braintree::Transaction.submit_for_settlement(result.transaction.id, nil, options)
+
+            result.success?.should == true
+            result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+          end
+
+          it "should not be processed with AID if validations on industry data fails for card : #{card_number}" do
+            result = Braintree::Transaction.create(
+              :type => "sale",
+              :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+              :amount => 1_00,
+              :credit_card => {
+                :number => card_number,
+                :expiration_date => "05/2029"
+              },
+              :options => {
+                :submit_for_settlement => true
+              },
+              :industry => {
+                :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+                :data => {
+                  :passenger_middle_initial => "CD",
+                  :fare_amount => -1_23,
+                  :issuing_carrier_code => "-AA",
+                  :restricted_ticket => false,
+                  :ticket_number => "A" * 30,
+                  :legs => [
+                    {
+                      :conjunction_ticket => "C"*25,
+                      :fare_amount => -1_23,
+                      :carrier_code => ".AA",
+                    }
+                  ]
+                }
+              },
+            )
+          result.success?.should be(false)
+          [
+            Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative,
+            Braintree::ErrorCodes::Transaction::Industry::TravelFlight::PassengerMiddleInitialIsTooLong,
+            Braintree::ErrorCodes::Transaction::Industry::TravelFlight::TicketNumberIsTooLong,
+          ].should include(*result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort)
+          [
+            Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::CarrierCodeIsTooLong,
+            Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::FareAmountCannotBeNegative,
+            Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::ConjunctionTicketIsTooLong,
+          ].should include(*result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort)
+          end
+        end
       end
     end
 
@@ -1561,6 +1790,19 @@ describe Braintree::Transaction do
         result.transaction.recurring.should == false
       end
 
+      it "marks a transactions as pre_auth" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/26",
+          },
+          :transaction_source => "estimated",
+        )
+        result.success?.should == true
+      end
+
       it "handles validation when transaction source invalid" do
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -1652,6 +1894,31 @@ describe Braintree::Transaction do
           result.transaction.vault_customer.should be_nil
           result.transaction.vault_credit_card.should be_nil
         end
+      end
+    end
+
+    context "processing_overrides" do
+      it "creates a successful transaction with options processing_overrides" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :customer => {
+            :last_name => "Doe"
+          },
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "12/12",
+          },
+          :options => {
+            :processing_overrides => {
+              :customer_email => "RubySDK@example.com",
+              :customer_first_name => "RubySDK_test_customer_first_name",
+              :customer_last_name => "RubySDK_test customer_last_name",
+              :customer_tax_identifier => "1.2.3.4.5.6"
+            },
+          },
+        )
+        expect(result.success?).to eq(true)
       end
     end
 
@@ -2904,6 +3171,76 @@ describe Braintree::Transaction do
 
             transaction = Braintree::Transaction.find(transaction.id)
             transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+          end
+        end
+
+        [Braintree::Test::CreditCardNumbers::Discover, Braintree::Test::CreditCardNumbers::Visa].each do |card_number|
+          it "successfully refunds a transaction with AID" do
+            transaction = Braintree::Transaction.sale!(
+              :amount => Braintree::Test::TransactionAmounts::Authorize,
+              :credit_card => {
+                :number => card_number,
+                :expiration_date => "05/2009"
+              },
+              :options => {
+                :submit_for_settlement => true
+              },
+              :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+              :industry => {
+                :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+                :data => {
+                  :passenger_first_name => "John",
+                  :passenger_last_name => "Doe",
+                  :passenger_middle_initial => "M",
+                  :passenger_title => "Mr.",
+                  :issued_date => Date.new(2018, 1, 1),
+                  :travel_agency_name => "Expedia",
+                  :travel_agency_code => "12345678",
+                  :ticket_number => "ticket-number",
+                  :issuing_carrier_code => "AA",
+                  :customer_code => "customer-code",
+                  :fare_amount => 70_00,
+                  :fee_amount => 10_00,
+                  :tax_amount => 20_00,
+                  :ticket_issuer_address => "Tkt-issuer-adr",
+                  :arrival_date => Date.new(2020, 1, 2),
+                  :restricted_ticket => false,
+                  :legs => [
+                    {
+                      :conjunction_ticket => "CJ0001",
+                      :exchange_ticket => "ET0001",
+                      :coupon_number => "1",
+                      :service_class => "Y",
+                      :carrier_code => "AA",
+                      :fare_basis_code => "W",
+                      :flight_number => "AA100",
+                      :departure_date => Date.new(2020, 1, 2),
+                      :departure_airport_code => "MDW",
+                      :departure_time => "08:00",
+                      :arrival_airport_code => "ABC",
+                      :arrival_time => "10:00",
+                      :stopover_permitted => false,
+                      :fare_amount => 35_00,
+                      :fee_amount => 5_00,
+                      :tax_amount => 10_00,
+                      :endorsement_or_restrictions => "NOT REFUNDABLE",
+                    },
+                  ]
+                },
+              },
+            )
+
+            config = Braintree::Configuration.instantiate
+            response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+            transaction = Braintree::Transaction.find(transaction.id)
+
+            result = Braintree::Transaction.refund(
+              transaction.id,
+              :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+            )
+
+            result.success?.should == true
+            result.transaction.type.should == "credit"
           end
         end
 
@@ -5268,152 +5605,6 @@ describe Braintree::Transaction do
         expect(result.errors.for(:transaction).for(:credit_card).map { |e| e.code }.sort).to eq [Braintree::ErrorCodes::CreditCard::NetworkTokenizationAttributeCryptogramIsRequired]
       end
     end
-
-    xit "Amex Pay with Points" do
-      context "transaction creation" do
-        it "succeeds when submit_for_settlement is true" do
-          result = Braintree::Transaction.sale(
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
-              :expiration_date => "05/2009"
-            },
-            :options => {
-              :submit_for_settlement => true,
-              :amex_rewards => {
-                :request_id => "ABC123",
-                :points => "1000",
-                :currency_amount => "10.00",
-                :currency_iso_code => "USD"
-              }
-            },
-          )
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-        end
-
-        it "succeeds even if the card is ineligible" do
-          result = Braintree::Transaction.sale(
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
-              :expiration_date => "05/2009"
-            },
-            :options => {
-              :submit_for_settlement => true,
-              :amex_rewards => {
-                :request_id => "ABC123",
-                :points => "1000",
-                :currency_amount => "10.00",
-                :currency_iso_code => "USD"
-              }
-            },
-          )
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-        end
-
-        it "succeeds even if the card's balance is insufficient" do
-          result = Braintree::Transaction.sale(
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::InsufficientPoints,
-              :expiration_date => "05/2009"
-            },
-            :options => {
-              :submit_for_settlement => true,
-              :amex_rewards => {
-                :request_id => "ABC123",
-                :points => "1000",
-                :currency_amount => "10.00",
-                :currency_iso_code => "USD"
-              }
-            },
-          )
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-        end
-      end
-
-      context "submit for settlement" do
-        it "succeeds" do
-          result = Braintree::Transaction.sale(
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
-              :expiration_date => "05/2009"
-            },
-            :options => {
-              :amex_rewards => {
-                :request_id => "ABC123",
-                :points => "1000",
-                :currency_amount => "10.00",
-                :currency_iso_code => "USD"
-              }
-            },
-          )
-          result.success?.should == true
-
-          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-        end
-
-        it "succeeds even if the card is ineligible" do
-          result = Braintree::Transaction.sale(
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
-              :expiration_date => "05/2009"
-            },
-            :options => {
-              :amex_rewards => {
-                :request_id => "ABC123",
-                :points => "1000",
-                :currency_amount => "10.00",
-                :currency_iso_code => "USD"
-              }
-            },
-          )
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::Authorized
-
-          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-        end
-
-        it "succeeds even if the card's balance is insufficient" do
-          result = Braintree::Transaction.sale(
-            :amount => Braintree::Test::TransactionAmounts::Authorize,
-            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
-            :credit_card => {
-              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
-              :expiration_date => "05/2009"
-            },
-            :options => {
-              :amex_rewards => {
-                :request_id => "ABC123",
-                :points => "1000",
-                :currency_amount => "10.00",
-                :currency_iso_code => "USD"
-              }
-            },
-          )
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::Authorized
-
-          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-        end
-      end
-    end
   end
 
   describe "self.sale!" do
@@ -6973,6 +7164,7 @@ describe Braintree::Transaction do
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :payment_method_token => "network_tokenized_credit_card",
       )
+
       transaction = result.transaction
       transaction.retried.should == true
     end
@@ -6997,6 +7189,53 @@ describe Braintree::Transaction do
       )
       transaction = result.transaction
       transaction.retried.should == nil
+    end
+  end
+
+  describe "retried_transaction_id and retry_ids presence in transaction response" do
+    context "when it creates a retried transaction" do
+      it "has retry_ids in the first transaction" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Decline,
+          :payment_method_token => "network_tokenized_credit_card",
+          :merchant_account_id => "ma_transaction_multiple_retries",
+        )
+
+        transaction = result.transaction
+        transaction.retried_transaction_id.should == nil
+        transaction.retry_ids.should_not == []
+        transaction.retry_ids.count.should == 2
+
+        # verify retried_transaction_id is in the all retried transactions
+        retry_transaction_1 = transaction.retry_ids[0]
+        collection_1 = Braintree::Transaction.search do |search|
+          search.id.is retry_transaction_1
+        end
+        collection_1.maximum_size.should == 1
+        collection_1.first.retried_transaction_id.should_not == nil
+        collection_1.first.retried_transaction_id.should == transaction.id
+
+        retry_transaction_2 = transaction.retry_ids[1]
+        collection_2 = Braintree::Transaction.search do |search|
+          search.id.is retry_transaction_2
+        end
+        collection_2.maximum_size.should == 1
+        collection_2.first.retried_transaction_id.should_not == nil
+        collection_2.first.retried_transaction_id.should == transaction.id
+      end
+    end
+
+    context "when it creates a non-retried transaction" do
+      it "does not have retried_transaction_id and retry_ids in the transaction" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_token => "network_tokenized_credit_card",
+        )
+
+        transaction = result.transaction
+        transaction.retried_transaction_id.should == nil
+        transaction.retry_ids.should == []
+      end
     end
   end
 
@@ -7232,32 +7471,6 @@ describe Braintree::Transaction do
         expect(adjustment_transaction.success?).to eq(false)
         expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
         expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionIsNotEligibleForAdjustment)
-      end
-
-      it "returns failure, when processor does not support incremental auth" do
-        initial_transaction = Braintree::Transaction.sale(first_data_visa_transaction_params)
-        expect(initial_transaction.success?).to eq(true)
-
-        adjustment_transaction = Braintree::Transaction.adjust_authorization(
-          initial_transaction.transaction.id, "85.50"
-        )
-
-        expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
-        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportIncrementalAuth)
-      end
-
-      it "returns failure, when processor does not support auth reversal" do
-        initial_transaction = Braintree::Transaction.sale(first_data_visa_transaction_params)
-        expect(initial_transaction.success?).to eq(true)
-
-        adjustment_transaction = Braintree::Transaction.adjust_authorization(
-          initial_transaction.transaction.id, "65.50"
-        )
-
-        expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
-        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportPartialAuthReversal)
       end
     end
   end

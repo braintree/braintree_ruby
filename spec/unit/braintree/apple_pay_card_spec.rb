@@ -35,10 +35,12 @@ describe Braintree::ApplePayCard do
       :image_url => nil,
       :issuing_bank => "Big Bad Bank",
       :last_4 => "9876",
+      :merchant_token_identifier => "merchant-token-123",
       :payment_instrument_name => nil,
       :payroll => "No",
       :prepaid => "No",
       :product_id => "MAC",
+      :source_card_last4 => "1234",
       :source_description => "blah",
       :subscriptions => [
         {
@@ -80,6 +82,13 @@ describe Braintree::ApplePayCard do
       card = Braintree::ApplePayCard._new(:gateway, attributes)
 
       expect(card.subscriptions).to be_empty
+    end
+
+    it "handles mpan attributes" do
+      card = Braintree::ApplePayCard._new(:gateway, attributes)
+
+      expect(card.merchant_token_identifier).to_not be_nil
+      expect(card.source_card_last4).to_not be_nil
     end
   end
 

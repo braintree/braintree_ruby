@@ -229,6 +229,7 @@ module Braintree
           :skip_avs,
           :skip_cvv,
           {:paypal => [:custom_field, :payee_id, :payee_email, :description, {:supplementary_data => :_any_key_}]},
+          {:processing_overrides => [:customer_email, :customer_first_name, :customer_last_name, :customer_tax_identifier]},
           {:three_d_secure => [:required]},
           {:amex_rewards => [:request_id, :points, :currency_amount, :currency_iso_code]},
           {:venmo => [:profile_id]},
@@ -247,7 +248,7 @@ module Braintree
           {:data => [
             :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
             :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
-            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone,
+            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone, :ticket_issuer_address, :arrival_date,
             {:legs => [
               :conjunction_ticket, :exchange_ticket, :coupon_number, :service_class, :carrier_code, :fare_basis_code, :flight_number, :departure_date, :departure_airport_code, :departure_time,
               :arrival_airport_code, :arrival_time, :stopover_permitted, :fare_amount, :fee_amount, :tax_amount, :endorsement_or_restrictions,
@@ -267,6 +268,21 @@ module Braintree
       [
         :order_id,
         {:descriptor => [:name, :phone, :url]},
+        {:industry => [
+          :industry_type,
+          {:data => [
+            :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
+            :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
+            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone, :ticket_issuer_address, :arrival_date,
+            {:legs => [
+              :conjunction_ticket, :exchange_ticket, :coupon_number, :service_class, :carrier_code, :fare_basis_code, :flight_number, :departure_date, :departure_airport_code, :departure_time,
+              :arrival_airport_code, :arrival_time, :stopover_permitted, :fare_amount, :fee_amount, :tax_amount, :endorsement_or_restrictions,
+            ]},
+            {:additional_charges => [
+              :kind, :amount,
+            ]},
+          ]},
+        ]},
         :purchase_order_number,
         :tax_amount,
         :tax_exempt,

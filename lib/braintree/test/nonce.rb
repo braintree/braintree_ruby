@@ -11,6 +11,7 @@ module Braintree
       ApplePayVisa = "fake-apple-pay-visa-nonce"
       ApplePayMasterCard = "fake-apple-pay-mastercard-nonce"
       ApplePayAmEx = "fake-apple-pay-amex-nonce"
+      ApplePayMpan = "fake-apple-pay-mpan-nonce"
       AbstractTransactable = "fake-abstract-transactable-nonce"
       Europe = "fake-europe-bank-account-nonce"
       GooglePayDiscover = "fake-android-pay-discover-nonce"

@@ -152,7 +152,9 @@ module Braintree
     attr_reader :refunded_transaction_id
     attr_reader :refunded_installments
     attr_reader :retried
+    attr_reader :retried_transaction_id                 # the primary/parent transaction id of any retried transaction
     attr_reader :retrieval_reference_number
+    attr_reader :retry_ids                              # all retried transactions ids for a primary transaction
     attr_reader :risk_data
     attr_reader :samsung_pay_card_details
     attr_reader :sca_exemption_requested

@@ -246,6 +246,17 @@ describe Braintree::Transaction do
       transaction.authorization_adjustments[1].processor_response_text.should == "Processor Network Unavailable - Try Again"
     end
 
+    it "accepts retry_ids and retried_transaction_id attributes in a transactions" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :retry_ids => ["retry_id_1"],
+        :retried_transaction_id => "original_retried_tranction_id",
+      )
+      transaction.retry_ids.count.should == 1
+      transaction.retry_ids[0].should == "retry_id_1"
+      transaction.retried_transaction_id.should == "original_retried_tranction_id"
+    end
+
     it "handles receiving custom as an empty string" do
       transaction = Braintree::Transaction._new(
         :gateway,
