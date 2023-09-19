@@ -136,6 +136,7 @@ module Braintree
     attr_reader :order_id
     attr_reader :partial_settlement_transaction_ids
     attr_reader :payment_instrument_type
+    attr_reader :payment_receipt
     attr_reader :paypal_details
     attr_reader :paypal_here_details
     attr_reader :plan_id
@@ -312,6 +313,7 @@ module Braintree
       @google_pay_details = GooglePayDetails.new(@google_pay_card)
       @local_payment_details = LocalPaymentDetails.new(@local_payment)
       @payment_instrument_type = attributes[:payment_instrument_type]
+      @payment_receipt = PaymentReceipt.new(attributes[:payment_receipt]) if attributes[:payment_receipt]
       @paypal_details = PayPalDetails.new(@paypal)
       @paypal_here_details = PayPalHereDetails.new(@paypal_here)
       @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card])

@@ -7175,7 +7175,8 @@ describe Braintree::Transaction do
         :payment_method_token => "network_tokenized_credit_card",
       )
       transaction = result.transaction
-      transaction.retried.should == nil
+
+      expect(transaction.retried).to be_falsey
     end
 
     it "creates a transaction that is ineligible for retries" do
@@ -7188,7 +7189,8 @@ describe Braintree::Transaction do
         :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
       transaction = result.transaction
-      transaction.retried.should == nil
+
+      expect(transaction.retried).to be_falsey
     end
   end
 

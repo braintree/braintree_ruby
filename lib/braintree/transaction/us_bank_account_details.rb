@@ -7,6 +7,7 @@ module Braintree
       attr_reader :account_type
       attr_reader :ach_mandate
       attr_reader :bank_name
+      attr_reader :global_id
       attr_reader :image_url
       attr_reader :last_4
       attr_reader :routing_number

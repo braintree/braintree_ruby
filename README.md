@@ -38,8 +38,8 @@ Braintree employs a deprecation policy for our SDKs. For more information on the
 | Major version number | Status      | Released      | Deprecated   | Unsupported  |
 | -------------------- | ----------- | ------------- | ------------ | ------------ |
 | 4.x.x                | Active      | May 2021      | TBA          | TBA          |
-| 3.x.x                | Inactive    | October 2020  | May 2023     | May 2024     |
-| 2.x.x                | Inactive    | April 2010    | October 2022 | October 2023 |
+| 3.x.x                | Deprecated  | October 2020  | May 2023     | May 2024     |
+| 2.x.x                | Deprecated  | April 2010    | October 2022 | October 2023 |
 
 ## Documentation
 
