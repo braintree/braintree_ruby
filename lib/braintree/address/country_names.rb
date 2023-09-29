@@ -228,7 +228,7 @@ module Braintree
     ["Tonga", "TO", "TON", "776"],
     ["Trinidad and Tobago", "TT", "TTO", "780"],
     ["Tunisia", "TN", "TUN", "788"],
-    ["Turkey", "TR", "TUR", "792"],
+    ["Türkiye", "TR", "TUR", "792"],
     ["Turkmenistan", "TM", "TKM", "795"],
     ["Turks and Caicos Islands", "TC", "TCA", "796"],
     ["Tuvalu", "TV", "TUV", "798"],
