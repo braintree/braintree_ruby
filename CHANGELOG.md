@@ -1,5 +1,9 @@
 # Changelog
 
+## unreleased
+
+- Prefer "Türkiye" in `Braintree::Address::CountryNames`
+
 ## 4.14.0
 
 - Add `payment_receipt` object to `Transaction`
