@@ -17,7 +17,7 @@ describe Braintree::ClientToken do
 
       response = http.get_payment_methods
 
-      response.code.should == "200"
+      expect(response.code).to eq("200")
     end
 
     it "raises ArgumentError on invalid parameters (422)" do
@@ -31,14 +31,14 @@ describe Braintree::ClientToken do
         config = Braintree::Configuration.instantiate
         client_token_string = Braintree::ClientToken.generate(:version => 1)
         client_token = JSON.parse(client_token_string)
-        client_token["version"].should == 1
+        expect(client_token["version"]).to eq(1)
       end
 
       it "defaults to 2" do
         config = Braintree::Configuration.instantiate
         client_token_string = Braintree::ClientToken.generate
         client_token = decode_client_token(client_token_string)
-        client_token["version"].should == 2
+        expect(client_token["version"]).to eq(2)
       end
     end
 
@@ -68,7 +68,7 @@ describe Braintree::ClientToken do
         },
       )
 
-      response.code.should == "422"
+      expect(response.code).to eq("422")
     end
 
     it "can pass make_default" do
@@ -98,7 +98,7 @@ describe Braintree::ClientToken do
         },
       )
 
-      response.code.should == "201"
+      expect(response.code).to eq("201")
 
       response = http.add_payment_method(
         :credit_card => {
@@ -108,10 +108,10 @@ describe Braintree::ClientToken do
         },
       )
 
-      response.code.should == "201"
+      expect(response.code).to eq("201")
 
       customer = Braintree::Customer.find(customer_id)
-      customer.credit_cards.select { |c| c.bin == "400551" }[0].should be_default
+      expect(customer.credit_cards.select { |c| c.bin == "400551" }[0]).to be_default
     end
 
     it "can pass fail_on_duplicate_payment_method" do
@@ -138,7 +138,7 @@ describe Braintree::ClientToken do
         },
       )
 
-      response.code.should == "201"
+      expect(response.code).to eq("201")
 
       second_raw_client_token = Braintree::ClientToken.generate(
         :customer_id => customer_id,
@@ -158,7 +158,7 @@ describe Braintree::ClientToken do
         },
       )
 
-      response.code.should == "422"
+      expect(response.code).to eq("422")
     end
 
     it "can pass merchant_account_id" do
@@ -169,7 +169,7 @@ describe Braintree::ClientToken do
       )
       client_token = decode_client_token(raw_client_token)
 
-      client_token["merchantAccountId"].should == merchant_account_id
+      expect(client_token["merchantAccountId"]).to eq(merchant_account_id)
     end
 
     context "paypal" do
@@ -178,11 +178,11 @@ describe Braintree::ClientToken do
           raw_client_token = Braintree::ClientToken.generate
           client_token = decode_client_token(raw_client_token)
 
-          client_token["paypal"]["displayName"].should == "merchant who has paypal and sepa enabled"
-          client_token["paypal"]["clientId"].should match(/.+/)
-          client_token["paypal"]["privacyUrl"].should match("http://www.example.com/privacy_policy")
-          client_token["paypal"]["userAgreementUrl"].should match("http://www.example.com/user_agreement")
-          client_token["paypal"]["baseUrl"].should_not be_nil
+          expect(client_token["paypal"]["displayName"]).to eq("merchant who has paypal and sepa enabled")
+          expect(client_token["paypal"]["clientId"]).to match(/.+/)
+          expect(client_token["paypal"]["privacyUrl"]).to match("http://www.example.com/privacy_policy")
+          expect(client_token["paypal"]["userAgreementUrl"]).to match("http://www.example.com/user_agreement")
+          expect(client_token["paypal"]["baseUrl"]).not_to be_nil
         end
       end
     end

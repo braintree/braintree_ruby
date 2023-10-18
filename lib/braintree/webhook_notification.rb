@@ -45,6 +45,7 @@ module Braintree
 
       RecipientUpdatedGrantedPaymentMethod = "recipient_updated_granted_payment_method"
 
+      SubscriptionBillingSkipped = "subscription_billing_skipped"
       SubscriptionCanceled = "subscription_canceled"
       SubscriptionChargedSuccessfully = "subscription_charged_successfully"
       SubscriptionChargedUnsuccessfully = "subscription_charged_unsuccessfully"

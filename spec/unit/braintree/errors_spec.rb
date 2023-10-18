@@ -6,15 +6,15 @@ describe Braintree::Errors do
       errors = Braintree::Errors.new(
         :level1 => {:errors => [{:code => "code1", :attribute => "attr", :message => "message"}]},
       )
-      errors.for(:level1).size.should == 1
-      errors.for(:level1)[0].code.should == "code1"
+      expect(errors.for(:level1).size).to eq(1)
+      expect(errors.for(:level1)[0].code).to eq("code1")
     end
 
     it "returns nil if there are no errors at the given scope" do
       errors = Braintree::Errors.new(
         :level1 => {:errors => [{:code => "code1", :attribute => "attr", :message => "message"}]},
       )
-      errors.for(:no_errors_here).should == nil
+      expect(errors.for(:no_errors_here)).to eq(nil)
     end
   end
 
@@ -23,7 +23,7 @@ describe Braintree::Errors do
       errors = Braintree::Errors.new(
         :level1 => {:errors => [{:code => "code1", :attribute => "attr", :message => "message"}]},
       )
-      errors.inspect.should == "#<Braintree::Errors level1:[(code1) message]>"
+      expect(errors.inspect).to eq("#<Braintree::Errors level1:[(code1) message]>")
     end
 
     it "shows errors 2 levels deep" do
@@ -35,7 +35,7 @@ describe Braintree::Errors do
           }
         },
       )
-      errors.inspect.should == "#<Braintree::Errors level1:[(code1) message], level1/level2:[(code2) message2]>"
+      expect(errors.inspect).to eq("#<Braintree::Errors level1:[(code1) message], level1/level2:[(code2) message2]>")
     end
 
     it "shows errors 3 levels deep" do
@@ -50,7 +50,7 @@ describe Braintree::Errors do
           }
         },
       )
-      errors.inspect.should == "#<Braintree::Errors level1:[(code1) message], level1/level2:[(code2) message2], level1/level2/level3:[(code3) message3]>"
+      expect(errors.inspect).to eq("#<Braintree::Errors level1:[(code1) message], level1/level2:[(code2) message2], level1/level2/level3:[(code3) message3]>")
     end
   end
 
@@ -67,7 +67,7 @@ describe Braintree::Errors do
           }
         },
       )
-      errors.map { |e| e.code }.sort.should == %w[1 2 3]
+      expect(errors.map { |e| e.code }.sort).to eq(%w[1 2 3])
     end
   end
 
@@ -76,7 +76,7 @@ describe Braintree::Errors do
       errors = Braintree::Errors.new(
         :level1 => {:errors => [{:code => "1", :attribute => "attr", :message => "message"}]},
       )
-      errors.size.should == 1
+      expect(errors.size).to eq(1)
     end
 
     it "returns the total number of validation errors in the hierarchy" do
@@ -91,7 +91,7 @@ describe Braintree::Errors do
           }
         },
       )
-      errors.size.should == 3
+      expect(errors.size).to eq(3)
     end
   end
 end

@@ -20,11 +20,12 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
-        :venmo_sdk_payment_method_code,
+        :venmo_sdk_payment_method_code, # NEXT_MAJOR_VERSION Remove this attribute
         :device_data,
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
-        {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
+        {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, # NEXT_MAJOR_VERSION Remove this attribute
+          :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -66,11 +67,12 @@ describe Braintree::CreditCard do
         :expiration_year,
         :number,
         :token,
-        :venmo_sdk_payment_method_code,
+        :venmo_sdk_payment_method_code, # NEXT_MAJOR_VERSION Remove this attribute
         :device_data,
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
-        {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
+        {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, # NEXT_MAJOR_VERSION Remove this attribute
+          :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -106,31 +108,31 @@ describe Braintree::CreditCard do
       first = Braintree::CreditCard._new(:gateway, :token => 123)
       second = Braintree::CreditCard._new(:gateway, :token => 123)
 
-      first.should == second
-      second.should == first
+      expect(first).to eq(second)
+      expect(second).to eq(first)
     end
 
     it "returns false if given a credit card with a different token" do
       first = Braintree::CreditCard._new(:gateway, :token => 123)
       second = Braintree::CreditCard._new(:gateway, :token => 124)
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false if not given a credit card" do
       credit_card = Braintree::CreditCard._new(:gateway, :token => 123)
-      credit_card.should_not == "not a credit card"
+      expect(credit_card).not_to eq("not a credit card")
     end
   end
 
   describe "default?" do
     it "is true if the credit card is the default credit card for the customer" do
-      Braintree::CreditCard._new(:gateway, :default => true).default?.should == true
+      expect(Braintree::CreditCard._new(:gateway, :default => true).default?).to eq(true)
     end
 
     it "is false if the credit card is not the default credit card for the customer" do
-      Braintree::CreditCard._new(:gateway, :default => false).default?.should == false
+      expect(Braintree::CreditCard._new(:gateway, :default => false).default?).to eq(false)
     end
   end
 
@@ -154,7 +156,7 @@ describe Braintree::CreditCard do
     end
 
     it "does not raise an error if address_id does not respond to strip" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
+      allow(Braintree::Http).to receive(:new).and_return double.as_null_object
       expect do
         Braintree::CreditCard.find(8675309)
       end.to_not raise_error
@@ -164,7 +166,7 @@ describe Braintree::CreditCard do
   describe "inspect" do
     it "includes the token first" do
       output = Braintree::CreditCard._new(:gateway, :token => "cc123").inspect
-      output.should include("#<Braintree::CreditCard token: \"cc123\",")
+      expect(output).to include("#<Braintree::CreditCard token: \"cc123\",")
     end
 
     it "includes all customer attributes" do
@@ -183,18 +185,18 @@ describe Braintree::CreditCard do
         :is_network_tokenized => false,
       )
       output = credit_card.inspect
-      output.should include(%q(bin: "411111"))
-      output.should include(%q(card_type: "Visa"))
-      output.should include(%q(cardholder_name: "John Miller"))
+      expect(output).to include(%q(bin: "411111"))
+      expect(output).to include(%q(card_type: "Visa"))
+      expect(output).to include(%q(cardholder_name: "John Miller"))
 
-      output.should include(%q(customer_id: "cid1"))
-      output.should include(%q(expiration_month: "01"))
-      output.should include(%q(expiration_year: "2020"))
-      output.should include(%q(last_4: "1111"))
-      output.should include(%q(token: "tok1"))
-      output.should include(%Q(updated_at: #{credit_card.updated_at.inspect}))
-      output.should include(%Q(created_at: #{credit_card.created_at.inspect}))
-      output.should include(%q(is_network_tokenized?: false))
+      expect(output).to include(%q(customer_id: "cid1"))
+      expect(output).to include(%q(expiration_month: "01"))
+      expect(output).to include(%q(expiration_year: "2020"))
+      expect(output).to include(%q(last_4: "1111"))
+      expect(output).to include(%q(token: "tok1"))
+      expect(output).to include(%Q(updated_at: #{credit_card.updated_at.inspect}))
+      expect(output).to include(%Q(created_at: #{credit_card.created_at.inspect}))
+      expect(output).to include(%q(is_network_tokenized?: false))
     end
   end
 
@@ -205,7 +207,7 @@ describe Braintree::CreditCard do
         :bin => "510510",
         :last_4 => "5100",
       )
-      credit_card.masked_number.should == "510510******5100"
+      expect(credit_card.masked_number).to eq("510510******5100")
     end
   end
 
@@ -217,7 +219,7 @@ describe Braintree::CreditCard do
         :last_4 => "5100",
         :is_network_tokenized => true,
       )
-      credit_card.is_network_tokenized?.should == true
+      expect(credit_card.is_network_tokenized?).to eq(true)
     end
 
     it "returns false" do
@@ -227,7 +229,7 @@ describe Braintree::CreditCard do
         :last_4 => "5100",
         :is_network_tokenized => false,
       )
-      credit_card.is_network_tokenized?.should == false
+      expect(credit_card.is_network_tokenized?).to eq(false)
     end
   end
 
@@ -253,12 +255,12 @@ describe Braintree::CreditCard do
         verification1 = {:created_at => Time.now, :id => 123}
         verification2 = {:created_at => Time.now - 3600, :id => 456}
         credit_card = Braintree::CreditCard._new(Braintree::Configuration.gateway, {:verifications => [verification1, verification2]})
-        credit_card.verification.id.should == 123
+        expect(credit_card.verification.id).to eq(123)
       end
 
       it "picks nil if verifications are empty" do
         credit_card = Braintree::CreditCard._new(Braintree::Configuration.gateway, {})
-        credit_card.verification.should be_nil
+        expect(credit_card.verification).to be_nil
       end
     end
   end

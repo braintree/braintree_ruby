@@ -27,7 +27,7 @@ describe Braintree::ErrorResult do
         }
       }
       result = Braintree::ErrorResult.new(:gateway, :params => "params", :errors => errors)
-      result.inspect.should == "#<Braintree::ErrorResult params:{...} errors:<level1:[(code1) message], level1/level2:[(code2) message2]>>"
+      expect(result.inspect).to eq("#<Braintree::ErrorResult params:{...} errors:<level1:[(code1) message], level1/level2:[(code2) message2]>>")
     end
 
     it "includes the credit_card_verification if there is one" do
@@ -38,7 +38,7 @@ describe Braintree::ErrorResult do
         :verification => {},
         :transaction => nil,
       )
-      result.inspect.should include("credit_card_verification: #<Braintree::CreditCardVerification status: ")
+      expect(result.inspect).to include("credit_card_verification: #<Braintree::CreditCardVerification status: ")
     end
 
     it "does not include the credit_card_verification if there isn't one" do
@@ -49,7 +49,7 @@ describe Braintree::ErrorResult do
         :verification => nil,
         :transaction => nil,
       )
-      result.inspect.should_not include("credit_card_verification")
+      expect(result.inspect).not_to include("credit_card_verification")
     end
 
     it "includes the transaction if there is one" do
@@ -60,7 +60,7 @@ describe Braintree::ErrorResult do
         :verification => nil,
         :transaction => {},
       )
-      result.inspect.should include("transaction: #<Braintree::Transaction id: ")
+      expect(result.inspect).to include("transaction: #<Braintree::Transaction id: ")
     end
 
     it "does not include the transaction if there isn't one" do
@@ -71,7 +71,7 @@ describe Braintree::ErrorResult do
         :verification => nil,
         :transaction => nil,
       )
-      result.inspect.should_not include("transaction")
+      expect(result.inspect).not_to include("transaction")
     end
   end
 end

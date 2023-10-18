@@ -29,8 +29,8 @@ describe Braintree::AdvancedSearch do
         search.id.is "subscription1_#{id}"
       end
 
-      collection.should include(subscription1)
-      collection.should_not include(subscription2)
+      expect(collection).to include(subscription1)
+      expect(collection).not_to include(subscription2)
     end
 
     it "is_not" do
@@ -54,8 +54,8 @@ describe Braintree::AdvancedSearch do
         search.price.is "11"
       end
 
-      collection.should_not include(subscription1)
-      collection.should include(subscription2)
+      expect(collection).not_to include(subscription1)
+      expect(collection).to include(subscription2)
     end
 
     it "starts_with" do
@@ -76,8 +76,8 @@ describe Braintree::AdvancedSearch do
         search.id.starts_with "subscription1_"
       end
 
-      collection.should include(subscription1)
-      collection.should_not include(subscription2)
+      expect(collection).to include(subscription1)
+      expect(collection).not_to include(subscription2)
     end
 
     it "ends_with" do
@@ -98,8 +98,8 @@ describe Braintree::AdvancedSearch do
         search.id.ends_with "1_#{id}"
       end
 
-      collection.should include(subscription1)
-      collection.should_not include(subscription2)
+      expect(collection).to include(subscription1)
+      expect(collection).not_to include(subscription2)
     end
 
     it "contains" do
@@ -120,8 +120,8 @@ describe Braintree::AdvancedSearch do
         search.id.contains "scription1_"
       end
 
-      collection.should include(subscription1)
-      collection.should_not include(subscription2)
+      expect(collection).to include(subscription1)
+      expect(collection).not_to include(subscription2)
     end
   end
 
@@ -147,8 +147,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "12"
         end
 
-        collection.should include(subscription1)
-        collection.should include(subscription2)
+        expect(collection).to include(subscription1)
+        expect(collection).to include(subscription2)
       end
 
       it "returns only matching results" do
@@ -171,8 +171,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "13"
         end
 
-        collection.should include(subscription1)
-        collection.should_not include(subscription2)
+        expect(collection).to include(subscription1)
+        expect(collection).not_to include(subscription2)
       end
 
       it "returns only matching results given an argument list" do
@@ -195,8 +195,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "14"
         end
 
-        collection.should include(subscription1)
-        collection.should include(subscription2)
+        expect(collection).to include(subscription1)
+        expect(collection).to include(subscription2)
       end
 
       describe "is" do
@@ -220,8 +220,8 @@ describe Braintree::AdvancedSearch do
             search.price.is "15"
           end
 
-          collection.should include(subscription1)
-          collection.should_not include(subscription2)
+          expect(collection).to include(subscription1)
+          expect(collection).not_to include(subscription2)
         end
       end
 
@@ -245,8 +245,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "16"
         end
 
-        collection.should include(subscription1)
-        collection.should include(subscription2)
+        expect(collection).to include(subscription1)
+        expect(collection).to include(subscription2)
       end
 
       it "returns expired subscriptions" do
@@ -254,8 +254,8 @@ describe Braintree::AdvancedSearch do
           search.status.in [Braintree::Subscription::Status::Expired]
         end
 
-        collection.maximum_size.should > 0
-        collection.all? { |subscription| subscription.status.should == Braintree::Subscription::Status::Expired }
+        expect(collection.maximum_size).to be > 0
+        collection.all? { |subscription| expect(subscription.status).to eq(Braintree::Subscription::Status::Expired) }
       end
     end
   end
@@ -287,7 +287,7 @@ describe Braintree::AdvancedSearch do
           search.price.is "17"
         end
 
-        collection.maximum_size.should > 0
+        expect(collection.maximum_size).to be > 0
         collection.all? { |subscription| plan_ids.include?(subscription.plan_id) }
       end
     end
@@ -298,7 +298,7 @@ describe Braintree::AdvancedSearch do
           search.plan_id.is "not_a_real_plan_id"
         end
 
-        collection.maximum_size.should == 0
+        expect(collection.maximum_size).to eq(0)
       end
     end
 
@@ -321,8 +321,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "18"
         end
 
-        collection.should include(trialless_subscription)
-        collection.should_not include(trial_subscription)
+        expect(collection).to include(trialless_subscription)
+        expect(collection).not_to include(trial_subscription)
       end
     end
 
@@ -345,8 +345,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "19"
         end
 
-        collection.should_not include(trialless_subscription)
-        collection.should include(trial_subscription)
+        expect(collection).not_to include(trialless_subscription)
+        expect(collection).to include(trial_subscription)
       end
     end
 
@@ -369,8 +369,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "20"
         end
 
-        collection.should include(trial_subscription)
-        collection.should_not include(trialless_subscription)
+        expect(collection).to include(trial_subscription)
+        expect(collection).not_to include(trialless_subscription)
       end
     end
 
@@ -393,8 +393,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "21"
         end
 
-        collection.should include(trial_subscription)
-        collection.should_not include(trialless_subscription)
+        expect(collection).to include(trial_subscription)
+        expect(collection).not_to include(trialless_subscription)
       end
     end
 
@@ -417,8 +417,8 @@ describe Braintree::AdvancedSearch do
           search.price.is "22"
         end
 
-        collection.should include(trial_subscription)
-        collection.should_not include(trialless_subscription)
+        expect(collection).to include(trial_subscription)
+        expect(collection).not_to include(trialless_subscription)
       end
     end
   end
@@ -441,8 +441,8 @@ describe Braintree::AdvancedSearch do
         search.price.is "5.00"
       end
 
-      collection.should include(subscription_500)
-      collection.should_not include(subscription_501)
+      expect(collection).to include(subscription_500)
+      expect(collection).not_to include(subscription_501)
     end
 
     it "<=" do
@@ -468,9 +468,9 @@ describe Braintree::AdvancedSearch do
         search.price <= "5.00"
       end
 
-      collection.should include(subscription_499)
-      collection.should include(subscription_500)
-      collection.should_not include(subscription_501)
+      expect(collection).to include(subscription_499)
+      expect(collection).to include(subscription_500)
+      expect(collection).not_to include(subscription_501)
     end
 
     it ">=" do
@@ -496,9 +496,9 @@ describe Braintree::AdvancedSearch do
         search.price >= "1000.00"
       end
 
-      collection.should_not include(subscription_499)
-      collection.should include(subscription_500)
-      collection.should include(subscription_501)
+      expect(collection).not_to include(subscription_499)
+      expect(collection).to include(subscription_500)
+      expect(collection).to include(subscription_501)
     end
 
     it "between" do
@@ -524,9 +524,9 @@ describe Braintree::AdvancedSearch do
         search.price.between "4.99", "5.01"
       end
 
-      collection.should include(subscription_499)
-      collection.should include(subscription_500)
-      collection.should_not include(subscription_502)
+      expect(collection).to include(subscription_499)
+      expect(collection).to include(subscription_500)
+      expect(collection).not_to include(subscription_502)
     end
   end
 end

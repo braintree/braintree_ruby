@@ -78,9 +78,9 @@ describe Braintree::Dispute do
       end
 
       it "does not raise an exception if the id is a fixnum" do
-        Braintree::Http.stub(:new).and_return double.as_null_object
-        Braintree::Dispute.stub(:_new).and_return nil
-        Braintree::ErrorResult.stub(:new).and_return nil
+        allow(Braintree::Http).to receive(:new).and_return double.as_null_object
+        allow(Braintree::Dispute).to receive(:_new).and_return nil
+        allow(Braintree::ErrorResult).to receive(:new).and_return nil
 
         expect do
           Braintree::Dispute.public_send(method_name, 8675309)
@@ -109,8 +109,8 @@ describe Braintree::Dispute do
     end
 
     it "does not raise an exception if the dispute_id is a fixnum" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
-      Braintree::Dispute.stub(:_new).and_return nil
+      allow(Braintree::Http).to receive(:new).and_return double.as_null_object
+      allow(Braintree::Dispute).to receive(:_new).and_return nil
       expect do
         Braintree::Dispute.add_file_evidence(8675309, "doc_upload_id")
       end.to_not raise_error
@@ -135,8 +135,8 @@ describe Braintree::Dispute do
     end
 
     it "does not raise an exception if the document_upload_id is a fixnum" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
-      Braintree::Dispute.stub(:_new).and_return nil
+      allow(Braintree::Http).to receive(:new).and_return double.as_null_object
+      allow(Braintree::Dispute).to receive(:_new).and_return nil
       expect do
         Braintree::Dispute.add_file_evidence("dispute_id", 8675309)
       end.to_not raise_error
@@ -144,7 +144,7 @@ describe Braintree::Dispute do
 
     describe "with optional params" do
       it "does not raise an exception if the optional parameters are valid" do
-        Braintree::Http.stub(:new).and_return double.as_null_object
+        allow(Braintree::Http).to receive(:new).and_return double.as_null_object
         expect do
           Braintree::Dispute.add_file_evidence("dispute_id", {category: "GENERAL", document_id: "document_id"})
         end.to_not raise_error
@@ -157,7 +157,7 @@ describe Braintree::Dispute do
       end
 
       it "raises an exception if the param tag is not a string" do
-        Braintree::Http.stub(:new).and_return double.as_null_object
+        allow(Braintree::Http).to receive(:new).and_return double.as_null_object
 
         expect do
           Braintree::Dispute.add_file_evidence("dispute_id", {category: 3, document_id: "document_id"})
@@ -186,8 +186,8 @@ describe Braintree::Dispute do
     end
 
     it "does not raise an exception if the id is a fixnum" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
-      Braintree::Dispute.stub(:_new).and_return nil
+      allow(Braintree::Http).to receive(:new).and_return double.as_null_object
+      allow(Braintree::Dispute).to receive(:_new).and_return nil
       expect do
         Braintree::Dispute.add_text_evidence(8675309, "text evidence")
       end.to_not raise_error
@@ -207,7 +207,7 @@ describe Braintree::Dispute do
 
     describe "with optional params" do
       it "does not raise an exception if the optional parameters are valid" do
-        Braintree::Http.stub(:new).and_return double.as_null_object
+        allow(Braintree::Http).to receive(:new).and_return double.as_null_object
         expect do
           Braintree::Dispute.add_text_evidence("dispute_id", {content: "a", category: "", sequence_number: 3})
         end.to_not raise_error
@@ -281,8 +281,8 @@ describe Braintree::Dispute do
     it "converts string amount_dispute and amount_won" do
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.amount_disputed.should == 500.0
-      dispute.amount_won.should == 0.0
+      expect(dispute.amount_disputed).to eq(500.0)
+      expect(dispute.amount_won).to eq(0.0)
     end
 
     it "returns 'Effortless Chargeback Protection tool' when initial chargeback_protection_level is effortless" do
@@ -336,74 +336,74 @@ describe Braintree::Dispute do
 
         dispute = Braintree::Dispute._new(attributes)
 
-        dispute.send(field).should == nil
+        expect(dispute.send(field)).to eq(nil)
       end
     end
 
     it "converts date_opened, date_won, reply_by_date, received_date from String to Date" do
       dispute = Braintree::Dispute._new(attributes.merge(:reply_by_date => "2009-03-14"))
 
-      dispute.date_opened.should == Date.new(2009, 3, 9)
-      dispute.date_won.should == Date.new(2009, 4, 15)
-      dispute.received_date.should == Date.new(2009, 3, 9)
-      dispute.reply_by_date.should == Date.new(2009, 3, 14)
+      expect(dispute.date_opened).to eq(Date.new(2009, 3, 9))
+      expect(dispute.date_won).to eq(Date.new(2009, 4, 15))
+      expect(dispute.received_date).to eq(Date.new(2009, 3, 9))
+      expect(dispute.reply_by_date).to eq(Date.new(2009, 3, 14))
     end
 
     it "converts transaction hash into a Dispute::TransactionDetails object first" do
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.transaction_details.id.should == "open_disputed_transaction"
-      dispute.transaction_details.amount.should == 31.00
+      expect(dispute.transaction_details.id).to eq("open_disputed_transaction")
+      expect(dispute.transaction_details.amount).to eq(31.00)
     end
 
     it "converts transaction hash into a Dispute::Transaction object" do
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.transaction.amount.should == 31.00
-      dispute.transaction.id.should == "open_disputed_transaction"
-      dispute.transaction.created_at.should == Time.utc(2009, 2, 9, 12, 59, 59)
-      dispute.transaction.installment_count.should == nil
-      dispute.transaction.order_id.should == nil
-      dispute.transaction.purchase_order_number.should == "po"
-      dispute.transaction.payment_instrument_subtype.should == "Visa"
+      expect(dispute.transaction.amount).to eq(31.00)
+      expect(dispute.transaction.id).to eq("open_disputed_transaction")
+      expect(dispute.transaction.created_at).to eq(Time.utc(2009, 2, 9, 12, 59, 59))
+      expect(dispute.transaction.installment_count).to eq(nil)
+      expect(dispute.transaction.order_id).to eq(nil)
+      expect(dispute.transaction.purchase_order_number).to eq("po")
+      expect(dispute.transaction.payment_instrument_subtype).to eq("Visa")
     end
 
     it "converts status_history hash into an array of Dispute::StatusHistory objects" do
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.status_history.length.should == 1
+      expect(dispute.status_history.length).to eq(1)
       status_history_1 = dispute.status_history.first
-      status_history_1.status.should == Braintree::Dispute::Status::Open
-      status_history_1.timestamp.should == Time.utc(2009, 3, 9, 10, 50, 39)
+      expect(status_history_1.status).to eq(Braintree::Dispute::Status::Open)
+      expect(status_history_1.timestamp).to eq(Time.utc(2009, 3, 9, 10, 50, 39))
     end
 
     it "converts evidence hash into an array of Dispute::Evidence objects" do
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.evidence.length.should ==2
+      expect(dispute.evidence.length).to eq(2)
       evidence1 = dispute.evidence.first
-      evidence1.comment.should == nil
-      evidence1.created_at.should == Time.utc(2009, 3, 10, 12, 5, 20)
-      evidence1.id.should == "evidence1"
-      evidence1.sent_to_processor_at.should == nil
-      evidence1.url.should == "url_of_file_evidence"
+      expect(evidence1.comment).to eq(nil)
+      expect(evidence1.created_at).to eq(Time.utc(2009, 3, 10, 12, 5, 20))
+      expect(evidence1.id).to eq("evidence1")
+      expect(evidence1.sent_to_processor_at).to eq(nil)
+      expect(evidence1.url).to eq("url_of_file_evidence")
 
       evidence2 = dispute.evidence.last
-      evidence2.comment.should == "text evidence"
-      evidence2.created_at.should == Time.utc(2009, 3, 10, 12, 5, 21)
-      evidence2.id.should == "evidence2"
-      evidence2.sent_to_processor_at.should == Date.new(2009, 3, 13)
-      evidence2.url.should == nil
+      expect(evidence2.comment).to eq("text evidence")
+      expect(evidence2.created_at).to eq(Time.utc(2009, 3, 10, 12, 5, 21))
+      expect(evidence2.id).to eq("evidence2")
+      expect(evidence2.sent_to_processor_at).to eq(Date.new(2009, 3, 13))
+      expect(evidence2.url).to eq(nil)
     end
 
     it "converts paypal_messages hash into an array of Dispute::PayPalMessage objects" do
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.paypal_messages.length.should == 1
+      expect(dispute.paypal_messages.length).to eq(1)
       paypal_message_1 = dispute.paypal_messages.first
-      paypal_message_1.message.should == "message"
-      paypal_message_1.sender.should == "seller"
-      paypal_message_1.sent_at.should == Time.utc(2009, 3, 9, 10, 50, 39)
+      expect(paypal_message_1.message).to eq("message")
+      expect(paypal_message_1.sender).to eq("seller")
+      expect(paypal_message_1.sent_at).to eq(Time.utc(2009, 3, 9, 10, 50, 39))
     end
 
     it "handles nil evidence" do
@@ -411,7 +411,7 @@ describe Braintree::Dispute do
 
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.evidence.should == nil
+      expect(dispute.evidence).to eq(nil)
     end
 
     it "handles nil paypal_messages" do
@@ -419,15 +419,15 @@ describe Braintree::Dispute do
 
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.paypal_messages.should == nil
+      expect(dispute.paypal_messages).to eq(nil)
     end
 
     it "sets the older webhook fields for backwards compatibility" do
       dispute = Braintree::Dispute._new(attributes)
 
-      dispute.amount.should == 31.00
-      dispute.date_opened.should == Date.new(2009, 3, 9)
-      dispute.date_won.should == Date.new(2009, 4, 15)
+      expect(dispute.amount).to eq(31.00)
+      expect(dispute.date_opened).to eq(Date.new(2009, 3, 9))
+      expect(dispute.date_won).to eq(Date.new(2009, 4, 15))
     end
 
     it "returns pre_dispute_program value" do
@@ -443,21 +443,21 @@ describe Braintree::Dispute do
       first = Braintree::Dispute._new(attributes)
       second = Braintree::Dispute._new(attributes)
 
-      first.should == second
-      second.should == first
+      expect(first).to eq(second)
+      expect(second).to eq(first)
     end
 
     it "returns false when given a dispute with a different id" do
       first = Braintree::Dispute._new(attributes)
       second = Braintree::Dispute._new(attributes.merge(:id => "1234"))
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false when not given a dispute" do
       dispute = Braintree::Dispute._new(attributes)
-      dispute.should_not == "not a dispute"
+      expect(dispute).not_to eq("not a dispute")
     end
   end
 

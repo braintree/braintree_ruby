@@ -23,9 +23,9 @@ describe Braintree::Disbursement do
       }
 
       disbursement = Braintree::Disbursement._new(Braintree::Configuration.gateway, attributes)
-      disbursement.transactions.maximum_size.should == 1
+      expect(disbursement.transactions.maximum_size).to eq(1)
       transaction = disbursement.transactions.first
-      transaction.id.should == "sub_merchant_transaction"
+      expect(transaction.id).to eq("sub_merchant_transaction")
     end
   end
 end

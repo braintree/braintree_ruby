@@ -91,8 +91,9 @@ module Braintree
       end
     end
 
-    attr_reader :acquirer_reference_number
     attr_reader :ach_return_code
+    attr_reader :ach_return_responses
+    attr_reader :acquirer_reference_number
     attr_reader :add_ons
     attr_reader :additional_processor_response          # The raw response from the processor.
     attr_reader :amount
@@ -111,6 +112,7 @@ module Braintree
     attr_reader :custom_fields
     attr_reader :customer_details
     attr_reader :cvv_response_code
+    attr_reader :debit_network
     attr_reader :descriptor
     attr_reader :disbursement_details
     attr_reader :discount_amount
@@ -150,8 +152,8 @@ module Braintree
     attr_reader :purchase_order_number
     attr_reader :recurring
     attr_reader :refund_ids
-    attr_reader :refunded_transaction_id
     attr_reader :refunded_installments
+    attr_reader :refunded_transaction_id
     attr_reader :retried
     attr_reader :retried_transaction_id                 # the primary/parent transaction id of any retried transaction
     attr_reader :retrieval_reference_number
@@ -159,9 +161,9 @@ module Braintree
     attr_reader :risk_data
     attr_reader :samsung_pay_card_details
     attr_reader :sca_exemption_requested
-    attr_reader :service_fee_amount
     attr_reader :sepa_direct_debit_account_details
     attr_reader :sepa_direct_debit_return_code
+    attr_reader :service_fee_amount
     attr_reader :settlement_batch_id
     attr_reader :shipping_amount
     attr_reader :shipping_details
@@ -179,7 +181,6 @@ module Braintree
     attr_reader :venmo_account_details
     attr_reader :visa_checkout_card_details
     attr_reader :voice_referral_number
-    attr_reader :ach_return_responses
 
     def self.adjust_authorization(*args)
       Configuration.gateway.transaction.adjust_authorization(*args)

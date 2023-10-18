@@ -25,8 +25,8 @@ describe Braintree::EnrichedCustomerData do
 
       payment_method_customer_data_updated = Braintree::EnrichedCustomerData._new(params)
 
-      payment_method_customer_data_updated.profile_data.should be_a(Braintree::VenmoProfileData)
-      payment_method_customer_data_updated.fields_updated.should eq(["username"])
+      expect(payment_method_customer_data_updated.profile_data).to be_a(Braintree::VenmoProfileData)
+      expect(payment_method_customer_data_updated.fields_updated).to eq(["username"])
     end
   end
 end

@@ -17,8 +17,8 @@ describe Braintree::LocalPaymentExpired do
       }
       local_payment_expired = Braintree::LocalPaymentExpired._new(params)
 
-      local_payment_expired.payment_id.should eq("a-payment-id")
-      local_payment_expired.payment_context_id.should eq("a-payment-context-id")
+      expect(local_payment_expired.payment_id).to eq("a-payment-id")
+      expect(local_payment_expired.payment_context_id).to eq("a-payment-context-id")
     end
   end
 end

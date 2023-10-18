@@ -8,8 +8,8 @@ describe Braintree::ErrorCodes do
           :cardholder_name => "x" * 256
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).map { |e| e.code }.should \
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).for(:credit_card).map { |e| e.code }).to \
         include(Braintree::ErrorCodes::CreditCard::CardholderNameIsTooLong)
     end
   end

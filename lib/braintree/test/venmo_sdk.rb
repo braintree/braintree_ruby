@@ -1,3 +1,5 @@
+# NEXT_MAJOR_VERSION Remove this class
+# The old venmo SDK class has been deprecated
 module Braintree
   module Test
     module VenmoSDK

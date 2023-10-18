@@ -6,18 +6,18 @@ describe Braintree::Util do
       original = {"a" => "b", "c" => "d"}
       new = Braintree::Util.symbolize_keys(original)
 
-      original["a"].should == "b"
-      new[:a].should == "b"
+      expect(original["a"]).to eq("b")
+      expect(new[:a]).to eq("b")
     end
 
     it "symbolizes nested keys" do
       hash = {"a" => {"b" => {"c" => "d"}}}
-      Braintree::Util.symbolize_keys(hash).should == {:a => {:b => {:c => "d"}}}
+      expect(Braintree::Util.symbolize_keys(hash)).to eq({:a => {:b => {:c => "d"}}})
     end
 
     it "symbolizes nested keys in arrays" do
       hash = {"a" => ["b" => {"c" => "d"}]}
-      Braintree::Util.symbolize_keys(hash).should == {:a => [:b => {:c => "d"}]}
+      expect(Braintree::Util.symbolize_keys(hash)).to eq({:a => [:b => {:c => "d"}]})
     end
   end
 
@@ -173,41 +173,41 @@ describe Braintree::Util do
 
   describe "self.replace_key" do
     it "replaces the target key with the replacement key" do
-      Braintree::Util.replace_key(
+      expect(Braintree::Util.replace_key(
         {:a => {:b => "some value"}},
         :b,
-        :c).should == {:a => {:c => "some value"}}
+        :c)).to eq({:a => {:c => "some value"}})
     end
 
     it "returns hash with all of the original keys if the target key does not exist" do
-      Braintree::Util.replace_key(
+      expect(Braintree::Util.replace_key(
         {:some_key => "some value"},
         :not_found,
-        :new_key).should == {:some_key => "some value"}
+        :new_key)).to eq({:some_key => "some value"})
     end
   end
 
   describe "self._flatten_hash_keys" do
     it "flattens hash keys" do
-      Braintree::Util._flatten_hash_keys(:nested => {
+      expect(Braintree::Util._flatten_hash_keys(:nested => {
         :nested_allowed => "ok",
         :nested_allowed2 => "also ok",
         :nested_invalid => "bad"
-      }).should == ["nested[nested_allowed2]", "nested[nested_allowed]", "nested[nested_invalid]"]
+      })).to eq(["nested[nested_allowed2]", "nested[nested_allowed]", "nested[nested_invalid]"])
     end
   end
 
   describe "self._flatten_valid_keys" do
     it "flattens hash keys" do
-      Braintree::Util._flatten_valid_keys(
+      expect(Braintree::Util._flatten_valid_keys(
         [:top_level, {:nested => [:nested_allowed, :nested_allowed2]}],
-      ).should == ["nested[nested_allowed2]", "nested[nested_allowed]", "top_level"]
+      )).to eq(["nested[nested_allowed2]", "nested[nested_allowed]", "top_level"])
     end
 
     it "allows wildcards with the :_any_key_ symbol" do
-      Braintree::Util._flatten_valid_keys(
+      expect(Braintree::Util._flatten_valid_keys(
         [:top_level, {:nested => :_any_key_}],
-      ).should == ["nested[_any_key_]", "top_level"]
+      )).to eq(["nested[_any_key_]", "top_level"])
     end
   end
 
@@ -215,25 +215,25 @@ describe Braintree::Util do
     it "deletes the attribute from the hash" do
       hash = {:foo => ["x"], :bar => :baz}
       Braintree::Util.extract_attribute_as_array(hash, :foo)
-      hash.should == {:bar => :baz}
+      expect(hash).to eq({:bar => :baz})
     end
 
     it "puts the attribute in an array if it's not an array" do
       hash = {:foo => "x", :bar => :baz}
       result = Braintree::Util.extract_attribute_as_array(hash, :foo)
-      result.should == ["x"]
+      expect(result).to eq(["x"])
     end
 
     it "returns the value if it's already an array" do
       hash = {:foo => ["one", "two"], :bar => :baz}
       result = Braintree::Util.extract_attribute_as_array(hash, :foo)
-      result.should == ["one", "two"]
+      expect(result).to eq(["one", "two"])
     end
 
     it "returns empty array if the attribute is not in the hash" do
       hash = {:foo => ["one", "two"], :bar => :baz}
       result = Braintree::Util.extract_attribute_as_array(hash, :quz)
-      result.should == []
+      expect(result).to eq([])
     end
 
     it "raises an UnexpectedError if nil data is provided" do
@@ -246,24 +246,24 @@ describe Braintree::Util do
   describe "self.hash_to_query_string" do
     it "generates a query string from the hash" do
       hash = {:foo => {:key_one => "value_one", :key_two => "value_two"}}
-      Braintree::Util.hash_to_query_string(hash).should == "foo%5Bkey_one%5D=value_one&foo%5Bkey_two%5D=value_two"
+      expect(Braintree::Util.hash_to_query_string(hash)).to eq("foo%5Bkey_one%5D=value_one&foo%5Bkey_two%5D=value_two")
     end
 
     it "works for nesting 2 levels deep" do
       hash = {:foo => {:nested => {:key_one => "value_one", :key_two => "value_two"}}}
-      Braintree::Util.hash_to_query_string(hash).should == "foo%5Bnested%5D%5Bkey_one%5D=value_one&foo%5Bnested%5D%5Bkey_two%5D=value_two"
+      expect(Braintree::Util.hash_to_query_string(hash)).to eq("foo%5Bnested%5D%5Bkey_one%5D=value_one&foo%5Bnested%5D%5Bkey_two%5D=value_two")
     end
   end
 
   describe "self.parse_query_string" do
     it "parses the query string" do
       query_string = "foo=bar%20baz&hash=a1b2c3"
-      Braintree::Util.parse_query_string(query_string).should == {:foo => "bar baz", :hash => "a1b2c3"}
+      expect(Braintree::Util.parse_query_string(query_string)).to eq({:foo => "bar baz", :hash => "a1b2c3"})
     end
 
     it "parses the query string when a key has an empty value" do
       query_string = "foo=bar%20baz&hash=a1b2c3&vat_number="
-      Braintree::Util.parse_query_string(query_string).should == {:foo => "bar baz", :hash => "a1b2c3", :vat_number => ""}
+      expect(Braintree::Util.parse_query_string(query_string)).to eq({:foo => "bar baz", :hash => "a1b2c3", :vat_number => ""})
     end
   end
 
@@ -388,15 +388,15 @@ describe Braintree::Util do
 
   describe "self.to_big_decimal" do
     it "returns the BigDecimal when given a BigDecimal" do
-      Braintree::Util.to_big_decimal(BigDecimal("12.34")).should == BigDecimal("12.34")
+      expect(Braintree::Util.to_big_decimal(BigDecimal("12.34"))).to eq(BigDecimal("12.34"))
     end
 
     it "returns a BigDecimal when given a string" do
-      Braintree::Util.to_big_decimal("12.34").should == BigDecimal("12.34")
+      expect(Braintree::Util.to_big_decimal("12.34")).to eq(BigDecimal("12.34"))
     end
 
     it "returns nil when given nil" do
-      Braintree::Util.to_big_decimal(nil).should be_nil
+      expect(Braintree::Util.to_big_decimal(nil)).to be_nil
     end
 
     it "blows up when not given a String or BigDecimal" do
@@ -408,13 +408,13 @@ describe Braintree::Util do
 
   describe "self.url_encode" do
     it "url encodes the given text" do
-      Braintree::Util.url_encode("foo?bar").should == "foo%3Fbar"
+      expect(Braintree::Util.url_encode("foo?bar")).to eq("foo%3Fbar")
     end
   end
 
   describe "self.url_decode" do
     it "url decodes the given text" do
-      Braintree::Util.url_decode("foo%3Fbar").should == "foo?bar"
+      expect(Braintree::Util.url_decode("foo%3Fbar")).to eq("foo?bar")
     end
   end
 end

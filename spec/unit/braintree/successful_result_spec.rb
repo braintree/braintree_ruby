@@ -7,21 +7,21 @@ describe Braintree::SuccessfulResult do
         :transaction => "transaction_value",
         :credit_card => "credit_card_value",
       )
-      result.success?.should == true
-      result.transaction.should == "transaction_value"
-      result.credit_card.should == "credit_card_value"
+      expect(result.success?).to eq(true)
+      expect(result.transaction).to eq("transaction_value")
+      expect(result.credit_card).to eq("credit_card_value")
     end
 
     it "can be initialized without any values" do
       result = Braintree::SuccessfulResult.new
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
   end
 
   describe "inspect" do
     it "is pretty" do
       result = Braintree::SuccessfulResult.new(:transaction => "transaction_value")
-      result.inspect.should == "#<Braintree::SuccessfulResult transaction:\"transaction_value\">"
+      expect(result.inspect).to eq("#<Braintree::SuccessfulResult transaction:\"transaction_value\">")
     end
   end
 end

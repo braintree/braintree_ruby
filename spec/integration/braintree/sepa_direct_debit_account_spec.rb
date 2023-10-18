@@ -25,19 +25,19 @@ describe Braintree::SepaDirectDebitAccount do
     context "when payment method exists" do
       it "returns a payment method" do
         sepa_direct_debit_account = subject
-        sepa_direct_debit_account.should be_a(Braintree::SepaDirectDebitAccount)
-        sepa_direct_debit_account.last_4.should == "1234"
-        sepa_direct_debit_account.default.should == true
-        sepa_direct_debit_account.customer_id.should == customer.id
-        sepa_direct_debit_account.global_id.should_not be_empty
-        sepa_direct_debit_account.customer_global_id.should_not be_empty
-        sepa_direct_debit_account.bank_reference_token.should == "a-fake-bank-reference-token"
-        sepa_direct_debit_account.mandate_type.should == "RECURRENT"
-        sepa_direct_debit_account.merchant_or_partner_customer_id.should == "a-fake-mp-customer-id"
-        sepa_direct_debit_account.token.should_not be_empty
-        sepa_direct_debit_account.image_url.should_not be_empty
-        sepa_direct_debit_account.created_at.should be_a Time
-        sepa_direct_debit_account.updated_at.should be_a Time
+        expect(sepa_direct_debit_account).to be_a(Braintree::SepaDirectDebitAccount)
+        expect(sepa_direct_debit_account.last_4).to eq("1234")
+        expect(sepa_direct_debit_account.default).to eq(true)
+        expect(sepa_direct_debit_account.customer_id).to eq(customer.id)
+        expect(sepa_direct_debit_account.global_id).not_to be_empty
+        expect(sepa_direct_debit_account.customer_global_id).not_to be_empty
+        expect(sepa_direct_debit_account.bank_reference_token).to eq("a-fake-bank-reference-token")
+        expect(sepa_direct_debit_account.mandate_type).to eq("RECURRENT")
+        expect(sepa_direct_debit_account.merchant_or_partner_customer_id).to eq("a-fake-mp-customer-id")
+        expect(sepa_direct_debit_account.token).not_to be_empty
+        expect(sepa_direct_debit_account.image_url).not_to be_empty
+        expect(sepa_direct_debit_account.created_at).to be_a Time
+        expect(sepa_direct_debit_account.updated_at).to be_a Time
       end
     end
 
@@ -79,7 +79,7 @@ describe Braintree::SepaDirectDebitAccount do
 
     context "when payment method exists" do
       it "deletes a payment method" do
-        should be_success
+        is_expected.to be_success
 
         expect {
           described_class.find(token)
@@ -111,28 +111,28 @@ describe Braintree::SepaDirectDebitAccount do
 
     context "when payment method exists" do
       it "creates a transaction" do
-        should be_success
+        is_expected.to be_success
 
         transaction = subject.transaction
-        transaction.amount.should eq(1.23)
-        transaction.status.should == "settling"
+        expect(transaction.amount).to eq(1.23)
+        expect(transaction.status).to eq("settling")
         sepa_direct_debit_account_details = transaction.sepa_direct_debit_account_details
-        sepa_direct_debit_account_details.should be_a(Braintree::Transaction::SepaDirectDebitAccountDetails)
-        sepa_direct_debit_account_details.bank_reference_token.should == "a-fake-bank-reference-token"
-        sepa_direct_debit_account_details.capture_id.should_not be_empty
-        sepa_direct_debit_account_details.debug_id.should be_nil
-        sepa_direct_debit_account_details.global_id.should_not be_empty
-        sepa_direct_debit_account_details.last_4.should == "1234"
-        sepa_direct_debit_account_details.mandate_type.should == "RECURRENT"
-        sepa_direct_debit_account_details.merchant_or_partner_customer_id.should == "a-fake-mp-customer-id"
-        sepa_direct_debit_account_details.paypal_v2_order_id.should be_nil
-        sepa_direct_debit_account_details.refund_from_transaction_fee_amount.should be_nil
-        sepa_direct_debit_account_details.refund_from_transaction_fee_currency_iso_code.should be_nil
-        sepa_direct_debit_account_details.refund_id.should be_nil
-        sepa_direct_debit_account_details.settlement_type.should be_nil
-        sepa_direct_debit_account_details.token.should == token
-        sepa_direct_debit_account_details.transaction_fee_amount.should == "0.01"
-        sepa_direct_debit_account_details.transaction_fee_currency_iso_code.should == "USD"
+        expect(sepa_direct_debit_account_details).to be_a(Braintree::Transaction::SepaDirectDebitAccountDetails)
+        expect(sepa_direct_debit_account_details.bank_reference_token).to eq("a-fake-bank-reference-token")
+        expect(sepa_direct_debit_account_details.capture_id).not_to be_empty
+        expect(sepa_direct_debit_account_details.debug_id).to be_nil
+        expect(sepa_direct_debit_account_details.global_id).not_to be_empty
+        expect(sepa_direct_debit_account_details.last_4).to eq("1234")
+        expect(sepa_direct_debit_account_details.mandate_type).to eq("RECURRENT")
+        expect(sepa_direct_debit_account_details.merchant_or_partner_customer_id).to eq("a-fake-mp-customer-id")
+        expect(sepa_direct_debit_account_details.paypal_v2_order_id).to be_nil
+        expect(sepa_direct_debit_account_details.refund_from_transaction_fee_amount).to be_nil
+        expect(sepa_direct_debit_account_details.refund_from_transaction_fee_currency_iso_code).to be_nil
+        expect(sepa_direct_debit_account_details.refund_id).to be_nil
+        expect(sepa_direct_debit_account_details.settlement_type).to be_nil
+        expect(sepa_direct_debit_account_details.token).to eq(token)
+        expect(sepa_direct_debit_account_details.transaction_fee_amount).to eq("0.01")
+        expect(sepa_direct_debit_account_details.transaction_fee_currency_iso_code).to eq("USD")
       end
     end
 
@@ -161,25 +161,25 @@ describe Braintree::SepaDirectDebitAccount do
     context "when payment method exists" do
       it "creates a transaction" do
         transaction = subject
-        transaction.amount.should eq(1.23)
-        transaction.status.should == "settling"
+        expect(transaction.amount).to eq(1.23)
+        expect(transaction.status).to eq("settling")
         sepa_direct_debit_account_details = transaction.sepa_direct_debit_account_details
-        sepa_direct_debit_account_details.should be_a(Braintree::Transaction::SepaDirectDebitAccountDetails)
-        sepa_direct_debit_account_details.bank_reference_token.should == "a-fake-bank-reference-token"
-        sepa_direct_debit_account_details.capture_id.should_not be_empty
-        sepa_direct_debit_account_details.debug_id.should be_nil
-        sepa_direct_debit_account_details.global_id.should_not be_empty
-        sepa_direct_debit_account_details.last_4.should == "1234"
-        sepa_direct_debit_account_details.mandate_type.should == "RECURRENT"
-        sepa_direct_debit_account_details.merchant_or_partner_customer_id.should == "a-fake-mp-customer-id"
-        sepa_direct_debit_account_details.paypal_v2_order_id.should be_nil
-        sepa_direct_debit_account_details.refund_from_transaction_fee_amount.should be_nil
-        sepa_direct_debit_account_details.refund_from_transaction_fee_currency_iso_code.should be_nil
-        sepa_direct_debit_account_details.refund_id.should be_nil
-        sepa_direct_debit_account_details.settlement_type.should be_nil
-        sepa_direct_debit_account_details.token.should == token
-        sepa_direct_debit_account_details.transaction_fee_amount.should == "0.01"
-        sepa_direct_debit_account_details.transaction_fee_currency_iso_code.should == "USD"
+        expect(sepa_direct_debit_account_details).to be_a(Braintree::Transaction::SepaDirectDebitAccountDetails)
+        expect(sepa_direct_debit_account_details.bank_reference_token).to eq("a-fake-bank-reference-token")
+        expect(sepa_direct_debit_account_details.capture_id).not_to be_empty
+        expect(sepa_direct_debit_account_details.debug_id).to be_nil
+        expect(sepa_direct_debit_account_details.global_id).not_to be_empty
+        expect(sepa_direct_debit_account_details.last_4).to eq("1234")
+        expect(sepa_direct_debit_account_details.mandate_type).to eq("RECURRENT")
+        expect(sepa_direct_debit_account_details.merchant_or_partner_customer_id).to eq("a-fake-mp-customer-id")
+        expect(sepa_direct_debit_account_details.paypal_v2_order_id).to be_nil
+        expect(sepa_direct_debit_account_details.refund_from_transaction_fee_amount).to be_nil
+        expect(sepa_direct_debit_account_details.refund_from_transaction_fee_currency_iso_code).to be_nil
+        expect(sepa_direct_debit_account_details.refund_id).to be_nil
+        expect(sepa_direct_debit_account_details.settlement_type).to be_nil
+        expect(sepa_direct_debit_account_details.token).to eq(token)
+        expect(sepa_direct_debit_account_details.transaction_fee_amount).to eq("0.01")
+        expect(sepa_direct_debit_account_details.transaction_fee_currency_iso_code).to eq("USD")
       end
     end
 

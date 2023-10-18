@@ -25,8 +25,8 @@ describe Braintree::Transaction do
                 :submit_for_settlement => true,
               },
             )
-            result.success?.should == false
-            result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::UsBankAccountNonceMustBePlaidVerified
+            expect(result.success?).to eq(false)
+            expect(result.errors.for(:transaction).on(:payment_method_nonce)[0].code).to eq(Braintree::ErrorCodes::Transaction::UsBankAccountNonceMustBePlaidVerified)
           end
 
           it "sale fails for invalid nonce" do
@@ -39,8 +39,8 @@ describe Braintree::Transaction do
                 :submit_for_settlement => true,
               },
             )
-            result.success?.should == false
-            result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown
+            expect(result.success?).to eq(false)
+            expect(result.errors.for(:transaction).on(:payment_method_nonce)[0].code).to eq(Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown)
           end
         end
 
@@ -56,12 +56,12 @@ describe Braintree::Transaction do
             )
             payment_method = result.payment_method
 
-            payment_method.verifications.count.should == 1
+            expect(payment_method.verifications.count).to eq(1)
             payment_method.verifications.first.status == Braintree::UsBankAccountVerification::Status::Verified
             payment_method.verifications.first.verification_method == Braintree::UsBankAccountVerification::VerificationMethod::IndependentCheck
-            payment_method.verifications.first.id.should_not be_empty
-            payment_method.verifications.first.verification_determined_at.should be_a Time
-            payment_method.verified.should == true
+            expect(payment_method.verifications.first.id).not_to be_empty
+            expect(payment_method.verifications.first.verification_determined_at).to be_a Time
+            expect(payment_method.verified).to eq(true)
 
             result = Braintree::Transaction.create(
               :type => "sale",
@@ -73,7 +73,7 @@ describe Braintree::Transaction do
               },
             )
 
-            result.success?.should == true
+            expect(result.success?).to eq(true)
           end
 
           it "sale fails for unverified token" do
@@ -85,8 +85,8 @@ describe Braintree::Transaction do
               },
             ).payment_method
 
-            payment_method.verifications.count.should == 0
-            payment_method.verified.should == false
+            expect(payment_method.verifications.count).to eq(0)
+            expect(payment_method.verified).to eq(false)
 
             result = Braintree::Transaction.create(
               :type => "sale",
@@ -98,8 +98,8 @@ describe Braintree::Transaction do
               },
             )
 
-            result.success?.should == false
-            result.errors.for(:transaction)[0].code.should == Braintree::ErrorCodes::Transaction::UsBankAccountNotVerified
+            expect(result.success?).to eq(false)
+            expect(result.errors.for(:transaction)[0].code).to eq(Braintree::ErrorCodes::Transaction::UsBankAccountNotVerified)
           end
         end
       end
@@ -127,21 +127,21 @@ describe Braintree::Transaction do
                 :submit_for_settlement => true,
               },
             )
-            result.success?.should == true
+            expect(result.success?).to eq(true)
 
             transaction = result.transaction
 
-            transaction.id.should =~ /^\w{6,}$/
-            transaction.type.should == "sale"
-            transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-            transaction.status.should == Braintree::Transaction::Status::SettlementPending
-            transaction.us_bank_account_details.routing_number.should == "021000021"
-            transaction.us_bank_account_details.last_4.should == "0000"
-            transaction.us_bank_account_details.account_type.should == "checking"
-            transaction.us_bank_account_details.account_holder_name.should == "John Doe"
-            transaction.us_bank_account_details.bank_name.should =~ /CHASE/
-            transaction.us_bank_account_details.ach_mandate.text.should == "cl mandate text"
-            transaction.us_bank_account_details.ach_mandate.accepted_at.should be_a Time
+            expect(transaction.id).to match(/^\w{6,}$/)
+            expect(transaction.type).to eq("sale")
+            expect(transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+            expect(transaction.status).to eq(Braintree::Transaction::Status::SettlementPending)
+            expect(transaction.us_bank_account_details.routing_number).to eq("021000021")
+            expect(transaction.us_bank_account_details.last_4).to eq("0000")
+            expect(transaction.us_bank_account_details.account_type).to eq("checking")
+            expect(transaction.us_bank_account_details.account_holder_name).to eq("John Doe")
+            expect(transaction.us_bank_account_details.bank_name).to match(/CHASE/)
+            expect(transaction.us_bank_account_details.ach_mandate.text).to eq("cl mandate text")
+            expect(transaction.us_bank_account_details.ach_mandate.accepted_at).to be_a Time
           end
 
           it "sale fails for invalid nonce" do
@@ -154,8 +154,8 @@ describe Braintree::Transaction do
                 :submit_for_settlement => true,
               },
             )
-            result.success?.should == false
-            result.errors.for(:transaction).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown
+            expect(result.success?).to eq(false)
+            expect(result.errors.for(:transaction).on(:payment_method_nonce)[0].code).to eq(Braintree::ErrorCodes::Transaction::PaymentMethodNonceUnknown)
           end
         end
 
@@ -170,12 +170,12 @@ describe Braintree::Transaction do
             )
             payment_method = result.payment_method
 
-            payment_method.verifications.count.should == 1
+            expect(payment_method.verifications.count).to eq(1)
             payment_method.verifications.first.status == Braintree::UsBankAccountVerification::Status::Verified
             payment_method.verifications.first.verification_method == Braintree::UsBankAccountVerification::VerificationMethod::IndependentCheck
-            payment_method.verifications.first.id.should_not be_empty
-            payment_method.verifications.first.verification_determined_at.should be_a Time
-            payment_method.verified.should == true
+            expect(payment_method.verifications.first.id).not_to be_empty
+            expect(payment_method.verifications.first.verification_determined_at).to be_a Time
+            expect(payment_method.verified).to eq(true)
 
             result = Braintree::Transaction.create(
               :type => "sale",
@@ -187,7 +187,7 @@ describe Braintree::Transaction do
               },
             )
 
-            result.success?.should == true
+            expect(result.success?).to eq(true)
           end
         end
       end

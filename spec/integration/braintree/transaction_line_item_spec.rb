@@ -21,17 +21,17 @@ describe Braintree::TransactionLineItem do
           },
         ],
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
 
       line_items = Braintree::TransactionLineItem.find_all(transaction.id)
 
       line_item = line_items[0]
-      line_item.quantity.should == BigDecimal("1.0232")
-      line_item.name.should == "Name #1"
-      line_item.kind.should == "debit"
-      line_item.unit_amount.should == BigDecimal("45.1232")
-      line_item.total_amount.should == BigDecimal("45.15")
+      expect(line_item.quantity).to eq(BigDecimal("1.0232"))
+      expect(line_item.name).to eq("Name #1")
+      expect(line_item.kind).to eq("debit")
+      expect(line_item.unit_amount).to eq(BigDecimal("45.1232"))
+      expect(line_item.total_amount).to eq(BigDecimal("45.15"))
     end
   end
 end

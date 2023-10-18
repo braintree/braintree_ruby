@@ -7,30 +7,30 @@ describe Braintree::DocumentUploadGateway do
       response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
       document_upload = response.document_upload
 
-      response.success?.should == true
-      document_upload.id.should_not be_nil
-      document_upload.content_type.should == "image/png"
-      document_upload.kind.should == Braintree::DocumentUpload::Kind::EvidenceDocument
-      document_upload.name.should == "bt_logo.png"
-      document_upload.size.should == 2443
+      expect(response.success?).to eq(true)
+      expect(document_upload.id).not_to be_nil
+      expect(document_upload.content_type).to eq("image/png")
+      expect(document_upload.kind).to eq(Braintree::DocumentUpload::Kind::EvidenceDocument)
+      expect(document_upload.name).to eq("bt_logo.png")
+      expect(document_upload.size).to eq(2443)
     end
 
     it "returns file type error with unsupported file type" do
       file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/gif_extension_bt_logo.gif", "r")
       response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
-      response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::FileTypeIsInvalid
+      expect(response.errors.for(:document_upload).first.code).to eq(Braintree::ErrorCodes::DocumentUpload::FileTypeIsInvalid)
     end
 
     it "returns malformed error with malformed file" do
       file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/malformed_pdf.pdf", "r")
       response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
-      response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::FileIsMalformedOrEncrypted
+      expect(response.errors.for(:document_upload).first.code).to eq(Braintree::ErrorCodes::DocumentUpload::FileIsMalformedOrEncrypted)
     end
 
     it "returns invalid kind error with invalid kind" do
       file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
       response = Braintree::DocumentUpload.create({:kind => "invalid_kind", :file => file})
-      response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::KindIsInvalid
+      expect(response.errors.for(:document_upload).first.code).to eq(Braintree::ErrorCodes::DocumentUpload::KindIsInvalid)
     end
 
     it "returns file too large error with file over 4mb" do
@@ -40,7 +40,7 @@ describe Braintree::DocumentUploadGateway do
         File.open(filename, "w+") { |f| write_times.times { f.write "a" } }
         file = File.new(filename, "r")
         response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
-        response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::FileIsTooLarge
+        expect(response.errors.for(:document_upload).first.code).to eq(Braintree::ErrorCodes::DocumentUpload::FileIsTooLarge)
       ensure
         File.delete(filename)
       end
@@ -52,7 +52,7 @@ describe Braintree::DocumentUploadGateway do
         File.open(filename, "w+") {}
         file = File.new(filename, "r")
         response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
-        response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::FileIsEmpty
+        expect(response.errors.for(:document_upload).first.code).to eq(Braintree::ErrorCodes::DocumentUpload::FileIsEmpty)
       ensure
         File.delete(filename)
       end
@@ -62,7 +62,7 @@ describe Braintree::DocumentUploadGateway do
       filename = "#{File.dirname(__FILE__)}/../../fixtures/files/too_long.pdf"
       file = File.new(filename, "r")
       response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
-      response.errors.for(:document_upload).first.code.should == Braintree::ErrorCodes::DocumentUpload::FileIsTooLong
+      expect(response.errors.for(:document_upload).first.code).to eq(Braintree::ErrorCodes::DocumentUpload::FileIsTooLong)
     end
 
     it "returns invalid keys error if signature is invalid" do
@@ -77,11 +77,11 @@ describe Braintree::DocumentUploadGateway do
       file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
       document_upload = Braintree::DocumentUpload.create!({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
 
-      document_upload.id.should_not be_nil
-      document_upload.content_type.should == "image/png"
-      document_upload.kind.should == Braintree::DocumentUpload::Kind::EvidenceDocument
-      document_upload.name.should == "bt_logo.png"
-      document_upload.size.should == 2443
+      expect(document_upload.id).not_to be_nil
+      expect(document_upload.content_type).to eq("image/png")
+      expect(document_upload.kind).to eq(Braintree::DocumentUpload::Kind::EvidenceDocument)
+      expect(document_upload.name).to eq("bt_logo.png")
+      expect(document_upload.size).to eq(2443)
     end
   end
 end

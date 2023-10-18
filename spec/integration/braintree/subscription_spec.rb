@@ -19,10 +19,10 @@ describe Braintree::Subscription do
         :plan_id => SpecHelper::TriallessPlan[:id],
       )
 
-      result.success?.should == true
-      result.subscription.id.should =~ /^\w{6}$/
-      result.subscription.status.should == Braintree::Subscription::Status::Active
-      result.subscription.plan_id.should == "integration_trialless_plan"
+      expect(result.success?).to eq(true)
+      expect(result.subscription.id).to match(/^\w{6}$/)
+      expect(result.subscription.status).to eq(Braintree::Subscription::Status::Active)
+      expect(result.subscription.plan_id).to eq("integration_trialless_plan")
 
       expect(result.subscription.first_billing_date).to be_a Date
       expect(result.subscription.next_billing_date).to be_a Date
@@ -30,18 +30,18 @@ describe Braintree::Subscription do
       expect(result.subscription.billing_period_end_date).to be_a Date
       expect(result.subscription.paid_through_date).to be_a Date
 
-      result.subscription.created_at.between?(Time.now - 60, Time.now).should == true
-      result.subscription.updated_at.between?(Time.now - 60, Time.now).should == true
+      expect(result.subscription.created_at.between?(Time.now - 60, Time.now)).to eq(true)
+      expect(result.subscription.updated_at.between?(Time.now - 60, Time.now)).to eq(true)
 
-      result.subscription.failure_count.should == 0
-      result.subscription.next_billing_period_amount.should == "12.34"
-      result.subscription.payment_method_token.should == @credit_card.token
+      expect(result.subscription.failure_count).to eq(0)
+      expect(result.subscription.next_billing_period_amount).to eq("12.34")
+      expect(result.subscription.payment_method_token).to eq(@credit_card.token)
 
-      result.subscription.status_history.first.price.should == "12.34"
-      result.subscription.status_history.first.status.should == Braintree::Subscription::Status::Active
-      result.subscription.status_history.first.subscription_source.should == Braintree::Subscription::Source::Api
-      result.subscription.status_history.first.currency_iso_code.should == "USD"
-      result.subscription.status_history.first.plan_id.should == SpecHelper::TriallessPlan[:id]
+      expect(result.subscription.status_history.first.price).to eq("12.34")
+      expect(result.subscription.status_history.first.status).to eq(Braintree::Subscription::Status::Active)
+      expect(result.subscription.status_history.first.subscription_source).to eq(Braintree::Subscription::Source::Api)
+      expect(result.subscription.status_history.first.currency_iso_code).to eq("USD")
+      expect(result.subscription.status_history.first.plan_id).to eq(SpecHelper::TriallessPlan[:id])
     end
 
     it "returns a transaction with billing period populated" do
@@ -50,12 +50,12 @@ describe Braintree::Subscription do
         :plan_id => SpecHelper::TriallessPlan[:id],
       )
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       subscription = result.subscription
       transaction = subscription.transactions.first
 
-      transaction.subscription_details.billing_period_start_date.should == subscription.billing_period_start_date
-      transaction.subscription_details.billing_period_end_date.should == subscription.billing_period_end_date
+      expect(transaction.subscription_details.billing_period_start_date).to eq(subscription.billing_period_start_date)
+      expect(transaction.subscription_details.billing_period_end_date).to eq(subscription.billing_period_end_date)
     end
 
     it "can set the id" do
@@ -66,8 +66,8 @@ describe Braintree::Subscription do
         :id => new_id,
       )
 
-      result.success?.should == true
-      result.subscription.id.should == new_id
+      expect(result.success?).to eq(true)
+      expect(result.subscription.id).to eq(new_id)
     end
 
     context "with payment_method_nonces" do
@@ -87,10 +87,10 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TriallessPlan[:id],
         )
 
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         transaction = result.subscription.transactions[0]
-        transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-        transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4, 4]
+        expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+        expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4, 4])
       end
 
       it "creates a subscription when given a paypal account payment_method_nonce" do
@@ -105,9 +105,9 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TriallessPlan[:id],
         )
 
-        result.should be_success
+        expect(result).to be_success
         transaction = result.subscription.transactions[0]
-        transaction.paypal_details.payer_email.should == "payer@example.com"
+        expect(transaction.paypal_details.payer_email).to eq("payer@example.com")
       end
 
       it "creates a subscription when given a paypal description" do
@@ -127,12 +127,12 @@ describe Braintree::Subscription do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
         subscription = result.subscription
-        subscription.description.should == "A great product"
+        expect(subscription.description).to eq("A great product")
         transaction = subscription.transactions[0]
-        transaction.paypal_details.payer_email.should == "payer@example.com"
-        transaction.paypal_details.description.should == "A great product"
+        expect(transaction.paypal_details.payer_email).to eq("payer@example.com")
+        expect(transaction.paypal_details.description).to eq("A great product")
       end
 
       it "returns an error if the payment_method_nonce hasn't been vaulted" do
@@ -142,8 +142,8 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TriallessPlan[:id],
         )
 
-        result.should_not be_success
-        result.errors.for(:subscription).on(:payment_method_nonce).first.code.should == "91925"
+        expect(result).not_to be_success
+        expect(result.errors.for(:subscription).on(:payment_method_nonce).first.code).to eq("91925")
       end
     end
 
@@ -154,8 +154,8 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::BillingDayOfMonthPlan[:id],
         )
 
-        result.success?.should == true
-        result.subscription.billing_day_of_month.should == 5
+        expect(result.success?).to eq(true)
+        expect(result.subscription.billing_day_of_month).to eq(5)
       end
 
       it "allows overriding" do
@@ -165,8 +165,8 @@ describe Braintree::Subscription do
           :billing_day_of_month => 25,
         )
 
-        result.success?.should == true
-        result.subscription.billing_day_of_month.should == 25
+        expect(result.success?).to eq(true)
+        expect(result.subscription.billing_day_of_month).to eq(25)
       end
 
       it "allows overriding with start_immediately" do
@@ -178,8 +178,8 @@ describe Braintree::Subscription do
           },
         )
 
-        result.success?.should == true
-        result.subscription.transactions.size.should == 1
+        expect(result.success?).to eq(true)
+        expect(result.subscription.transactions.size).to eq(1)
       end
     end
 
@@ -191,9 +191,9 @@ describe Braintree::Subscription do
           :first_billing_date => Date.today + 3,
         )
 
-        result.success?.should == true
-        result.subscription.first_billing_date.should == Date.today + 3
-        result.subscription.status.should == Braintree::Subscription::Status::Pending
+        expect(result.success?).to eq(true)
+        expect(result.subscription.first_billing_date).to eq(Date.today + 3)
+        expect(result.subscription.status).to eq(Braintree::Subscription::Status::Pending)
       end
 
       it "returns an error if the date is in the past" do
@@ -203,8 +203,8 @@ describe Braintree::Subscription do
           :first_billing_date => Date.today - 3,
         )
 
-        result.success?.should == false
-        result.errors.for(:subscription).on(:first_billing_date).first.code.should == Braintree::ErrorCodes::Subscription::FirstBillingDateCannotBeInThePast
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:first_billing_date).first.code).to eq(Braintree::ErrorCodes::Subscription::FirstBillingDateCannotBeInThePast)
       end
     end
 
@@ -215,8 +215,8 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TrialPlan[:id],
         )
 
-        result.success?.should == true
-        result.subscription.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+        expect(result.success?).to eq(true)
+        expect(result.subscription.merchant_account_id).to eq(SpecHelper::DefaultMerchantAccountId)
       end
 
       it "allows setting the merchant_account_id" do
@@ -226,8 +226,8 @@ describe Braintree::Subscription do
           :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
         )
 
-        result.success?.should == true
-        result.subscription.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+        expect(result.success?).to eq(true)
+        expect(result.subscription.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
       end
     end
 
@@ -239,8 +239,8 @@ describe Braintree::Subscription do
           :number_of_billing_cycles => 10,
         )
 
-        result.success?.should == true
-        result.subscription.number_of_billing_cycles.should == 10
+        expect(result.success?).to eq(true)
+        expect(result.subscription.number_of_billing_cycles).to eq(10)
       end
 
       it "sets the number of billing cycles to nil if :never_expires => true" do
@@ -250,8 +250,8 @@ describe Braintree::Subscription do
           :never_expires => true,
         )
 
-        result.success?.should == true
-        result.subscription.number_of_billing_cycles.should == nil
+        expect(result.success?).to eq(true)
+        expect(result.subscription.number_of_billing_cycles).to eq(nil)
       end
     end
 
@@ -263,9 +263,9 @@ describe Braintree::Subscription do
             :plan_id => SpecHelper::TriallessPlan[:id],
           )
 
-          result.subscription.trial_period.should == false
-          result.subscription.trial_duration.should == nil
-          result.subscription.trial_duration_unit.should == nil
+          expect(result.subscription.trial_period).to eq(false)
+          expect(result.subscription.trial_duration).to eq(nil)
+          expect(result.subscription.trial_duration_unit).to eq(nil)
         end
 
         it "with a trial" do
@@ -274,9 +274,9 @@ describe Braintree::Subscription do
             :plan_id => SpecHelper::TrialPlan[:id],
           )
 
-          result.subscription.trial_period.should == true
-          result.subscription.trial_duration.should == 2
-          result.subscription.trial_duration_unit.should == Braintree::Subscription::TrialDurationUnit::Day
+          expect(result.subscription.trial_period).to eq(true)
+          expect(result.subscription.trial_duration).to eq(2)
+          expect(result.subscription.trial_duration_unit).to eq(Braintree::Subscription::TrialDurationUnit::Day)
         end
 
         it "can alter the trial period params" do
@@ -287,9 +287,9 @@ describe Braintree::Subscription do
             :trial_duration_unit => Braintree::Subscription::TrialDurationUnit::Month,
           )
 
-          result.subscription.trial_period.should == true
-          result.subscription.trial_duration.should == 5
-          result.subscription.trial_duration_unit.should == Braintree::Subscription::TrialDurationUnit::Month
+          expect(result.subscription.trial_period).to eq(true)
+          expect(result.subscription.trial_duration).to eq(5)
+          expect(result.subscription.trial_duration_unit).to eq(Braintree::Subscription::TrialDurationUnit::Month)
         end
 
         it "can override the trial_period param" do
@@ -299,7 +299,7 @@ describe Braintree::Subscription do
             :trial_period => false,
           )
 
-          result.subscription.trial_period.should == false
+          expect(result.subscription.trial_period).to eq(false)
         end
 
         it "doesn't create a transaction if there's a trial period" do
@@ -308,7 +308,7 @@ describe Braintree::Subscription do
             :plan_id => SpecHelper::TrialPlan[:id],
           )
 
-          result.subscription.transactions.size.should == 0
+          expect(result.subscription.transactions.size).to eq(0)
         end
       end
 
@@ -319,11 +319,11 @@ describe Braintree::Subscription do
             :plan_id => SpecHelper::TriallessPlan[:id],
           )
 
-          result.subscription.transactions.size.should == 1
-          result.subscription.transactions.first.should be_a(Braintree::Transaction)
-          result.subscription.transactions.first.amount.should == SpecHelper::TriallessPlan[:price]
-          result.subscription.transactions.first.type.should == Braintree::Transaction::Type::Sale
-          result.subscription.transactions.first.subscription_id.should == result.subscription.id
+          expect(result.subscription.transactions.size).to eq(1)
+          expect(result.subscription.transactions.first).to be_a(Braintree::Transaction)
+          expect(result.subscription.transactions.first.amount).to eq(SpecHelper::TriallessPlan[:price])
+          expect(result.subscription.transactions.first.type).to eq(Braintree::Transaction::Type::Sale)
+          expect(result.subscription.transactions.first.subscription_id).to eq(result.subscription.id)
         end
 
         it "does not create the subscription and returns the transaction if the transaction is not successful" do
@@ -333,9 +333,9 @@ describe Braintree::Subscription do
             :price => Braintree::Test::TransactionAmounts::Decline,
           )
 
-          result.success?.should be(false)
-          result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
-          result.message.should == "Do Not Honor"
+          expect(result.success?).to be(false)
+          expect(result.transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+          expect(result.message).to eq("Do Not Honor")
         end
       end
 
@@ -346,7 +346,7 @@ describe Braintree::Subscription do
             :plan_id => SpecHelper::TrialPlan[:id],
           )
 
-          result.subscription.price.should == SpecHelper::TrialPlan[:price]
+          expect(result.subscription.price).to eq(SpecHelper::TrialPlan[:price])
         end
 
         it "can be overridden" do
@@ -356,7 +356,7 @@ describe Braintree::Subscription do
             :price => 98.76,
           )
 
-          result.subscription.price.should == BigDecimal("98.76")
+          expect(result.subscription.price).to eq(BigDecimal("98.76"))
         end
       end
     end
@@ -368,8 +368,8 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TrialPlan[:id],
           :id => "invalid token",
         )
-        result.success?.should == false
-        result.errors.for(:subscription).on(:id)[0].message.should == "ID is invalid (use only letters, numbers, '-', and '_')."
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:id)[0].message).to eq("ID is invalid (use only letters, numbers, '-', and '_').")
       end
 
       it "has validation errors on duplicate id" do
@@ -379,15 +379,15 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TrialPlan[:id],
           :id => duplicate_token,
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         result = Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
           :id => duplicate_token,
         )
-        result.success?.should == false
-        result.errors.for(:subscription).on(:id)[0].message.should == "ID has already been taken."
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:id)[0].message).to eq("ID has already been taken.")
       end
 
       it "trial duration required" do
@@ -397,8 +397,8 @@ describe Braintree::Subscription do
           :trial_period => true,
           :trial_duration => nil,
         )
-        result.success?.should == false
-        result.errors.for(:subscription).on(:trial_duration)[0].message.should == "Trial Duration is required."
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:trial_duration)[0].message).to eq("Trial Duration is required.")
       end
 
       it "trial duration unit required" do
@@ -409,8 +409,8 @@ describe Braintree::Subscription do
           :trial_duration => 2,
           :trial_duration_unit => nil,
         )
-        result.success?.should == false
-        result.errors.for(:subscription).on(:trial_duration_unit)[0].message.should == "Trial Duration Unit is invalid."
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:trial_duration_unit)[0].message).to eq("Trial Duration Unit is invalid.")
       end
     end
 
@@ -421,12 +421,12 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::AddOnDiscountPlan[:id],
           :options => {:do_not_inherit_add_ons_or_discounts => true},
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 0
-        subscription.discounts.size.should == 0
+        expect(subscription.add_ons.size).to eq(0)
+        expect(subscription.discounts.size).to eq(0)
       end
 
       it "inherits the add_ons and discounts from the plan when not specified" do
@@ -434,43 +434,43 @@ describe Braintree::Subscription do
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::AddOnDiscountPlan[:id],
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 2
+        expect(subscription.add_ons.size).to eq(2)
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
-        add_ons.first.id.should == "increase_10"
-        add_ons.first.amount.should == BigDecimal("10.00")
-        add_ons.first.quantity.should == 1
-        add_ons.first.number_of_billing_cycles.should be_nil
-        add_ons.first.never_expires?.should be(true)
-        add_ons.first.current_billing_cycle.should == 0
+        expect(add_ons.first.id).to eq("increase_10")
+        expect(add_ons.first.amount).to eq(BigDecimal("10.00"))
+        expect(add_ons.first.quantity).to eq(1)
+        expect(add_ons.first.number_of_billing_cycles).to be_nil
+        expect(add_ons.first.never_expires?).to be(true)
+        expect(add_ons.first.current_billing_cycle).to eq(0)
 
-        add_ons.last.id.should == "increase_20"
-        add_ons.last.amount.should == BigDecimal("20.00")
-        add_ons.last.quantity.should == 1
-        add_ons.last.number_of_billing_cycles.should be_nil
-        add_ons.last.never_expires?.should be(true)
-        add_ons.last.current_billing_cycle.should == 0
+        expect(add_ons.last.id).to eq("increase_20")
+        expect(add_ons.last.amount).to eq(BigDecimal("20.00"))
+        expect(add_ons.last.quantity).to eq(1)
+        expect(add_ons.last.number_of_billing_cycles).to be_nil
+        expect(add_ons.last.never_expires?).to be(true)
+        expect(add_ons.last.current_billing_cycle).to eq(0)
 
-        subscription.discounts.size.should == 2
+        expect(subscription.discounts.size).to eq(2)
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
-        discounts.first.id.should == "discount_11"
-        discounts.first.amount.should == BigDecimal("11.00")
-        discounts.first.quantity.should == 1
-        discounts.first.number_of_billing_cycles.should be_nil
-        discounts.first.never_expires?.should be(true)
-        discounts.first.current_billing_cycle.should == 0
+        expect(discounts.first.id).to eq("discount_11")
+        expect(discounts.first.amount).to eq(BigDecimal("11.00"))
+        expect(discounts.first.quantity).to eq(1)
+        expect(discounts.first.number_of_billing_cycles).to be_nil
+        expect(discounts.first.never_expires?).to be(true)
+        expect(discounts.first.current_billing_cycle).to eq(0)
 
-        discounts.last.id.should == "discount_7"
-        discounts.last.amount.should == BigDecimal("7.00")
-        discounts.last.quantity.should == 1
-        discounts.last.number_of_billing_cycles.should be_nil
-        discounts.last.never_expires?.should be(true)
-        discounts.last.current_billing_cycle.should == 0
+        expect(discounts.last.id).to eq("discount_7")
+        expect(discounts.last.amount).to eq(BigDecimal("7.00"))
+        expect(discounts.last.quantity).to eq(1)
+        expect(discounts.last.number_of_billing_cycles).to be_nil
+        expect(discounts.last.never_expires?).to be(true)
+        expect(discounts.last.current_billing_cycle).to eq(0)
       end
 
       it "allows overriding of inherited add_ons and discounts" do
@@ -498,39 +498,39 @@ describe Braintree::Subscription do
             ]
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 2
+        expect(subscription.add_ons.size).to eq(2)
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
-        add_ons.first.id.should == "increase_10"
-        add_ons.first.amount.should == BigDecimal("50.00")
-        add_ons.first.quantity.should == 2
-        add_ons.first.number_of_billing_cycles.should == 5
-        add_ons.first.never_expires?.should be(false)
-        add_ons.first.current_billing_cycle.should == 0
+        expect(add_ons.first.id).to eq("increase_10")
+        expect(add_ons.first.amount).to eq(BigDecimal("50.00"))
+        expect(add_ons.first.quantity).to eq(2)
+        expect(add_ons.first.number_of_billing_cycles).to eq(5)
+        expect(add_ons.first.never_expires?).to be(false)
+        expect(add_ons.first.current_billing_cycle).to eq(0)
 
-        add_ons.last.id.should == "increase_20"
-        add_ons.last.amount.should == BigDecimal("20.00")
-        add_ons.last.quantity.should == 1
-        add_ons.last.current_billing_cycle.should == 0
+        expect(add_ons.last.id).to eq("increase_20")
+        expect(add_ons.last.amount).to eq(BigDecimal("20.00"))
+        expect(add_ons.last.quantity).to eq(1)
+        expect(add_ons.last.current_billing_cycle).to eq(0)
 
-        subscription.discounts.size.should == 2
+        expect(subscription.discounts.size).to eq(2)
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
-        discounts.first.id.should == "discount_11"
-        discounts.first.amount.should == BigDecimal("11.00")
-        discounts.first.quantity.should == 1
-        discounts.first.current_billing_cycle.should == 0
+        expect(discounts.first.id).to eq("discount_11")
+        expect(discounts.first.amount).to eq(BigDecimal("11.00"))
+        expect(discounts.first.quantity).to eq(1)
+        expect(discounts.first.current_billing_cycle).to eq(0)
 
-        discounts.last.id.should == "discount_7"
-        discounts.last.amount.should == BigDecimal("15.00")
-        discounts.last.quantity.should == 3
-        discounts.last.number_of_billing_cycles.should be_nil
-        discounts.last.never_expires?.should be(true)
-        discounts.last.current_billing_cycle.should == 0
+        expect(discounts.last.id).to eq("discount_7")
+        expect(discounts.last.amount).to eq(BigDecimal("15.00"))
+        expect(discounts.last.quantity).to eq(3)
+        expect(discounts.last.number_of_billing_cycles).to be_nil
+        expect(discounts.last.never_expires?).to be(true)
+        expect(discounts.last.current_billing_cycle).to eq(0)
       end
 
       it "allows deleting of inherited add_ons and discounts" do
@@ -544,21 +544,21 @@ describe Braintree::Subscription do
             :remove => [SpecHelper::Discount7]
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 1
-        subscription.add_ons.first.id.should == "increase_20"
-        subscription.add_ons.first.amount.should == BigDecimal("20.00")
-        subscription.add_ons.first.quantity.should == 1
-        subscription.add_ons.first.current_billing_cycle.should == 0
+        expect(subscription.add_ons.size).to eq(1)
+        expect(subscription.add_ons.first.id).to eq("increase_20")
+        expect(subscription.add_ons.first.amount).to eq(BigDecimal("20.00"))
+        expect(subscription.add_ons.first.quantity).to eq(1)
+        expect(subscription.add_ons.first.current_billing_cycle).to eq(0)
 
-        subscription.discounts.size.should == 1
-        subscription.discounts.last.id.should == "discount_11"
-        subscription.discounts.last.amount.should == BigDecimal("11.00")
-        subscription.discounts.last.quantity.should == 1
-        subscription.discounts.last.current_billing_cycle.should == 0
+        expect(subscription.discounts.size).to eq(1)
+        expect(subscription.discounts.last.id).to eq("discount_11")
+        expect(subscription.discounts.last.amount).to eq(BigDecimal("11.00"))
+        expect(subscription.discounts.last.quantity).to eq(1)
+        expect(subscription.discounts.last.current_billing_cycle).to eq(0)
       end
 
       it "allows adding new add_ons and discounts" do
@@ -572,38 +572,38 @@ describe Braintree::Subscription do
             :add => [{:inherited_from_id => SpecHelper::Discount15}]
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 3
+        expect(subscription.add_ons.size).to eq(3)
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
-        add_ons[0].id.should == "increase_10"
-        add_ons[0].amount.should == BigDecimal("10.00")
-        add_ons[0].quantity.should == 1
+        expect(add_ons[0].id).to eq("increase_10")
+        expect(add_ons[0].amount).to eq(BigDecimal("10.00"))
+        expect(add_ons[0].quantity).to eq(1)
 
-        add_ons[1].id.should == "increase_20"
-        add_ons[1].amount.should == BigDecimal("20.00")
-        add_ons[1].quantity.should == 1
+        expect(add_ons[1].id).to eq("increase_20")
+        expect(add_ons[1].amount).to eq(BigDecimal("20.00"))
+        expect(add_ons[1].quantity).to eq(1)
 
-        add_ons[2].id.should == "increase_30"
-        add_ons[2].amount.should == BigDecimal("30.00")
-        add_ons[2].quantity.should == 1
+        expect(add_ons[2].id).to eq("increase_30")
+        expect(add_ons[2].amount).to eq(BigDecimal("30.00"))
+        expect(add_ons[2].quantity).to eq(1)
 
-        subscription.discounts.size.should == 3
+        expect(subscription.discounts.size).to eq(3)
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
-        discounts[0].id.should == "discount_11"
-        discounts[0].amount.should == BigDecimal("11.00")
-        discounts[0].quantity.should == 1
+        expect(discounts[0].id).to eq("discount_11")
+        expect(discounts[0].amount).to eq(BigDecimal("11.00"))
+        expect(discounts[0].quantity).to eq(1)
 
-        discounts[1].id.should == "discount_15"
-        discounts[1].amount.should == BigDecimal("15.00")
-        discounts[1].quantity.should == 1
+        expect(discounts[1].id).to eq("discount_15")
+        expect(discounts[1].amount).to eq(BigDecimal("15.00"))
+        expect(discounts[1].quantity).to eq(1)
 
-        discounts[2].id.should == "discount_7"
-        discounts[2].amount.should == BigDecimal("7.00")
-        discounts[2].quantity.should == 1
+        expect(discounts[2].id).to eq("discount_7")
+        expect(discounts[2].amount).to eq(BigDecimal("7.00"))
+        expect(discounts[2].quantity).to eq(1)
       end
 
       it "properly parses validation errors for arrays" do
@@ -623,9 +623,9 @@ describe Braintree::Subscription do
             ]
           },
         )
-        result.success?.should == false
-        result.errors.for(:subscription).for(:add_ons).for(:update).for_index(0).on(:amount)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::AmountIsInvalid
-        result.errors.for(:subscription).for(:add_ons).for(:update).for_index(1).on(:quantity)[0].code.should == Braintree::ErrorCodes::Subscription::Modification::QuantityIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).for(:add_ons).for(:update).for_index(0).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Subscription::Modification::AmountIsInvalid)
+        expect(result.errors.for(:subscription).for(:add_ons).for(:update).for_index(1).on(:quantity)[0].code).to eq(Braintree::ErrorCodes::Subscription::Modification::QuantityIsInvalid)
       end
     end
 
@@ -640,14 +640,14 @@ describe Braintree::Subscription do
           },
         )
 
-        result.success?.should == true
-        result.subscription.descriptor.name.should == "123*123456789012345678"
-        result.subscription.descriptor.phone.should == "3334445555"
+        expect(result.success?).to eq(true)
+        expect(result.subscription.descriptor.name).to eq("123*123456789012345678")
+        expect(result.subscription.descriptor.phone).to eq("3334445555")
 
-        result.subscription.transactions.size.should == 1
+        expect(result.subscription.transactions.size).to eq(1)
         transaction = result.subscription.transactions.first
-        transaction.descriptor.name.should == "123*123456789012345678"
-        transaction.descriptor.phone.should == "3334445555"
+        expect(transaction.descriptor.name).to eq("123*123456789012345678")
+        expect(transaction.descriptor.phone).to eq("3334445555")
       end
 
       it "has validation errors if format is invalid" do
@@ -660,10 +660,10 @@ describe Braintree::Subscription do
             :url => "12345678901234"
           },
         )
-        result.success?.should == false
-        result.errors.for(:subscription).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
-        result.errors.for(:subscription).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
-        result.errors.for(:subscription).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).for(:descriptor).on(:name)[0].code).to eq(Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid)
+        expect(result.errors.for(:subscription).for(:descriptor).on(:phone)[0].code).to eq(Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid)
+        expect(result.errors.for(:subscription).for(:descriptor).on(:url)[0].code).to eq(Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid)
       end
     end
   end
@@ -675,9 +675,9 @@ describe Braintree::Subscription do
         :plan_id => SpecHelper::TriallessPlan[:id],
       )
 
-      subscription.id.should =~ /^\w{6}$/
-      subscription.status.should == Braintree::Subscription::Status::Active
-      subscription.plan_id.should == "integration_trialless_plan"
+      expect(subscription.id).to match(/^\w{6}$/)
+      expect(subscription.status).to eq(Braintree::Subscription::Status::Active)
+      expect(subscription.plan_id).to eq("integration_trialless_plan")
 
       expect(subscription.first_billing_date).to be_a Date
       expect(subscription.next_billing_date).to be_a Date
@@ -685,10 +685,10 @@ describe Braintree::Subscription do
       expect(subscription.billing_period_end_date).to be_a Date
       expect(subscription.paid_through_date).to be_a Date
 
-      subscription.failure_count.should == 0
-      subscription.current_billing_cycle.should == 1
-      subscription.next_billing_period_amount.should == "12.34"
-      subscription.payment_method_token.should == @credit_card.token
+      expect(subscription.failure_count).to eq(0)
+      expect(subscription.current_billing_cycle).to eq(1)
+      expect(subscription.next_billing_period_amount).to eq("12.34")
+      expect(subscription.payment_method_token).to eq(@credit_card.token)
     end
 
     it "raises a ValidationsFailed if invalid" do
@@ -707,9 +707,9 @@ describe Braintree::Subscription do
         :payment_method_token => @credit_card.token,
         :plan_id => SpecHelper::TrialPlan[:id],
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
-      Braintree::Subscription.find(result.subscription.id).should == result.subscription
+      expect(Braintree::Subscription.find(result.subscription.id)).to eq(result.subscription)
     end
 
     it "raises Braintree::NotFoundError if it cannot find" do
@@ -733,8 +733,8 @@ describe Braintree::Subscription do
         :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
       )
 
-      result.success?.should == true
-      result.subscription.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+      expect(result.success?).to eq(true)
+      expect(result.subscription.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
     end
 
     it "allows changing the payment method by payment_method_token" do
@@ -748,7 +748,7 @@ describe Braintree::Subscription do
         :payment_method_token => new_credit_card.token,
       )
 
-      result.subscription.payment_method_token.should == new_credit_card.token
+      expect(result.subscription.payment_method_token).to eq(new_credit_card.token)
     end
 
     it "allows changing the payment_method by payment_method_nonce" do
@@ -763,8 +763,8 @@ describe Braintree::Subscription do
       )
 
       result = Braintree::Subscription.update(@subscription.id, :payment_method_nonce => nonce)
-      result.subscription.transactions[0].credit_card_details.token.should == @credit_card.token
-      result.subscription.payment_method_token.should_not == @credit_card.token
+      expect(result.subscription.transactions[0].credit_card_details.token).to eq(@credit_card.token)
+      expect(result.subscription.payment_method_token).not_to eq(@credit_card.token)
     end
 
     it "allows changing the descriptors" do
@@ -776,10 +776,10 @@ describe Braintree::Subscription do
         },
       )
 
-      result.success?.should == true
-      result.subscription.descriptor.name.should == "aaa*1234"
-      result.subscription.descriptor.phone.should == "3334443333"
-      result.subscription.descriptor.url.should == "ebay.com"
+      expect(result.success?).to eq(true)
+      expect(result.subscription.descriptor.name).to eq("aaa*1234")
+      expect(result.subscription.descriptor.phone).to eq("3334443333")
+      expect(result.subscription.descriptor.url).to eq("ebay.com")
     end
 
     it "allows changing the paypal description" do
@@ -803,8 +803,8 @@ describe Braintree::Subscription do
         },
       )
 
-      result.success?.should == true
-      result.subscription.description.should == "A great product"
+      expect(result.success?).to eq(true)
+      expect(result.subscription.description).to eq("A great product")
     end
 
     context "when successful" do
@@ -816,10 +816,10 @@ describe Braintree::Subscription do
           :plan_id => SpecHelper::TrialPlan[:id],
         )
 
-        result.success?.should == true
-        result.subscription.id.should =~ /#{new_id}/
-        result.subscription.plan_id.should == SpecHelper::TrialPlan[:id]
-        result.subscription.price.should == BigDecimal("9999.88")
+        expect(result.success?).to eq(true)
+        expect(result.subscription.id).to match(/#{new_id}/)
+        expect(result.subscription.plan_id).to eq(SpecHelper::TrialPlan[:id])
+        expect(result.subscription.price).to eq(BigDecimal("9999.88"))
       end
 
       context "proration" do
@@ -828,9 +828,9 @@ describe Braintree::Subscription do
             :price => @subscription.price.to_f + 1,
           )
 
-          result.success?.should == true
-          result.subscription.price.to_f.should == @subscription.price.to_f + 1
-          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+          expect(result.success?).to eq(true)
+          expect(result.subscription.price.to_f).to eq(@subscription.price.to_f + 1)
+          expect(result.subscription.transactions.size).to eq(@subscription.transactions.size + 1)
         end
 
         it "allows the user to force proration if there is a charge" do
@@ -839,9 +839,9 @@ describe Braintree::Subscription do
             :options => {:prorate_charges => true},
           )
 
-          result.success?.should == true
-          result.subscription.price.to_f.should == @subscription.price.to_f + 1
-          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+          expect(result.success?).to eq(true)
+          expect(result.subscription.price.to_f).to eq(@subscription.price.to_f + 1)
+          expect(result.subscription.transactions.size).to eq(@subscription.transactions.size + 1)
         end
 
         it "allows the user to prevent proration if there is a charge" do
@@ -850,9 +850,9 @@ describe Braintree::Subscription do
             :options => {:prorate_charges => false},
           )
 
-          result.success?.should == true
-          result.subscription.price.to_f.should == @subscription.price.to_f + 1
-          result.subscription.transactions.size.should == @subscription.transactions.size
+          expect(result.success?).to eq(true)
+          expect(result.subscription.price.to_f).to eq(@subscription.price.to_f + 1)
+          expect(result.subscription.transactions.size).to eq(@subscription.transactions.size)
         end
 
         it "doesn't prorate if price decreases" do
@@ -860,9 +860,9 @@ describe Braintree::Subscription do
             :price => @subscription.price.to_f - 1,
           )
 
-          result.success?.should == true
-          result.subscription.price.to_f.should == @subscription.price.to_f - 1
-          result.subscription.transactions.size.should == @subscription.transactions.size
+          expect(result.success?).to eq(true)
+          expect(result.subscription.price.to_f).to eq(@subscription.price.to_f - 1)
+          expect(result.subscription.transactions.size).to eq(@subscription.transactions.size)
         end
 
         it "updates the subscription if the proration fails and revert_subscription_on_proration_failure => false" do
@@ -873,13 +873,13 @@ describe Braintree::Subscription do
             },
           )
 
-          result.success?.should == true
-          result.subscription.price.to_f.should == @subscription.price.to_f + 2100
+          expect(result.success?).to eq(true)
+          expect(result.subscription.price.to_f).to eq(@subscription.price.to_f + 2100)
 
-          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+          expect(result.subscription.transactions.size).to eq(@subscription.transactions.size + 1)
           transaction = result.subscription.transactions.first
-          transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
-          result.subscription.balance.should == transaction.amount
+          expect(transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+          expect(result.subscription.balance).to eq(transaction.amount)
         end
 
         it "does not update the subscription if the proration fails and revert_subscription_on_proration_failure => true" do
@@ -890,13 +890,13 @@ describe Braintree::Subscription do
             },
           )
 
-          result.success?.should == false
-          result.subscription.price.to_f.should == @subscription.price.to_f
+          expect(result.success?).to eq(false)
+          expect(result.subscription.price.to_f).to eq(@subscription.price.to_f)
 
-          result.subscription.transactions.size.should == @subscription.transactions.size + 1
+          expect(result.subscription.transactions.size).to eq(@subscription.transactions.size + 1)
           transaction = result.subscription.transactions.first
-          transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
-          result.subscription.balance.should == 0
+          expect(transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+          expect(result.subscription.balance).to eq(0)
         end
       end
     end
@@ -919,20 +919,20 @@ describe Braintree::Subscription do
 
       it "has validation errors on id" do
         result = Braintree::Subscription.update(@subscription.id, :id => "invalid token")
-        result.success?.should == false
-        result.errors.for(:subscription).on(:id)[0].code.should == Braintree::ErrorCodes::Subscription::TokenFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:id)[0].code).to eq(Braintree::ErrorCodes::Subscription::TokenFormatIsInvalid)
       end
 
       it "has a price" do
         result = Braintree::Subscription.update(@subscription.id, :price => "")
-        result.success?.should == false
-        result.errors.for(:subscription).on(:price)[0].code.should == Braintree::ErrorCodes::Subscription::PriceCannotBeBlank
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:price)[0].code).to eq(Braintree::ErrorCodes::Subscription::PriceCannotBeBlank)
       end
 
       it "has a properly formatted price" do
         result = Braintree::Subscription.update(@subscription.id, :price => "9.2.1 apples")
-        result.success?.should == false
-        result.errors.for(:subscription).on(:price)[0].code.should == Braintree::ErrorCodes::Subscription::PriceFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:price)[0].code).to eq(Braintree::ErrorCodes::Subscription::PriceFormatIsInvalid)
       end
 
       it "has validation errors on duplicate id" do
@@ -946,8 +946,8 @@ describe Braintree::Subscription do
           @subscription.id,
           :id => duplicate_id,
         )
-        result.success?.should == false
-        result.errors.for(:subscription).on(:id)[0].code.should == Braintree::ErrorCodes::Subscription::IdIsInUse
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription).on(:id)[0].code).to eq(Braintree::ErrorCodes::Subscription::IdIsInUse)
       end
 
       it "cannot update a canceled subscription" do
@@ -958,13 +958,13 @@ describe Braintree::Subscription do
         ).subscription
 
         result = Braintree::Subscription.cancel(subscription.id)
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         result = Braintree::Subscription.update(subscription.id,
           :price => 123.45,
         )
-        result.success?.should == false
-        result.errors.for(:subscription)[0].code.should == Braintree::ErrorCodes::Subscription::CannotEditCanceledSubscription
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:subscription)[0].code).to eq(Braintree::ErrorCodes::Subscription::CannotEditCanceledSubscription)
       end
     end
 
@@ -981,7 +981,7 @@ describe Braintree::Subscription do
           :number_of_billing_cycles => 5,
         )
 
-        result.subscription.number_of_billing_cycles.should == 5
+        expect(result.subscription.number_of_billing_cycles).to eq(5)
       end
 
       it "sets the number of billing cycles to nil if :never_expires => true" do
@@ -996,9 +996,9 @@ describe Braintree::Subscription do
           :never_expires => true,
         )
 
-        result.success?.should == true
-        result.subscription.number_of_billing_cycles.should == nil
-        result.subscription.never_expires?.should be(true)
+        expect(result.success?).to eq(true)
+        expect(result.subscription.number_of_billing_cycles).to eq(nil)
+        expect(result.subscription.never_expires?).to be(true)
       end
     end
 
@@ -1008,7 +1008,7 @@ describe Braintree::Subscription do
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::AddOnDiscountPlan[:id],
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         subscription = result.subscription
 
         result = Braintree::Subscription.update(
@@ -1035,17 +1035,17 @@ describe Braintree::Subscription do
 
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 2
+        expect(subscription.add_ons.size).to eq(2)
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
-        add_ons.first.amount.should == BigDecimal("99.99")
-        add_ons.first.quantity.should == 12
+        expect(add_ons.first.amount).to eq(BigDecimal("99.99"))
+        expect(add_ons.first.quantity).to eq(12)
 
-        subscription.discounts.size.should == 2
+        expect(subscription.discounts.size).to eq(2)
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
-        discounts.last.amount.should == BigDecimal("88.88")
-        discounts.last.quantity.should == 9
+        expect(discounts.last.amount).to eq(BigDecimal("88.88"))
+        expect(discounts.last.quantity).to eq(9)
       end
 
       it "allows adding new add_ons and discounts" do
@@ -1063,38 +1063,38 @@ describe Braintree::Subscription do
           },
         )
 
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 3
+        expect(subscription.add_ons.size).to eq(3)
         add_ons = subscription.add_ons.sort_by { |add_on| add_on.id }
 
-        add_ons[0].id.should == "increase_10"
-        add_ons[0].amount.should == BigDecimal("10.00")
-        add_ons[0].quantity.should == 1
+        expect(add_ons[0].id).to eq("increase_10")
+        expect(add_ons[0].amount).to eq(BigDecimal("10.00"))
+        expect(add_ons[0].quantity).to eq(1)
 
-        add_ons[1].id.should == "increase_20"
-        add_ons[1].amount.should == BigDecimal("20.00")
-        add_ons[1].quantity.should == 1
+        expect(add_ons[1].id).to eq("increase_20")
+        expect(add_ons[1].amount).to eq(BigDecimal("20.00"))
+        expect(add_ons[1].quantity).to eq(1)
 
-        add_ons[2].id.should == "increase_30"
-        add_ons[2].amount.should == BigDecimal("30.00")
-        add_ons[2].quantity.should == 1
+        expect(add_ons[2].id).to eq("increase_30")
+        expect(add_ons[2].amount).to eq(BigDecimal("30.00"))
+        expect(add_ons[2].quantity).to eq(1)
 
-        subscription.discounts.size.should == 3
+        expect(subscription.discounts.size).to eq(3)
         discounts = subscription.discounts.sort_by { |discount| discount.id }
 
-        discounts[0].id.should == "discount_11"
-        discounts[0].amount.should == BigDecimal("11.00")
-        discounts[0].quantity.should == 1
+        expect(discounts[0].id).to eq("discount_11")
+        expect(discounts[0].amount).to eq(BigDecimal("11.00"))
+        expect(discounts[0].quantity).to eq(1)
 
-        discounts[1].id.should == "discount_15"
-        discounts[1].amount.should == BigDecimal("15.00")
-        discounts[1].quantity.should == 1
+        expect(discounts[1].id).to eq("discount_15")
+        expect(discounts[1].amount).to eq(BigDecimal("15.00"))
+        expect(discounts[1].quantity).to eq(1)
 
-        discounts[2].id.should == "discount_7"
-        discounts[2].amount.should == BigDecimal("7.00")
-        discounts[2].quantity.should == 1
+        expect(discounts[2].id).to eq("discount_7")
+        expect(discounts[2].amount).to eq(BigDecimal("7.00"))
+        expect(discounts[2].quantity).to eq(1)
       end
 
       it "allows replacing entire set of add_ons and discounts" do
@@ -1113,18 +1113,18 @@ describe Braintree::Subscription do
           :options => {:replace_all_add_ons_and_discounts => true},
         )
 
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 1
+        expect(subscription.add_ons.size).to eq(1)
 
-        subscription.add_ons[0].amount.should == BigDecimal("30.00")
-        subscription.add_ons[0].quantity.should == 1
+        expect(subscription.add_ons[0].amount).to eq(BigDecimal("30.00"))
+        expect(subscription.add_ons[0].quantity).to eq(1)
 
-        subscription.discounts.size.should == 1
+        expect(subscription.discounts.size).to eq(1)
 
-        subscription.discounts[0].amount.should == BigDecimal("15.00")
-        subscription.discounts[0].quantity.should == 1
+        expect(subscription.discounts[0].amount).to eq(BigDecimal("15.00"))
+        expect(subscription.discounts[0].quantity).to eq(1)
       end
 
       it "allows deleting of add_ons and discounts" do
@@ -1141,17 +1141,17 @@ describe Braintree::Subscription do
             :remove => [SpecHelper::Discount7]
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         subscription = result.subscription
 
-        subscription.add_ons.size.should == 1
-        subscription.add_ons.first.amount.should == BigDecimal("20.00")
-        subscription.add_ons.first.quantity.should == 1
+        expect(subscription.add_ons.size).to eq(1)
+        expect(subscription.add_ons.first.amount).to eq(BigDecimal("20.00"))
+        expect(subscription.add_ons.first.quantity).to eq(1)
 
-        subscription.discounts.size.should == 1
-        subscription.discounts.last.amount.should == BigDecimal("11.00")
-        subscription.discounts.last.quantity.should == 1
+        expect(subscription.discounts.size).to eq(1)
+        expect(subscription.discounts.last.amount).to eq(BigDecimal("11.00"))
+        expect(subscription.discounts.last.quantity).to eq(1)
       end
     end
   end
@@ -1173,9 +1173,9 @@ describe Braintree::Subscription do
         :plan_id => SpecHelper::TrialPlan[:id],
       )
 
-      subscription.id.should =~ /#{new_id}/
-      subscription.plan_id.should == SpecHelper::TrialPlan[:id]
-      subscription.price.should == BigDecimal("9999.88")
+      expect(subscription.id).to match(/#{new_id}/)
+      expect(subscription.plan_id).to eq(SpecHelper::TrialPlan[:id])
+      expect(subscription.price).to eq(BigDecimal("9999.88"))
     end
 
     it "raises a ValidationsFailed if invalid" do
@@ -1197,8 +1197,8 @@ describe Braintree::Subscription do
       ).subscription
 
       result = Braintree::Subscription.cancel(subscription.id)
-      result.success?.should == true
-      result.subscription.status.should == Braintree::Subscription::Status::Canceled
+      expect(result.success?).to eq(true)
+      expect(result.subscription.status).to eq(Braintree::Subscription::Status::Canceled)
     end
 
     it "returns a validation error if record not found" do
@@ -1215,12 +1215,12 @@ describe Braintree::Subscription do
       ).subscription
 
       result = Braintree::Subscription.cancel(subscription.id)
-      result.success?.should == true
-      result.subscription.status.should == Braintree::Subscription::Status::Canceled
+      expect(result.success?).to eq(true)
+      expect(result.subscription.status).to eq(Braintree::Subscription::Status::Canceled)
 
       result = Braintree::Subscription.cancel(subscription.id)
-      result.success?.should == false
-      result.errors.for(:subscription)[0].code.should == "81905"
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:subscription)[0].code).to eq("81905")
     end
   end
 
@@ -1233,7 +1233,7 @@ describe Braintree::Subscription do
       )
 
       updated_subscription = Braintree::Subscription.cancel!(subscription.id)
-      updated_subscription.status.should == Braintree::Subscription::Status::Canceled
+      expect(updated_subscription.status).to eq(Braintree::Subscription::Status::Canceled)
     end
   end
 
@@ -1257,15 +1257,15 @@ describe Braintree::Subscription do
           search.in_trial_period.is true
         end
 
-        subscriptions_in_trial_period.should include(subscription_with_trial)
-        subscriptions_in_trial_period.should_not include(subscription_without_trial)
+        expect(subscriptions_in_trial_period).to include(subscription_with_trial)
+        expect(subscriptions_in_trial_period).not_to include(subscription_without_trial)
 
         subscriptions_not_in_trial_period = Braintree::Subscription.search do |search|
           search.in_trial_period.is false
         end
 
-        subscriptions_not_in_trial_period.should_not include(subscription_with_trial)
-        subscriptions_not_in_trial_period.should include(subscription_without_trial)
+        expect(subscriptions_not_in_trial_period).not_to include(subscription_with_trial)
+        expect(subscriptions_not_in_trial_period).to include(subscription_without_trial)
       end
     end
 
@@ -1286,21 +1286,21 @@ describe Braintree::Subscription do
 
         # not testing for specific number since the
         # create subscriptions accumulate over time
-        collection.maximum_size.should >= 1
+        expect(collection.maximum_size).to be >= 1
 
         collection = Braintree::Subscription.search do |search|
           search.merchant_account_id.in subscription.merchant_account_id, "bogus_merchant_account_id"
           search.price.is "11.38"
         end
 
-        collection.maximum_size.should >= 1
+        expect(collection.maximum_size).to be >= 1
 
         collection = Braintree::Subscription.search do |search|
           search.merchant_account_id.is "bogus_merchant_account_id"
           search.price.is "11.38"
         end
 
-        collection.maximum_size.should == 0
+        expect(collection.maximum_size).to eq(0)
       end
     end
 
@@ -1323,8 +1323,8 @@ describe Braintree::Subscription do
           search.id.is "subscription1_#{id}"
         end
 
-        collection.should include(subscription1)
-        collection.should_not include(subscription2)
+        expect(collection).to include(subscription1)
+        expect(collection).not_to include(subscription2)
       end
     end
 
@@ -1349,16 +1349,16 @@ describe Braintree::Subscription do
           search.price.is "1"
         end
 
-        collection.should include(subscription1)
-        collection.should_not include(subscription2)
+        expect(collection).to include(subscription1)
+        expect(collection).not_to include(subscription2)
 
         collection = Braintree::Subscription.search do |search|
           search.merchant_account_id.in [SpecHelper::DefaultMerchantAccountId, SpecHelper::NonDefaultMerchantAccountId]
           search.price.is "1"
         end
 
-        collection.should include(subscription1)
-        collection.should include(subscription2)
+        expect(collection).to include(subscription1)
+        expect(collection).to include(subscription2)
       end
     end
 
@@ -1381,8 +1381,8 @@ describe Braintree::Subscription do
           search.price.is "2"
         end
 
-        collection.should include(trialless_subscription)
-        collection.should_not include(trial_subscription)
+        expect(collection).to include(trialless_subscription)
+        expect(collection).not_to include(trial_subscription)
       end
     end
 
@@ -1404,8 +1404,8 @@ describe Braintree::Subscription do
           search.price.is "5.00"
         end
 
-        collection.should include(subscription_500)
-        collection.should_not include(subscription_501)
+        expect(collection).to include(subscription_500)
+        expect(collection).not_to include(subscription_501)
       end
     end
 
@@ -1430,11 +1430,11 @@ describe Braintree::Subscription do
           search.days_past_due.is 5
         end
 
-        collection.should include(past_due_subscription)
-        collection.should_not include(active_subscription)
+        expect(collection).to include(past_due_subscription)
+        expect(collection).not_to include(active_subscription)
         collection.each do |s|
-          s.status.should == Braintree::Subscription::Status::PastDue
-          s.balance.should == BigDecimal("6.00")
+          expect(s.status).to eq(Braintree::Subscription::Status::PastDue)
+          expect(s.balance).to eq(BigDecimal("6.00"))
         end
       end
 
@@ -1448,10 +1448,10 @@ describe Braintree::Subscription do
           search.days_past_due.between 1, 20
         end
 
-        collection.should_not include(subscription)
+        expect(collection).not_to include(subscription)
         collection.each do |s|
-          s.days_past_due.should >= 1
-          s.days_past_due.should <= 20
+          expect(s.days_past_due).to be >= 1
+          expect(s.days_past_due).to be <= 20
         end
       end
     end
@@ -1480,9 +1480,9 @@ describe Braintree::Subscription do
           search.billing_cycles_remaining.between 5, 10
         end
 
-        collection.should include(subscription_5)
-        collection.should include(subscription_9)
-        collection.should_not include(subscription_15)
+        expect(collection).to include(subscription_5)
+        expect(collection).to include(subscription_9)
+        expect(collection).not_to include(subscription_15)
       end
     end
 
@@ -1502,8 +1502,8 @@ describe Braintree::Subscription do
           search.transaction_id.is matching_subscription.transactions.first.id
         end
 
-        collection.should include(matching_subscription)
-        collection.should_not include(non_matching_subscription)
+        expect(collection).to include(matching_subscription)
+        expect(collection).not_to include(non_matching_subscription)
       end
     end
 
@@ -1524,8 +1524,8 @@ describe Braintree::Subscription do
           search.next_billing_date >= five_days_from_now
         end
 
-        collection.should include(matching_subscription)
-        collection.should_not include(non_matching_subscription)
+        expect(collection).to include(matching_subscription)
+        expect(collection).not_to include(non_matching_subscription)
       end
     end
 
@@ -1539,7 +1539,7 @@ describe Braintree::Subscription do
       end
 
       it "searches on created_at in UTC using between" do
-        @created_at.should be_utc
+        expect(@created_at).to be_utc
 
         collection = Braintree::Subscription.search do |search|
           search.id.is @subscription.id
@@ -1549,8 +1549,8 @@ describe Braintree::Subscription do
           )
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
 
       it "searches on created_at in UTC using geq" do
@@ -1559,8 +1559,8 @@ describe Braintree::Subscription do
           search.created_at >= @created_at - 1
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
 
       it "searches on created_at in UTC using leq" do
@@ -1569,8 +1569,8 @@ describe Braintree::Subscription do
           search.created_at <= @created_at + 1
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
 
       it "searches on created_at in UTC and finds nothing" do
@@ -1582,7 +1582,7 @@ describe Braintree::Subscription do
           )
         end
 
-        collection.maximum_size.should == 0
+        expect(collection.maximum_size).to eq(0)
       end
 
       it "searches on created_at in UTC using exact time" do
@@ -1591,8 +1591,8 @@ describe Braintree::Subscription do
           search.created_at.is @created_at
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
 
       it "searches on created_at in local time using between" do
@@ -1606,8 +1606,8 @@ describe Braintree::Subscription do
           )
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
 
       it "searches on created_at in local time using geq" do
@@ -1618,8 +1618,8 @@ describe Braintree::Subscription do
           search.created_at >= now - 60
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
 
       it "searches on created_at in local time using leq" do
@@ -1630,8 +1630,8 @@ describe Braintree::Subscription do
           search.created_at <= now + 60
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
 
       it "searches on created_at in local time and finds nothing" do
@@ -1645,7 +1645,7 @@ describe Braintree::Subscription do
           )
         end
 
-        collection.maximum_size.should == 0
+        expect(collection.maximum_size).to eq(0)
       end
 
       it "searches on created_at with dates" do
@@ -1657,8 +1657,8 @@ describe Braintree::Subscription do
           )
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == @subscription.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(@subscription.id)
       end
     end
 
@@ -1668,10 +1668,10 @@ describe Braintree::Subscription do
       end
 
       collection = Braintree::Subscription.search
-      collection.maximum_size.should > 100
+      expect(collection.maximum_size).to be > 100
 
       subscriptions_ids = collection.map { |t| t.id }.uniq.compact
-      subscriptions_ids.size.should == collection.maximum_size
+      expect(subscriptions_ids.size).to eq(collection.maximum_size)
     end
   end
 
@@ -1685,13 +1685,13 @@ describe Braintree::Subscription do
 
       result = Braintree::Subscription.retry_charge(subscription.id)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
 
-      transaction.amount.should == subscription.price
-      transaction.processor_authorization_code.should_not be_nil
-      transaction.type.should == Braintree::Transaction::Type::Sale
-      transaction.status.should == Braintree::Transaction::Status::Authorized
+      expect(transaction.amount).to eq(subscription.price)
+      expect(transaction.processor_authorization_code).not_to be_nil
+      expect(transaction.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(transaction.status).to eq(Braintree::Transaction::Status::Authorized)
     end
 
     it "is successful with subscription id and amount" do
@@ -1703,13 +1703,13 @@ describe Braintree::Subscription do
 
       result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      transaction.processor_authorization_code.should_not be_nil
-      transaction.type.should == Braintree::Transaction::Type::Sale
-      transaction.status.should == Braintree::Transaction::Status::Authorized
+      expect(transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(transaction.processor_authorization_code).not_to be_nil
+      expect(transaction.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(transaction.status).to eq(Braintree::Transaction::Status::Authorized)
     end
 
     it "is successful with subscription id and submit_for_settlement" do
@@ -1721,13 +1721,13 @@ describe Braintree::Subscription do
 
       result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize, true)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      transaction.processor_authorization_code.should_not be_nil
-      transaction.type.should == Braintree::Transaction::Type::Sale
-      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(transaction.processor_authorization_code).not_to be_nil
+      expect(transaction.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
 
     it "is successful with subscription id, amount and submit_for_settlement" do
@@ -1739,13 +1739,13 @@ describe Braintree::Subscription do
 
       result = Braintree::Subscription.retry_charge(subscription.id, Braintree::Test::TransactionAmounts::Authorize, true)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      transaction.processor_authorization_code.should_not be_nil
-      transaction.type.should == Braintree::Transaction::Type::Sale
-      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(transaction.processor_authorization_code).not_to be_nil
+      expect(transaction.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
   end
 end

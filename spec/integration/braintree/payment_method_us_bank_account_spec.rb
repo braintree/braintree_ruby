@@ -23,22 +23,22 @@ describe Braintree::PaymentMethod do
             },
           )
 
-          result.should be_success
+          expect(result).to be_success
           us_bank_account = result.payment_method
-          us_bank_account.should be_a(Braintree::UsBankAccount)
-          us_bank_account.routing_number.should == "021000021"
-          us_bank_account.last_4.should == "0000"
-          us_bank_account.account_type.should == "checking"
-          us_bank_account.account_holder_name.should == "John Doe"
-          us_bank_account.bank_name.should =~ /CHASE/
-          us_bank_account.default.should == true
-          us_bank_account.ach_mandate.text.should == "cl mandate text"
-          us_bank_account.ach_mandate.accepted_at.should be_a Time
+          expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+          expect(us_bank_account.routing_number).to eq("021000021")
+          expect(us_bank_account.last_4).to eq("0000")
+          expect(us_bank_account.account_type).to eq("checking")
+          expect(us_bank_account.account_holder_name).to eq("John Doe")
+          expect(us_bank_account.bank_name).to match(/CHASE/)
+          expect(us_bank_account.default).to eq(true)
+          expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+          expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
 
-          us_bank_account.verifications.count.should == 0
-          us_bank_account.verified.should == false
+          expect(us_bank_account.verifications.count).to eq(0)
+          expect(us_bank_account.verified).to eq(false)
 
-          Braintree::PaymentMethod.find(us_bank_account.token).should be_a(Braintree::UsBankAccount)
+          expect(Braintree::PaymentMethod.find(us_bank_account.token)).to be_a(Braintree::UsBankAccount)
         end
 
         [
@@ -56,26 +56,26 @@ describe Braintree::PaymentMethod do
               },
             )
 
-            result.should be_success
+            expect(result).to be_success
             us_bank_account = result.payment_method
-            us_bank_account.should be_a(Braintree::UsBankAccount)
-            us_bank_account.routing_number.should == "021000021"
-            us_bank_account.last_4.should == "0000"
-            us_bank_account.account_type.should == "checking"
-            us_bank_account.account_holder_name.should == "John Doe"
-            us_bank_account.bank_name.should =~ /CHASE/
-            us_bank_account.default.should == true
-            us_bank_account.ach_mandate.text.should == "cl mandate text"
-            us_bank_account.ach_mandate.accepted_at.should be_a Time
+            expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+            expect(us_bank_account.routing_number).to eq("021000021")
+            expect(us_bank_account.last_4).to eq("0000")
+            expect(us_bank_account.account_type).to eq("checking")
+            expect(us_bank_account.account_holder_name).to eq("John Doe")
+            expect(us_bank_account.bank_name).to match(/CHASE/)
+            expect(us_bank_account.default).to eq(true)
+            expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+            expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
 
-            us_bank_account.verifications.count.should == 1
-            us_bank_account.verifications.first.status.should == Braintree::UsBankAccountVerification::Status::Verified
-            us_bank_account.verifications.first.verification_method.should == method
-            us_bank_account.verifications.first.id.should_not be_empty
-            us_bank_account.verifications.first.verification_determined_at.should be_a Time
-            us_bank_account.verified.should == true
+            expect(us_bank_account.verifications.count).to eq(1)
+            expect(us_bank_account.verifications.first.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
+            expect(us_bank_account.verifications.first.verification_method).to eq(method)
+            expect(us_bank_account.verifications.first.id).not_to be_empty
+            expect(us_bank_account.verifications.first.verification_determined_at).to be_a Time
+            expect(us_bank_account.verified).to eq(true)
 
-            Braintree::PaymentMethod.find(us_bank_account.token).should be_a(Braintree::UsBankAccount)
+            expect(Braintree::PaymentMethod.find(us_bank_account.token)).to be_a(Braintree::UsBankAccount)
           end
         end
       end
@@ -87,8 +87,8 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
         )
 
-        result.should_not be_success
-        result.errors.for(:payment_method).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::PaymentMethod::PaymentMethodNonceUnknown
+        expect(result).not_to be_success
+        expect(result.errors.for(:payment_method).on(:payment_method_nonce)[0].code).to eq(Braintree::ErrorCodes::PaymentMethod::PaymentMethodNonceUnknown)
       end
     end
 
@@ -100,8 +100,8 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
         )
 
-        result.should_not be_success
-        result.errors.for(:payment_method).on(:payment_method_nonce)[0].code.should == Braintree::ErrorCodes::PaymentMethod::PaymentMethodNonceUnknown
+        expect(result).not_to be_success
+        expect(result.errors.for(:payment_method).on(:payment_method_nonce)[0].code).to eq(Braintree::ErrorCodes::PaymentMethod::PaymentMethodNonceUnknown)
       end
     end
   end
@@ -139,27 +139,27 @@ describe Braintree::PaymentMethod do
               },
             )
 
-            result.should be_success
+            expect(result).to be_success
 
             us_bank_account = result.payment_method
-            us_bank_account.should be_a(Braintree::UsBankAccount)
-            us_bank_account.routing_number.should == "021000021"
-            us_bank_account.last_4.should == "0000"
-            us_bank_account.account_type.should == "checking"
-            us_bank_account.account_holder_name.should == "John Doe"
-            us_bank_account.bank_name.should =~ /CHASE/
-            us_bank_account.default.should == true
-            us_bank_account.ach_mandate.text.should == "cl mandate text"
-            us_bank_account.ach_mandate.accepted_at.should be_a Time
+            expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+            expect(us_bank_account.routing_number).to eq("021000021")
+            expect(us_bank_account.last_4).to eq("0000")
+            expect(us_bank_account.account_type).to eq("checking")
+            expect(us_bank_account.account_holder_name).to eq("John Doe")
+            expect(us_bank_account.bank_name).to match(/CHASE/)
+            expect(us_bank_account.default).to eq(true)
+            expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+            expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
 
-            us_bank_account.verifications.count.should == 1
-            us_bank_account.verifications.first.status.should == Braintree::UsBankAccountVerification::Status::Verified
-            us_bank_account.verifications.first.verification_method.should == method
-            us_bank_account.verifications.first.id.should_not be_empty
-            us_bank_account.verifications.first.verification_determined_at.should be_a Time
-            us_bank_account.verified.should == true
+            expect(us_bank_account.verifications.count).to eq(1)
+            expect(us_bank_account.verifications.first.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
+            expect(us_bank_account.verifications.first.verification_method).to eq(method)
+            expect(us_bank_account.verifications.first.id).not_to be_empty
+            expect(us_bank_account.verifications.first.verification_determined_at).to be_a Time
+            expect(us_bank_account.verified).to eq(true)
 
-            Braintree::PaymentMethod.find(us_bank_account.token).should be_a(Braintree::UsBankAccount)
+            expect(Braintree::PaymentMethod.find(us_bank_account.token)).to be_a(Braintree::UsBankAccount)
           end
         end
 
@@ -172,8 +172,8 @@ describe Braintree::PaymentMethod do
             },
           )
 
-          result.should_not be_success
-          result.errors.for(:options).first.code.should == Braintree::ErrorCodes::PaymentMethod::Options::UsBankAccountVerificationMethodIsInvalid
+          expect(result).not_to be_success
+          expect(result.errors.for(:options).first.code).to eq(Braintree::ErrorCodes::PaymentMethod::Options::UsBankAccountVerificationMethodIsInvalid)
         end
       end
     end
@@ -210,29 +210,29 @@ describe Braintree::PaymentMethod do
               },
             )
 
-            result.should be_success
+            expect(result).to be_success
 
             us_bank_account = result.payment_method
-            us_bank_account.should be_a(Braintree::UsBankAccount)
-            us_bank_account.routing_number.should == "021000021"
-            us_bank_account.last_4.should == "0000"
-            us_bank_account.account_type.should == "checking"
-            us_bank_account.account_holder_name.should == "John Doe"
-            us_bank_account.bank_name.should =~ /CHASE/
-            us_bank_account.default.should == true
-            us_bank_account.ach_mandate.text.should == "cl mandate text"
-            us_bank_account.ach_mandate.accepted_at.should be_a Time
+            expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+            expect(us_bank_account.routing_number).to eq("021000021")
+            expect(us_bank_account.last_4).to eq("0000")
+            expect(us_bank_account.account_type).to eq("checking")
+            expect(us_bank_account.account_holder_name).to eq("John Doe")
+            expect(us_bank_account.bank_name).to match(/CHASE/)
+            expect(us_bank_account.default).to eq(true)
+            expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+            expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
 
-            us_bank_account.verifications.count.should == 2
+            expect(us_bank_account.verifications.count).to eq(2)
             verification = us_bank_account.verifications.find do |verification|
               verification.verification_method == method
             end
-            verification.status.should == Braintree::UsBankAccountVerification::Status::Verified
-            verification.id.should_not be_empty
-            verification.verification_determined_at.should be_a Time
-            us_bank_account.verified.should == true
+            expect(verification.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
+            expect(verification.id).not_to be_empty
+            expect(verification.verification_determined_at).to be_a Time
+            expect(us_bank_account.verified).to eq(true)
 
-            Braintree::PaymentMethod.find(us_bank_account.token).should be_a(Braintree::UsBankAccount)
+            expect(Braintree::PaymentMethod.find(us_bank_account.token)).to be_a(Braintree::UsBankAccount)
           end
         end
 
@@ -244,8 +244,8 @@ describe Braintree::PaymentMethod do
             },
           )
 
-          result.should_not be_success
-          result.errors.for(:options).first.code.should == Braintree::ErrorCodes::PaymentMethod::Options::UsBankAccountVerificationMethodIsInvalid
+          expect(result).not_to be_success
+          expect(result.errors.for(:options).first.code).to eq(Braintree::ErrorCodes::PaymentMethod::Options::UsBankAccountVerificationMethodIsInvalid)
         end
       end
     end

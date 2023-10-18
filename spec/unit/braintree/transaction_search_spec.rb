@@ -5,14 +5,14 @@ describe Braintree::TransactionSearch do
     search = Braintree::TransactionSearch.new
     search.billing_company.is "one"
     search.billing_company.is "two"
-    search.to_hash.should == {:billing_company => {:is => "two"}}
+    expect(search.to_hash).to eq({:billing_company => {:is => "two"}})
   end
 
   it "overrides previous 'in' with new 'in' for the same field" do
     search = Braintree::TransactionSearch.new
     search.status.in Braintree::Transaction::Status::Authorized
     search.status.in Braintree::Transaction::Status::SubmittedForSettlement
-    search.to_hash.should == {:status => [Braintree::Transaction::Status::SubmittedForSettlement]}
+    expect(search.to_hash).to eq({:status => [Braintree::Transaction::Status::SubmittedForSettlement]})
   end
 
   it "raises if the operator 'is' is left off" do

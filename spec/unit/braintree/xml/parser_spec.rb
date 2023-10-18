@@ -4,7 +4,7 @@ describe Braintree::Xml::Parser do
   describe "self.hash_from_xml" do
     it "typecasts integers" do
       xml = "<root><foo type=\"integer\">123</foo></root>"
-      xml.should parse_to(:root => {:foo => 123})
+      expect(xml).to parse_to(:root => {:foo => 123})
     end
 
     it "works with dashes or underscores" do
@@ -14,7 +14,7 @@ describe Braintree::Xml::Parser do
           <under_scores />
         </root>
       END
-      xml.should parse_to(:root=>{:dash_es=>"", :under_scores=>""})
+      expect(xml).to parse_to(:root=>{:dash_es=>"", :under_scores=>""})
     end
 
     it "uses nil if nil=true, otherwise uses empty string" do
@@ -24,7 +24,7 @@ describe Braintree::Xml::Parser do
           <an_empty_string></an_empty_string>
         </root>
       END
-      xml.should parse_to(:root => {:a_nil_value => nil, :an_empty_string => ""})
+      expect(xml).to parse_to(:root => {:a_nil_value => nil, :an_empty_string => ""})
     end
 
     it "typecasts datetimes" do
@@ -33,7 +33,7 @@ describe Braintree::Xml::Parser do
           <created-at type="datetime">2009-10-28T10:19:49Z</created-at>
         </root>
       END
-      xml.should parse_to(:root => {:created_at => Time.utc(2009, 10, 28, 10, 19, 49)})
+      expect(xml).to parse_to(:root => {:created_at => Time.utc(2009, 10, 28, 10, 19, 49)})
     end
 
     it "doesn't typecast dates" do
@@ -42,7 +42,7 @@ describe Braintree::Xml::Parser do
           <created-at type="date">2009-10-28</created-at>
         </root>
       END
-      xml.should parse_to(:root => {:created_at => "2009-10-28"})
+      expect(xml).to parse_to(:root => {:created_at => "2009-10-28"})
     end
 
     it "builds an array if type=array" do
@@ -54,7 +54,7 @@ describe Braintree::Xml::Parser do
           </customers>
         </root>
       END
-      xml.should parse_to(:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]})
+      expect(xml).to parse_to(:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]})
     end
 
     it "parses an array" do
@@ -66,7 +66,7 @@ describe Braintree::Xml::Parser do
           </customers>
         </root>
       END
-      xml.should parse_to(:root => {:customers => [{:name => "Adam", :customer_id => "1"}, {:name => "Ben", :customer_id => "2"}]})
+      expect(xml).to parse_to(:root => {:customers => [{:name => "Adam", :customer_id => "1"}, {:name => "Ben", :customer_id => "2"}]})
     end
 
     it "parses nested objects" do
@@ -79,7 +79,7 @@ describe Braintree::Xml::Parser do
           </paypal-details>
         </root>
       END
-      xml.should parse_to(:root => {:paypal_details => {:deets => [{:secret_code => "1234"}], :payer_email => "abc@test.com", :payment_id => "1234567890"}})
+      expect(xml).to parse_to(:root => {:paypal_details => {:deets => [{:secret_code => "1234"}], :payer_email => "abc@test.com", :payment_id => "1234567890"}})
     end
   end
 end

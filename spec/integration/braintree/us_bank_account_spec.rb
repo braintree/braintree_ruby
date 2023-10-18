@@ -14,17 +14,17 @@ describe Braintree::UsBankAccount do
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
         },
       )
-      result.should be_success
+      expect(result).to be_success
 
       us_bank_account = Braintree::UsBankAccount.find(result.payment_method.token)
-      us_bank_account.should be_a(Braintree::UsBankAccount)
-      us_bank_account.routing_number.should == "021000021"
-      us_bank_account.last_4.should == "0000"
-      us_bank_account.account_type.should == "checking"
-      us_bank_account.account_holder_name.should == "John Doe"
-      us_bank_account.bank_name.should =~ /CHASE/
-      us_bank_account.ach_mandate.text.should == "cl mandate text"
-      us_bank_account.ach_mandate.accepted_at.should be_a Time
+      expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+      expect(us_bank_account.routing_number).to eq("021000021")
+      expect(us_bank_account.last_4).to eq("0000")
+      expect(us_bank_account.account_type).to eq("checking")
+      expect(us_bank_account.account_holder_name).to eq("John Doe")
+      expect(us_bank_account.bank_name).to match(/CHASE/)
+      expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+      expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
     end
 
     it "raises if the payment method token is not found" do
@@ -46,7 +46,7 @@ describe Braintree::UsBankAccount do
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
         },
       )
-      result.should be_success
+      expect(result).to be_success
 
       result = Braintree::UsBankAccount.sale(
         result.payment_method.token,
@@ -54,17 +54,17 @@ describe Braintree::UsBankAccount do
         :amount => "100.00",
       )
 
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "sale"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("100.00"))
+      expect(result.transaction.type).to eq("sale")
       us_bank_account = result.transaction.us_bank_account_details
-      us_bank_account.routing_number.should == "021000021"
-      us_bank_account.last_4.should == "0000"
-      us_bank_account.account_type.should == "checking"
-      us_bank_account.account_holder_name.should == "John Doe"
-      us_bank_account.bank_name.should =~ /CHASE/
-      us_bank_account.ach_mandate.text.should == "cl mandate text"
-      us_bank_account.ach_mandate.accepted_at.should be_a Time
+      expect(us_bank_account.routing_number).to eq("021000021")
+      expect(us_bank_account.last_4).to eq("0000")
+      expect(us_bank_account.account_type).to eq("checking")
+      expect(us_bank_account.account_holder_name).to eq("John Doe")
+      expect(us_bank_account.bank_name).to match(/CHASE/)
+      expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+      expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
     end
   end
 
@@ -80,7 +80,7 @@ describe Braintree::UsBankAccount do
           :verification_merchant_account_id => SpecHelper::UsBankMerchantAccountId,
         },
       )
-      result.should be_success
+      expect(result).to be_success
 
       transaction = Braintree::UsBankAccount.sale!(
         result.payment_method.token,
@@ -88,16 +88,16 @@ describe Braintree::UsBankAccount do
         :amount => "100.00",
       )
 
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "sale"
+      expect(transaction.amount).to eq(BigDecimal("100.00"))
+      expect(transaction.type).to eq("sale")
       us_bank_account = transaction.us_bank_account_details
-      us_bank_account.routing_number.should == "021000021"
-      us_bank_account.last_4.should == "0000"
-      us_bank_account.account_type.should == "checking"
-      us_bank_account.account_holder_name.should == "John Doe"
-      us_bank_account.bank_name.should =~ /CHASE/
-      us_bank_account.ach_mandate.text.should == "cl mandate text"
-      us_bank_account.ach_mandate.accepted_at.should be_a Time
+      expect(us_bank_account.routing_number).to eq("021000021")
+      expect(us_bank_account.last_4).to eq("0000")
+      expect(us_bank_account.account_type).to eq("checking")
+      expect(us_bank_account.account_holder_name).to eq("John Doe")
+      expect(us_bank_account.bank_name).to match(/CHASE/)
+      expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+      expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
     end
 
     it "does not creates a transaction using a us bank account and returns raises an exception" do

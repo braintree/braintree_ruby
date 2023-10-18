@@ -54,15 +54,16 @@ module Braintree
       CreditCard::CustomerLocation::International,
       CreditCard::CustomerLocation::US
     ]
+    multiple_value_field :debit_network, :allows => CreditCard::DebitNetwork::All
     multiple_value_field :ids
-    multiple_value_field :payment_instrument_type
-    multiple_value_field :user
     multiple_value_field :merchant_account_id
-    multiple_value_field :status, :allows => Transaction::Status::All
-    multiple_value_field :source
-    multiple_value_field :type, :allows => Transaction::Type::All
-    multiple_value_field :store_ids
+    multiple_value_field :payment_instrument_type
     multiple_value_field :reason_code
+    multiple_value_field :source
+    multiple_value_field :status, :allows => Transaction::Status::All
+    multiple_value_field :store_ids
+    multiple_value_field :type, :allows => Transaction::Type::All
+    multiple_value_field :user
 
     key_value_fields :refund
 

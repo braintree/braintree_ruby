@@ -10,11 +10,11 @@ describe "Braintree::ResourceCollection" do
 
       count = 0
       collection.each_with_index do |item, index|
-        item.should == values[index]
+        expect(item).to eq(values[index])
         count += 1
       end
 
-      count.should == 5
+      expect(count).to eq(5)
     end
   end
 
@@ -25,7 +25,7 @@ describe "Braintree::ResourceCollection" do
         ids.map { |id| values[id] }
       end
 
-      collection.first.should == nil
+      expect(collection.first).to eq(nil)
     end
 
     context "with results" do
@@ -38,11 +38,11 @@ describe "Braintree::ResourceCollection" do
       end
 
       it "returns the first occourence" do
-        collection.first.should == "a"
+        expect(collection.first).to eq("a")
       end
 
       it "returns the first N occourences" do
-        collection.first(4).should == ["a","b","c","d"]
+        expect(collection.first(4)).to eq(["a","b","c","d"])
       end
     end
   end
@@ -50,12 +50,12 @@ describe "Braintree::ResourceCollection" do
   describe "#ids" do
     it "returns a list of the resource collection ids" do
       collection = Braintree::ResourceCollection.new(:search_results => {:ids => [0,1,2,3,4], :page_size => 2})
-      collection.ids.should == [0,1,2,3,4]
+      expect(collection.ids).to eq([0,1,2,3,4])
     end
   end
 
   it "returns an empty array when the collection is empty" do
     collection = Braintree::ResourceCollection.new(:search_results => {:page_size => 2})
-    collection.ids.should == []
+    expect(collection.ids).to eq([])
   end
 end

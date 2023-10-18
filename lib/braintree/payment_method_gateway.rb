@@ -9,6 +9,10 @@ module Braintree
     end
 
     def create(attributes)
+      # NEXT_MAJOR_VERSION remove this check
+      if attributes.has_key?(:venmo_sdk_payment_method_code) || attributes.has_key?(:venmo_sdk_session)
+        warn "[DEPRECATED] The Venmo SDK integration is Unsupported. Please update your integration to use Pay with Venmo instead."
+      end
       Util.verify_keys(PaymentMethodGateway._create_signature, attributes)
       _do_create("/payment_methods", :payment_method => attributes)
     end
@@ -60,6 +64,10 @@ module Braintree
     end
 
     def update(token, attributes)
+      # NEXT_MAJOR_VERSION remove this check
+      if attributes.has_key?(:venmo_sdk_payment_method_code) || attributes.has_key?(:venmo_sdk_session)
+        warn "[DEPRECATED] The Venmo SDK integration is Unsupported. Please update your integration to use Pay with Venmo instead."
+      end
       Util.verify_keys(PaymentMethodGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/any/#{token}", :payment_method => attributes)
     end
@@ -149,11 +157,13 @@ module Braintree
     def self._signature(type) # :nodoc:
       billing_address_params = AddressGateway._shared_signature
       paypal_options_shipping_signature = AddressGateway._shared_signature
+      # NEXT_MAJOR_VERSION Remove venmo_sdk_session
+      # The old venmo SDK class has been deprecated
       options = [
         :make_default,
         :skip_advanced_fraud_checking,
         :us_bank_account_verification_method,
-        :venmo_sdk_session,
+        :venmo_sdk_session, # Deprecated
         :verification_account_type,
         :verification_amount,
         :verification_currency_iso_code,
@@ -168,10 +178,12 @@ module Braintree
           {:shipping => paypal_options_shipping_signature}
         ],
       ]
+      # NEXT_MAJOR_VERSION Remove venmo_sdk_payment_method_code
+      # The old venmo SDK class has been deprecated
       signature = [
         :billing_address_id, :cardholder_name, :cvv, :expiration_date, :expiration_month,
-        :expiration_year, :number, :token, :venmo_sdk_payment_method_code, :device_data,
-        :payment_method_nonce,
+        :expiration_year, :number, :token, :venmo_sdk_payment_method_code, # Deprecated
+        :device_data, :payment_method_nonce,
         {:options => options},
         {:billing_address => billing_address_params}
       ]

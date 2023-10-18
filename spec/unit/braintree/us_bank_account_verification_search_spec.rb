@@ -6,11 +6,11 @@ module Braintree
       it "allows All verification methods" do
         search = UsBankAccountVerificationSearch.new
 
-        lambda do
+        expect do
           search.verification_method.in(
             *Braintree::UsBankAccountVerification::VerificationMethod::All,
           )
-        end.should_not raise_error
+        end.not_to raise_error
       end
     end
 
@@ -19,7 +19,7 @@ module Braintree
         search = UsBankAccountVerificationSearch.new
         search.id.is "v_id"
 
-        search.to_hash.should == {:id => {:is => "v_id"}}
+        expect(search.to_hash).to eq({:id => {:is => "v_id"}})
       end
     end
 
@@ -28,7 +28,7 @@ module Braintree
         search = UsBankAccountVerificationSearch.new
         search.ids.in("id1", "id2")
 
-        search.to_hash.should == {:ids => ["id1", "id2"]}
+        expect(search.to_hash).to eq({:ids => ["id1", "id2"]})
       end
     end
 
@@ -37,14 +37,14 @@ module Braintree
         search = UsBankAccountVerificationSearch.new
         search.account_holder_name.is "v_account_holder_name"
 
-        search.to_hash.should == {:account_holder_name => {:is => "v_account_holder_name"}}
+        expect(search.to_hash).to eq({:account_holder_name => {:is => "v_account_holder_name"}})
       end
     end
 
     context "created_at" do
       it "is a range node" do
         search = UsBankAccountVerificationSearch.new
-        search.created_at.should be_kind_of(Braintree::AdvancedSearch::RangeNode)
+        expect(search.created_at).to be_kind_of(Braintree::AdvancedSearch::RangeNode)
       end
     end
 
@@ -53,7 +53,7 @@ module Braintree
         search = UsBankAccountVerificationSearch.new
         search.account_number.ends_with "1234"
 
-        search.to_hash.should == {:account_number => {:ends_with => "1234"}}
+        expect(search.to_hash).to eq({:account_number => {:ends_with => "1234"}})
       end
     end
   end

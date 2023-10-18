@@ -4,7 +4,7 @@ describe Braintree::Customer do
   describe "inspect" do
     it "includes the id first" do
       output = Braintree::Customer._new(:gateway, {:first_name => "Dan", :id => "1234"}).inspect
-      output.should include("#<Braintree::Customer id: \"1234\",")
+      expect(output).to include("#<Braintree::Customer id: \"1234\",")
     end
 
     it "includes all customer attributes" do
@@ -21,19 +21,19 @@ describe Braintree::Customer do
         :updated_at => Time.now,
       )
       output = customer.inspect
-      output.should include(%q(company: "Company"))
-      output.should include(%q(email: "e@mail.com"))
-      output.should include(%q(fax: "483-438-5821"))
-      output.should include(%q(first_name: "Patrick"))
-      output.should include(%q(last_name: "Smith"))
-      output.should include(%q(phone: "802-483-5932"))
-      output.should include(%q(website: "patrick.smith.com"))
-      output.should include(%q(addresses: []))
-      output.should include(%q(credit_cards: []))
-      output.should include(%q(paypal_accounts: []))
-      output.should include(%q(tax_identifiers: []))
-      output.should include(%Q(created_at: #{customer.created_at.inspect}))
-      output.should include(%Q(updated_at: #{customer.updated_at.inspect}))
+      expect(output).to include(%q(company: "Company"))
+      expect(output).to include(%q(email: "e@mail.com"))
+      expect(output).to include(%q(fax: "483-438-5821"))
+      expect(output).to include(%q(first_name: "Patrick"))
+      expect(output).to include(%q(last_name: "Smith"))
+      expect(output).to include(%q(phone: "802-483-5932"))
+      expect(output).to include(%q(website: "patrick.smith.com"))
+      expect(output).to include(%q(addresses: []))
+      expect(output).to include(%q(credit_cards: []))
+      expect(output).to include(%q(paypal_accounts: []))
+      expect(output).to include(%q(tax_identifiers: []))
+      expect(output).to include(%Q(created_at: #{customer.created_at.inspect}))
+      expect(output).to include(%Q(updated_at: #{customer.updated_at.inspect}))
     end
   end
 
@@ -59,7 +59,7 @@ describe Braintree::Customer do
     end
 
     it "does not raise an exception if the id is a fixnum" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
+      allow(Braintree::Http).to receive(:new).and_return double.as_null_object
       expect do
         Braintree::Customer.find(8675309)
       end.to_not raise_error
@@ -97,11 +97,12 @@ describe Braintree::Customer do
           :expiration_year,
           :number,
           :token,
-          :venmo_sdk_payment_method_code,
+          :venmo_sdk_payment_method_code, # NEXT_MAJOR_VERSION Remove this attribute
           :device_data,
           :payment_method_nonce,
           {:external_vault=>[:network_transaction_id]},
-          {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
+          {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, # NEXT_MAJOR_VERSION Remove this attribute
+            :fail_on_duplicate_payment_method, :verification_account_type, :verification_currency_iso_code])},
           {:billing_address => [
             :company,
             :country_code_alpha2,
@@ -190,7 +191,7 @@ describe Braintree::Customer do
           :expiration_year,
           :number,
           :token,
-          :venmo_sdk_payment_method_code,
+          :venmo_sdk_payment_method_code, # NEXT_MAJOR_VERSION Remove this attribute
           :device_data,
           :payment_method_nonce,
           {:external_vault=>[:network_transaction_id]},
@@ -200,7 +201,7 @@ describe Braintree::Customer do
             :verification_merchant_account_id,
             :verify_card,
             :verification_amount,
-            :venmo_sdk_session,
+            :venmo_sdk_session, # NEXT_MAJOR_VERSION Remove this attribute
             :fail_on_duplicate_payment_method,
             :verification_account_type,
             :verification_currency_iso_code,
@@ -271,21 +272,21 @@ describe Braintree::Customer do
       first = Braintree::Customer._new(:gateway, :id => 123)
       second = Braintree::Customer._new(:gateway, :id => 123)
 
-      first.should == second
-      second.should == first
+      expect(first).to eq(second)
+      expect(second).to eq(first)
     end
 
     it "returns false when given a customer with a different id" do
       first = Braintree::Customer._new(:gateway, :id => 123)
       second = Braintree::Customer._new(:gateway, :id => 124)
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false when not given a customer" do
       customer = Braintree::Customer._new(:gateway, :id => 123)
-      customer.should_not == "not a customer"
+      expect(customer).not_to eq("not a customer")
     end
   end
 
@@ -307,25 +308,25 @@ describe Braintree::Customer do
         ],
       )
 
-      customer.credit_cards.size.should == 2
-      customer.credit_cards[0].token.should == "credit_card_1"
-      customer.credit_cards[1].token.should == "credit_card_2"
+      expect(customer.credit_cards.size).to eq(2)
+      expect(customer.credit_cards[0].token).to eq("credit_card_1")
+      expect(customer.credit_cards[1].token).to eq("credit_card_2")
 
-      customer.paypal_accounts.size.should == 2
-      customer.paypal_accounts[0].token.should == "paypal_1"
-      customer.paypal_accounts[1].token.should == "paypal_2"
+      expect(customer.paypal_accounts.size).to eq(2)
+      expect(customer.paypal_accounts[0].token).to eq("paypal_1")
+      expect(customer.paypal_accounts[1].token).to eq("paypal_2")
 
-      customer.sepa_direct_debit_accounts.size.should == 2
-      customer.sepa_direct_debit_accounts[0].token.should == "sepa_debit_1"
-      customer.sepa_direct_debit_accounts[1].token.should == "sepa_debit_2"
+      expect(customer.sepa_direct_debit_accounts.size).to eq(2)
+      expect(customer.sepa_direct_debit_accounts[0].token).to eq("sepa_debit_1")
+      expect(customer.sepa_direct_debit_accounts[1].token).to eq("sepa_debit_2")
 
-      customer.payment_methods.count.should == 6
-      customer.payment_methods.map(&:token).should include("credit_card_1")
-      customer.payment_methods.map(&:token).should include("credit_card_2")
-      customer.payment_methods.map(&:token).should include("paypal_1")
-      customer.payment_methods.map(&:token).should include("paypal_2")
-      customer.payment_methods.map(&:token).should include("sepa_debit_1")
-      customer.payment_methods.map(&:token).should include("sepa_debit_2")
+      expect(customer.payment_methods.count).to eq(6)
+      expect(customer.payment_methods.map(&:token)).to include("credit_card_1")
+      expect(customer.payment_methods.map(&:token)).to include("credit_card_2")
+      expect(customer.payment_methods.map(&:token)).to include("paypal_1")
+      expect(customer.payment_methods.map(&:token)).to include("paypal_2")
+      expect(customer.payment_methods.map(&:token)).to include("sepa_debit_1")
+      expect(customer.payment_methods.map(&:token)).to include("sepa_debit_2")
     end
   end
 

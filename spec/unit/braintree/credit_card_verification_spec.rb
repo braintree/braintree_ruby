@@ -18,7 +18,7 @@ describe Braintree::CreditCardVerification do
         :network_response_text => "Do not Honor",
       )
 
-      verification.inspect.should == %(#<Braintree::CreditCardVerification status: "verified", processor_response_code: "2000", processor_response_text: "Do Not Honor", amount: "12.45", currency_iso_code: "USD", cvv_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", network_response_code: "05", network_response_text: "Do not Honor", merchant_account_id: "some_id", gateway_rejection_reason: nil, id: nil, credit_card: nil, billing: nil, created_at: nil>)
+      expect(verification.inspect).to eq(%(#<Braintree::CreditCardVerification status: "verified", processor_response_code: "2000", processor_response_text: "Do Not Honor", amount: "12.45", currency_iso_code: "USD", cvv_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", network_response_code: "05", network_response_text: "Do not Honor", merchant_account_id: "some_id", gateway_rejection_reason: nil, id: nil, credit_card: nil, billing: nil, created_at: nil>))
     end
 
     it "has a status" do
@@ -33,13 +33,13 @@ describe Braintree::CreditCardVerification do
         :merchant_account_id => "some_id",
       )
 
-      verification.status.should == Braintree::CreditCardVerification::Status::Verified
+      expect(verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
     end
   end
 
   it "accepts amount as either a String or BigDecimal" do
-    Braintree::CreditCardVerification._new(:amount => "12.34").amount.should == BigDecimal("12.34")
-    Braintree::CreditCardVerification._new(:amount => BigDecimal("12.34")).amount.should == BigDecimal("12.34")
+    expect(Braintree::CreditCardVerification._new(:amount => "12.34").amount).to eq(BigDecimal("12.34"))
+    expect(Braintree::CreditCardVerification._new(:amount => BigDecimal("12.34")).amount).to eq(BigDecimal("12.34"))
   end
 
   it "accepts network_transaction_id" do
@@ -88,27 +88,27 @@ describe Braintree::CreditCardVerification do
       first = Braintree::CreditCardVerification._new(:id => 123)
       second = Braintree::CreditCardVerification._new(:id => 123)
 
-      first.should == second
-      second.should == first
+      expect(first).to eq(second)
+      expect(second).to eq(first)
     end
 
     it "returns false for verifications with different ids" do
       first = Braintree::CreditCardVerification._new(:id => 123)
       second = Braintree::CreditCardVerification._new(:id => 124)
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false when comparing to nil" do
-      Braintree::CreditCardVerification._new({}).should_not == nil
+      expect(Braintree::CreditCardVerification._new({})).not_to eq(nil)
     end
 
     it "returns false when comparing to non-verifications" do
       same_id_different_object = Object.new
       def same_id_different_object.id; 123; end
       verification = Braintree::CreditCardVerification._new(:id => 123)
-      verification.should_not == same_id_different_object
+      expect(verification).not_to eq(same_id_different_object)
     end
   end
 
@@ -123,17 +123,17 @@ describe Braintree::CreditCardVerification do
         :transaction_risk_score => "12",
       })
 
-      verification.risk_data.id.should == "123"
-      verification.risk_data.decision.should == "WOO YOU WON $1000 dollars"
-      verification.risk_data.decision_reasons.should == ["reason"]
-      verification.risk_data.device_data_captured.should == true
-      verification.risk_data.fraud_service_provider.should == "paypal_fraud_protection"
-      verification.risk_data.transaction_risk_score.should == "12"
+      expect(verification.risk_data.id).to eq("123")
+      expect(verification.risk_data.decision).to eq("WOO YOU WON $1000 dollars")
+      expect(verification.risk_data.decision_reasons).to eq(["reason"])
+      expect(verification.risk_data.device_data_captured).to eq(true)
+      expect(verification.risk_data.fraud_service_provider).to eq("paypal_fraud_protection")
+      expect(verification.risk_data.transaction_risk_score).to eq("12")
     end
 
     it "handles a nil risk_data" do
       verification = Braintree::CreditCardVerification._new(:risk_data => nil)
-      verification.risk_data.should be_nil
+      expect(verification.risk_data).to be_nil
     end
   end
 

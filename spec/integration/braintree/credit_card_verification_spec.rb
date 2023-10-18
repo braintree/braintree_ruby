@@ -17,12 +17,12 @@ describe Braintree::CreditCardVerification, "search" do
 
       result = Braintree::CreditCardVerification.create(verification_params)
 
-      result.should be_success
-      result.credit_card_verification.id.should =~ /^\w{6,}$/
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
-      result.credit_card_verification.processor_response_code.should == "1000"
-      result.credit_card_verification.processor_response_text.should == "Approved"
-      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
       expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
 
@@ -61,12 +61,12 @@ describe Braintree::CreditCardVerification, "search" do
 
       result = Braintree::CreditCardVerification.create(verification_params)
 
-      result.success?.should == false
-      result.credit_card_verification.id.should =~ /^\w{6,}$/
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
-      result.credit_card_verification.processor_response_code.should == "2000"
-      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::SoftDeclined
+      expect(result.success?).to eq(false)
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::ProcessorDeclined)
+      expect(result.credit_card_verification.processor_response_code).to eq("2000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Do Not Honor")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::SoftDeclined)
     end
 
     it "returns validation errors" do
@@ -82,8 +82,8 @@ describe Braintree::CreditCardVerification, "search" do
 
       result = Braintree::CreditCardVerification.create(verification_params)
 
-      result.success?.should == false
-      result.errors.for(:verification).for(:options).first.code.should == Braintree::ErrorCodes::Verification::Options::AmountCannotBeNegative
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:verification).for(:options).first.code).to eq(Braintree::ErrorCodes::Verification::Options::AmountCannotBeNegative)
     end
 
     it "returns account type with debit" do
@@ -98,8 +98,8 @@ describe Braintree::CreditCardVerification, "search" do
         },
       )
 
-      result.success?.should == true
-      result.credit_card_verification.credit_card[:account_type].should == "debit"
+      expect(result.success?).to eq(true)
+      expect(result.credit_card_verification.credit_card[:account_type]).to eq("debit")
     end
 
     it "returns account type with credit" do
@@ -114,8 +114,8 @@ describe Braintree::CreditCardVerification, "search" do
         },
       )
 
-      result.success?.should == true
-      result.credit_card_verification.credit_card[:account_type].should == "credit"
+      expect(result.success?).to eq(true)
+      expect(result.credit_card_verification.credit_card[:account_type]).to eq("credit")
     end
 
     it "errors with unsupported account type" do
@@ -129,8 +129,8 @@ describe Braintree::CreditCardVerification, "search" do
         },
       )
 
-      result.success?.should == false
-      result.errors.for(:verification).for(:options).on(:account_type)[0].code.should == Braintree::ErrorCodes::Verification::Options::AccountTypeNotSupported
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:verification).for(:options).on(:account_type)[0].code).to eq(Braintree::ErrorCodes::Verification::Options::AccountTypeNotSupported)
     end
 
     it "errors with invalid account type" do
@@ -145,8 +145,8 @@ describe Braintree::CreditCardVerification, "search" do
         },
       )
 
-      result.success?.should == false
-      result.errors.for(:verification).for(:options).on(:account_type)[0].code.should == Braintree::ErrorCodes::Verification::Options::AccountTypeIsInvalid
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:verification).for(:options).on(:account_type)[0].code).to eq(Braintree::ErrorCodes::Verification::Options::AccountTypeIsInvalid)
     end
   end
 
@@ -162,8 +162,8 @@ describe Braintree::CreditCardVerification, "search" do
       credit_card_verification = Braintree::Customer.create(:credit_card => credit_card_params).credit_card_verification
       found_verification = Braintree::CreditCardVerification.find(credit_card_verification.id)
 
-      found_verification.should == credit_card_verification
-      found_verification.graphql_id.should_not be_nil
+      expect(found_verification).to eq(credit_card_verification)
+      expect(found_verification.graphql_id).not_to be_nil
     end
 
     it "raises a NotFoundError exception if verification cannot be found" do
@@ -215,7 +215,7 @@ describe Braintree::CreditCardVerification, "search" do
         search.status.in credit_card_verification.status
       end
 
-      found_verifications.should include(credit_card_verification)
+      expect(found_verifications).to include(credit_card_verification)
     end
 
     it "searches and finds verifications using customer fields" do
@@ -231,7 +231,7 @@ describe Braintree::CreditCardVerification, "search" do
         search.payment_method_token.is credit_card.token
       end
 
-      found_verifications.count.should eq(1)
+      expect(found_verifications.count).to eq(1)
     end
 
     describe "card type indicators" do
@@ -256,7 +256,7 @@ describe Braintree::CreditCardVerification, "search" do
         verification_id = search_results.first.id
 
         found_verification = Braintree::CreditCardVerification.find(verification_id)
-        found_verification.credit_card[:prepaid].should == Braintree::CreditCard::Prepaid::Yes
+        expect(found_verification.credit_card[:prepaid]).to eq(Braintree::CreditCard::Prepaid::Yes)
       end
     end
   end
@@ -276,12 +276,12 @@ describe Braintree::CreditCardVerification, "search" do
 
       result = Braintree::CreditCardVerification.create(verification_params)
 
-      result.should be_success
-      result.credit_card_verification.id.should =~ /^\w{6,}$/
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
-      result.credit_card_verification.processor_response_code.should == "1000"
-      result.credit_card_verification.processor_response_text.should == "Approved"
-      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
       expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
   end
@@ -309,12 +309,12 @@ describe Braintree::CreditCardVerification, "search" do
 
       result = Braintree::CreditCardVerification.create(verification_params)
 
-      result.should be_success
-      result.credit_card_verification.id.should =~ /^\w{6,}$/
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
-      result.credit_card_verification.processor_response_code.should == "1000"
-      result.credit_card_verification.processor_response_text.should == "Approved"
-      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
       expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
 
@@ -326,7 +326,7 @@ describe Braintree::CreditCardVerification, "search" do
           :expiration_year => "2099",
         },
       )
-      nonce.should_not be_nil
+      expect(nonce).not_to be_nil
 
       verification_params = {
         :credit_card => {
@@ -341,12 +341,12 @@ describe Braintree::CreditCardVerification, "search" do
 
       result = Braintree::CreditCardVerification.create(verification_params)
 
-      result.should be_success
-      result.credit_card_verification.id.should =~ /^\w{6,}$/
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
-      result.credit_card_verification.processor_response_code.should == "1000"
-      result.credit_card_verification.processor_response_text.should == "Approved"
-      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
       expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
 
@@ -373,12 +373,12 @@ describe Braintree::CreditCardVerification, "search" do
 
       result = Braintree::CreditCardVerification.create(verification_params)
 
-      result.should be_success
-      result.credit_card_verification.id.should =~ /^\w{6,}$/
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::Verified
-      result.credit_card_verification.processor_response_code.should == "1000"
-      result.credit_card_verification.processor_response_text.should == "Approved"
-      result.credit_card_verification.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
       expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
   end

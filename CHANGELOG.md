@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.15.0
+- Add `retry_ids`, `retried_transaction_id`, and `debit_network` to `Transaction`
+- Add `evidence_submittable` to Dispute
+- Add `implicitly_vaulted_payment_method_token` and `implicitly_vaulted_payment_method_global_id` to `LocalPaymentDetails`
+- Add `merchant_token_identifier` and `source_card_last4` to ApplePayCard and ApplePayDetails response objects
+- Add `debit_network` to `TransactionSearch`
+- Add `DebitNetwork` enum to `CreditCard`
+- Add `SubscriptionBillingSkipped` webhook notification support
+- Deprecate `three_d_secure_token` in favor of `three_d_secure_authentication_id`
+- Deprecate `venmo_sdk_session`, `venmo_sdk_payment_method_code`, and `venmo_sdk?`
+
 ## 4.14.0
 
 - Add `payment_receipt` object to `Transaction`

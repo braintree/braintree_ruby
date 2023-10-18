@@ -26,26 +26,26 @@ describe Braintree::Plan do
 
       plans = Braintree::Plan.all
       plan = plans.select { |plan| plan.id == plan_token }.first
-      plan.should_not be_nil
-      plan.id.should == attributes[:id]
-      plan.billing_day_of_month.should == attributes[:billing_day_of_month]
-      plan.billing_frequency.should == attributes[:billing_frequency]
-      plan.currency_iso_code.should == attributes[:currency_iso_code]
-      plan.description.should == attributes[:description]
-      plan.name.should == attributes[:name]
-      plan.number_of_billing_cycles.should == attributes[:number_of_billing_cycles]
-      plan.price.should == Braintree::Util.to_big_decimal("1.00")
-      plan.trial_period.should == attributes[:trial_period]
-      plan.created_at.should_not be_nil
-      plan.updated_at.should_not be_nil
-      plan.add_ons.first.name.should == add_on_name
-      plan.discounts.first.name.should == discount_name
+      expect(plan).not_to be_nil
+      expect(plan.id).to eq(attributes[:id])
+      expect(plan.billing_day_of_month).to eq(attributes[:billing_day_of_month])
+      expect(plan.billing_frequency).to eq(attributes[:billing_frequency])
+      expect(plan.currency_iso_code).to eq(attributes[:currency_iso_code])
+      expect(plan.description).to eq(attributes[:description])
+      expect(plan.name).to eq(attributes[:name])
+      expect(plan.number_of_billing_cycles).to eq(attributes[:number_of_billing_cycles])
+      expect(plan.price).to eq(Braintree::Util.to_big_decimal("1.00"))
+      expect(plan.trial_period).to eq(attributes[:trial_period])
+      expect(plan.created_at).not_to be_nil
+      expect(plan.updated_at).not_to be_nil
+      expect(plan.add_ons.first.name).to eq(add_on_name)
+      expect(plan.discounts.first.name).to eq(discount_name)
     end
 
     it "returns an empty array if there are no plans" do
       gateway = Braintree::Gateway.new(SpecHelper::TestMerchantConfig)
       plans = gateway.plan.all
-      plans.should == []
+      expect(plans).to eq([])
     end
   end
 

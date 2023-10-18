@@ -23,6 +23,16 @@ module Braintree
       All = constants.map { |c| const_get(c) }
     end
 
+    module DebitNetwork
+      Accel = "ACCEL"
+      Nyce = "NYCE"
+      Pulse = "PULSE"
+      Star = "STAR"
+      Star_Access = "STAR_ACCESS"
+
+      All = constants.map { |c| const_get(c) }
+    end
+
     module CustomerLocation
       International = "international"
       US = "us"
@@ -160,7 +170,10 @@ module Braintree
     end
 
     # Returns true if the card is associated with Venmo SDK
+    # NEXT_MAJOR_VERSION Remove this method
+    # The old venmo SDK class has been deprecated
     def venmo_sdk?
+      warn "[DEPRECATED] The Venmo SDK integration is Unsupported. Please update your integration to use Pay with Venmo instead."
       @venmo_sdk
     end
 

@@ -21,19 +21,19 @@ describe Braintree::PaymentMethodNonce do
         :customer_id => customer.id,
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::CreditCard)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::CreditCard)
       token = result.payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
+      expect(found_credit_card).not_to be_nil
 
       result = Braintree::PaymentMethodNonce.create(found_credit_card.token)
-      result.should be_success
-      result.payment_method_nonce.should_not be_nil
-      result.payment_method_nonce.nonce.should_not be_nil
-      result.payment_method_nonce.details.should_not be_nil
-      result.payment_method_nonce.default?.should be_truthy
+      expect(result).to be_success
+      expect(result.payment_method_nonce).not_to be_nil
+      expect(result.payment_method_nonce.nonce).not_to be_nil
+      expect(result.payment_method_nonce.details).not_to be_nil
+      expect(result.payment_method_nonce.default?).to be_truthy
     end
 
     it "correctly raises and exception for a non existent token" do
@@ -59,17 +59,17 @@ describe Braintree::PaymentMethodNonce do
         :customer_id => customer.id,
       )
 
-      payment_method.should be_a(Braintree::CreditCard)
+      expect(payment_method).to be_a(Braintree::CreditCard)
       token = payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
+      expect(found_credit_card).not_to be_nil
 
       payment_method_nonce = Braintree::PaymentMethodNonce.create!(found_credit_card.token)
-      payment_method_nonce.should_not be_nil
-      payment_method_nonce.nonce.should_not be_nil
-      payment_method_nonce.details.should_not be_nil
-      payment_method_nonce.default?.should be_truthy
+      expect(payment_method_nonce).not_to be_nil
+      expect(payment_method_nonce.nonce).not_to be_nil
+      expect(payment_method_nonce.details).not_to be_nil
+      expect(payment_method_nonce.default?).to be_truthy
     end
   end
 
@@ -79,27 +79,27 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.nonce.should == "fake-valid-nonce"
-      nonce.type.should == "CreditCard"
-      nonce.details.bin.should == "401288"
-      nonce.details.card_type.should == "Visa"
-      nonce.details.expiration_month.should == "12"
-      nonce.details.expiration_year.should == Date.today.next_year.year.to_s
-      nonce.details.is_network_tokenized?.should be_nil
-      nonce.details.last_two.should == "81"
-      nonce.details.payer_info.should be_nil
+      expect(result).to be_success
+      expect(nonce.nonce).to eq("fake-valid-nonce")
+      expect(nonce.type).to eq("CreditCard")
+      expect(nonce.details.bin).to eq("401288")
+      expect(nonce.details.card_type).to eq("Visa")
+      expect(nonce.details.expiration_month).to eq("12")
+      expect(nonce.details.expiration_year).to eq(Date.today.next_year.year.to_s)
+      expect(nonce.details.is_network_tokenized?).to be_nil
+      expect(nonce.details.last_two).to eq("81")
+      expect(nonce.details.payer_info).to be_nil
     end
 
     it "return paypal details if details exist" do
       result = Braintree::PaymentMethodNonce.find("fake-paypal-one-time-nonce")
       nonce = result.payment_method_nonce
-      nonce.details.payer_info.billing_agreement_id.should be_nil
-      nonce.details.payer_info.country_code.should be_nil
-      nonce.details.payer_info.email.should_not be_nil
-      nonce.details.payer_info.first_name.should_not be_nil
-      nonce.details.payer_info.last_name.should_not be_nil
-      nonce.details.payer_info.payer_id.should_not be_nil
+      expect(nonce.details.payer_info.billing_agreement_id).to be_nil
+      expect(nonce.details.payer_info.country_code).to be_nil
+      expect(nonce.details.payer_info.email).not_to be_nil
+      expect(nonce.details.payer_info.first_name).not_to be_nil
+      expect(nonce.details.payer_info.last_name).not_to be_nil
+      expect(nonce.details.payer_info.payer_id).not_to be_nil
     end
 
     it "returns null 3ds_info if there isn't any" do
@@ -115,17 +115,17 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.three_d_secure_info.should be_nil
+      expect(result).to be_success
+      expect(nonce.three_d_secure_info).to be_nil
     end
 
     it "returns the bin" do
       result = Braintree::PaymentMethodNonce.find("fake-valid-visa-nonce")
 
       nonce = result.payment_method_nonce
-      result.should be_success
-      nonce.details.should_not be_nil
-      nonce.details.bin.should == "401288"
+      expect(result).to be_success
+      expect(nonce.details).not_to be_nil
+      expect(nonce.details.bin).to eq("401288")
     end
 
     it "returns bin_data with commercial set to Yes" do
@@ -133,9 +133,9 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.commercial.should == Braintree::CreditCard::Commercial::Yes
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.commercial).to eq(Braintree::CreditCard::Commercial::Yes)
     end
 
     it "returns bin_data with country_of_issuance set to CAN" do
@@ -143,9 +143,9 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.country_of_issuance.should == "CAN"
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.country_of_issuance).to eq("CAN")
     end
 
     it "returns bin_data with debit set to Yes" do
@@ -153,9 +153,9 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.debit.should == Braintree::CreditCard::Debit::Yes
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.debit).to eq(Braintree::CreditCard::Debit::Yes)
     end
 
     it "returns bin_data with durbin_regulated set to Yes" do
@@ -163,9 +163,9 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Yes)
     end
 
     it "returns bin_data with healthcare set to Yes" do
@@ -173,10 +173,10 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.healthcare.should == Braintree::CreditCard::Healthcare::Yes
-      nonce.bin_data.product_id.should == "J3"
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.healthcare).to eq(Braintree::CreditCard::Healthcare::Yes)
+      expect(nonce.bin_data.product_id).to eq("J3")
     end
 
     it "returns bin_data with issuing_bank set to Network Only" do
@@ -184,9 +184,9 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.issuing_bank.should == "NETWORK ONLY"
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.issuing_bank).to eq("NETWORK ONLY")
     end
 
     it "returns bin_data with payroll set to Yes" do
@@ -194,10 +194,10 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.payroll.should == Braintree::CreditCard::Payroll::Yes
-      nonce.bin_data.product_id.should == "MSA"
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.payroll).to eq(Braintree::CreditCard::Payroll::Yes)
+      expect(nonce.bin_data.product_id).to eq("MSA")
     end
 
     it "returns bin_data with prepaid set to Yes" do
@@ -205,9 +205,9 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
     end
 
     it "returns bin_data with unknown indicators" do
@@ -215,17 +215,17 @@ describe Braintree::PaymentMethodNonce do
 
       nonce = result.payment_method_nonce
 
-      result.should be_success
-      nonce.bin_data.should_not be_nil
-      nonce.bin_data.commercial.should == Braintree::CreditCard::Commercial::Unknown
-      nonce.bin_data.country_of_issuance.should == Braintree::CreditCard::CountryOfIssuance::Unknown
-      nonce.bin_data.debit.should == Braintree::CreditCard::Debit::Unknown
-      nonce.bin_data.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Unknown
-      nonce.bin_data.healthcare.should == Braintree::CreditCard::Healthcare::Unknown
-      nonce.bin_data.issuing_bank.should == Braintree::CreditCard::IssuingBank::Unknown
-      nonce.bin_data.payroll.should == Braintree::CreditCard::Payroll::Unknown
-      nonce.bin_data.prepaid.should == Braintree::CreditCard::Prepaid::Unknown
-      nonce.bin_data.product_id.should == Braintree::CreditCard::ProductId::Unknown
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.commercial).to eq(Braintree::CreditCard::Commercial::Unknown)
+      expect(nonce.bin_data.country_of_issuance).to eq(Braintree::CreditCard::CountryOfIssuance::Unknown)
+      expect(nonce.bin_data.debit).to eq(Braintree::CreditCard::Debit::Unknown)
+      expect(nonce.bin_data.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Unknown)
+      expect(nonce.bin_data.healthcare).to eq(Braintree::CreditCard::Healthcare::Unknown)
+      expect(nonce.bin_data.issuing_bank).to eq(Braintree::CreditCard::IssuingBank::Unknown)
+      expect(nonce.bin_data.payroll).to eq(Braintree::CreditCard::Payroll::Unknown)
+      expect(nonce.bin_data.prepaid).to eq(Braintree::CreditCard::Prepaid::Unknown)
+      expect(nonce.bin_data.product_id).to eq(Braintree::CreditCard::ProductId::Unknown)
     end
 
     it "correctly raises and exception for a non existent token" do
@@ -305,7 +305,7 @@ describe Braintree::PaymentMethodNonce do
           payment_method_token,
           payment_method_nonce: nonce_request,
         )
-        result.should be_success
+        expect(result).to be_success
 
         return result.payment_method_nonce.authentication_insight
       end

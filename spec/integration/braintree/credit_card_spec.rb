@@ -17,15 +17,15 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
         :cvv => "100",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       credit_card = result.credit_card
-      credit_card.token.should =~ /\A\w{4,}\z/
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      credit_card.expiration_date.should == "05/2009"
-      credit_card.unique_number_identifier.should =~ /\A\w{32}\z/
-      credit_card.venmo_sdk?.should == false
-      credit_card.image_url.should_not be_nil
+      expect(credit_card.token).to match(/\A\w{4,}\z/)
+      expect(credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(credit_card.expiration_date).to eq("05/2009")
+      expect(credit_card.unique_number_identifier).to match(/\A\w{32}\z/)
+      expect(credit_card.venmo_sdk?).to eq(false)
+      expect(credit_card.image_url).not_to be_nil
     end
 
     it "supports creation of cards with security params" do
@@ -37,7 +37,7 @@ describe Braintree::CreditCard do
         :cvv => "100",
         :device_data => "device_data",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "can provide expiration month and year separately" do
@@ -48,11 +48,11 @@ describe Braintree::CreditCard do
         :expiration_month => "05",
         :expiration_year => "2012",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       credit_card = result.credit_card
-      credit_card.expiration_month.should == "05"
-      credit_card.expiration_year.should == "2012"
-      credit_card.expiration_date.should == "05/2012"
+      expect(credit_card.expiration_month).to eq("05")
+      expect(credit_card.expiration_year).to eq("2012")
+      expect(credit_card.expiration_date).to eq("05/2012")
     end
 
     it "can specify the desired token" do
@@ -65,12 +65,12 @@ describe Braintree::CreditCard do
         :cvv => "100",
         :token => token,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       credit_card = result.credit_card
-      credit_card.token.should == token
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      credit_card.expiration_date.should == "05/2009"
+      expect(credit_card.token).to eq(token)
+      expect(credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(credit_card.expiration_date).to eq("05/2009")
     end
 
     it "accepts billing_address_id" do
@@ -84,9 +84,9 @@ describe Braintree::CreditCard do
         :billing_address_id => address.id,
       ).credit_card
 
-      credit_card.billing_address.id.should == address.id
-      credit_card.billing_address.first_name.should == "Bobby"
-      credit_card.billing_address.last_name.should == "Tables"
+      expect(credit_card.billing_address.id).to eq(address.id)
+      expect(credit_card.billing_address.first_name).to eq("Bobby")
+      expect(credit_card.billing_address.last_name).to eq("Tables")
     end
 
     it "accepts empty options hash" do
@@ -97,7 +97,7 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
         :options => {},
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "verifies the credit card if options[verify_card]=true" do
@@ -108,14 +108,14 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
         :options => {:verify_card => true},
       )
-      result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
-      result.credit_card_verification.processor_response_code.should == "2000"
-      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.cvv_response_code.should == "I"
-      result.credit_card_verification.avs_error_response_code.should == nil
-      result.credit_card_verification.avs_postal_code_response_code.should == "I"
-      result.credit_card_verification.avs_street_address_response_code.should == "I"
+      expect(result.success?).to eq(false)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::ProcessorDeclined)
+      expect(result.credit_card_verification.processor_response_code).to eq("2000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Do Not Honor")
+      expect(result.credit_card_verification.cvv_response_code).to eq("I")
+      expect(result.credit_card_verification.avs_error_response_code).to eq(nil)
+      expect(result.credit_card_verification.avs_postal_code_response_code).to eq("I")
+      expect(result.credit_card_verification.avs_street_address_response_code).to eq("I")
     end
 
     it "allows passing a specific verification amount" do
@@ -126,14 +126,14 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
         :options => {:verify_card => true, :verification_amount => "100.00"},
       )
-      result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
-      result.credit_card_verification.processor_response_code.should == "2000"
-      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.cvv_response_code.should == "I"
-      result.credit_card_verification.avs_error_response_code.should == nil
-      result.credit_card_verification.avs_postal_code_response_code.should == "I"
-      result.credit_card_verification.avs_street_address_response_code.should == "I"
+      expect(result.success?).to eq(false)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::ProcessorDeclined)
+      expect(result.credit_card_verification.processor_response_code).to eq("2000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Do Not Honor")
+      expect(result.credit_card_verification.cvv_response_code).to eq("I")
+      expect(result.credit_card_verification.avs_error_response_code).to eq(nil)
+      expect(result.credit_card_verification.avs_postal_code_response_code).to eq("I")
+      expect(result.credit_card_verification.avs_street_address_response_code).to eq("I")
     end
 
     it "returns risk data on verification on credit_card create" do
@@ -148,9 +148,9 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         verification = credit_card.verification
-        verification.risk_data.id.should_not be_nil
-        verification.risk_data.decision.should_not be_nil
-        verification.risk_data.decision_reasons.should_not be_nil
+        expect(verification.risk_data.id).not_to be_nil
+        expect(verification.risk_data.decision).not_to be_nil
+        expect(verification.risk_data.decision_reasons).not_to be_nil
         expect(verification.risk_data).to respond_to(:device_data_captured)
         expect(verification.risk_data).to respond_to(:fraud_service_provider)
         expect(verification.risk_data).to respond_to(:transaction_risk_score)
@@ -217,8 +217,8 @@ describe Braintree::CreditCard do
           :cvv => "200",
           :options => {:verify_card => true},
         )
-        result.success?.should == false
-        result.credit_card_verification.gateway_rejection_reason.should == Braintree::CreditCardVerification::GatewayRejectionReason::CVV
+        expect(result.success?).to eq(false)
+        expect(result.credit_card_verification.gateway_rejection_reason).to eq(Braintree::CreditCardVerification::GatewayRejectionReason::CVV)
       ensure
         Braintree::Configuration.merchant_id = old_merchant
         Braintree::Configuration.public_key = old_public_key
@@ -234,14 +234,14 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
         :options => {:verify_card => true, :verification_amount => "1.01"},
       )
-      result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
-      result.credit_card_verification.processor_response_code.should == "2000"
-      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.cvv_response_code.should == "I"
-      result.credit_card_verification.avs_error_response_code.should == nil
-      result.credit_card_verification.avs_postal_code_response_code.should == "I"
-      result.credit_card_verification.avs_street_address_response_code.should == "I"
+      expect(result.success?).to eq(false)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::ProcessorDeclined)
+      expect(result.credit_card_verification.processor_response_code).to eq("2000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Do Not Honor")
+      expect(result.credit_card_verification.cvv_response_code).to eq("I")
+      expect(result.credit_card_verification.avs_error_response_code).to eq(nil)
+      expect(result.credit_card_verification.avs_postal_code_response_code).to eq("I")
+      expect(result.credit_card_verification.avs_street_address_response_code).to eq("I")
     end
 
     it "allows user to specify merchant account for verification" do
@@ -255,8 +255,8 @@ describe Braintree::CreditCard do
           :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
         },
       )
-      result.success?.should == false
-      result.credit_card_verification.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+      expect(result.success?).to eq(false)
+      expect(result.credit_card_verification.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
     end
 
     it "does not verify the card if options[verify_card]=false" do
@@ -267,7 +267,7 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
         :options => {:verify_card => false},
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "validates presence of three_d_secure_version in 3ds pass thru params" do
@@ -309,7 +309,7 @@ describe Braintree::CreditCard do
         },
         :options => {:verify_card => true},
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
     end
 
@@ -320,19 +320,19 @@ describe Braintree::CreditCard do
         :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
         :options => {:verify_card => true},
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       three_d_secure_info = result.credit_card.verification.three_d_secure_info
-      three_d_secure_info.enrolled.should == "Y"
-      three_d_secure_info.should be_liability_shifted
-      three_d_secure_info.should be_liability_shift_possible
-      three_d_secure_info.status.should == "authenticate_successful"
-      three_d_secure_info.cavv.should == "cavv_value"
-      three_d_secure_info.xid.should == "xid_value"
-      three_d_secure_info.eci_flag.should == "05"
-      three_d_secure_info.three_d_secure_version.should == "1.0.2"
-      three_d_secure_info.ds_transaction_id.should == nil
-      three_d_secure_info.three_d_secure_authentication_id.should_not be_nil
+      expect(three_d_secure_info.enrolled).to eq("Y")
+      expect(three_d_secure_info).to be_liability_shifted
+      expect(three_d_secure_info).to be_liability_shift_possible
+      expect(three_d_secure_info.status).to eq("authenticate_successful")
+      expect(three_d_secure_info.cavv).to eq("cavv_value")
+      expect(three_d_secure_info.xid).to eq("xid_value")
+      expect(three_d_secure_info.eci_flag).to eq("05")
+      expect(three_d_secure_info.three_d_secure_version).to eq("1.0.2")
+      expect(three_d_secure_info.ds_transaction_id).to eq(nil)
+      expect(three_d_secure_info.three_d_secure_authentication_id).not_to be_nil
     end
 
     it "adds credit card with billing address to customer" do
@@ -348,10 +348,10 @@ describe Braintree::CreditCard do
           :postal_code => "60622"
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       credit_card = result.credit_card
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      credit_card.billing_address.street_address.should == "123 Abc Way"
+      expect(credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(credit_card.billing_address.street_address).to eq("123 Abc Way")
     end
 
     it "adds credit card with billing using country_code" do
@@ -367,12 +367,12 @@ describe Braintree::CreditCard do
           :country_code_numeric => "840"
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       credit_card = result.credit_card
-      credit_card.billing_address.country_name.should == "United States of America"
-      credit_card.billing_address.country_code_alpha2.should == "US"
-      credit_card.billing_address.country_code_alpha3.should == "USA"
-      credit_card.billing_address.country_code_numeric.should == "840"
+      expect(credit_card.billing_address.country_name).to eq("United States of America")
+      expect(credit_card.billing_address.country_code_alpha2).to eq("US")
+      expect(credit_card.billing_address.country_code_alpha3).to eq("USA")
+      expect(credit_card.billing_address.country_code_numeric).to eq("840")
     end
 
     it "returns an error when given inconsistent country information" do
@@ -386,8 +386,8 @@ describe Braintree::CreditCard do
           :country_code_alpha2 => "US"
         },
       )
-      result.success?.should == false
-      result.errors.for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }).to include(Braintree::ErrorCodes::Address::InconsistentCountry)
     end
 
     it "returns an error response if unsuccessful" do
@@ -397,8 +397,8 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "invalid_date",
       )
-      result.success?.should == false
-      result.errors.for(:credit_card).on(:expiration_date)[0].message.should == "Expiration date is invalid."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:credit_card).on(:expiration_date)[0].message).to eq("Expiration date is invalid.")
     end
 
     it "can set the default flag" do
@@ -408,7 +408,7 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
       ).credit_card
-      card1.should be_default
+      expect(card1).to be_default
 
       card2 = Braintree::CreditCard.create(
         :customer_id => customer.id,
@@ -418,9 +418,9 @@ describe Braintree::CreditCard do
           :make_default => true
         },
       ).credit_card
-      card2.should be_default
+      expect(card2).to be_default
 
-      Braintree::CreditCard.find(card1.token).should_not be_default
+      expect(Braintree::CreditCard.find(card1.token)).not_to be_default
     end
 
     it "can set the network transaction identifier when creating a credit card" do
@@ -448,7 +448,7 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Yes
+        expect(credit_card.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
       end
 
       it "sets the healthcare field if the card is healthcare" do
@@ -460,8 +460,8 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.healthcare.should == Braintree::CreditCard::Healthcare::Yes
-        credit_card.product_id.should == "J3"
+        expect(credit_card.healthcare).to eq(Braintree::CreditCard::Healthcare::Yes)
+        expect(credit_card.product_id).to eq("J3")
       end
 
       it "sets the durbin regulated field if the card is durbin regulated" do
@@ -473,7 +473,7 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
+        expect(credit_card.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Yes)
       end
 
       it "sets the country of issuance field" do
@@ -485,7 +485,7 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.country_of_issuance.should == Braintree::Test::CreditCardDefaults::CountryOfIssuance
+        expect(credit_card.country_of_issuance).to eq(Braintree::Test::CreditCardDefaults::CountryOfIssuance)
       end
 
       it "sets the issuing bank field" do
@@ -497,7 +497,7 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.issuing_bank.should == Braintree::Test::CreditCardDefaults::IssuingBank
+        expect(credit_card.issuing_bank).to eq(Braintree::Test::CreditCardDefaults::IssuingBank)
       end
 
       it "sets the payroll field if the card is payroll" do
@@ -509,8 +509,8 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.payroll.should == Braintree::CreditCard::Payroll::Yes
-        credit_card.product_id.should == "MSA"
+        expect(credit_card.payroll).to eq(Braintree::CreditCard::Payroll::Yes)
+        expect(credit_card.product_id).to eq("MSA")
       end
 
       it "sets the debit field if the card is debit" do
@@ -522,7 +522,7 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.debit.should == Braintree::CreditCard::Debit::Yes
+        expect(credit_card.debit).to eq(Braintree::CreditCard::Debit::Yes)
       end
 
       it "sets the commercial field if the card is commercial" do
@@ -534,7 +534,7 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.commercial.should == Braintree::CreditCard::Commercial::Yes
+        expect(credit_card.commercial).to eq(Braintree::CreditCard::Commercial::Yes)
       end
 
       it "sets negative card type identifiers" do
@@ -546,13 +546,13 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.prepaid.should == Braintree::CreditCard::Prepaid::No
-        credit_card.commercial.should == Braintree::CreditCard::Prepaid::No
-        credit_card.payroll.should == Braintree::CreditCard::Prepaid::No
-        credit_card.debit.should == Braintree::CreditCard::Prepaid::No
-        credit_card.durbin_regulated.should == Braintree::CreditCard::Prepaid::No
-        credit_card.healthcare.should == Braintree::CreditCard::Prepaid::No
-        credit_card.product_id.should == "MSB"
+        expect(credit_card.prepaid).to eq(Braintree::CreditCard::Prepaid::No)
+        expect(credit_card.commercial).to eq(Braintree::CreditCard::Prepaid::No)
+        expect(credit_card.payroll).to eq(Braintree::CreditCard::Prepaid::No)
+        expect(credit_card.debit).to eq(Braintree::CreditCard::Prepaid::No)
+        expect(credit_card.durbin_regulated).to eq(Braintree::CreditCard::Prepaid::No)
+        expect(credit_card.healthcare).to eq(Braintree::CreditCard::Prepaid::No)
+        expect(credit_card.product_id).to eq("MSB")
       end
 
       it "doesn't set the card type identifiers for an un-identified card" do
@@ -564,12 +564,12 @@ describe Braintree::CreditCard do
           :options => {:verify_card => true},
         )
         credit_card = result.credit_card
-        credit_card.prepaid.should == Braintree::CreditCard::Prepaid::Unknown
-        credit_card.commercial.should == Braintree::CreditCard::Prepaid::Unknown
-        credit_card.payroll.should == Braintree::CreditCard::Prepaid::Unknown
-        credit_card.debit.should == Braintree::CreditCard::Prepaid::Unknown
-        credit_card.durbin_regulated.should == Braintree::CreditCard::Prepaid::Unknown
-        credit_card.healthcare.should == Braintree::CreditCard::Prepaid::Unknown
+        expect(credit_card.prepaid).to eq(Braintree::CreditCard::Prepaid::Unknown)
+        expect(credit_card.commercial).to eq(Braintree::CreditCard::Prepaid::Unknown)
+        expect(credit_card.payroll).to eq(Braintree::CreditCard::Prepaid::Unknown)
+        expect(credit_card.debit).to eq(Braintree::CreditCard::Prepaid::Unknown)
+        expect(credit_card.durbin_regulated).to eq(Braintree::CreditCard::Prepaid::Unknown)
+        expect(credit_card.healthcare).to eq(Braintree::CreditCard::Prepaid::Unknown)
         credit_card.country_of_issuance == Braintree::CreditCard::CountryOfIssuance::Unknown
         credit_card.issuing_bank == Braintree::CreditCard::IssuingBank::Unknown
         credit_card.product_id == Braintree::CreditCard::ProductId::Unknown
@@ -592,11 +592,11 @@ describe Braintree::CreditCard do
           :payment_method_nonce => nonce,
         )
 
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         credit_card = result.credit_card
-        credit_card.bin.should == "411111"
-        credit_card.last_4.should == "1111"
-        credit_card.expiration_date.should == "11/2099"
+        expect(credit_card.bin).to eq("411111")
+        expect(credit_card.last_4).to eq("1111")
+        expect(credit_card.expiration_date).to eq("11/2099")
       end
     end
 
@@ -608,9 +608,9 @@ describe Braintree::CreditCard do
           :number => Braintree::Test::CreditCardNumbers::Elo,
           :expiration_date => "10/2020",
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         credit_card = result.credit_card
-        credit_card.card_type.should == Braintree::CreditCard::CardType::Elo
+        expect(credit_card.card_type).to eq(Braintree::CreditCard::CardType::Elo)
       end
     end
 
@@ -693,10 +693,10 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
       )
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      credit_card.cardholder_name.should == "Adam Davis"
-      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      credit_card.expiration_date.should == "05/2009"
+      expect(credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(credit_card.cardholder_name).to eq("Adam Davis")
+      expect(credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(credit_card.expiration_date).to eq("05/2009")
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
@@ -723,14 +723,14 @@ describe Braintree::CreditCard do
         customer.credit_cards[0].token,
         :amount => "100.00",
       )
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "credit"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("100.00"))
+      expect(result.transaction.type).to eq("credit")
+      expect(result.transaction.customer_details.id).to eq(customer.id)
+      expect(result.transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -746,13 +746,13 @@ describe Braintree::CreditCard do
         customer.credit_cards[0].token,
         :amount => "100.00",
       )
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "credit"
-      transaction.customer_details.id.should == customer.id
-      transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(transaction.amount).to eq(BigDecimal("100.00"))
+      expect(transaction.type).to eq("credit")
+      expect(transaction.customer_details.id).to eq(customer.id)
+      expect(transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -772,13 +772,13 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::MasterCard,
         :expiration_date => "06/2013",
       )
-      update_result.success?.should == true
-      update_result.credit_card.should == credit_card
+      expect(update_result.success?).to eq(true)
+      expect(update_result.credit_card).to eq(credit_card)
       updated_credit_card = update_result.credit_card
-      updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      updated_credit_card.expiration_date.should == "06/2013"
-      updated_credit_card.cardholder_name.should == "New Holder"
+      expect(updated_credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(updated_credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+      expect(updated_credit_card.expiration_date).to eq("06/2013")
+      expect(updated_credit_card.cardholder_name).to eq("New Holder")
     end
 
     it "validates presence of three_d_secure_version in 3ds pass thru params" do
@@ -833,7 +833,7 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true},
       )
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "includes risk data when skip_advanced_fraud_checking is false" do
@@ -900,11 +900,11 @@ describe Braintree::CreditCard do
             :region => "IL"
           },
         )
-        update_result.success?.should == true
+        expect(update_result.success?).to eq(true)
         updated_credit_card = update_result.credit_card
-        updated_credit_card.billing_address.region.should == "IL"
-        updated_credit_card.billing_address.street_address.should == nil
-        updated_credit_card.billing_address.id.should_not == credit_card.billing_address.id
+        expect(updated_credit_card.billing_address.region).to eq("IL")
+        expect(updated_credit_card.billing_address.street_address).to eq(nil)
+        expect(updated_credit_card.billing_address.id).not_to eq(credit_card.billing_address.id)
       end
 
       it "updates the billing address if option is specified" do
@@ -923,11 +923,11 @@ describe Braintree::CreditCard do
             :options => {:update_existing => true}
           },
         )
-        update_result.success?.should == true
+        expect(update_result.success?).to eq(true)
         updated_credit_card = update_result.credit_card
-        updated_credit_card.billing_address.region.should == "IL"
-        updated_credit_card.billing_address.street_address.should == "123 Nigeria Ave"
-        updated_credit_card.billing_address.id.should == credit_card.billing_address.id
+        expect(updated_credit_card.billing_address.region).to eq("IL")
+        expect(updated_credit_card.billing_address.street_address).to eq("123 Nigeria Ave")
+        expect(updated_credit_card.billing_address.id).to eq(credit_card.billing_address.id)
       end
 
       it "updates the country via codes" do
@@ -949,12 +949,12 @@ describe Braintree::CreditCard do
             :options => {:update_existing => true}
           },
         )
-        update_result.success?.should == true
+        expect(update_result.success?).to eq(true)
         updated_credit_card = update_result.credit_card
-        updated_credit_card.billing_address.country_name.should == "American Samoa"
-        updated_credit_card.billing_address.country_code_alpha2.should == "AS"
-        updated_credit_card.billing_address.country_code_alpha3.should == "ASM"
-        updated_credit_card.billing_address.country_code_numeric.should == "016"
+        expect(updated_credit_card.billing_address.country_name).to eq("American Samoa")
+        expect(updated_credit_card.billing_address.country_code_alpha2).to eq("AS")
+        expect(updated_credit_card.billing_address.country_code_alpha3).to eq("ASM")
+        expect(updated_credit_card.billing_address.country_code_numeric).to eq("016")
       end
     end
 
@@ -970,11 +970,11 @@ describe Braintree::CreditCard do
         :expiration_month => "07",
         :expiration_year => "2011",
       )
-      update_result.success?.should == true
-      update_result.credit_card.should == credit_card
-      update_result.credit_card.expiration_month.should == "07"
-      update_result.credit_card.expiration_year.should == "2011"
-      update_result.credit_card.expiration_date.should == "07/2011"
+      expect(update_result.success?).to eq(true)
+      expect(update_result.credit_card).to eq(credit_card)
+      expect(update_result.credit_card.expiration_month).to eq("07")
+      expect(update_result.credit_card.expiration_year).to eq("2011")
+      expect(update_result.credit_card.expiration_date).to eq("07/2011")
     end
 
     it "verifies the update if options[verify_card]=true" do
@@ -993,9 +993,9 @@ describe Braintree::CreditCard do
         :expiration_date => "06/2013",
         :options => {:verify_card => true},
       )
-      update_result.success?.should == false
-      update_result.credit_card_verification.status.should == Braintree::CreditCardVerification::Status::ProcessorDeclined
-      update_result.credit_card_verification.gateway_rejection_reason.should be_nil
+      expect(update_result.success?).to eq(false)
+      expect(update_result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::ProcessorDeclined)
+      expect(update_result.credit_card_verification.gateway_rejection_reason).to be_nil
     end
 
     it "can update the billing address" do
@@ -1032,17 +1032,17 @@ describe Braintree::CreditCard do
           :country_name => "United States of America"
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       address = result.credit_card.billing_address
-      address.first_name.should == "New First Name"
-      address.last_name.should == "New Last Name"
-      address.company.should == "New Company"
-      address.street_address.should == "123 New St"
-      address.extended_address.should == "Apt New"
-      address.locality.should == "New City"
-      address.region.should == "New State"
-      address.postal_code.should == "56789"
-      address.country_name.should == "United States of America"
+      expect(address.first_name).to eq("New First Name")
+      expect(address.last_name).to eq("New Last Name")
+      expect(address.company).to eq("New Company")
+      expect(address.street_address).to eq("123 New St")
+      expect(address.extended_address).to eq("Apt New")
+      expect(address.locality).to eq("New City")
+      expect(address.region).to eq("New State")
+      expect(address.postal_code).to eq("56789")
+      expect(address.country_name).to eq("United States of America")
     end
 
     it "returns an error response if invalid" do
@@ -1058,8 +1058,8 @@ describe Braintree::CreditCard do
         :number => "invalid",
         :expiration_date => "05/2014",
       )
-      update_result.success?.should == false
-      update_result.errors.for(:credit_card).on(:number)[0].message.should == "Credit card number must be 12-19 digits."
+      expect(update_result.success?).to eq(false)
+      expect(update_result.errors.for(:credit_card).on(:number)[0].message).to eq("Credit card number must be 12-19 digits.")
     end
 
     it "can update the default" do
@@ -1075,13 +1075,13 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
       ).credit_card
 
-      card1.should be_default
-      card2.should_not be_default
+      expect(card1).to be_default
+      expect(card2).not_to be_default
 
       Braintree::CreditCard.update(card2.token, :options => {:make_default => true})
 
-      Braintree::CreditCard.find(card1.token).should_not be_default
-      Braintree::CreditCard.find(card2.token).should be_default
+      expect(Braintree::CreditCard.find(card1.token)).not_to be_default
+      expect(Braintree::CreditCard.find(card2.token)).to be_default
     end
 
     context "verification_account_type" do
@@ -1137,12 +1137,12 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::MasterCard,
         :expiration_date => "06/2013",
       )
-      updated_credit_card.token.should == credit_card.token
-      updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      updated_credit_card.expiration_date.should == "06/2013"
-      updated_credit_card.cardholder_name.should == "New Holder"
-      updated_credit_card.updated_at.between?(Time.now - 60, Time.now).should == true
+      expect(updated_credit_card.token).to eq(credit_card.token)
+      expect(updated_credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(updated_credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+      expect(updated_credit_card.expiration_date).to eq("06/2013")
+      expect(updated_credit_card.cardholder_name).to eq("New Holder")
+      expect(updated_credit_card.updated_at.between?(Time.now - 60, Time.now)).to eq(true)
     end
 
     it "raises a ValidationsFailed if invalid" do
@@ -1172,9 +1172,9 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2012",
       )
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       credit_card = result.credit_card
-      Braintree::CreditCard.delete(credit_card.token).should == true
+      expect(Braintree::CreditCard.delete(credit_card.token)).to eq(true)
       expect do
         Braintree::CreditCard.find(credit_card.token)
       end.to raise_error(Braintree::NotFoundError)
@@ -1194,13 +1194,13 @@ describe Braintree::CreditCard do
       end
 
       collection = Braintree::CreditCard.expired
-      collection.maximum_size.should > 100
+      expect(collection.maximum_size).to be > 100
 
       credit_card_ids = collection.map do |c|
-        c.expired?.should == true
+        expect(c.expired?).to eq(true)
         c.token
       end.uniq.compact
-      credit_card_ids.size.should == collection.maximum_size
+      expect(credit_card_ids.size).to eq(collection.maximum_size)
     end
   end
 
@@ -1208,9 +1208,9 @@ describe Braintree::CreditCard do
     it "finds payment methods expiring between the given dates" do
       next_year = Time.now.year + 1
       collection = Braintree::CreditCard.expiring_between(Time.mktime(next_year, 1), Time.mktime(next_year, 12))
-      collection.maximum_size.should > 0
-      collection.all? { |pm| pm.expired?.should == false }
-      collection.all? { |pm| pm.expiration_year.should == next_year.to_s }
+      expect(collection.maximum_size).to be > 0
+      collection.all? { |pm| expect(pm.expired?).to eq(false) }
+      collection.all? { |pm| expect(pm.expiration_year).to eq(next_year.to_s) }
     end
 
     it "can iterate over all items" do
@@ -1225,10 +1225,10 @@ describe Braintree::CreditCard do
       end
 
       collection = Braintree::CreditCard.expiring_between(Time.mktime(2010, 1, 1), Time.mktime(2010,3, 1))
-      collection.maximum_size.should > 100
+      expect(collection.maximum_size).to be > 100
 
       credit_card_ids = collection.map { |c| c.token }.uniq.compact
-      credit_card_ids.size.should == collection.maximum_size
+      expect(credit_card_ids.size).to eq(collection.maximum_size)
     end
   end
 
@@ -1240,12 +1240,12 @@ describe Braintree::CreditCard do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2012",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       credit_card = Braintree::CreditCard.find(result.credit_card.token)
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      credit_card.token.should == result.credit_card.token
-      credit_card.expiration_date.should == "05/2012"
+      expect(credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(credit_card.token).to eq(result.credit_card.token)
+      expect(credit_card.expiration_date).to eq("05/2012")
     end
 
     it "returns associated subscriptions with the credit card" do
@@ -1263,10 +1263,10 @@ describe Braintree::CreditCard do
       ).subscription
 
       found_card = Braintree::CreditCard.find(credit_card.token)
-      found_card.subscriptions.first.id.should == subscription.id
-      found_card.subscriptions.first.plan_id.should == "integration_trialless_plan"
-      found_card.subscriptions.first.payment_method_token.should == credit_card.token
-      found_card.subscriptions.first.price.should == BigDecimal("1.00")
+      expect(found_card.subscriptions.first.id).to eq(subscription.id)
+      expect(found_card.subscriptions.first.plan_id).to eq("integration_trialless_plan")
+      expect(found_card.subscriptions.first.payment_method_token).to eq(credit_card.token)
+      expect(found_card.subscriptions.first.price).to eq(BigDecimal("1.00"))
     end
 
     it "raises a NotFoundError exception if payment method cannot be found" do
@@ -1308,7 +1308,7 @@ describe Braintree::CreditCard do
 
       credit_card = Braintree::CreditCard.from_nonce(nonce)
       customer = Braintree::Customer.find(customer.id)
-      credit_card.should == customer.credit_cards.first
+      expect(credit_card).to eq(customer.credit_cards.first)
     end
 
     it "does not find a payment method for an unlocked nonce that points to a shared credit card" do
@@ -1352,14 +1352,14 @@ describe Braintree::CreditCard do
       )
       result = Braintree::CreditCard.sale(customer.credit_cards[0].token, :amount => "100.00")
 
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "sale"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("100.00"))
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.customer_details.id).to eq(customer.id)
+      expect(result.transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
 
     it "allows passing a cvv in addition to the token" do
@@ -1376,12 +1376,12 @@ describe Braintree::CreditCard do
         },
       )
 
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "sale"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.cvv_response_code.should == "S"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("100.00"))
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.customer_details.id).to eq(customer.id)
+      expect(result.transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(result.transaction.cvv_response_code).to eq("S")
     end
   end
 
@@ -1394,13 +1394,13 @@ describe Braintree::CreditCard do
         },
       )
       transaction = Braintree::CreditCard.sale!(customer.credit_cards[0].token, :amount => "100.00")
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "sale"
-      transaction.customer_details.id.should == customer.id
-      transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(transaction.amount).to eq(BigDecimal("100.00"))
+      expect(transaction.type).to eq("sale")
+      expect(transaction.customer_details.id).to eq(customer.id)
+      expect(transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -1414,14 +1414,14 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2012",
       )
 
-      credit_card.nonce.should_not be_nil
+      expect(credit_card.nonce).not_to be_nil
     end
   end
 
   describe "card on file network tokenization" do
     it "should find a network tokenized credit card" do
       credit_card = Braintree::CreditCard.find("network_tokenized_credit_card")
-      credit_card.is_network_tokenized?.should == true
+      expect(credit_card.is_network_tokenized?).to eq(true)
     end
 
     it "should find a non-network tokenized credit card" do
@@ -1432,7 +1432,7 @@ describe Braintree::CreditCard do
         :expiration_date => "05/2009",
       ).credit_card
       credit_card_vaulted = Braintree::CreditCard.find(credit_card.token)
-      credit_card_vaulted.is_network_tokenized?.should == false
+      expect(credit_card_vaulted.is_network_tokenized?).to eq(false)
     end
   end
 end

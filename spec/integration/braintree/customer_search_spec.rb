@@ -8,7 +8,7 @@ describe Braintree::Transaction, "search" do
         search.first_name.is "thisnameisnotreal"
       end
 
-      collection.maximum_size.should == 0
+      expect(collection.maximum_size).to eq(0)
     end
 
     it "can search on text fields" do
@@ -69,14 +69,14 @@ describe Braintree::Transaction, "search" do
           search.send(criterion).is value
         end
 
-        collection.maximum_size.should == 1
-        collection.first.id.should == customer.id
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(customer.id)
 
         collection = Braintree::Customer.search do |search|
           search.id.is customer.id
           search.send(criterion).is("invalid_attribute")
         end
-        collection.should be_empty
+        expect(collection).to be_empty
       end
 
       collection = Braintree::Customer.search do |search|
@@ -86,8 +86,8 @@ describe Braintree::Transaction, "search" do
         end
       end
 
-      collection.maximum_size.should == 1
-      collection.first.id.should == customer.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(customer.id)
     end
 
     it "can find duplicate credit cards for a give payment method token " do
@@ -111,8 +111,8 @@ describe Braintree::Transaction, "search" do
         search.payment_method_token_with_duplicates.is jim.credit_cards.first.token
       end
 
-      collection.should include(jim)
-      collection.should include(joe)
+      expect(collection).to include(jim)
+      expect(collection).to include(joe)
     end
 
     it "can search by created_at" do
@@ -122,7 +122,7 @@ describe Braintree::Transaction, "search" do
       )
 
       created_at = customer.created_at
-      created_at.should be_utc
+      expect(created_at).to be_utc
 
       collection = Braintree::Customer.search do |search|
         search.company.is company
@@ -132,24 +132,24 @@ describe Braintree::Transaction, "search" do
         )
       end
 
-      collection.maximum_size.should == 1
-      collection.first.id.should == customer.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(customer.id)
 
       collection = Braintree::Customer.search do |search|
         search.company.is customer.company
         search.created_at >= created_at - 1
       end
 
-      collection.maximum_size.should == 1
-      collection.first.company.should == customer.company
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.company).to eq(customer.company)
 
       collection = Braintree::Customer.search do |search|
         search.company.is customer.company
         search.created_at <= created_at + 1
       end
 
-      collection.maximum_size.should == 1
-      collection.first.company.should == customer.company
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.company).to eq(customer.company)
 
       collection = Braintree::Customer.search do |search|
         search.company.is customer.company
@@ -159,15 +159,15 @@ describe Braintree::Transaction, "search" do
         )
       end
 
-      collection.maximum_size.should == 0
+      expect(collection.maximum_size).to eq(0)
 
       collection = Braintree::Customer.search do |search|
         search.company.is customer.company
         search.created_at.is created_at
       end
 
-      collection.maximum_size.should == 1
-      collection.first.company.should == customer.company
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.company).to eq(customer.company)
     end
   end
 
@@ -189,7 +189,7 @@ describe Braintree::Transaction, "search" do
       search.id.is customer_id
     end
 
-    collection.maximum_size.should == 1
-    collection.first.should == customer
+    expect(collection.maximum_size).to eq(1)
+    expect(collection.first).to eq(customer)
   end
 end

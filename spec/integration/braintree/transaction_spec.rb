@@ -26,7 +26,7 @@ describe Braintree::Transaction do
           :country_code_numeric => "064"
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       clone_result = Braintree::Transaction.clone_transaction(
         result.transaction.id,
@@ -36,29 +36,29 @@ describe Braintree::Transaction do
           :submit_for_settlement => false
         },
       )
-      clone_result.success?.should == true
+      expect(clone_result.success?).to eq(true)
 
       transaction = clone_result.transaction
 
-      transaction.id.should_not == result.transaction.id
-      transaction.amount.should == BigDecimal("112.44")
-      transaction.channel.should == "MyShoppingCartProvider"
+      expect(transaction.id).not_to eq(result.transaction.id)
+      expect(transaction.amount).to eq(BigDecimal("112.44"))
+      expect(transaction.channel).to eq("MyShoppingCartProvider")
 
-      transaction.billing_details.country_name.should == "Botswana"
-      transaction.billing_details.country_code_alpha2.should == "BW"
-      transaction.billing_details.country_code_alpha3.should == "BWA"
-      transaction.billing_details.country_code_numeric.should == "072"
+      expect(transaction.billing_details.country_name).to eq("Botswana")
+      expect(transaction.billing_details.country_code_alpha2).to eq("BW")
+      expect(transaction.billing_details.country_code_alpha3).to eq("BWA")
+      expect(transaction.billing_details.country_code_numeric).to eq("072")
 
-      transaction.shipping_details.country_name.should == "Bhutan"
-      transaction.shipping_details.country_code_alpha2.should == "BT"
-      transaction.shipping_details.country_code_alpha3.should == "BTN"
-      transaction.shipping_details.country_code_numeric.should == "064"
+      expect(transaction.shipping_details.country_name).to eq("Bhutan")
+      expect(transaction.shipping_details.country_code_alpha2).to eq("BT")
+      expect(transaction.shipping_details.country_code_alpha3).to eq("BTN")
+      expect(transaction.shipping_details.country_code_numeric).to eq("064")
 
-      transaction.credit_card_details.masked_number.should == "510510******5100"
-      transaction.credit_card_details.expiration_date.should == "05/2012"
+      expect(transaction.credit_card_details.masked_number).to eq("510510******5100")
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2012")
 
-      transaction.customer_details.last_name.should == "Adama"
-      transaction.status.should == Braintree::Transaction::Status::Authorized
+      expect(transaction.customer_details.last_name).to eq("Adama")
+      expect(transaction.status).to eq(Braintree::Transaction::Status::Authorized)
     end
 
     it "submit for settlement option" do
@@ -70,12 +70,12 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should be(true)
+      expect(result.success?).to be(true)
 
       clone_result = Braintree::Transaction.clone_transaction(result.transaction.id, :amount => "112.44", :options => {:submit_for_settlement => true})
-      clone_result.success?.should == true
+      expect(clone_result.success?).to eq(true)
 
-      clone_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(clone_result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
 
     it "handles validation errors" do
@@ -87,9 +87,9 @@ describe Braintree::Transaction do
         },
       )
       result = Braintree::Transaction.clone_transaction(transaction.id, :amount => "112.44")
-      result.success?.should be(false)
+      expect(result.success?).to be(false)
 
-      result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotCloneCredit
+      expect(result.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::CannotCloneCredit)
     end
   end
 
@@ -103,7 +103,7 @@ describe Braintree::Transaction do
         },
       )
       clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "112.44", :options => {:submit_for_settlement => false})
-      clone_transaction.id.should_not == transaction.id
+      expect(clone_transaction.id).not_to eq(transaction.id)
     end
 
     it "raises a validationsfailed if invalid" do
@@ -116,7 +116,7 @@ describe Braintree::Transaction do
       )
       expect do
         clone_transaction = Braintree::Transaction.clone_transaction!(transaction.id, :amount => "im not a number")
-        clone_transaction.id.should_not == transaction.id
+        expect(clone_transaction.id).not_to eq(transaction.id)
       end.to raise_error(Braintree::ValidationsFailed)
     end
   end
@@ -181,9 +181,9 @@ describe Braintree::Transaction do
             },
           )
           expect(result.success?).to eq(false)
-          result.errors.for(:transaction).for(:risk_data).on(:customer_device_id).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerDeviceIdIsTooLong
-          result.errors.for(:transaction).for(:risk_data).on(:customer_location_zip).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerLocationZipInvalidCharacters
-          result.errors.for(:transaction).for(:risk_data).on(:customer_tenure).map { |e| e.code }.should include Braintree::ErrorCodes::RiskData::CustomerTenureIsTooLong
+          expect(result.errors.for(:transaction).for(:risk_data).on(:customer_device_id).map { |e| e.code }).to include Braintree::ErrorCodes::RiskData::CustomerDeviceIdIsTooLong
+          expect(result.errors.for(:transaction).for(:risk_data).on(:customer_location_zip).map { |e| e.code }).to include Braintree::ErrorCodes::RiskData::CustomerLocationZipInvalidCharacters
+          expect(result.errors.for(:transaction).for(:risk_data).on(:customer_tenure).map { |e| e.code }).to include Braintree::ErrorCodes::RiskData::CustomerTenureIsTooLong
         end
       end
     end
@@ -198,8 +198,8 @@ describe Braintree::Transaction do
             :expiration_date => "05/2009"
           },
         )
-        result.transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
-        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::CreditCard
+        expect(result.transaction.credit_card_details.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
+        expect(result.transaction.payment_instrument_type).to eq(Braintree::PaymentInstrumentType::CreditCard)
       end
     end
 
@@ -274,7 +274,7 @@ describe Braintree::Transaction do
               }
             },
           )
-          result.success?.should be(true)
+          expect(result.success?).to be(true)
         end
 
         it "returns errors if validations on industry lodging data fails" do
@@ -301,13 +301,13 @@ describe Braintree::Transaction do
               }
             },
           )
-          result.success?.should be(false)
+          expect(result.success?).to be(false)
           invalid_folio = Braintree::ErrorCodes::Transaction::Industry::Lodging::FolioNumberIsInvalid
           check_out_date_must_follow_check_in_date = Braintree::ErrorCodes::Transaction::Industry::Lodging::CheckOutDateMustFollowCheckInDate
           room_rate_format_is_invalid = Braintree::ErrorCodes::Transaction::Industry::Lodging::RoomRateFormatIsInvalid
           invalid_additional_charge_kind = Braintree::ErrorCodes::Transaction::Industry::AdditionalCharge::KindIsInvalid
-          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should include(*[invalid_folio, check_out_date_must_follow_check_in_date, room_rate_format_is_invalid])
-          result.errors.for(:transaction).for(:industry).for(:additional_charges).for(:index_0).on(:kind).map { |e| e.code }.sort.should include(*[invalid_additional_charge_kind])
+          expect(result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort).to include(*[invalid_folio, check_out_date_must_follow_check_in_date, room_rate_format_is_invalid])
+          expect(result.errors.for(:transaction).for(:industry).for(:additional_charges).for(:index_0).on(:kind).map { |e| e.code }.sort).to include(*[invalid_additional_charge_kind])
         end
       end
 
@@ -331,7 +331,7 @@ describe Braintree::Transaction do
               }
             },
           )
-          result.success?.should be(true)
+          expect(result.success?).to be(true)
         end
 
         it "returns errors if validations on industry data fails" do
@@ -349,8 +349,8 @@ describe Braintree::Transaction do
               }
             },
           )
-          result.success?.should be(false)
-          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelCruise::TravelPackageIsInvalid]
+          expect(result.success?).to be(false)
+          expect(result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort).to eq([Braintree::ErrorCodes::Transaction::Industry::TravelCruise::TravelPackageIsInvalid])
         end
       end
 
@@ -423,7 +423,7 @@ describe Braintree::Transaction do
               }
             },
           )
-          result.success?.should be(true)
+          expect(result.success?).to be(true)
         end
 
         it "returns errors if validations on industry data fails" do
@@ -447,9 +447,9 @@ describe Braintree::Transaction do
               }
             },
           )
-          result.success?.should be(false)
-          result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative]
-          result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort.should == [Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::FareAmountCannotBeNegative]
+          expect(result.success?).to be(false)
+          expect(result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort).to eq([Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative])
+          expect(result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort).to eq([Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::FareAmountCannotBeNegative])
         end
 
         [Braintree::Test::CreditCardNumbers::Discover, Braintree::Test::CreditCardNumbers::Visa].each do |card_number|
@@ -508,7 +508,7 @@ describe Braintree::Transaction do
                 }
               },
             )
-            result.success?.should be(true)
+            expect(result.success?).to be(true)
           end
 
 
@@ -564,13 +564,13 @@ describe Braintree::Transaction do
                 }
               },
             )
-            result.success?.should be(true)
-            result.transaction.status.should == Braintree::Transaction::Status::Authorized
+            expect(result.success?).to be(true)
+            expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
 
             result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
 
-            result.success?.should == true
-            result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+            expect(result.success?).to eq(true)
+            expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
           end
 
           it "2 step should be processed with AID in step 2" do
@@ -584,8 +584,8 @@ describe Braintree::Transaction do
               },
             )
 
-            result.success?.should be(true)
-            result.transaction.status.should == Braintree::Transaction::Status::Authorized
+            expect(result.success?).to be(true)
+            expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
 
             options = {:industry => {
               :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
@@ -633,8 +633,8 @@ describe Braintree::Transaction do
 
             result = Braintree::Transaction.submit_for_settlement(result.transaction.id, nil, options)
 
-            result.success?.should == true
-            result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+            expect(result.success?).to eq(true)
+            expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
           end
 
           it "should not be processed with AID if validations on industry data fails for card : #{card_number}" do
@@ -667,17 +667,17 @@ describe Braintree::Transaction do
                 }
               },
             )
-          result.success?.should be(false)
-          [
+          expect(result.success?).to be(false)
+          expect([
             Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative,
             Braintree::ErrorCodes::Transaction::Industry::TravelFlight::PassengerMiddleInitialIsTooLong,
             Braintree::ErrorCodes::Transaction::Industry::TravelFlight::TicketNumberIsTooLong,
-          ].should include(*result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort)
-          [
+          ]).to include(*result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort)
+          expect([
             Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::CarrierCodeIsTooLong,
             Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::FareAmountCannotBeNegative,
             Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::ConjunctionTicketIsTooLong,
-          ].should include(*result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort)
+          ]).to include(*result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort)
           end
         end
       end
@@ -695,16 +695,16 @@ describe Braintree::Transaction do
             :expiration_date => "10/2020"
           },
         )
-        result.success?.should == true
-        result.transaction.id.should =~ /^\w{6,}$/
-        result.transaction.type.should == "sale"
-        result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-        result.transaction.processor_authorization_code.should_not be_nil
-        result.transaction.voice_referral_number.should be_nil
-        result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Elo[0, 6]
-        result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Elo[-4..-1]
-        result.transaction.credit_card_details.expiration_date.should == "10/2020"
-        result.transaction.credit_card_details.customer_location.should == "US"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.id).to match(/^\w{6,}$/)
+        expect(result.transaction.type).to eq("sale")
+        expect(result.transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+        expect(result.transaction.processor_authorization_code).not_to be_nil
+        expect(result.transaction.voice_referral_number).to be_nil
+        expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Elo[0, 6])
+        expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Elo[-4..-1])
+        expect(result.transaction.credit_card_details.expiration_date).to eq("10/2020")
+        expect(result.transaction.credit_card_details.customer_location).to eq("US")
       end
     end
 
@@ -717,21 +717,21 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
-      result.transaction.id.should =~ /^\w{6,}$/
-      result.transaction.type.should == "sale"
-      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      result.transaction.processor_authorization_code.should_not be_nil
-      result.transaction.processor_response_code.should == "1000"
-      result.transaction.processor_response_text.should == "Approved"
-      result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::Approved
-      result.transaction.voice_referral_number.should be_nil
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2009"
-      result.transaction.credit_card_details.customer_location.should == "US"
-      result.transaction.retrieval_reference_number.should_not be_nil
-      result.transaction.acquirer_reference_number.should be_nil
+      expect(result.success?).to eq(true)
+      expect(result.transaction.id).to match(/^\w{6,}$/)
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(result.transaction.processor_authorization_code).not_to be_nil
+      expect(result.transaction.processor_response_code).to eq("1000")
+      expect(result.transaction.processor_response_text).to eq("Approved")
+      expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+      expect(result.transaction.voice_referral_number).to be_nil
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2009")
+      expect(result.transaction.credit_card_details.customer_location).to eq("US")
+      expect(result.transaction.retrieval_reference_number).not_to be_nil
+      expect(result.transaction.acquirer_reference_number).to be_nil
     end
 
     it "returns a successful network response code if successful" do
@@ -784,16 +784,16 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == true
-      result.transaction.id.should =~ /^\w{6,}$/
-      result.transaction.type.should == "sale"
-      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      result.transaction.processor_authorization_code.should_not be_nil
-      result.transaction.voice_referral_number.should be_nil
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2009"
-      result.transaction.credit_card_details.customer_location.should == "US"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.id).to match(/^\w{6,}$/)
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(result.transaction.processor_authorization_code).not_to be_nil
+      expect(result.transaction.voice_referral_number).to be_nil
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2009")
+      expect(result.transaction.credit_card_details.customer_location).to eq("US")
     end
 
     it "accepts additional security parameters: device_data" do
@@ -807,7 +807,7 @@ describe Braintree::Transaction do
         :device_data => "device_data",
       )
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "accepts additional security parameters: risk data" do
@@ -827,7 +827,7 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "accepts billing_address_id in place of billing_address" do
@@ -848,7 +848,7 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "returns processor response code and text as well as the additional processor response if soft declined" do
@@ -860,14 +860,14 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == false
-      result.transaction.id.should =~ /^\w{6,}$/
-      result.transaction.type.should == "sale"
-      result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
-      result.transaction.processor_response_code.should == "2000"
-      result.transaction.processor_response_text.should == "Do Not Honor"
-      result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::SoftDeclined
-      result.transaction.additional_processor_response.should == "2000 : Do Not Honor"
+      expect(result.success?).to eq(false)
+      expect(result.transaction.id).to match(/^\w{6,}$/)
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+      expect(result.transaction.processor_response_code).to eq("2000")
+      expect(result.transaction.processor_response_text).to eq("Do Not Honor")
+      expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::SoftDeclined)
+      expect(result.transaction.additional_processor_response).to eq("2000 : Do Not Honor")
     end
 
     it "returns processor response code and text as well as the additional processor response if hard declined" do
@@ -879,14 +879,14 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == false
-      result.transaction.id.should =~ /^\w{6,}$/
-      result.transaction.type.should == "sale"
-      result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
-      result.transaction.processor_response_code.should == "2015"
-      result.transaction.processor_response_text.should == "Transaction Not Allowed"
-      result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::HardDeclined
-      result.transaction.additional_processor_response.should == "2015 : Transaction Not Allowed"
+      expect(result.success?).to eq(false)
+      expect(result.transaction.id).to match(/^\w{6,}$/)
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+      expect(result.transaction.processor_response_code).to eq("2015")
+      expect(result.transaction.processor_response_text).to eq("Transaction Not Allowed")
+      expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::HardDeclined)
+      expect(result.transaction.additional_processor_response).to eq("2015 : Transaction Not Allowed")
     end
 
     it "accepts all four country codes" do
@@ -916,22 +916,22 @@ describe Braintree::Transaction do
           :store_in_vault => true
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
-      transaction.billing_details.country_name.should == "Botswana"
-      transaction.billing_details.country_code_alpha2.should == "BW"
-      transaction.billing_details.country_code_alpha3.should == "BWA"
-      transaction.billing_details.country_code_numeric.should == "072"
+      expect(transaction.billing_details.country_name).to eq("Botswana")
+      expect(transaction.billing_details.country_code_alpha2).to eq("BW")
+      expect(transaction.billing_details.country_code_alpha3).to eq("BWA")
+      expect(transaction.billing_details.country_code_numeric).to eq("072")
 
-      transaction.shipping_details.country_name.should == "Bhutan"
-      transaction.shipping_details.country_code_alpha2.should == "BT"
-      transaction.shipping_details.country_code_alpha3.should == "BTN"
-      transaction.shipping_details.country_code_numeric.should == "064"
+      expect(transaction.shipping_details.country_name).to eq("Bhutan")
+      expect(transaction.shipping_details.country_code_alpha2).to eq("BT")
+      expect(transaction.shipping_details.country_code_alpha3).to eq("BTN")
+      expect(transaction.shipping_details.country_code_numeric).to eq("064")
 
-      transaction.vault_credit_card.billing_address.country_name.should == "Botswana"
-      transaction.vault_credit_card.billing_address.country_code_alpha2.should == "BW"
-      transaction.vault_credit_card.billing_address.country_code_alpha3.should == "BWA"
-      transaction.vault_credit_card.billing_address.country_code_numeric.should == "072"
+      expect(transaction.vault_credit_card.billing_address.country_name).to eq("Botswana")
+      expect(transaction.vault_credit_card.billing_address.country_code_alpha2).to eq("BW")
+      expect(transaction.vault_credit_card.billing_address.country_code_alpha3).to eq("BWA")
+      expect(transaction.vault_credit_card.billing_address.country_code_numeric).to eq("072")
     end
 
     it "returns an error if provided inconsistent country information" do
@@ -947,8 +947,8 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == false
-      result.errors.for(:transaction).for(:billing).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).for(:billing).on(:base).map { |e| e.code }).to include(Braintree::ErrorCodes::Address::InconsistentCountry)
     end
 
     it "returns an error if given an incorrect alpha2 code" do
@@ -963,9 +963,9 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == false
+      expect(result.success?).to eq(false)
       codes = result.errors.for(:transaction).for(:billing).on(:country_code_alpha2).map { |e| e.code }
-      codes.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
+      expect(codes).to include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
     end
 
     it "returns an error if given an incorrect alpha3 code" do
@@ -980,9 +980,9 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == false
+      expect(result.success?).to eq(false)
       codes = result.errors.for(:transaction).for(:billing).on(:country_code_alpha3).map { |e| e.code }
-      codes.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
+      expect(codes).to include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
     end
 
     it "returns an error if given an incorrect numeric code" do
@@ -997,9 +997,9 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == false
+      expect(result.success?).to eq(false)
       codes = result.errors.for(:transaction).for(:billing).on(:country_code_numeric).map { |e| e.code }
-      codes.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
+      expect(codes).to include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
     it "returns an error if provided product sku is invalid" do
@@ -1012,8 +1012,8 @@ describe Braintree::Transaction do
         :product_sku => "product$ku!",
       )
 
-      result.success?.should == false
-      result.errors.for(:transaction).on(:product_sku).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::ProductSkuIsInvalid)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:product_sku).map { |e| e.code }).to include(Braintree::ErrorCodes::Transaction::ProductSkuIsInvalid)
     end
 
     it "returns an error if provided shipping phone number is invalid" do
@@ -1028,8 +1028,8 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == false
-      result.errors.for(:transaction).for(:shipping).on(:phone_number).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::ShippingPhoneNumberIsInvalid)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).for(:shipping).on(:phone_number).map { |e| e.code }).to include(Braintree::ErrorCodes::Transaction::ShippingPhoneNumberIsInvalid)
     end
 
     it "returns an error if provided shipping method is invalid" do
@@ -1044,8 +1044,8 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == false
-      result.errors.for(:transaction).for(:shipping).on(:shipping_method).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::ShippingMethodIsInvalid)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).for(:shipping).on(:shipping_method).map { |e| e.code }).to include(Braintree::ErrorCodes::Transaction::ShippingMethodIsInvalid)
     end
 
     it "returns an error if provided billing phone number is invalid" do
@@ -1060,8 +1060,8 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should == false
-      result.errors.for(:transaction).for(:billing).on(:phone_number).map { |e| e.code }.should include(Braintree::ErrorCodes::Transaction::BillingPhoneNumberIsInvalid)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).for(:billing).on(:phone_number).map { |e| e.code }).to include(Braintree::ErrorCodes::Transaction::BillingPhoneNumberIsInvalid)
     end
 
     context "gateway rejection reason" do
@@ -1083,8 +1083,8 @@ describe Braintree::Transaction do
               :cvv => "200"
             },
           )
-          result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::CVV
+          expect(result.success?).to eq(false)
+          expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::CVV)
         ensure
           Braintree::Configuration.merchant_id = old_merchant
           Braintree::Configuration.public_key = old_public_key
@@ -1117,8 +1117,8 @@ describe Braintree::Transaction do
             :expiration_date => "05/2020"
           },
         )
-        result.success?.should == false
-        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete
+        expect(result.success?).to eq(false)
+        expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete)
       end
 
       it "exposes the avs gateway rejection reason" do
@@ -1141,8 +1141,8 @@ describe Braintree::Transaction do
               :expiration_date => "05/2009"
             },
           )
-          result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVS
+          expect(result.success?).to eq(false)
+          expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::AVS)
         ensure
           Braintree::Configuration.merchant_id = old_merchant
           Braintree::Configuration.public_key = old_public_key
@@ -1171,8 +1171,8 @@ describe Braintree::Transaction do
               :cvv => "200"
             },
           )
-          result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::AVSAndCVV
+          expect(result.success?).to eq(false)
+          expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::AVSAndCVV)
         ensure
           Braintree::Configuration.merchant_id = old_merchant
           Braintree::Configuration.public_key = old_public_key
@@ -1190,8 +1190,8 @@ describe Braintree::Transaction do
               :cvv => "333"
             },
           )
-          result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::Fraud
+          expect(result.success?).to eq(false)
+          expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::Fraud)
         end
       end
 
@@ -1205,8 +1205,8 @@ describe Braintree::Transaction do
               :cvv => "333"
             },
           )
-          result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::RiskThreshold
+          expect(result.success?).to eq(false)
+          expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::RiskThreshold)
         end
       end
 
@@ -1216,8 +1216,8 @@ describe Braintree::Transaction do
             :amount => Braintree::Test::TransactionAmounts::Authorize,
             :payment_method_nonce => Braintree::Test::Nonce::GatewayRejectedRiskThresholds,
           )
-          result.success?.should == false
-          result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::RiskThreshold
+          expect(result.success?).to eq(false)
+          expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::RiskThreshold)
         end
       end
 
@@ -1227,8 +1227,8 @@ describe Braintree::Transaction do
           :merchant_account_id => SpecHelper::FakeVenmoAccountMerchantAccountId,
           :payment_method_nonce => Braintree::Test::Nonce::VenmoAccountTokenIssuanceError,
         )
-        result.success?.should == false
-        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::TokenIssuance
+        expect(result.success?).to eq(false)
+        expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::TokenIssuance)
       end
 
       xit "exposes the excessive_retry gateway rejection reason" do
@@ -1263,10 +1263,10 @@ describe Braintree::Transaction do
           :expiration_year => "2011"
         },
       )
-      result.success?.should == true
-      result.transaction.credit_card_details.expiration_month.should == "05"
-      result.transaction.credit_card_details.expiration_year.should == "2011"
-      result.transaction.credit_card_details.expiration_date.should == "05/2011"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.credit_card_details.expiration_month).to eq("05")
+      expect(result.transaction.credit_card_details.expiration_year).to eq("2011")
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2011")
     end
 
     it "accepts exchange_rate_quote_id" do
@@ -1279,8 +1279,8 @@ describe Braintree::Transaction do
           },
           :exchange_rate_quote_id => "dummyExchangeRateQuoteId-Brainree-Ruby",
       )
-      result.success?.should == true
-      result.transaction.credit_card_details.expiration_date.should == "05/2009"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2009")
     end
 
     it "returns an error if provided invalid exchange_rate_quote_id" do
@@ -1293,8 +1293,8 @@ describe Braintree::Transaction do
           },
           :exchange_rate_quote_id => "a" * 4010,
       )
-      result.success?.should == false
-      result.errors.for(:transaction).on(:exchange_rate_quote_id)[0].code.should == Braintree::ErrorCodes::Transaction::ExchangeRateQuoteIdTooLong
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:exchange_rate_quote_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::ExchangeRateQuoteIdTooLong)
     end
 
     it "returns some error if customer_id is invalid" do
@@ -1303,9 +1303,9 @@ describe Braintree::Transaction do
         :amount => Braintree::Test::TransactionAmounts::Decline,
         :customer_id => 123456789,
       )
-      result.success?.should == false
-      result.errors.for(:transaction).on(:customer_id)[0].code.should == "91510"
-      result.message.should == "Customer ID is invalid."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:customer_id)[0].code).to eq("91510")
+      expect(result.message).to eq("Customer ID is invalid.")
     end
 
     it "can create custom fields" do
@@ -1320,8 +1320,8 @@ describe Braintree::Transaction do
           :store_me => "custom value"
         },
       )
-      result.success?.should == true
-      result.transaction.custom_fields.should == {:store_me => "custom value"}
+      expect(result.success?).to eq(true)
+      expect(result.transaction.custom_fields).to eq({:store_me => "custom value"})
     end
 
     it "returns nil if a custom field is not defined" do
@@ -1338,7 +1338,7 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.find(create_result.transaction.id)
 
-      result.custom_fields.should == {}
+      expect(result.custom_fields).to eq({})
     end
 
     it "returns an error if custom_field is not registered" do
@@ -1353,8 +1353,8 @@ describe Braintree::Transaction do
           :invalid_key => "custom value"
         },
       )
-      result.success?.should == false
-      result.errors.for(:transaction).on(:custom_fields)[0].message.should == "Custom field is invalid: invalid_key."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:custom_fields)[0].message).to eq("Custom field is invalid: invalid_key.")
     end
 
     it "returns the given params if validations fail" do
@@ -1369,8 +1369,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.create(params[:transaction])
-      result.success?.should == false
-      result.params.should == {:transaction => {:type => "sale", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
+      expect(result.success?).to eq(false)
+      expect(result.params).to eq({:transaction => {:type => "sale", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}})
     end
 
     it "returns errors if validations fail (tests many errors at once for spec speed)" do
@@ -1389,11 +1389,11 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.create(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base).map { |error| error.code }.should include(Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer)
-      result.errors.for(:transaction).on(:customer_id)[0].code.should == Braintree::ErrorCodes::Transaction::CustomerIdIsInvalid
-      result.errors.for(:transaction).on(:payment_method_token)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodTokenIsInvalid
-      result.errors.for(:transaction).on(:type)[0].code.should == Braintree::ErrorCodes::Transaction::TypeIsInvalid
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base).map { |error| error.code }).to include(Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer)
+      expect(result.errors.for(:transaction).on(:customer_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::CustomerIdIsInvalid)
+      expect(result.errors.for(:transaction).on(:payment_method_token)[0].code).to eq(Braintree::ErrorCodes::Transaction::PaymentMethodTokenIsInvalid)
+      expect(result.errors.for(:transaction).on(:type)[0].code).to eq(Braintree::ErrorCodes::Transaction::TypeIsInvalid)
     end
 
     it "returns an error if amount is negative" do
@@ -1404,8 +1404,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.create(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountCannotBeNegative
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::AmountCannotBeNegative)
     end
 
     it "returns an error if amount is not supported by processor" do
@@ -1423,8 +1423,8 @@ describe Braintree::Transaction do
           }
         },
       )
-      result.success?.should == false
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountNotSupportedByProcessor
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::AmountNotSupportedByProcessor)
     end
 
     it "returns an error if amount is invalid format" do
@@ -1435,8 +1435,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.create(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsInvalid
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::AmountIsInvalid)
     end
 
     it "returns an error if type is not given" do
@@ -1446,8 +1446,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.create(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:type)[0].code.should == Braintree::ErrorCodes::Transaction::TypeIsRequired
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:type)[0].code).to eq(Braintree::ErrorCodes::Transaction::TypeIsRequired)
     end
 
     it "returns an error if no credit card is given" do
@@ -1456,8 +1456,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.create(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CreditCardIsRequired
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CreditCardIsRequired)
     end
 
     it "returns an error if the given payment method token doesn't belong to the customer" do
@@ -1473,8 +1473,8 @@ describe Braintree::Transaction do
         :customer_id => customer.id,
         :payment_method_token => customer.credit_cards[0].token + "x",
       )
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::PaymentMethodDoesNotBelongToCustomer)
     end
 
     context "new credit card for existing customer" do
@@ -1494,9 +1494,9 @@ describe Braintree::Transaction do
             :expiration_date => "12/12"
           },
         )
-        result.success?.should == true
-        result.transaction.credit_card_details.masked_number.should == "401288******1881"
-        result.transaction.vault_credit_card.should be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction.credit_card_details.masked_number).to eq("401288******1881")
+        expect(result.transaction.vault_credit_card).to be_nil
       end
 
       it "allows a new credit card to be used and stored in the vault" do
@@ -1516,10 +1516,10 @@ describe Braintree::Transaction do
           },
           :options => {:store_in_vault => true},
         )
-        result.success?.should == true
-        result.transaction.credit_card_details.masked_number.should == "401288******1881"
-        result.transaction.vault_credit_card.masked_number.should == "401288******1881"
-        result.transaction.credit_card_details.unique_number_identifier.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction.credit_card_details.masked_number).to eq("401288******1881")
+        expect(result.transaction.vault_credit_card.masked_number).to eq("401288******1881")
+        expect(result.transaction.credit_card_details.unique_number_identifier).not_to be_nil
       end
     end
 
@@ -1562,33 +1562,33 @@ describe Braintree::Transaction do
         },
       )
 
-      result.success?.should be(true)
+      expect(result.success?).to be(true)
       transaction = result.subscription.transactions.first
 
-      transaction.plan_id.should == SpecHelper::TriallessPlan[:id]
+      expect(transaction.plan_id).to eq(SpecHelper::TriallessPlan[:id])
 
-      transaction.add_ons.size.should == 2
+      expect(transaction.add_ons.size).to eq(2)
       add_ons = transaction.add_ons.sort_by { |add_on| add_on.id }
 
-      add_ons.first.id.should == "increase_10"
-      add_ons.first.amount.should == BigDecimal("11.00")
-      add_ons.first.quantity.should == 2
-      add_ons.first.number_of_billing_cycles.should == 5
-      add_ons.first.never_expires?.should be(false)
+      expect(add_ons.first.id).to eq("increase_10")
+      expect(add_ons.first.amount).to eq(BigDecimal("11.00"))
+      expect(add_ons.first.quantity).to eq(2)
+      expect(add_ons.first.number_of_billing_cycles).to eq(5)
+      expect(add_ons.first.never_expires?).to be(false)
 
-      add_ons.last.id.should == "increase_20"
-      add_ons.last.amount.should == BigDecimal("21.00")
-      add_ons.last.quantity.should == 3
-      add_ons.last.number_of_billing_cycles.should == 6
-      add_ons.last.never_expires?.should be(false)
+      expect(add_ons.last.id).to eq("increase_20")
+      expect(add_ons.last.amount).to eq(BigDecimal("21.00"))
+      expect(add_ons.last.quantity).to eq(3)
+      expect(add_ons.last.number_of_billing_cycles).to eq(6)
+      expect(add_ons.last.never_expires?).to be(false)
 
-      transaction.discounts.size.should == 1
+      expect(transaction.discounts.size).to eq(1)
 
-      transaction.discounts.first.id.should == "discount_7"
-      transaction.discounts.first.amount.should == BigDecimal("7.50")
-      transaction.discounts.first.quantity.should == 2
-      transaction.discounts.first.number_of_billing_cycles.should be_nil
-      transaction.discounts.first.never_expires?.should be(true)
+      expect(transaction.discounts.first.id).to eq("discount_7")
+      expect(transaction.discounts.first.amount).to eq(BigDecimal("7.50"))
+      expect(transaction.discounts.first.quantity).to eq(2)
+      expect(transaction.discounts.first.number_of_billing_cycles).to be_nil
+      expect(transaction.discounts.first.never_expires?).to be(true)
     end
 
     context "descriptors" do
@@ -1605,10 +1605,10 @@ describe Braintree::Transaction do
             :url => "ebay.com"
           },
         )
-        result.success?.should == true
-        result.transaction.descriptor.name.should == "123*123456789012345678"
-        result.transaction.descriptor.phone.should == "3334445555"
-        result.transaction.descriptor.url.should == "ebay.com"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.descriptor.name).to eq("123*123456789012345678")
+        expect(result.transaction.descriptor.phone).to eq("3334445555")
+        expect(result.transaction.descriptor.url).to eq("ebay.com")
       end
 
       it "has validation errors if format is invalid" do
@@ -1624,10 +1624,10 @@ describe Braintree::Transaction do
             :url => "12345678901234"
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
-        result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
-        result.errors.for(:transaction).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:descriptor).on(:name)[0].code).to eq(Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid)
+        expect(result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code).to eq(Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid)
+        expect(result.errors.for(:transaction).for(:descriptor).on(:url)[0].code).to eq(Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid)
       end
     end
 
@@ -1643,10 +1643,10 @@ describe Braintree::Transaction do
           :tax_exempt => false,
           :purchase_order_number => "12345678901234567",
         )
-        result.success?.should == true
-        result.transaction.tax_amount.should == BigDecimal("0.05")
-        result.transaction.tax_exempt.should == false
-        result.transaction.purchase_order_number.should == "12345678901234567"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.tax_amount).to eq(BigDecimal("0.05"))
+        expect(result.transaction.tax_exempt).to eq(false)
+        expect(result.transaction.purchase_order_number).to eq("12345678901234567")
       end
 
       it "accepts tax_amount as a BigDecimal" do
@@ -1659,10 +1659,10 @@ describe Braintree::Transaction do
           :tax_amount => BigDecimal("1.99"),
           :tax_exempt => true,
         )
-        result.success?.should == true
-        result.transaction.tax_amount.should == BigDecimal("1.99")
-        result.transaction.tax_exempt.should == true
-        result.transaction.purchase_order_number.should be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction.tax_amount).to eq(BigDecimal("1.99"))
+        expect(result.transaction.tax_exempt).to eq(true)
+        expect(result.transaction.purchase_order_number).to be_nil
       end
 
       context "validations" do
@@ -1675,8 +1675,8 @@ describe Braintree::Transaction do
             },
             :tax_amount => "abcd",
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::Transaction::TaxAmountFormatIsInvalid
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:tax_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::TaxAmountFormatIsInvalid)
         end
 
         it "purchase_order_number length" do
@@ -1688,8 +1688,8 @@ describe Braintree::Transaction do
             },
             :purchase_order_number => "a" * 18,
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsTooLong
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:purchase_order_number)[0].code).to eq(Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsTooLong)
         end
 
         it "purchase_order_number format" do
@@ -1701,8 +1701,8 @@ describe Braintree::Transaction do
             },
             :purchase_order_number => "\303\237\303\245\342\210\202",
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:purchase_order_number)[0].code.should == Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsInvalid
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:purchase_order_number)[0].code).to eq(Braintree::ErrorCodes::Transaction::PurchaseOrderNumberIsInvalid)
         end
       end
     end
@@ -1718,8 +1718,8 @@ describe Braintree::Transaction do
           },
           :transaction_source => "recurring_first",
         )
-        result.success?.should == true
-        result.transaction.recurring.should == true
+        expect(result.success?).to eq(true)
+        expect(result.transaction.recurring).to eq(true)
       end
 
       it "marks a transactions as recurring" do
@@ -1732,8 +1732,8 @@ describe Braintree::Transaction do
           },
           :transaction_source => "recurring",
         )
-        result.success?.should == true
-        result.transaction.recurring.should == true
+        expect(result.success?).to eq(true)
+        expect(result.transaction.recurring).to eq(true)
       end
 
       it "successfully creates a transaction with installment_first" do
@@ -1746,7 +1746,7 @@ describe Braintree::Transaction do
           },
           :transaction_source => "installment_first",
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
 
       it "successfully creates a transaction with installment" do
@@ -1759,7 +1759,7 @@ describe Braintree::Transaction do
           },
           :transaction_source => "installment",
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
 
       it "marks a transactions as merchant" do
@@ -1772,8 +1772,8 @@ describe Braintree::Transaction do
           },
           :transaction_source => "merchant",
         )
-        result.success?.should == true
-        result.transaction.recurring.should == false
+        expect(result.success?).to eq(true)
+        expect(result.transaction.recurring).to eq(false)
       end
 
       it "marks a transactions as moto" do
@@ -1786,8 +1786,8 @@ describe Braintree::Transaction do
           },
           :transaction_source => "moto",
         )
-        result.success?.should == true
-        result.transaction.recurring.should == false
+        expect(result.success?).to eq(true)
+        expect(result.transaction.recurring).to eq(false)
       end
 
       it "marks a transactions as pre_auth" do
@@ -1800,7 +1800,7 @@ describe Braintree::Transaction do
           },
           :transaction_source => "estimated",
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
 
       it "handles validation when transaction source invalid" do
@@ -1813,8 +1813,8 @@ describe Braintree::Transaction do
           },
           :transaction_source => "invalid_value",
         )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:transaction_source)[0].code.should == Braintree::ErrorCodes::Transaction::TransactionSourceIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:transaction_source)[0].code).to eq(Braintree::ErrorCodes::Transaction::TransactionSourceIsInvalid)
       end
     end
 
@@ -1833,10 +1833,10 @@ describe Braintree::Transaction do
             },
             :options => {:store_in_vault_on_success => true},
           )
-          result.success?.should == true
-          result.transaction.vault_customer.last_name.should == "Doe"
-          result.transaction.vault_credit_card.masked_number.should == "401288******1881"
-          result.transaction.credit_card_details.unique_number_identifier.should_not be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.vault_customer.last_name).to eq("Doe")
+          expect(result.transaction.vault_credit_card.masked_number).to eq("401288******1881")
+          expect(result.transaction.credit_card_details.unique_number_identifier).not_to be_nil
         end
 
         it "does not store vault records when true and transaction fails" do
@@ -1852,9 +1852,9 @@ describe Braintree::Transaction do
             },
             :options => {:store_in_vault_on_success => true},
           )
-          result.success?.should == false
-          result.transaction.vault_customer.should be_nil
-          result.transaction.vault_credit_card.should be_nil
+          expect(result.success?).to eq(false)
+          expect(result.transaction.vault_customer).to be_nil
+          expect(result.transaction.vault_credit_card).to be_nil
         end
       end
 
@@ -1872,9 +1872,9 @@ describe Braintree::Transaction do
             },
             :options => {:store_in_vault_on_success => false},
           )
-          result.success?.should == true
-          result.transaction.vault_customer.should be_nil
-          result.transaction.vault_credit_card.should be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.vault_customer).to be_nil
+          expect(result.transaction.vault_credit_card).to be_nil
         end
 
         it "does not store vault records when transaction fails" do
@@ -1890,9 +1890,9 @@ describe Braintree::Transaction do
             },
             :options => {:store_in_vault_on_success => false},
           )
-          result.success?.should == false
-          result.transaction.vault_customer.should be_nil
-          result.transaction.vault_credit_card.should be_nil
+          expect(result.success?).to eq(false)
+          expect(result.transaction.vault_customer).to be_nil
+          expect(result.transaction.vault_credit_card).to be_nil
         end
       end
     end
@@ -1934,8 +1934,8 @@ describe Braintree::Transaction do
           },
           :service_fee_amount => "1.00",
         )
-        result.success?.should == true
-        result.transaction.service_fee_amount.should == BigDecimal("1.00")
+        expect(result.success?).to eq(true)
+        expect(result.transaction.service_fee_amount).to eq(BigDecimal("1.00"))
       end
 
       it "raises an error if transaction merchant account is a master" do
@@ -1949,9 +1949,9 @@ describe Braintree::Transaction do
           },
           :service_fee_amount => "1.00",
         )
-        result.success?.should == false
+        expect(result.success?).to eq(false)
         expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeAmountNotAllowedOnMasterMerchantAccount
-        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == expected_error_code
+        expect(result.errors.for(:transaction).on(:service_fee_amount)[0].code).to eq(expected_error_code)
       end
 
       it "raises an error if no service fee is present on a sub merchant account transaction" do
@@ -1964,9 +1964,9 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
         )
-        result.success?.should == false
+        expect(result.success?).to eq(false)
         expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFeeAmount
-        result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == expected_error_code
+        expect(result.errors.for(:transaction).on(:merchant_account_id)[0].code).to eq(expected_error_code)
       end
 
       it "raises an error if service fee amount is negative" do
@@ -1974,8 +1974,8 @@ describe Braintree::Transaction do
           :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
           :service_fee_amount => "-1.00",
         )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountCannotBeNegative
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:service_fee_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ServiceFeeAmountCannotBeNegative)
       end
 
       it "raises an error if service fee amount is invalid" do
@@ -1983,8 +1983,8 @@ describe Braintree::Transaction do
           :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
           :service_fee_amount => "invalid amount",
         )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:service_fee_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ServiceFeeAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:service_fee_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ServiceFeeAmountFormatIsInvalid)
       end
     end
 
@@ -2002,8 +2002,8 @@ describe Braintree::Transaction do
           :options => {:hold_in_escrow => true},
         )
 
-        result.success?.should == true
-        result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
+        expect(result.success?).to eq(true)
+        expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::HoldPending)
       end
 
       it "raises an error if transaction merchant account is a master" do
@@ -2018,9 +2018,9 @@ describe Braintree::Transaction do
           :service_fee_amount => "1.00",
           :options => {:hold_in_escrow => true},
         )
-        result.success?.should == false
+        expect(result.success?).to eq(false)
         expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
-        result.errors.for(:transaction).on(:base)[0].code.should == expected_error_code
+        expect(result.errors.for(:transaction).on(:base)[0].code).to eq(expected_error_code)
       end
     end
 
@@ -2034,14 +2034,14 @@ describe Braintree::Transaction do
           },
           :share => true,
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => nonce,
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
 
       it "can create a transaction with a vaulted card nonce" do
@@ -2056,14 +2056,14 @@ describe Braintree::Transaction do
             :customer_id => customer.id,
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => nonce,
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
 
       it "can create a transaction with a vaulted PayPal account" do
@@ -2076,16 +2076,16 @@ describe Braintree::Transaction do
             :customer_id => customer.id,
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => nonce,
         )
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
       end
 
       it "can create a transaction with a params nonce with PayPal account params" do
@@ -2095,16 +2095,16 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => nonce,
         )
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
       end
 
       it "can create a transaction with a fake apple pay nonce" do
@@ -2114,26 +2114,26 @@ describe Braintree::Transaction do
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
         )
-        result.success?.should == true
-        result.transaction.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction).not_to be_nil
         apple_pay_details = result.transaction.apple_pay_details
-        apple_pay_details.should_not be_nil
-        apple_pay_details.bin.should_not be_nil
-        apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
-        apple_pay_details.payment_instrument_name.should == "Visa 8886"
-        apple_pay_details.source_description.should == "Visa 8886"
-        apple_pay_details.expiration_month.to_i.should > 0
-        apple_pay_details.expiration_year.to_i.should > 0
-        apple_pay_details.cardholder_name.should_not be_nil
-        apple_pay_details.image_url.should_not be_nil
-        apple_pay_details.token.should be_nil
-        apple_pay_details.prepaid.should_not be_nil
-        apple_pay_details.healthcare.should_not be_nil
-        apple_pay_details.debit.should_not be_nil
-        apple_pay_details.durbin_regulated.should_not be_nil
-        apple_pay_details.commercial.should_not be_nil
-        apple_pay_details.payroll.should_not be_nil
-        apple_pay_details.product_id.should_not be_nil
+        expect(apple_pay_details).not_to be_nil
+        expect(apple_pay_details.bin).not_to be_nil
+        expect(apple_pay_details.card_type).to eq(Braintree::ApplePayCard::CardType::Visa)
+        expect(apple_pay_details.payment_instrument_name).to eq("Visa 8886")
+        expect(apple_pay_details.source_description).to eq("Visa 8886")
+        expect(apple_pay_details.expiration_month.to_i).to be > 0
+        expect(apple_pay_details.expiration_year.to_i).to be > 0
+        expect(apple_pay_details.cardholder_name).not_to be_nil
+        expect(apple_pay_details.image_url).not_to be_nil
+        expect(apple_pay_details.token).to be_nil
+        expect(apple_pay_details.prepaid).not_to be_nil
+        expect(apple_pay_details.healthcare).not_to be_nil
+        expect(apple_pay_details.debit).not_to be_nil
+        expect(apple_pay_details.durbin_regulated).not_to be_nil
+        expect(apple_pay_details.commercial).not_to be_nil
+        expect(apple_pay_details.payroll).not_to be_nil
+        expect(apple_pay_details.product_id).not_to be_nil
       end
 
       it "can create a vaulted transaction with a fake apple pay nonce" do
@@ -2144,18 +2144,18 @@ describe Braintree::Transaction do
           :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
           :options => {:store_in_vault_on_success => true},
         )
-        result.success?.should == true
-        result.transaction.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction).not_to be_nil
         apple_pay_details = result.transaction.apple_pay_details
-        apple_pay_details.should_not be_nil
-        apple_pay_details.card_type.should == Braintree::ApplePayCard::CardType::Visa
-        apple_pay_details.payment_instrument_name.should == "Visa 8886"
-        apple_pay_details.source_description.should == "Visa 8886"
-        apple_pay_details.expiration_month.to_i.should > 0
-        apple_pay_details.expiration_year.to_i.should > 0
-        apple_pay_details.cardholder_name.should_not be_nil
-        apple_pay_details.image_url.should_not be_nil
-        apple_pay_details.token.should_not be_nil
+        expect(apple_pay_details).not_to be_nil
+        expect(apple_pay_details.card_type).to eq(Braintree::ApplePayCard::CardType::Visa)
+        expect(apple_pay_details.payment_instrument_name).to eq("Visa 8886")
+        expect(apple_pay_details.source_description).to eq("Visa 8886")
+        expect(apple_pay_details.expiration_month.to_i).to be > 0
+        expect(apple_pay_details.expiration_year.to_i).to be > 0
+        expect(apple_pay_details.cardholder_name).not_to be_nil
+        expect(apple_pay_details.image_url).not_to be_nil
+        expect(apple_pay_details.token).not_to be_nil
       end
 
       it "can create a transaction with a fake google pay proxy card nonce" do
@@ -2165,29 +2165,29 @@ describe Braintree::Transaction do
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
         )
-        result.success?.should == true
-        result.transaction.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction).not_to be_nil
         google_pay_details = result.transaction.google_pay_details
-        google_pay_details.should_not be_nil
-        google_pay_details.bin.should_not be_nil
-        google_pay_details.card_type.should == Braintree::CreditCard::CardType::Discover
-        google_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
-        google_pay_details.last_4.should == "1117"
-        google_pay_details.virtual_card_last_4.should == "1117"
-        google_pay_details.source_description.should == "Discover 1111"
-        google_pay_details.expiration_month.to_i.should > 0
-        google_pay_details.expiration_year.to_i.should > 0
-        google_pay_details.google_transaction_id.should == "google_transaction_id"
-        google_pay_details.image_url.should_not be_nil
-        google_pay_details.is_network_tokenized?.should == false
-        google_pay_details.token.should be_nil
-        google_pay_details.prepaid.should_not be_nil
-        google_pay_details.healthcare.should_not be_nil
-        google_pay_details.debit.should_not be_nil
-        google_pay_details.durbin_regulated.should_not be_nil
-        google_pay_details.commercial.should_not be_nil
-        google_pay_details.payroll.should_not be_nil
-        google_pay_details.product_id.should_not be_nil
+        expect(google_pay_details).not_to be_nil
+        expect(google_pay_details.bin).not_to be_nil
+        expect(google_pay_details.card_type).to eq(Braintree::CreditCard::CardType::Discover)
+        expect(google_pay_details.virtual_card_type).to eq(Braintree::CreditCard::CardType::Discover)
+        expect(google_pay_details.last_4).to eq("1117")
+        expect(google_pay_details.virtual_card_last_4).to eq("1117")
+        expect(google_pay_details.source_description).to eq("Discover 1111")
+        expect(google_pay_details.expiration_month.to_i).to be > 0
+        expect(google_pay_details.expiration_year.to_i).to be > 0
+        expect(google_pay_details.google_transaction_id).to eq("google_transaction_id")
+        expect(google_pay_details.image_url).not_to be_nil
+        expect(google_pay_details.is_network_tokenized?).to eq(false)
+        expect(google_pay_details.token).to be_nil
+        expect(google_pay_details.prepaid).not_to be_nil
+        expect(google_pay_details.healthcare).not_to be_nil
+        expect(google_pay_details.debit).not_to be_nil
+        expect(google_pay_details.durbin_regulated).not_to be_nil
+        expect(google_pay_details.commercial).not_to be_nil
+        expect(google_pay_details.payroll).not_to be_nil
+        expect(google_pay_details.product_id).not_to be_nil
       end
 
       it "can create a vaulted transaction with a fake google pay proxy card nonce" do
@@ -2198,21 +2198,21 @@ describe Braintree::Transaction do
           :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
           :options => {:store_in_vault_on_success => true},
         )
-        result.success?.should == true
-        result.transaction.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction).not_to be_nil
         google_pay_details = result.transaction.google_pay_details
-        google_pay_details.should_not be_nil
-        google_pay_details.card_type.should == Braintree::CreditCard::CardType::Discover
-        google_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
-        google_pay_details.last_4.should == "1117"
-        google_pay_details.virtual_card_last_4.should == "1117"
-        google_pay_details.source_description.should == "Discover 1111"
-        google_pay_details.expiration_month.to_i.should > 0
-        google_pay_details.expiration_year.to_i.should > 0
-        google_pay_details.google_transaction_id.should == "google_transaction_id"
-        google_pay_details.image_url.should_not be_nil
-        google_pay_details.is_network_tokenized?.should == false
-        google_pay_details.token.should_not be_nil
+        expect(google_pay_details).not_to be_nil
+        expect(google_pay_details.card_type).to eq(Braintree::CreditCard::CardType::Discover)
+        expect(google_pay_details.virtual_card_type).to eq(Braintree::CreditCard::CardType::Discover)
+        expect(google_pay_details.last_4).to eq("1117")
+        expect(google_pay_details.virtual_card_last_4).to eq("1117")
+        expect(google_pay_details.source_description).to eq("Discover 1111")
+        expect(google_pay_details.expiration_month.to_i).to be > 0
+        expect(google_pay_details.expiration_year.to_i).to be > 0
+        expect(google_pay_details.google_transaction_id).to eq("google_transaction_id")
+        expect(google_pay_details.image_url).not_to be_nil
+        expect(google_pay_details.is_network_tokenized?).to eq(false)
+        expect(google_pay_details.token).not_to be_nil
       end
 
       it "can create a transaction with a fake google pay network token nonce" do
@@ -2222,19 +2222,19 @@ describe Braintree::Transaction do
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard,
         )
-        result.success?.should == true
-        result.transaction.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction).not_to be_nil
         google_pay_details = result.transaction.google_pay_details
-        google_pay_details.should_not be_nil
-        google_pay_details.card_type.should == Braintree::CreditCard::CardType::MasterCard
-        google_pay_details.virtual_card_type.should == Braintree::CreditCard::CardType::MasterCard
-        google_pay_details.last_4.should == "4444"
-        google_pay_details.virtual_card_last_4.should == "4444"
-        google_pay_details.source_description.should == "MasterCard 4444"
-        google_pay_details.expiration_month.to_i.should > 0
-        google_pay_details.expiration_year.to_i.should > 0
-        google_pay_details.google_transaction_id.should == "google_transaction_id"
-        google_pay_details.is_network_tokenized?.should == true
+        expect(google_pay_details).not_to be_nil
+        expect(google_pay_details.card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+        expect(google_pay_details.virtual_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+        expect(google_pay_details.last_4).to eq("4444")
+        expect(google_pay_details.virtual_card_last_4).to eq("4444")
+        expect(google_pay_details.source_description).to eq("MasterCard 4444")
+        expect(google_pay_details.expiration_month.to_i).to be > 0
+        expect(google_pay_details.expiration_year.to_i).to be > 0
+        expect(google_pay_details.google_transaction_id).to eq("google_transaction_id")
+        expect(google_pay_details.is_network_tokenized?).to eq(true)
       end
 
       it "can create a transaction with a fake venmo account nonce" do
@@ -2245,16 +2245,16 @@ describe Braintree::Transaction do
           :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
           :options => {:store_in_vault => true},
         )
-        result.should be_success
+        expect(result).to be_success
 
-        result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::VenmoAccount
+        expect(result.transaction.payment_instrument_type).to eq(Braintree::PaymentInstrumentType::VenmoAccount)
         venmo_account_details = result.transaction.venmo_account_details
-        venmo_account_details.should be_a(Braintree::Transaction::VenmoAccountDetails)
-        venmo_account_details.token.should respond_to(:to_str)
-        venmo_account_details.username.should == "venmojoe"
-        venmo_account_details.venmo_user_id.should == "1234567891234567891"
-        venmo_account_details.image_url.should include(".png")
-        venmo_account_details.source_description.should == "Venmo Account: venmojoe"
+        expect(venmo_account_details).to be_a(Braintree::Transaction::VenmoAccountDetails)
+        expect(venmo_account_details.token).to respond_to(:to_str)
+        expect(venmo_account_details.username).to eq("venmojoe")
+        expect(venmo_account_details.venmo_user_id).to eq("1234567891234567891")
+        expect(venmo_account_details.image_url).to include(".png")
+        expect(venmo_account_details.source_description).to eq("Venmo Account: venmojoe")
       end
 
       it "can create a transaction with a fake venmo account nonce specifying a profile" do
@@ -2265,7 +2265,7 @@ describe Braintree::Transaction do
           :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
           :options => {:store_in_vault => true, :venmo => {:profile_id => "integration_venmo_merchant_public_id"}},
         )
-        result.should be_success
+        expect(result).to be_success
       end
 
       it "can create a transaction with an unknown nonce" do
@@ -2275,8 +2275,8 @@ describe Braintree::Transaction do
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable,
         )
-        result.success?.should == true
-        result.transaction.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction).not_to be_nil
       end
 
       it "can create a transaction with local payment webhook content" do
@@ -2291,10 +2291,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.status.should == Braintree::Transaction::Status::Settling
-        result.transaction.paypal_details.payer_id.should == "PAYER-1234"
-        result.transaction.paypal_details.payment_id.should == "PAY-5678"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.status).to eq(Braintree::Transaction::Status::Settling)
+        expect(result.transaction.paypal_details.payer_id).to eq("PAYER-1234")
+        expect(result.transaction.paypal_details.payment_id).to eq("PAY-5678")
       end
 
       it "can create a transaction with a payee id" do
@@ -2304,7 +2304,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2315,10 +2315,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.payee_id.should == "fake-payee-id"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.payee_id).to eq("fake-payee-id")
       end
 
       it "can create a transaction with a payee id in the options params" do
@@ -2328,7 +2328,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2340,10 +2340,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.payee_id.should == "fake-payee-id"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.payee_id).to eq("fake-payee-id")
       end
 
       it "can create a transaction with a payee id in options.paypal" do
@@ -2353,7 +2353,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2366,10 +2366,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.payee_id.should == "fake-payee-id"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.payee_id).to eq("fake-payee-id")
       end
 
       it "can create a transaction with a payee email" do
@@ -2379,7 +2379,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2390,10 +2390,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.payee_email.should == "bt_seller_us@paypal.com"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.payee_email).to eq("bt_seller_us@paypal.com")
       end
 
       it "can create a transaction with a payee email in the options params" do
@@ -2403,7 +2403,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2415,10 +2415,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.payee_email.should == "bt_seller_us@paypal.com"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.payee_email).to eq("bt_seller_us@paypal.com")
       end
 
       it "can create a transaction with a payee email in options.paypal" do
@@ -2428,7 +2428,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2441,10 +2441,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.payee_email.should == "bt_seller_us@paypal.com"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.payee_email).to eq("bt_seller_us@paypal.com")
       end
 
       it "can create a transaction with a paypal custom field" do
@@ -2454,7 +2454,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2467,10 +2467,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.custom_field.should == "Additional info"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.custom_field).to eq("Additional info")
       end
 
       it "can create a transaction with a paypal description" do
@@ -2480,7 +2480,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2493,10 +2493,10 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.paypal_details.should_not be_nil
-        result.transaction.paypal_details.debug_id.should_not be_nil
-        result.transaction.paypal_details.description.should == "A great product"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.paypal_details).not_to be_nil
+        expect(result.transaction.paypal_details.debug_id).not_to be_nil
+        expect(result.transaction.paypal_details.description).to eq("A great product")
       end
 
       it "can create a transaction with STC supplementary data" do
@@ -2506,7 +2506,7 @@ describe Braintree::Transaction do
             :consent_code => "PAYPAL_CONSENT_CODE",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
 
         result = Braintree::Transaction.create(
           :type => "sale",
@@ -2523,11 +2523,12 @@ describe Braintree::Transaction do
         )
 
         # note - supplementary data is not returned in response
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
     end
 
     context "three_d_secure" do
+      # NEXT_MAJOR_VERSION Remove this test. :three_d_secure_token is deprecated in favor of :three_d_secure_authentication_id
       it "can create a transaction with a three_d_secure token" do
         three_d_secure_token = SpecHelper.create_3ds_verification(
           SpecHelper::ThreeDSecureMerchantAccountId,
@@ -2547,7 +2548,7 @@ describe Braintree::Transaction do
           :three_d_secure_token => three_d_secure_token,
         )
 
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
 
       it "gateway rejects transactions if 3DS is required but not provided" do
@@ -2558,7 +2559,7 @@ describe Braintree::Transaction do
             :expiration_year => "2099",
           },
         )
-        nonce.should_not be_nil
+        expect(nonce).not_to be_nil
         result = Braintree::Transaction.create(
           :merchant_account_id => SpecHelper::ThreeDSecureMerchantAccountId,
           :type => "sale",
@@ -2571,8 +2572,8 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == false
-        result.transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ThreeDSecure
+        expect(result.success?).to eq(false)
+        expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::ThreeDSecure)
       end
 
 
@@ -2586,7 +2587,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
       end
 
       context "with three_d_secure_authentication_id" do
@@ -2609,7 +2610,7 @@ describe Braintree::Transaction do
             :three_d_secure_authentication_id => three_d_secure_authentication_id,
           )
 
-          result.success?.should == true
+          expect(result.success?).to eq(true)
         end
         it "returns an error if sent a nil three_d_secure_authentication_id" do
           result = Braintree::Transaction.create(
@@ -2622,8 +2623,8 @@ describe Braintree::Transaction do
             },
             :three_d_secure_authentication_id => nil,
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationIdIsInvalid
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationIdIsInvalid)
         end
         it "returns an error if merchant_account in the payment_method does not match with 3ds data" do
           three_d_secure_authentication_id = SpecHelper.create_3ds_verification(
@@ -2642,8 +2643,8 @@ describe Braintree::Transaction do
             },
             :three_d_secure_authentication_id => three_d_secure_authentication_id,
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod)
         end
         it "returns an error if 3ds lookup data does not match txn data" do
           three_d_secure_authentication_id = SpecHelper.create_3ds_verification(
@@ -2663,8 +2664,8 @@ describe Braintree::Transaction do
             },
             :three_d_secure_authentication_id => three_d_secure_authentication_id,
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionPaymentMethodDoesntMatchThreeDSecureAuthenticationPaymentMethod)
         end
         it "returns an error if three_d_secure_authentication_id is supplied with three_d_secure_pass_thru" do
           three_d_secure_authentication_id = SpecHelper.create_3ds_verification(
@@ -2693,11 +2694,13 @@ describe Braintree::Transaction do
               :ds_transaction_id => "some_ds_id",
             },
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationIdWithThreeDSecurePassThruIsInvalid
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:three_d_secure_authentication_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationIdWithThreeDSecurePassThruIsInvalid)
         end
       end
 
+      # NEXT_MAJOR_VERSION Remove these tests.
+      # :three_d_secure_token is deprecated in favor of :three_d_secure_authentication_id
       context "with three_d_secure_token" do
         it "can create a transaction with a three_d_secure token" do
           three_d_secure_token = SpecHelper.create_3ds_verification(
@@ -2718,7 +2721,7 @@ describe Braintree::Transaction do
             :three_d_secure_token => three_d_secure_token,
           )
 
-          result.success?.should == true
+          expect(result.success?).to eq(true)
         end
 
         it "returns an error if sent a nil three_d_secure token" do
@@ -2732,8 +2735,8 @@ describe Braintree::Transaction do
             },
             :three_d_secure_token => nil,
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:three_d_secure_token)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureTokenIsInvalid)
         end
 
         it "returns an error if 3ds lookup data does not match txn data" do
@@ -2754,8 +2757,8 @@ describe Braintree::Transaction do
             },
             :three_d_secure_token => three_d_secure_token,
           )
-          result.success?.should == false
-          result.errors.for(:transaction).on(:three_d_secure_token)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:three_d_secure_token)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureTransactionDataDoesntMatchVerify)
         end
       end
 
@@ -2779,8 +2782,8 @@ describe Braintree::Transaction do
           },
         )
 
-        result.success?.should == true
-        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+        expect(result.success?).to eq(true)
+        expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
       end
 
       it "returns an error for transaction with three_d_secure_pass_thru when processor settings do not support 3DS for card type" do
@@ -2803,8 +2806,8 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:merchant_account_id)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureMerchantAccountDoesNotSupportCardType
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:merchant_account_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureMerchantAccountDoesNotSupportCardType)
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is missing" do
@@ -2821,8 +2824,8 @@ describe Braintree::Transaction do
             :xid => "some_xid",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsRequired
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsRequired)
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru cavv or xid is missing" do
@@ -2844,8 +2847,8 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureCavvIsRequired)
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru eci_flag is invalid" do
@@ -2867,8 +2870,8 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:eci_flag)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureEciFlagIsInvalid)
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru three_d_secure_version is invalid" do
@@ -2890,8 +2893,8 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:three_d_secure_version)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureThreeDSecureVersionIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:three_d_secure_version)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureThreeDSecureVersionIsInvalid)
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru authentication_response is invalid" do
@@ -2914,8 +2917,8 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:authentication_response)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationResponseIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:authentication_response)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureAuthenticationResponseIsInvalid)
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru directory_response is invalid" do
@@ -2938,8 +2941,8 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:directory_response)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureDirectoryResponseIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:directory_response)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureDirectoryResponseIsInvalid)
       end
 
       it "returns an error for transaction when the three_d_secure_pass_thru cavv_algorithm is invalid" do
@@ -2962,8 +2965,8 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv_algorithm)[0].code.should == Braintree::ErrorCodes::Transaction::ThreeDSecureCavvAlgorithmIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv_algorithm)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureCavvAlgorithmIsInvalid)
       end
     end
 
@@ -2980,10 +2983,10 @@ describe Braintree::Transaction do
             :payment_method_token => payment_method_result.payment_method.token,
           )
 
-          result.should be_success
-          result.transaction.payment_instrument_type.should == Braintree::PaymentInstrumentType::PayPalAccount
-          result.transaction.paypal_details.should_not be_nil
-          result.transaction.paypal_details.debug_id.should_not be_nil
+          expect(result).to be_success
+          expect(result.transaction.payment_instrument_type).to eq(Braintree::PaymentInstrumentType::PayPalAccount)
+          expect(result.transaction.paypal_details).not_to be_nil
+          expect(result.transaction.paypal_details.debug_id).not_to be_nil
         end
       end
 
@@ -3001,9 +3004,9 @@ describe Braintree::Transaction do
             :payment_method_nonce => nonce,
           )
 
-          result.should be_success
-          result.transaction.paypal_details.should_not be_nil
-          result.transaction.paypal_details.debug_id.should_not be_nil
+          expect(result).to be_success
+          expect(result.transaction.paypal_details).not_to be_nil
+          expect(result.transaction.paypal_details.debug_id).not_to be_nil
 
           expect do
             Braintree::PaymentMethod.find(payment_method_token)
@@ -3024,13 +3027,13 @@ describe Braintree::Transaction do
             :options => {:store_in_vault => true},
           )
 
-          result.success?.should == true
-          result.transaction.paypal_details.should_not be_nil
-          result.transaction.paypal_details.debug_id.should_not be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.paypal_details).not_to be_nil
+          expect(result.transaction.paypal_details.debug_id).not_to be_nil
 
           found_paypal_account = Braintree::PaymentMethod.find(payment_method_token)
-          found_paypal_account.should be_a(Braintree::PayPalAccount)
-          found_paypal_account.token.should == payment_method_token
+          expect(found_paypal_account).to be_a(Braintree::PayPalAccount)
+          expect(found_paypal_account.token).to eq(payment_method_token)
         end
       end
 
@@ -3043,10 +3046,10 @@ describe Braintree::Transaction do
             :options => {:store_in_vault => true},
           )
 
-          result.should be_success
-          result.transaction.paypal_details.should_not be_nil
-          result.transaction.paypal_details.debug_id.should_not be_nil
-          result.transaction.paypal_details.billing_agreement_id.should_not be_nil
+          expect(result).to be_success
+          expect(result.transaction.paypal_details).not_to be_nil
+          expect(result.transaction.paypal_details.debug_id).not_to be_nil
+          expect(result.transaction.paypal_details.billing_agreement_id).not_to be_nil
         end
       end
 
@@ -3058,13 +3061,13 @@ describe Braintree::Transaction do
             :payment_method_nonce => Braintree::Test::Nonce::LocalPayment,
           )
 
-          result.should be_success
-          result.transaction.local_payment_details.should_not be_nil
-          result.transaction.local_payment_details.funding_source.should_not be_nil
-          result.transaction.local_payment_details.payment_id.should_not be_nil
-          result.transaction.local_payment_details.capture_id.should_not be_nil
-          result.transaction.local_payment_details.transaction_fee_amount.should_not be_nil
-          result.transaction.local_payment_details.transaction_fee_currency_iso_code.should_not be_nil
+          expect(result).to be_success
+          expect(result.transaction.local_payment_details).not_to be_nil
+          expect(result.transaction.local_payment_details.funding_source).not_to be_nil
+          expect(result.transaction.local_payment_details.payment_id).not_to be_nil
+          expect(result.transaction.local_payment_details.capture_id).not_to be_nil
+          expect(result.transaction.local_payment_details.transaction_fee_amount).not_to be_nil
+          expect(result.transaction.local_payment_details.transaction_fee_currency_iso_code).not_to be_nil
         end
       end
 
@@ -3076,9 +3079,9 @@ describe Braintree::Transaction do
             :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
           )
 
-          result.should be_success
-          result.transaction.paypal_details.should_not be_nil
-          result.transaction.paypal_details.debug_id.should_not be_nil
+          expect(result).to be_success
+          expect(result.transaction.paypal_details).not_to be_nil
+          expect(result.transaction.paypal_details.debug_id).not_to be_nil
         end
 
         it "can create a paypal transaction and does not vault even if asked to" do
@@ -3095,9 +3098,9 @@ describe Braintree::Transaction do
             :options => {:store_in_vault => true},
           )
 
-          result.success?.should == true
-          result.transaction.paypal_details.should_not be_nil
-          result.transaction.paypal_details.debug_id.should_not be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.paypal_details).not_to be_nil
+          expect(result.transaction.paypal_details.debug_id).not_to be_nil
 
           expect do
             Braintree::PaymentMethod.find(payment_method_token)
@@ -3114,8 +3117,8 @@ describe Braintree::Transaction do
               :submit_for_settlement => true
             },
           )
-          result.success?.should == true
-          result.transaction.status.should == Braintree::Transaction::Status::Settling
+          expect(result.success?).to eq(true)
+          expect(result.transaction.status).to eq(Braintree::Transaction::Status::Settling)
         end
       end
 
@@ -3127,8 +3130,8 @@ describe Braintree::Transaction do
           )
 
           void_transaction = Braintree::Transaction.void!(sale_transaction.id)
-          void_transaction.should == sale_transaction
-          void_transaction.status.should == Braintree::Transaction::Status::Voided
+          expect(void_transaction).to eq(sale_transaction)
+          expect(void_transaction.status).to eq(Braintree::Transaction::Status::Voided)
         end
 
         it "fails to void a paypal transaction that's been declined" do
@@ -3149,8 +3152,8 @@ describe Braintree::Transaction do
             transaction = create_paypal_transaction_for_refund
 
             result = Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
-            result.should be_success
-            result.transaction.type.should == "credit"
+            expect(result).to be_success
+            expect(result.transaction.type).to eq("credit")
           end
 
           it "allows multiple partial refunds" do
@@ -3160,7 +3163,7 @@ describe Braintree::Transaction do
             transaction_2 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
 
             transaction = Braintree::Transaction.find(transaction.id)
-            transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+            expect(transaction.refund_ids.sort).to eq([transaction_1.id, transaction_2.id].sort)
           end
 
           it "allows partial refunds passed in an options hash" do
@@ -3170,7 +3173,7 @@ describe Braintree::Transaction do
             transaction_2 = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount / 2).transaction
 
             transaction = Braintree::Transaction.find(transaction.id)
-            transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+            expect(transaction.refund_ids.sort).to eq([transaction_1.id, transaction_2.id].sort)
           end
         end
 
@@ -3239,8 +3242,8 @@ describe Braintree::Transaction do
               :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
             )
 
-            result.success?.should == true
-            result.transaction.type.should == "credit"
+            expect(result.success?).to eq(true)
+            expect(result.transaction.type).to eq("credit")
           end
         end
 
@@ -3249,8 +3252,8 @@ describe Braintree::Transaction do
 
           result = Braintree::Transaction.refund(transaction.id)
 
-          result.success?.should == true
-          result.transaction.type.should == "credit"
+          expect(result.success?).to eq(true)
+          expect(result.transaction.type).to eq("credit")
         end
 
         it "allows an order_id to be passed for the refund" do
@@ -3258,9 +3261,9 @@ describe Braintree::Transaction do
 
           result = Braintree::Transaction.refund(transaction.id, :order_id => "123458798123")
 
-          result.success?.should == true
-          result.transaction.type.should == "credit"
-          result.transaction.order_id.should == "123458798123"
+          expect(result.success?).to eq(true)
+          expect(result.transaction.type).to eq("credit")
+          expect(result.transaction.order_id).to eq("123458798123")
         end
 
         it "allows amount and order_id to be passed for the refund" do
@@ -3268,10 +3271,10 @@ describe Braintree::Transaction do
 
           result = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount/2, :order_id => "123458798123")
 
-          result.success?.should == true
-          result.transaction.type.should == "credit"
-          result.transaction.order_id.should == "123458798123"
-          result.transaction.amount.should == transaction.amount/2
+          expect(result.success?).to eq(true)
+          expect(result.transaction.type).to eq("credit")
+          expect(result.transaction.order_id).to eq("123458798123")
+          expect(result.transaction.amount).to eq(transaction.amount/2)
         end
 
         it "allows merchant_account_id to be passed for the refund" do
@@ -3282,9 +3285,9 @@ describe Braintree::Transaction do
             :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
           )
 
-          result.success?.should == true
-          result.transaction.type.should == "credit"
-          result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+          expect(result.success?).to eq(true)
+          expect(result.transaction.type).to eq("credit")
+          expect(result.transaction.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
         end
 
         it "does not allow arbitrary options to be passed" do
@@ -3299,7 +3302,7 @@ describe Braintree::Transaction do
           transaction = create_paypal_transaction_for_refund
           refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
 
-          refund_transaction.refunded_transaction_id.should == transaction.id
+          expect(refund_transaction.refunded_transaction_id).to eq(transaction.id)
         end
 
         it "returns an error result if unsettled" do
@@ -3308,8 +3311,8 @@ describe Braintree::Transaction do
             :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
           )
           result = Braintree::Transaction.refund(transaction.id)
-          result.success?.should == false
-          result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled)
         end
 
         it "handles soft declined refund authorizations" do
@@ -3323,14 +3326,14 @@ describe Braintree::Transaction do
           config = Braintree::Configuration.instantiate
           response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
           result = Braintree::Transaction.refund(transaction.id, :amount => "2046.00")
-          result.success?.should == false
-          result.transaction.id.should =~ /^\w{6,}$/
-          result.transaction.type.should == "credit"
-          result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
-          result.transaction.processor_response_code.should == "2046"
-          result.transaction.processor_response_text.should == "Declined"
-          result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::SoftDeclined
-          result.transaction.additional_processor_response.should == "2046 : Declined"
+          expect(result.success?).to eq(false)
+          expect(result.transaction.id).to match(/^\w{6,}$/)
+          expect(result.transaction.type).to eq("credit")
+          expect(result.transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+          expect(result.transaction.processor_response_code).to eq("2046")
+          expect(result.transaction.processor_response_text).to eq("Declined")
+          expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::SoftDeclined)
+          expect(result.transaction.additional_processor_response).to eq("2046 : Declined")
         end
 
         it "handles hard declined refund authorizations" do
@@ -3344,14 +3347,14 @@ describe Braintree::Transaction do
           config = Braintree::Configuration.instantiate
           response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
           result = Braintree::Transaction.refund(transaction.id, :amount => "2009.00")
-          result.success?.should == false
-          result.transaction.id.should =~ /^\w{6,}$/
-          result.transaction.type.should == "credit"
-          result.transaction.status.should == Braintree::Transaction::Status::ProcessorDeclined
-          result.transaction.processor_response_code.should == "2009"
-          result.transaction.processor_response_text.should == "No Such Issuer"
-          result.transaction.processor_response_type.should == Braintree::ProcessorResponseTypes::HardDeclined
-          result.transaction.additional_processor_response.should == "2009 : No Such Issuer"
+          expect(result.success?).to eq(false)
+          expect(result.transaction.id).to match(/^\w{6,}$/)
+          expect(result.transaction.type).to eq("credit")
+          expect(result.transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+          expect(result.transaction.processor_response_code).to eq("2009")
+          expect(result.transaction.processor_response_text).to eq("No Such Issuer")
+          expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::HardDeclined)
+          expect(result.transaction.additional_processor_response).to eq("2009 : No Such Issuer")
         end
       end
 
@@ -3368,8 +3371,8 @@ describe Braintree::Transaction do
             :payment_method_nonce => nonce,
           )
 
-          result.should_not be_success
-          result.errors.for(:transaction).for(:paypal_account).first.code.should == "82903"
+          expect(result).not_to be_success
+          expect(result.errors.for(:transaction).for(:paypal_account).first.code).to eq("82903")
         end
 
         it "handles non-existent nonces" do
@@ -3379,8 +3382,8 @@ describe Braintree::Transaction do
             :payment_method_nonce => "NON_EXISTENT_NONCE",
           )
 
-          result.should_not be_success
-          result.errors.for(:transaction).first.code.should == "91565"
+          expect(result).not_to be_success
+          expect(result.errors.for(:transaction).first.code).to eq("91565")
         end
       end
     end
@@ -3393,8 +3396,8 @@ describe Braintree::Transaction do
           :payment_method_nonce => Braintree::Test::Nonce::Transactable,
           :line_items => [],
         )
-        result.success?.should == true
-        result.transaction.line_items.should == []
+        expect(result.success?).to eq(true)
+        expect(result.transaction.line_items).to eq([])
       end
 
       it "allows creation with single line item with minimal fields and returns it" do
@@ -3412,14 +3415,14 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == true
-        result.transaction.line_items.length.should == 1
+        expect(result.success?).to eq(true)
+        expect(result.transaction.line_items.length).to eq(1)
         line_item = result.transaction.line_items[0]
-        line_item.quantity.should == BigDecimal("1.0232")
-        line_item.name.should == "Name #1"
-        line_item.kind.should == "debit"
-        line_item.unit_amount.should == BigDecimal("45.1232")
-        line_item.total_amount.should == BigDecimal("45.15")
+        expect(line_item.quantity).to eq(BigDecimal("1.0232"))
+        expect(line_item.name).to eq("Name #1")
+        expect(line_item.kind).to eq("debit")
+        expect(line_item.unit_amount).to eq(BigDecimal("45.1232"))
+        expect(line_item.total_amount).to eq(BigDecimal("45.15"))
       end
 
       it "allows creation with single line item with zero amount fields and returns it" do
@@ -3440,17 +3443,17 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == true
-        result.transaction.line_items.length.should == 1
+        expect(result.success?).to eq(true)
+        expect(result.transaction.line_items.length).to eq(1)
         line_item = result.transaction.line_items[0]
-        line_item.quantity.should == BigDecimal("1.0232")
-        line_item.name.should == "Name #1"
-        line_item.kind.should == "debit"
-        line_item.unit_amount.should == BigDecimal("45.1232")
-        line_item.total_amount.should == BigDecimal("45.15")
-        line_item.unit_tax_amount.should == BigDecimal("0")
-        line_item.discount_amount.should == BigDecimal("0")
-        line_item.tax_amount.should == BigDecimal("0")
+        expect(line_item.quantity).to eq(BigDecimal("1.0232"))
+        expect(line_item.name).to eq("Name #1")
+        expect(line_item.kind).to eq("debit")
+        expect(line_item.unit_amount).to eq(BigDecimal("45.1232"))
+        expect(line_item.total_amount).to eq(BigDecimal("45.15"))
+        expect(line_item.unit_tax_amount).to eq(BigDecimal("0"))
+        expect(line_item.discount_amount).to eq(BigDecimal("0"))
+        expect(line_item.tax_amount).to eq(BigDecimal("0"))
       end
 
       it "allows creation with single line item and returns it" do
@@ -3476,22 +3479,22 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == true
-        result.transaction.line_items.length.should == 1
+        expect(result.success?).to eq(true)
+        expect(result.transaction.line_items.length).to eq(1)
         line_item = result.transaction.line_items[0]
-        line_item.quantity.should == BigDecimal("1.0232")
-        line_item.name.should == "Name #1"
-        line_item.description.should == "Description #1"
-        line_item.kind.should == "debit"
-        line_item.unit_amount.should == BigDecimal("45.1232")
-        line_item.unit_tax_amount.should == BigDecimal("1.23")
-        line_item.unit_of_measure.should == "gallon"
-        line_item.discount_amount.should == BigDecimal("1.02")
-        line_item.tax_amount.should == BigDecimal("4.50")
-        line_item.total_amount.should == BigDecimal("45.15")
-        line_item.product_code.should == "23434"
-        line_item.commodity_code.should == "9SAASSD8724"
-        line_item.url.should == "https://example.com/products/23434"
+        expect(line_item.quantity).to eq(BigDecimal("1.0232"))
+        expect(line_item.name).to eq("Name #1")
+        expect(line_item.description).to eq("Description #1")
+        expect(line_item.kind).to eq("debit")
+        expect(line_item.unit_amount).to eq(BigDecimal("45.1232"))
+        expect(line_item.unit_tax_amount).to eq(BigDecimal("1.23"))
+        expect(line_item.unit_of_measure).to eq("gallon")
+        expect(line_item.discount_amount).to eq(BigDecimal("1.02"))
+        expect(line_item.tax_amount).to eq(BigDecimal("4.50"))
+        expect(line_item.total_amount).to eq(BigDecimal("45.15"))
+        expect(line_item.product_code).to eq("23434")
+        expect(line_item.commodity_code).to eq("9SAASSD8724")
+        expect(line_item.url).to eq("https://example.com/products/23434")
       end
 
       it "allows creation with multiple line items and returns them" do
@@ -3523,30 +3526,30 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == true
-        result.transaction.line_items.length.should == 2
+        expect(result.success?).to eq(true)
+        expect(result.transaction.line_items.length).to eq(2)
         line_item_1 = result.transaction.line_items.find { |line_item| line_item.name == "Name #1" }
-        line_item_1.quantity.should == BigDecimal("1.0232")
-        line_item_1.name.should == "Name #1"
-        line_item_1.kind.should == "debit"
-        line_item_1.unit_amount.should == BigDecimal("45.1232")
-        line_item_1.unit_of_measure.should == "gallon"
-        line_item_1.discount_amount.should == BigDecimal("1.02")
-        line_item_1.tax_amount.should == BigDecimal("4.50")
-        line_item_1.total_amount.should == BigDecimal("45.15")
-        line_item_1.product_code.should == "23434"
-        line_item_1.commodity_code.should == "9SAASSD8724"
+        expect(line_item_1.quantity).to eq(BigDecimal("1.0232"))
+        expect(line_item_1.name).to eq("Name #1")
+        expect(line_item_1.kind).to eq("debit")
+        expect(line_item_1.unit_amount).to eq(BigDecimal("45.1232"))
+        expect(line_item_1.unit_of_measure).to eq("gallon")
+        expect(line_item_1.discount_amount).to eq(BigDecimal("1.02"))
+        expect(line_item_1.tax_amount).to eq(BigDecimal("4.50"))
+        expect(line_item_1.total_amount).to eq(BigDecimal("45.15"))
+        expect(line_item_1.product_code).to eq("23434")
+        expect(line_item_1.commodity_code).to eq("9SAASSD8724")
         line_item_2 = result.transaction.line_items.find { |line_item| line_item.name == "Name #2" }
-        line_item_2.quantity.should == BigDecimal("2.02")
-        line_item_2.name.should == "Name #2"
-        line_item_2.kind.should == "credit"
-        line_item_2.unit_amount.should == BigDecimal("5")
-        line_item_2.unit_of_measure.should == "gallon"
-        line_item_2.total_amount.should == BigDecimal("10.1")
-        line_item_2.tax_amount.should == BigDecimal("1.50")
-        line_item_2.discount_amount.should == nil
-        line_item_2.product_code.should == nil
-        line_item_2.commodity_code.should == nil
+        expect(line_item_2.quantity).to eq(BigDecimal("2.02"))
+        expect(line_item_2.name).to eq("Name #2")
+        expect(line_item_2.kind).to eq("credit")
+        expect(line_item_2.unit_amount).to eq(BigDecimal("5"))
+        expect(line_item_2.unit_of_measure).to eq("gallon")
+        expect(line_item_2.total_amount).to eq(BigDecimal("10.1"))
+        expect(line_item_2.tax_amount).to eq(BigDecimal("1.50"))
+        expect(line_item_2.discount_amount).to eq(nil)
+        expect(line_item_2.product_code).to eq(nil)
+        expect(line_item_2.commodity_code).to eq(nil)
       end
 
       it "handles validation error commodity code is too long" do
@@ -3579,8 +3582,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:commodity_code)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::CommodityCodeIsTooLong
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:commodity_code)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::CommodityCodeIsTooLong)
       end
 
       it "handles validation error description is too long" do
@@ -3614,8 +3617,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:description)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DescriptionIsTooLong
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:description)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::DescriptionIsTooLong)
       end
 
       it "handles validation error discount amount format is invalid" do
@@ -3648,8 +3651,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DiscountAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::DiscountAmountFormatIsInvalid)
       end
 
       it "handles validation error discount amount is too large" do
@@ -3682,8 +3685,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DiscountAmountIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::DiscountAmountIsTooLarge)
       end
 
       it "handles validation error discount amount cannot be negative" do
@@ -3716,8 +3719,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::DiscountAmountCannotBeNegative
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:discount_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::DiscountAmountCannotBeNegative)
       end
 
       it "handles validation error tax amount format is invalid" do
@@ -3740,8 +3743,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_0).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TaxAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_0).on(:tax_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::TaxAmountFormatIsInvalid)
       end
 
       it "handles validation error tax amount is too large" do
@@ -3764,8 +3767,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_0).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TaxAmountIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_0).on(:tax_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::TaxAmountIsTooLarge)
       end
 
       it "handles validation error tax amount cannot be negative" do
@@ -3788,8 +3791,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_0).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TaxAmountCannotBeNegative
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_0).on(:tax_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::TaxAmountCannotBeNegative)
       end
 
       it "handles validation error kind is invalid" do
@@ -3822,8 +3825,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::KindIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::KindIsInvalid)
       end
 
       it "handles validation error kind is required" do
@@ -3855,8 +3858,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::KindIsRequired
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:kind)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::KindIsRequired)
       end
 
       it "handles validation error name is required" do
@@ -3888,8 +3891,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::NameIsRequired
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::NameIsRequired)
       end
 
       it "handles validation error name is too long" do
@@ -3922,8 +3925,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::NameIsTooLong
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:name)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::NameIsTooLong)
       end
 
       it "handles validation error product code is too long" do
@@ -3956,8 +3959,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:product_code)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::ProductCodeIsTooLong
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:product_code)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::ProductCodeIsTooLong)
       end
 
       it "handles validation error quantity format is invalid" do
@@ -3990,8 +3993,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::QuantityFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::QuantityFormatIsInvalid)
       end
 
       it "handles validation error quantity is required" do
@@ -4023,8 +4026,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::QuantityIsRequired
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::QuantityIsRequired)
       end
 
       it "handles validation error quantity is too large" do
@@ -4057,8 +4060,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::QuantityIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:quantity)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::QuantityIsTooLarge)
       end
 
       it "handles validation error total amount format is invalid" do
@@ -4091,8 +4094,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::TotalAmountFormatIsInvalid)
       end
 
       it "handles validation error total amount is required" do
@@ -4124,8 +4127,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountIsRequired
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::TotalAmountIsRequired)
       end
 
       it "handles validation error total amount is too large" do
@@ -4158,8 +4161,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::TotalAmountIsTooLarge)
       end
 
       it "handles validation error total amount must be greater than zero" do
@@ -4192,8 +4195,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::TotalAmountMustBeGreaterThanZero
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:total_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::TotalAmountMustBeGreaterThanZero)
       end
 
       it "handles validation error unit amount format is invalid" do
@@ -4226,8 +4229,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitAmountFormatIsInvalid)
       end
 
       it "handles validation error unit amount is required" do
@@ -4258,8 +4261,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountIsRequired
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitAmountIsRequired)
       end
 
       it "handles validation error unit amount is too large" do
@@ -4292,8 +4295,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitAmountIsTooLarge)
       end
 
       it "handles validation error unit amount must be greater than zero" do
@@ -4326,8 +4329,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitAmountMustBeGreaterThanZero
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitAmountMustBeGreaterThanZero)
       end
 
       it "handles validation error unit of measure is too long" do
@@ -4360,8 +4363,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_of_measure)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitOfMeasureIsTooLong
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_of_measure)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitOfMeasureIsTooLong)
       end
 
       it "handles validation error unit tax amount format is invalid" do
@@ -4396,8 +4399,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountFormatIsInvalid)
       end
 
       it "handles validation error unit tax amount is too large" do
@@ -4432,8 +4435,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountIsTooLarge)
       end
 
       it "handles validation error unit tax amount cannot be negative" do
@@ -4467,8 +4470,8 @@ describe Braintree::Transaction do
             },
           ],
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code.should == Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountCannotBeNegative
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:line_items).for(:index_1).on(:unit_tax_amount)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UnitTaxAmountCannotBeNegative)
       end
 
       it "handles validation errors on line items structure" do
@@ -4485,8 +4488,8 @@ describe Braintree::Transaction do
             :total_amount => "10.1",
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:line_items)[0].code.should == Braintree::ErrorCodes::Transaction::LineItemsExpected
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:line_items)[0].code).to eq(Braintree::ErrorCodes::Transaction::LineItemsExpected)
       end
 
       it "handles invalid arguments on line items structure" do
@@ -4535,8 +4538,8 @@ describe Braintree::Transaction do
           :payment_method_nonce => Braintree::Test::Nonce::Transactable,
           :line_items => line_items,
         )
-        result.success?.should == false
-        result.errors.for(:transaction).on(:line_items)[0].code.should == Braintree::ErrorCodes::Transaction::TooManyLineItems
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:line_items)[0].code).to eq(Braintree::ErrorCodes::Transaction::TooManyLineItems)
       end
     end
 
@@ -4551,10 +4554,10 @@ describe Braintree::Transaction do
           :ships_from_postal_code => "12345",
         )
 
-        result.success?.should == true
-        result.transaction.shipping_amount.should == "1.00"
-        result.transaction.discount_amount.should == "2.00"
-        result.transaction.ships_from_postal_code.should == "12345"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.shipping_amount).to eq("1.00")
+        expect(result.transaction.discount_amount).to eq("2.00")
+        expect(result.transaction.ships_from_postal_code).to eq("12345")
       end
 
       it "handles validation errors on summary data" do
@@ -4567,10 +4570,10 @@ describe Braintree::Transaction do
           :ships_from_postal_code => "1$345",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountFormatIsInvalid
-        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountCannotBeNegative
-        result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:shipping_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ShippingAmountFormatIsInvalid)
+        expect(result.errors.for(:transaction).on(:discount_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::DiscountAmountCannotBeNegative)
+        expect(result.errors.for(:transaction).on(:ships_from_postal_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters)
       end
 
       it "handles validation error discount amount format is invalid" do
@@ -4581,8 +4584,8 @@ describe Braintree::Transaction do
           :discount_amount => "2.001",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:discount_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::DiscountAmountFormatIsInvalid)
       end
 
       it "handles validation error discount amount cannot be negative" do
@@ -4593,8 +4596,8 @@ describe Braintree::Transaction do
           :discount_amount => "-2",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountCannotBeNegative
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:discount_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::DiscountAmountCannotBeNegative)
       end
 
       it "handles validation error discount amount is too large" do
@@ -4605,8 +4608,8 @@ describe Braintree::Transaction do
           :discount_amount => "2147483648",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:discount_amount)[0].code.should == Braintree::ErrorCodes::Transaction::DiscountAmountIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:discount_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::DiscountAmountIsTooLarge)
       end
 
       it "handles validation error shipping amount format is invalid" do
@@ -4617,8 +4620,8 @@ describe Braintree::Transaction do
           :shipping_amount => "2.001",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountFormatIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:shipping_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ShippingAmountFormatIsInvalid)
       end
 
       it "handles validation error shipping amount cannot be negative" do
@@ -4629,8 +4632,8 @@ describe Braintree::Transaction do
           :shipping_amount => "-2",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountCannotBeNegative
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:shipping_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ShippingAmountCannotBeNegative)
       end
 
       it "handles validation error shipping amount is too large" do
@@ -4641,8 +4644,8 @@ describe Braintree::Transaction do
           :shipping_amount => "2147483648",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:shipping_amount)[0].code.should == Braintree::ErrorCodes::Transaction::ShippingAmountIsTooLarge
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:shipping_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ShippingAmountIsTooLarge)
       end
 
       it "handles validation error ships from postal code is too long" do
@@ -4653,8 +4656,8 @@ describe Braintree::Transaction do
           :ships_from_postal_code => "1234567890",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeIsTooLong
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:ships_from_postal_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeIsTooLong)
       end
 
       it "handles validation error ships from postal code invalid characters" do
@@ -4665,8 +4668,8 @@ describe Braintree::Transaction do
           :ships_from_postal_code => "12345%78",
         )
 
-        result.success?.should == false
-        result.errors.for(:transaction).on(:ships_from_postal_code)[0].code.should == Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:ships_from_postal_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::ShipsFromPostalCodeInvalidCharacters)
       end
     end
 
@@ -4680,8 +4683,8 @@ describe Braintree::Transaction do
           },
           :amount => "10.00",
         )
-        result.success?.should == true
-        result.transaction.network_transaction_id.should_not be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction.network_transaction_id).not_to be_nil
       end
     end
 
@@ -4703,8 +4706,8 @@ describe Braintree::Transaction do
           },
           :amount => "10.00",
         )
-        result.success?.should == false
-        result.errors.for(:transaction)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentInstrumentWithExternalVaultIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction)[0].code).to eq(Braintree::ErrorCodes::Transaction::PaymentInstrumentWithExternalVaultIsInvalid)
       end
 
       it "reject invalid status" do
@@ -4719,8 +4722,8 @@ describe Braintree::Transaction do
           },
           :amount => "10.00",
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:external_vault).on(:status)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::StatusIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:external_vault).on(:status)[0].code).to eq(Braintree::ErrorCodes::Transaction::ExternalVault::StatusIsInvalid)
       end
 
       context "Visa/Mastercard/Discover/AmEx" do
@@ -4736,8 +4739,8 @@ describe Braintree::Transaction do
             },
             :amount => "10.00",
           )
-          result.success?.should == true
-          result.transaction.network_transaction_id.should_not be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.network_transaction_id).not_to be_nil
         end
 
         it "accepts previous_network_transaction_id" do
@@ -4753,8 +4756,8 @@ describe Braintree::Transaction do
             },
             :amount => "10.00",
           )
-          result.success?.should == true
-          result.transaction.network_transaction_id.should_not be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.network_transaction_id).not_to be_nil
         end
 
         it "rejects non-vaulted status with previous_network_transaction_id" do
@@ -4770,8 +4773,8 @@ describe Braintree::Transaction do
             },
             :amount => "10.00",
           )
-          result.success?.should == false
-          result.errors.for(:transaction).for(:external_vault).on(:status)[0].code.should == Braintree::ErrorCodes::Transaction::ExternalVault::StatusWithPreviousNetworkTransactionIdIsInvalid
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).for(:external_vault).on(:status)[0].code).to eq(Braintree::ErrorCodes::Transaction::ExternalVault::StatusWithPreviousNetworkTransactionIdIsInvalid)
         end
       end
 
@@ -4788,8 +4791,8 @@ describe Braintree::Transaction do
             },
             :amount => "10.00",
           )
-          result.success?.should == true
-          result.transaction.network_transaction_id.should_not be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.network_transaction_id).not_to be_nil
         end
 
         it "accepts blank previous_network_transaction_id" do
@@ -4805,8 +4808,8 @@ describe Braintree::Transaction do
             },
             :amount => "10.00",
           )
-          result.success?.should == true
-          result.transaction.network_transaction_id.should_not be_nil
+          expect(result.success?).to eq(true)
+          expect(result.transaction.network_transaction_id).not_to be_nil
         end
       end
     end
@@ -4827,8 +4830,8 @@ describe Braintree::Transaction do
             }
           },
         )
-        result.success?.should == true
-        result.transaction.credit_card_details.account_type.should == "credit"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.credit_card_details.account_type).to eq("credit")
       end
 
       it "creates a Hipercard transaction with account_type credit" do
@@ -4846,8 +4849,8 @@ describe Braintree::Transaction do
             }
           },
         )
-        result.success?.should == true
-        result.transaction.credit_card_details.account_type.should == "credit"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.credit_card_details.account_type).to eq("credit")
       end
 
       it "creates a Hiper transaction with account_type debit" do
@@ -4866,8 +4869,8 @@ describe Braintree::Transaction do
             :submit_for_settlement => true,
           },
         )
-        result.success?.should == true
-        result.transaction.credit_card_details.account_type.should == "debit"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.credit_card_details.account_type).to eq("debit")
       end
 
       it "does not allow auths with account_type debit" do
@@ -4885,8 +4888,8 @@ describe Braintree::Transaction do
             },
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code.should == Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeDebitDoesNotSupportAuths
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code).to eq(Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeDebitDoesNotSupportAuths)
       end
 
       it "does not allow invalid account_type" do
@@ -4904,8 +4907,8 @@ describe Braintree::Transaction do
             },
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code.should == Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeIsInvalid
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code).to eq(Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeIsInvalid)
       end
 
       it "does not allow account_type not supported by merchant" do
@@ -4922,8 +4925,8 @@ describe Braintree::Transaction do
             },
           },
         )
-        result.success?.should == false
-        result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code.should == Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeNotSupported
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).for(:options).for(:credit_card).on(:account_type)[0].code).to eq(Braintree::ErrorCodes::Transaction::Options::CreditCard::AccountTypeNotSupported)
       end
     end
   end
@@ -4938,12 +4941,12 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      transaction.id.should =~ /^\w{6,}$/
-      transaction.type.should == "sale"
-      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2009"
+      expect(transaction.id).to match(/^\w{6,}$/)
+      expect(transaction.type).to eq("sale")
+      expect(transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2009")
     end
 
     it "raises a validationsfailed if invalid" do
@@ -4965,8 +4968,8 @@ describe Braintree::Transaction do
       it "allows partial refunds" do
         transaction = create_transaction_to_refund
         result = Braintree::Transaction.refund(transaction.id, transaction.amount / 2)
-        result.success?.should == true
-        result.transaction.type.should == "credit"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.type).to eq("credit")
       end
 
       it "allows multiple partial refunds" do
@@ -4975,32 +4978,32 @@ describe Braintree::Transaction do
         transaction_2 = Braintree::Transaction.refund(transaction.id, transaction.amount / 2).transaction
 
         transaction = Braintree::Transaction.find(transaction.id)
-        transaction.refund_ids.sort.should == [transaction_1.id, transaction_2.id].sort
+        expect(transaction.refund_ids.sort).to eq([transaction_1.id, transaction_2.id].sort)
       end
     end
 
     it "returns a successful result if successful" do
       transaction = create_transaction_to_refund
-      transaction.status.should == Braintree::Transaction::Status::Settled
+      expect(transaction.status).to eq(Braintree::Transaction::Status::Settled)
       result = Braintree::Transaction.refund(transaction.id)
-      result.success?.should == true
-      result.transaction.type.should == "credit"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.type).to eq("credit")
     end
 
     it "assigns the refunded_transaction_id to the original transaction" do
       transaction = create_transaction_to_refund
       refund_transaction = Braintree::Transaction.refund(transaction.id).transaction
 
-      refund_transaction.refunded_transaction_id.should == transaction.id
+      expect(refund_transaction.refunded_transaction_id).to eq(transaction.id)
     end
 
     it "returns an error if already refunded" do
       transaction = create_transaction_to_refund
       result = Braintree::Transaction.refund(transaction.id)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       result = Braintree::Transaction.refund(transaction.id)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::HasAlreadyBeenRefunded)
     end
 
     it "returns an error result if unsettled" do
@@ -5013,8 +5016,8 @@ describe Braintree::Transaction do
         },
       )
       result = Braintree::Transaction.refund(transaction.id)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled)
     end
   end
 
@@ -5024,15 +5027,15 @@ describe Braintree::Transaction do
 
       refund_transaction = Braintree::Transaction.refund!(transaction.id)
 
-      refund_transaction.refunded_transaction_id.should == transaction.id
-      refund_transaction.type.should == "credit"
-      transaction.amount.should == refund_transaction.amount
+      expect(refund_transaction.refunded_transaction_id).to eq(transaction.id)
+      expect(refund_transaction.type).to eq("credit")
+      expect(transaction.amount).to eq(refund_transaction.amount)
     end
 
     it "raises a ValidationsFailed if invalid" do
       transaction = create_transaction_to_refund
       invalid_refund_amount = transaction.amount + 1
-      invalid_refund_amount.should be > transaction.amount
+      expect(invalid_refund_amount).to be > transaction.amount
 
       expect do
         Braintree::Transaction.refund!(transaction.id,invalid_refund_amount)
@@ -5049,13 +5052,13 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
-      result.transaction.id.should =~ /^\w{6,}$/
-      result.transaction.type.should == "sale"
-      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2009"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.id).to match(/^\w{6,}$/)
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2009")
     end
 
     it "works when given all attributes" do
@@ -5105,59 +5108,59 @@ describe Braintree::Transaction do
           :shipping_method => Braintree::Transaction::AddressDetails::ShippingMethod::Electronic
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
-      transaction.id.should =~ /\A\w{6,}\z/
-      transaction.type.should == "sale"
-      transaction.status.should == Braintree::Transaction::Status::Authorized
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.currency_iso_code.should == "USD"
-      transaction.order_id.should == "123"
-      transaction.channel.should == "MyShoppingCartProvider"
-      transaction.processor_response_code.should == "1000"
-      transaction.authorization_expires_at.between?(Time.now, Time.now + (60 * 60 * 24 * 60)).should == true
-      transaction.created_at.between?(Time.now - 60, Time.now).should == true
-      transaction.updated_at.between?(Time.now - 60, Time.now).should == true
-      transaction.credit_card_details.bin.should == "510510"
-      transaction.credit_card_details.cardholder_name.should == "The Cardholder"
-      transaction.credit_card_details.last_4.should == "5100"
-      transaction.credit_card_details.masked_number.should == "510510******5100"
-      transaction.credit_card_details.card_type.should == "MasterCard"
-      transaction.avs_error_response_code.should == nil
-      transaction.avs_postal_code_response_code.should == "M"
-      transaction.avs_street_address_response_code.should == "M"
-      transaction.cvv_response_code.should == "M"
-      transaction.customer_details.first_name.should == "Dan"
-      transaction.customer_details.last_name.should == "Smith"
-      transaction.customer_details.company.should == "Braintree"
-      transaction.customer_details.email.should == "dan@example.com"
-      transaction.customer_details.phone.should == "419-555-1234"
-      transaction.customer_details.fax.should == "419-555-1235"
-      transaction.customer_details.website.should == "http://braintreepayments.com"
-      transaction.billing_details.first_name.should == "Carl"
-      transaction.billing_details.last_name.should == "Jones"
-      transaction.billing_details.company.should == "Braintree"
-      transaction.billing_details.street_address.should == "123 E Main St"
-      transaction.billing_details.extended_address.should == "Suite 403"
-      transaction.billing_details.locality.should == "Chicago"
-      transaction.billing_details.region.should == "IL"
-      transaction.billing_details.postal_code.should == "60622"
-      transaction.billing_details.country_name.should == "United States of America"
-      transaction.billing_details.country_code_alpha2.should == "US"
-      transaction.billing_details.country_code_alpha3.should == "USA"
-      transaction.billing_details.country_code_numeric.should == "840"
-      transaction.shipping_details.first_name.should == "Andrew"
-      transaction.shipping_details.last_name.should == "Mason"
-      transaction.shipping_details.company.should == "Braintree"
-      transaction.shipping_details.street_address.should == "456 W Main St"
-      transaction.shipping_details.extended_address.should == "Apt 2F"
-      transaction.shipping_details.locality.should == "Bartlett"
-      transaction.shipping_details.region.should == "IL"
-      transaction.shipping_details.postal_code.should == "60103"
-      transaction.shipping_details.country_name.should == "United States of America"
-      transaction.shipping_details.country_code_alpha2.should == "US"
-      transaction.shipping_details.country_code_alpha3.should == "USA"
-      transaction.shipping_details.country_code_numeric.should == "840"
+      expect(transaction.id).to match(/\A\w{6,}\z/)
+      expect(transaction.type).to eq("sale")
+      expect(transaction.status).to eq(Braintree::Transaction::Status::Authorized)
+      expect(transaction.amount).to eq(BigDecimal("100.00"))
+      expect(transaction.currency_iso_code).to eq("USD")
+      expect(transaction.order_id).to eq("123")
+      expect(transaction.channel).to eq("MyShoppingCartProvider")
+      expect(transaction.processor_response_code).to eq("1000")
+      expect(transaction.authorization_expires_at.between?(Time.now, Time.now + (60 * 60 * 24 * 60))).to eq(true)
+      expect(transaction.created_at.between?(Time.now - 60, Time.now)).to eq(true)
+      expect(transaction.updated_at.between?(Time.now - 60, Time.now)).to eq(true)
+      expect(transaction.credit_card_details.bin).to eq("510510")
+      expect(transaction.credit_card_details.cardholder_name).to eq("The Cardholder")
+      expect(transaction.credit_card_details.last_4).to eq("5100")
+      expect(transaction.credit_card_details.masked_number).to eq("510510******5100")
+      expect(transaction.credit_card_details.card_type).to eq("MasterCard")
+      expect(transaction.avs_error_response_code).to eq(nil)
+      expect(transaction.avs_postal_code_response_code).to eq("M")
+      expect(transaction.avs_street_address_response_code).to eq("M")
+      expect(transaction.cvv_response_code).to eq("M")
+      expect(transaction.customer_details.first_name).to eq("Dan")
+      expect(transaction.customer_details.last_name).to eq("Smith")
+      expect(transaction.customer_details.company).to eq("Braintree")
+      expect(transaction.customer_details.email).to eq("dan@example.com")
+      expect(transaction.customer_details.phone).to eq("419-555-1234")
+      expect(transaction.customer_details.fax).to eq("419-555-1235")
+      expect(transaction.customer_details.website).to eq("http://braintreepayments.com")
+      expect(transaction.billing_details.first_name).to eq("Carl")
+      expect(transaction.billing_details.last_name).to eq("Jones")
+      expect(transaction.billing_details.company).to eq("Braintree")
+      expect(transaction.billing_details.street_address).to eq("123 E Main St")
+      expect(transaction.billing_details.extended_address).to eq("Suite 403")
+      expect(transaction.billing_details.locality).to eq("Chicago")
+      expect(transaction.billing_details.region).to eq("IL")
+      expect(transaction.billing_details.postal_code).to eq("60622")
+      expect(transaction.billing_details.country_name).to eq("United States of America")
+      expect(transaction.billing_details.country_code_alpha2).to eq("US")
+      expect(transaction.billing_details.country_code_alpha3).to eq("USA")
+      expect(transaction.billing_details.country_code_numeric).to eq("840")
+      expect(transaction.shipping_details.first_name).to eq("Andrew")
+      expect(transaction.shipping_details.last_name).to eq("Mason")
+      expect(transaction.shipping_details.company).to eq("Braintree")
+      expect(transaction.shipping_details.street_address).to eq("456 W Main St")
+      expect(transaction.shipping_details.extended_address).to eq("Apt 2F")
+      expect(transaction.shipping_details.locality).to eq("Bartlett")
+      expect(transaction.shipping_details.region).to eq("IL")
+      expect(transaction.shipping_details.postal_code).to eq("60103")
+      expect(transaction.shipping_details.country_name).to eq("United States of America")
+      expect(transaction.shipping_details.country_code_alpha2).to eq("US")
+      expect(transaction.shipping_details.country_code_alpha3).to eq("USA")
+      expect(transaction.shipping_details.country_code_numeric).to eq("840")
     end
 
     it "allows merchant account to be specified" do
@@ -5169,8 +5172,8 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
-      result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+      expect(result.success?).to eq(true)
+      expect(result.transaction.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
     end
 
     it "uses default merchant account when it is not specified" do
@@ -5181,8 +5184,8 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
-      result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+      expect(result.success?).to eq(true)
+      expect(result.transaction.merchant_account_id).to eq(SpecHelper::DefaultMerchantAccountId)
     end
 
     it "can store customer and credit card in the vault" do
@@ -5200,12 +5203,12 @@ describe Braintree::Transaction do
           :store_in_vault => true
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,}\z/
-      transaction.vault_customer.id.should == transaction.customer_details.id
-      transaction.credit_card_details.token.should =~ /\A\w{4,}\z/
-      transaction.vault_credit_card.token.should == transaction.credit_card_details.token
+      expect(transaction.customer_details.id).to match(/\A\d{6,}\z/)
+      expect(transaction.vault_customer.id).to eq(transaction.customer_details.id)
+      expect(transaction.credit_card_details.token).to match(/\A\w{4,}\z/)
+      expect(transaction.vault_credit_card.token).to eq(transaction.credit_card_details.token)
     end
 
     it "associates a billing address with a credit card in the vault" do
@@ -5235,22 +5238,22 @@ describe Braintree::Transaction do
           :add_billing_address_to_payment_method => true,
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,}\z/
-      transaction.vault_customer.id.should == transaction.customer_details.id
+      expect(transaction.customer_details.id).to match(/\A\d{6,}\z/)
+      expect(transaction.vault_customer.id).to eq(transaction.customer_details.id)
       credit_card = Braintree::CreditCard.find(transaction.vault_credit_card.token)
-      transaction.billing_details.id.should == credit_card.billing_address.id
-      transaction.vault_billing_address.id.should == credit_card.billing_address.id
-      credit_card.billing_address.first_name.should == "Carl"
-      credit_card.billing_address.last_name.should == "Jones"
-      credit_card.billing_address.company.should == "Braintree"
-      credit_card.billing_address.street_address.should == "123 E Main St"
-      credit_card.billing_address.extended_address.should == "Suite 403"
-      credit_card.billing_address.locality.should == "Chicago"
-      credit_card.billing_address.region.should == "IL"
-      credit_card.billing_address.postal_code.should == "60622"
-      credit_card.billing_address.country_name.should == "United States of America"
+      expect(transaction.billing_details.id).to eq(credit_card.billing_address.id)
+      expect(transaction.vault_billing_address.id).to eq(credit_card.billing_address.id)
+      expect(credit_card.billing_address.first_name).to eq("Carl")
+      expect(credit_card.billing_address.last_name).to eq("Jones")
+      expect(credit_card.billing_address.company).to eq("Braintree")
+      expect(credit_card.billing_address.street_address).to eq("123 E Main St")
+      expect(credit_card.billing_address.extended_address).to eq("Suite 403")
+      expect(credit_card.billing_address.locality).to eq("Chicago")
+      expect(credit_card.billing_address.region).to eq("IL")
+      expect(credit_card.billing_address.postal_code).to eq("60622")
+      expect(credit_card.billing_address.country_name).to eq("United States of America")
     end
 
     it "can store the shipping address in the vault" do
@@ -5280,21 +5283,21 @@ describe Braintree::Transaction do
           :store_shipping_address_in_vault => true,
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
-      transaction.customer_details.id.should =~ /\A\d{6,}\z/
-      transaction.vault_customer.id.should == transaction.customer_details.id
-      transaction.vault_shipping_address.id.should == transaction.vault_customer.addresses[0].id
+      expect(transaction.customer_details.id).to match(/\A\d{6,}\z/)
+      expect(transaction.vault_customer.id).to eq(transaction.customer_details.id)
+      expect(transaction.vault_shipping_address.id).to eq(transaction.vault_customer.addresses[0].id)
       shipping_address = transaction.vault_customer.addresses[0]
-      shipping_address.first_name.should == "Carl"
-      shipping_address.last_name.should == "Jones"
-      shipping_address.company.should == "Braintree"
-      shipping_address.street_address.should == "123 E Main St"
-      shipping_address.extended_address.should == "Suite 403"
-      shipping_address.locality.should == "Chicago"
-      shipping_address.region.should == "IL"
-      shipping_address.postal_code.should == "60622"
-      shipping_address.country_name.should == "United States of America"
+      expect(shipping_address.first_name).to eq("Carl")
+      expect(shipping_address.last_name).to eq("Jones")
+      expect(shipping_address.company).to eq("Braintree")
+      expect(shipping_address.street_address).to eq("123 E Main St")
+      expect(shipping_address.extended_address).to eq("Suite 403")
+      expect(shipping_address.locality).to eq("Chicago")
+      expect(shipping_address.region).to eq("IL")
+      expect(shipping_address.postal_code).to eq("60622")
+      expect(shipping_address.country_name).to eq("United States of America")
     end
 
     it "stores a unique number identifier in the vault" do
@@ -5307,10 +5310,10 @@ describe Braintree::Transaction do
         :options => {:store_in_vault => true},
       )
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       transaction = result.transaction
-      transaction.credit_card_details.unique_number_identifier.should_not be_nil
+      expect(transaction.credit_card_details.unique_number_identifier).not_to be_nil
     end
 
     it "submits for settlement if given transaction[options][submit_for_settlement]" do
@@ -5324,8 +5327,8 @@ describe Braintree::Transaction do
           :submit_for_settlement => true
         },
       )
-      result.success?.should == true
-      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(result.success?).to eq(true)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
 
     it "can specify the customer id and payment method token" do
@@ -5347,12 +5350,12 @@ describe Braintree::Transaction do
           :store_in_vault => true
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
-      transaction.customer_details.id.should == customer_id
-      transaction.vault_customer.id.should == customer_id
-      transaction.credit_card_details.token.should == payment_method_token
-      transaction.vault_credit_card.token.should == payment_method_token
+      expect(transaction.customer_details.id).to eq(customer_id)
+      expect(transaction.vault_customer.id).to eq(customer_id)
+      expect(transaction.credit_card_details.token).to eq(payment_method_token)
+      expect(transaction.vault_credit_card.token).to eq(payment_method_token)
     end
 
     it "can specify existing shipping address" do
@@ -5371,11 +5374,11 @@ describe Braintree::Transaction do
         :customer_id => customer.id,
         :shipping_address_id => address.id,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
-      transaction.shipping_details.street_address.should == "123 Fake St."
-      transaction.customer_details.id.should == customer.id
-      transaction.shipping_details.id.should == address.id
+      expect(transaction.shipping_details.street_address).to eq("123 Fake St.")
+      expect(transaction.customer_details.id).to eq(customer.id)
+      expect(transaction.shipping_details.id).to eq(address.id)
     end
 
     it "returns an error result if validations fail" do
@@ -5389,9 +5392,9 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.sale(params[:transaction])
-      result.success?.should == false
-      result.params.should == {:transaction => {:type => "sale", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
+      expect(result.success?).to eq(false)
+      expect(result.params).to eq({:transaction => {:type => "sale", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}})
+      expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::AmountIsRequired)
     end
 
     it "validates currency_iso_code and creates transaction" do
@@ -5406,7 +5409,7 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.sale(params[:transaction])
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       result.transaction.currency_iso_code == "USD"
     end
 
@@ -5422,8 +5425,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.sale(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:currency_iso_code)[0].code.should == Braintree::ErrorCodes::Transaction::CurrencyCodeNotSupportedByMerchantAccount
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:currency_iso_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::CurrencyCodeNotSupportedByMerchantAccount)
     end
 
     it "validates currency_iso_code and creates transaction with specified merchant account" do
@@ -5439,7 +5442,7 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.sale(params[:transaction])
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       result.transaction.currency_iso_code == "USD"
       result.transaction.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
     end
@@ -5457,8 +5460,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.sale(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:currency_iso_code)[0].code.should == Braintree::ErrorCodes::Transaction::CurrencyCodeNotSupportedByMerchantAccount
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:currency_iso_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::CurrencyCodeNotSupportedByMerchantAccount)
     end
 
     it "validates tax_amount for Aib domestic sweden transaction and returns error" do
@@ -5473,8 +5476,8 @@ describe Braintree::Transaction do
           }
       }
       result = Braintree::Transaction.sale(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:tax_amount)[0].code.should == Braintree::ErrorCodes::Transaction::TaxAmountIsRequiredForAibSwedish
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:tax_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::TaxAmountIsRequiredForAibSwedish)
     end
 
     it "skips advanced fraud checking if transaction[options][skip_advanced_fraud_checking] is set to true" do
@@ -5489,8 +5492,8 @@ describe Braintree::Transaction do
             :skip_advanced_fraud_checking => true
           },
         )
-        result.success?.should == true
-        result.transaction.risk_data.should be_nil
+        expect(result.success?).to eq(true)
+        expect(result.transaction.risk_data).to be_nil
       end
     end
 
@@ -5507,8 +5510,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.sale(params)
-      result.success?.should == true
-      result.transaction.status.should == Braintree::Transaction::Status::Authorized
+      expect(result.success?).to eq(true)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
     end
 
     context "Google Pay params" do
@@ -5527,8 +5530,8 @@ describe Braintree::Transaction do
           }
         }
         result = Braintree::Transaction.sale(params)
-        result.success?.should == true
-        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+        expect(result.success?).to eq(true)
+        expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
       end
 
       it "works with only number, cryptogram, expiration and transaction ID (network tokenized card)" do
@@ -5543,8 +5546,8 @@ describe Braintree::Transaction do
           }
         }
         result = Braintree::Transaction.sale(params)
-        result.success?.should == true
-        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+        expect(result.success?).to eq(true)
+        expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
       end
 
       it "works with only number, expiration and transaction ID (non-tokenized card)" do
@@ -5558,8 +5561,8 @@ describe Braintree::Transaction do
           }
         }
         result = Braintree::Transaction.sale(params)
-        result.success?.should == true
-        result.transaction.status.should == Braintree::Transaction::Status::Authorized
+        expect(result.success?).to eq(true)
+        expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
       end
     end
 
@@ -5605,6 +5608,169 @@ describe Braintree::Transaction do
         expect(result.errors.for(:transaction).for(:credit_card).map { |e| e.code }.sort).to eq [Braintree::ErrorCodes::CreditCard::NetworkTokenizationAttributeCryptogramIsRequired]
       end
     end
+
+    xit "Amex Pay with Points" do
+      context "transaction creation" do
+        it "succeeds when submit_for_settlement is true" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true,
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            },
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+
+        it "succeeds even if the card is ineligible" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true,
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            },
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+
+        it "succeeds even if the card's balance is insufficient" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::InsufficientPoints,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :submit_for_settlement => true,
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            },
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+      end
+
+      context "submit for settlement" do
+        it "succeeds" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::Success,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            },
+          )
+          result.success?.should == true
+
+          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+
+        it "succeeds even if the card is ineligible" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            },
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::Authorized
+
+          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+
+        it "succeeds even if the card's balance is insufficient" do
+          result = Braintree::Transaction.sale(
+            :amount => Braintree::Test::TransactionAmounts::Authorize,
+            :merchant_account_id => SpecHelper::FakeAmexDirectMerchantAccountId,
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::AmexPayWithPoints::IneligibleCard,
+              :expiration_date => "05/2009"
+            },
+            :options => {
+              :amex_rewards => {
+                :request_id => "ABC123",
+                :points => "1000",
+                :currency_amount => "10.00",
+                :currency_iso_code => "USD"
+              }
+            },
+          )
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::Authorized
+
+          result = Braintree::Transaction.submit_for_settlement(result.transaction.id)
+          result.success?.should == true
+          result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+        end
+      end
+    end
+
+    context "Pinless debit transaction" do
+      xit "succesfully submits for settlement" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::PinlessDebitMerchantAccountId,
+          :currency_iso_code => "USD",
+          :payment_method_nonce => Braintree::Test::Nonce::TransactablePinlessDebitVisa,
+          :options => {
+            :submit_for_settlement => true
+          },
+        )
+        expect(result.success?).to be_truthy
+        expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+        expect(result.transaction.debit_network).not_to be_nil
+      end
+    end
   end
 
   describe "self.sale!" do
@@ -5616,12 +5782,12 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      transaction.id.should =~ /^\w{6,}$/
-      transaction.type.should == "sale"
-      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2009"
+      expect(transaction.id).to match(/^\w{6,}$/)
+      expect(transaction.type).to eq("sale")
+      expect(transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2009")
     end
 
     it "raises a ValidationsFailed if invalid" do
@@ -5647,7 +5813,7 @@ describe Braintree::Transaction do
         },
       )
       result = Braintree::Transaction.submit_for_settlement(transaction.id)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "can submit a specific amount for settlement" do
@@ -5658,12 +5824,12 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         },
       )
-      transaction.amount.should == BigDecimal("1000.00")
+      expect(transaction.amount).to eq(BigDecimal("1000.00"))
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "999.99")
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("999.99")
-      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      result.transaction.updated_at.between?(Time.now - 60, Time.now).should == true
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("999.99"))
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(result.transaction.updated_at.between?(Time.now - 60, Time.now)).to eq(true)
     end
 
     it "returns a successful result if order_id is passed in as an options hash" do
@@ -5676,9 +5842,9 @@ describe Braintree::Transaction do
       )
       options = {:order_id => "ABC123"}
       result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, options)
-      result.success?.should == true
-      result.transaction.order_id.should == "ABC123"
-      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(result.success?).to eq(true)
+      expect(result.transaction.order_id).to eq("ABC123")
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
 
     it "returns a successful result if descritpors are passed in as an options hash" do
@@ -5699,11 +5865,11 @@ describe Braintree::Transaction do
       }
 
       result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, options)
-      result.success?.should == true
-      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      result.transaction.descriptor.name.should == "123*123456789012345678"
-      result.transaction.descriptor.phone.should == "3334445555"
-      result.transaction.descriptor.url.should == "ebay.com"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(result.transaction.descriptor.name).to eq("123*123456789012345678")
+      expect(result.transaction.descriptor.phone).to eq("3334445555")
+      expect(result.transaction.descriptor.url).to eq("ebay.com")
     end
 
     it "raises an error if an invalid option is passed in" do
@@ -5731,11 +5897,11 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         },
       )
-      transaction.amount.should == BigDecimal("1000.00")
+      expect(transaction.amount).to eq(BigDecimal("1000.00"))
       result = Braintree::Transaction.submit_for_settlement(transaction.id, "1000.01")
-      result.success?.should == false
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
-      result.params[:transaction][:amount].should == "1000.01"
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge)
+      expect(result.params[:transaction][:amount]).to eq("1000.01")
     end
 
     it "returns an error result if status is not authorized" do
@@ -5747,8 +5913,8 @@ describe Braintree::Transaction do
         },
       ).transaction
       result = Braintree::Transaction.submit_for_settlement(transaction.id)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement)
     end
 
     context "service fees" do
@@ -5764,8 +5930,8 @@ describe Braintree::Transaction do
           :service_fee_amount => "1.00",
         ).transaction
         result = Braintree::Transaction.submit_for_settlement(transaction.id, "0.01")
-        result.success?.should == false
-        result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsLessThanServiceFeeAmount
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::SettlementAmountIsLessThanServiceFeeAmount)
       end
     end
 
@@ -5786,11 +5952,11 @@ describe Braintree::Transaction do
           }
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       result = Braintree::Transaction.submit_for_settlement(result.transaction.id, nil, :tax_amount => "2.00", :tax_exempt => false, :purchase_order_number => "0Rd3r#")
-      result.success?.should == true
-      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(result.success?).to eq(true)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
 
     xit "succeeds when level 3 data is provided" do
@@ -5810,7 +5976,7 @@ describe Braintree::Transaction do
           }
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       result = Braintree::Transaction.submit_for_settlement(
         result.transaction.id,
@@ -5830,8 +5996,8 @@ describe Braintree::Transaction do
           },
         ],
       )
-      result.success?.should == true
-      result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(result.success?).to eq(true)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
   end
 
@@ -5846,9 +6012,9 @@ describe Braintree::Transaction do
       )
       options = {:order_id => "ABC123"}
       transaction = Braintree::Transaction.submit_for_settlement!(original_transaction.id, "0.01", options)
-      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      transaction.id.should == original_transaction.id
-      transaction.order_id.should == options[:order_id]
+      expect(transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(transaction.id).to eq(original_transaction.id)
+      expect(transaction.order_id).to eq(options[:order_id])
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
@@ -5860,7 +6026,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         },
       )
-      transaction.amount.should == BigDecimal("1000.00")
+      expect(transaction.amount).to eq(BigDecimal("1000.00"))
       expect do
         Braintree::Transaction.submit_for_settlement!(transaction.id, "1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
@@ -5899,10 +6065,10 @@ describe Braintree::Transaction do
           },
           :order_id => "456"
         })
-        result.success?.should == true
-        result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize) - 1
-        result.transaction.order_id.should == "456"
-        result.transaction.descriptor.name.should ==  "456*123456789012345678"
+        expect(result.success?).to eq(true)
+        expect(result.transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize) - 1)
+        expect(result.transaction.order_id).to eq("456")
+        expect(result.transaction.descriptor.name).to eq("456*123456789012345678")
       end
 
       it "raises an error when a key is invalid" do
@@ -5930,8 +6096,8 @@ describe Braintree::Transaction do
             },
             :order_id => "456"
           })
-          result.success?.should == false
-          result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge)
         end
 
         it "returns an error response when the descriptor is invalid" do
@@ -5944,10 +6110,10 @@ describe Braintree::Transaction do
             },
             :order_id => "456"
           })
-          result.success?.should == false
-          result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
-          result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
-          result.errors.for(:transaction).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).for(:descriptor).on(:name)[0].code).to eq(Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid)
+          expect(result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code).to eq(Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid)
+          expect(result.errors.for(:transaction).for(:descriptor).on(:url)[0].code).to eq(Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid)
         end
 
         it "returns an error response when the order_id is invalid" do
@@ -5960,8 +6126,8 @@ describe Braintree::Transaction do
             },
             :order_id => "x" * 256
           })
-          result.success?.should == false
-          result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:order_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::OrderIdIsTooLong)
         end
 
         it "returns an error on an unsupported processor" do
@@ -5991,8 +6157,8 @@ describe Braintree::Transaction do
             },
             :order_id => "456"
           })
-          result.success?.should == false
-          result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingTransactionDetails
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportUpdatingTransactionDetails)
         end
       end
     end
@@ -6022,8 +6188,8 @@ describe Braintree::Transaction do
           },
           :order_id => "456"
         })
-        result.success?.should == false
-        result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotUpdateTransactionDetailsNotSubmittedForSettlement
+        expect(result.success?).to eq(false)
+        expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotUpdateTransactionDetailsNotSubmittedForSettlement)
       end
     end
 
@@ -6041,28 +6207,28 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       partial_settlement_transaction1 = result.transaction
-      partial_settlement_transaction1.amount.should == 100
-      partial_settlement_transaction1.type.should == Braintree::Transaction::Type::Sale
-      partial_settlement_transaction1.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      partial_settlement_transaction1.authorized_transaction_id.should == authorized_transaction.id
+      expect(partial_settlement_transaction1.amount).to eq(100)
+      expect(partial_settlement_transaction1.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(partial_settlement_transaction1.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(partial_settlement_transaction1.authorized_transaction_id).to eq(authorized_transaction.id)
 
       refreshed_authorized_transaction = Braintree::Transaction.find(authorized_transaction.id)
-      refreshed_authorized_transaction.status.should == Braintree::Transaction::Status::SettlementPending
-      refreshed_authorized_transaction.partial_settlement_transaction_ids.should == [partial_settlement_transaction1.id]
+      expect(refreshed_authorized_transaction.status).to eq(Braintree::Transaction::Status::SettlementPending)
+      expect(refreshed_authorized_transaction.partial_settlement_transaction_ids).to eq([partial_settlement_transaction1.id])
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 800)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       partial_settlement_transaction2 = result.transaction
-      partial_settlement_transaction2.amount.should == 800
-      partial_settlement_transaction2.type.should == Braintree::Transaction::Type::Sale
-      partial_settlement_transaction2.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      partial_settlement_transaction2.authorized_transaction_id.should == authorized_transaction.id
+      expect(partial_settlement_transaction2.amount).to eq(800)
+      expect(partial_settlement_transaction2.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(partial_settlement_transaction2.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(partial_settlement_transaction2.authorized_transaction_id).to eq(authorized_transaction.id)
 
       refreshed_authorized_transaction = Braintree::Transaction.find(authorized_transaction.id)
-      refreshed_authorized_transaction.status.should == Braintree::Transaction::Status::SettlementPending
-      refreshed_authorized_transaction.partial_settlement_transaction_ids.sort.should == [partial_settlement_transaction1.id, partial_settlement_transaction2.id].sort
+      expect(refreshed_authorized_transaction.status).to eq(Braintree::Transaction::Status::SettlementPending)
+      expect(refreshed_authorized_transaction.partial_settlement_transaction_ids.sort).to eq([partial_settlement_transaction1.id, partial_settlement_transaction2.id].sort)
     end
 
     it "allows partial settlement to be submitted with order_id" do
@@ -6076,9 +6242,9 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100, :order_id => 1234)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       partial_settlement_transaction = result.transaction
-      partial_settlement_transaction.order_id.should == "1234"
+      expect(partial_settlement_transaction.order_id).to eq("1234")
     end
 
     it "returns an error with an order_id that's too long" do
@@ -6092,8 +6258,8 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100, :order_id => "1"*256)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:order_id)[0].code.should == Braintree::ErrorCodes::Transaction::OrderIdIsTooLong
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:order_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::OrderIdIsTooLong)
     end
 
     it "allows partial settlement to be submitted with descriptors" do
@@ -6111,11 +6277,11 @@ describe Braintree::Transaction do
         100,
         :descriptor => {:name => "123*123456789012345678", :phone => "5555551234", :url => "url.com"},
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       partial_settlement_transaction = result.transaction
-      partial_settlement_transaction.descriptor.name.should == "123*123456789012345678"
-      partial_settlement_transaction.descriptor.phone.should == "5555551234"
-      partial_settlement_transaction.descriptor.url.should == "url.com"
+      expect(partial_settlement_transaction.descriptor.name).to eq("123*123456789012345678")
+      expect(partial_settlement_transaction.descriptor.phone).to eq("5555551234")
+      expect(partial_settlement_transaction.descriptor.url).to eq("url.com")
     end
 
     it "returns an error with a descriptor in an invalid format" do
@@ -6137,10 +6303,10 @@ describe Braintree::Transaction do
           :url => "12345678901234"
         },
       )
-      result.success?.should == false
-      result.errors.for(:transaction).for(:descriptor).on(:name)[0].code.should == Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid
-      result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code.should == Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid
-      result.errors.for(:transaction).for(:descriptor).on(:url)[0].code.should == Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).for(:descriptor).on(:name)[0].code).to eq(Braintree::ErrorCodes::Descriptor::NameFormatIsInvalid)
+      expect(result.errors.for(:transaction).for(:descriptor).on(:phone)[0].code).to eq(Braintree::ErrorCodes::Descriptor::PhoneFormatIsInvalid)
+      expect(result.errors.for(:transaction).for(:descriptor).on(:url)[0].code).to eq(Braintree::ErrorCodes::Descriptor::UrlFormatIsInvalid)
     end
 
     it "returns an error with an unsupported processor" do
@@ -6154,8 +6320,8 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportPartialSettlement
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportPartialSettlement)
     end
 
     it "returns an error with an invalid payment instrument type" do
@@ -6166,8 +6332,8 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::PaymentInstrumentTypeIsNotAccepted
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::PaymentInstrumentTypeIsNotAccepted)
     end
 
     it "returns an error result if settlement amount greater than authorized amount" do
@@ -6181,11 +6347,11 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 901)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::SettlementAmountIsTooLarge)
     end
 
     it "returns an error result if status is not authorized" do
@@ -6199,11 +6365,11 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.void(authorized_transaction.id)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement)
     end
   end
 
@@ -6218,8 +6384,8 @@ describe Braintree::Transaction do
       )
       options = {:order_id => "ABC123"}
       transaction = Braintree::Transaction.submit_for_partial_settlement!(original_transaction.id, "0.01", options)
-      transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
-      transaction.order_id.should == options[:order_id]
+      expect(transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(transaction.order_id).to eq(options[:order_id])
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
@@ -6230,7 +6396,7 @@ describe Braintree::Transaction do
           :expiration_date => "06/2009"
         },
       )
-      transaction.amount.should == BigDecimal("1000.00")
+      expect(transaction.amount).to eq(BigDecimal("1000.00"))
       expect do
         Braintree::Transaction.submit_for_partial_settlement!(transaction.id, "1000.01")
       end.to raise_error(Braintree::ValidationsFailed)
@@ -6242,7 +6408,7 @@ describe Braintree::Transaction do
       original_transaction = create_escrowed_transcation
 
       result = Braintree::Transaction.release_from_escrow(original_transaction.id)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
     end
 
     it "returns an error result if escrow_status is not HeldForEscrow" do
@@ -6256,10 +6422,10 @@ describe Braintree::Transaction do
         :service_fee_amount => "1.00",
       )
 
-      transaction.escrow_status.should be_nil
+      expect(transaction.escrow_status).to be_nil
 
       result = Braintree::Transaction.release_from_escrow(transaction.id)
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotReleaseFromEscrow
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotReleaseFromEscrow)
     end
   end
 
@@ -6268,7 +6434,7 @@ describe Braintree::Transaction do
       original_transaction = create_escrowed_transcation
 
       transaction = Braintree::Transaction.release_from_escrow!(original_transaction.id)
-      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+      expect(transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
     end
 
     it "raises an error when transaction is not successful" do
@@ -6282,7 +6448,7 @@ describe Braintree::Transaction do
         :service_fee_amount => "1.00",
       )
 
-      transaction.escrow_status.should be_nil
+      expect(transaction.escrow_status).to be_nil
 
       expect do
         Braintree::Transaction.release_from_escrow!(transaction.id)
@@ -6294,12 +6460,12 @@ describe Braintree::Transaction do
     it "returns the transaction if successful" do
       transaction = create_escrowed_transcation
       result = Braintree::Transaction.release_from_escrow(transaction.id)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
 
       result = Braintree::Transaction.cancel_release(transaction.id)
 
-      result.success?.should be(true)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::Held
+      expect(result.success?).to be(true)
+      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::Held)
     end
 
     it "returns an error result if escrow_status is not ReleasePending" do
@@ -6307,8 +6473,8 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.cancel_release(transaction.id)
 
-      result.success?.should be(false)
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotCancelRelease
+      expect(result.success?).to be(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotCancelRelease)
     end
   end
 
@@ -6316,11 +6482,11 @@ describe Braintree::Transaction do
     it "returns the transaction when release is cancelled" do
       transaction = create_escrowed_transcation
       result = Braintree::Transaction.release_from_escrow(transaction.id)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::ReleasePending
+      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
 
       transaction = Braintree::Transaction.cancel_release!(transaction.id)
 
-      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::Held
+      expect(transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::Held)
     end
 
     it "raises an error when release cannot be cancelled" do
@@ -6341,13 +6507,13 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
-      result.transaction.id.should =~ /^\w{6,}$/
-      result.transaction.type.should == "credit"
-      result.transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2009"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.id).to match(/^\w{6,}$/)
+      expect(result.transaction.type).to eq("credit")
+      expect(result.transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2009")
     end
 
     it "returns an error result if validations fail" do
@@ -6361,9 +6527,9 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.credit(params[:transaction])
-      result.success?.should == false
-      result.params.should == {:transaction => {:type => "credit", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}}
-      result.errors.for(:transaction).on(:amount)[0].code.should == Braintree::ErrorCodes::Transaction::AmountIsRequired
+      expect(result.success?).to eq(false)
+      expect(result.params).to eq({:transaction => {:type => "credit", :amount => nil, :credit_card => {:expiration_date => "05/2009"}}})
+      expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::AmountIsRequired)
     end
 
     it "allows merchant account to be specified" do
@@ -6375,8 +6541,8 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
-      result.transaction.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+      expect(result.success?).to eq(true)
+      expect(result.transaction.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
     end
 
     it "uses default merchant account when it is not specified" do
@@ -6387,8 +6553,8 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
-      result.transaction.merchant_account_id.should == SpecHelper::DefaultMerchantAccountId
+      expect(result.success?).to eq(true)
+      expect(result.transaction.merchant_account_id).to eq(SpecHelper::DefaultMerchantAccountId)
     end
 
     it "disallows service fee on a credit" do
@@ -6403,8 +6569,8 @@ describe Braintree::Transaction do
         }
       }
       result = Braintree::Transaction.credit(params[:transaction])
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base).map(&:code).should include(Braintree::ErrorCodes::Transaction::ServiceFeeIsNotAllowedOnCredits)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base).map(&:code)).to include(Braintree::ErrorCodes::Transaction::ServiceFeeIsNotAllowedOnCredits)
     end
   end
 
@@ -6417,12 +6583,12 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      transaction.id.should =~ /^\w{6,}$/
-      transaction.type.should == "credit"
-      transaction.amount.should == BigDecimal(Braintree::Test::TransactionAmounts::Authorize)
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2009"
+      expect(transaction.id).to match(/^\w{6,}$/)
+      expect(transaction.type).to eq("credit")
+      expect(transaction.amount).to eq(BigDecimal(Braintree::Test::TransactionAmounts::Authorize))
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2009")
     end
 
     it "raises a ValidationsFailed if invalid" do
@@ -6448,11 +6614,11 @@ describe Braintree::Transaction do
           :expiration_date => "05/2009"
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       created_transaction = result.transaction
       found_transaction = Braintree::Transaction.find(created_transaction.id)
-      found_transaction.should == created_transaction
-      found_transaction.graphql_id.should_not be_nil
+      expect(found_transaction).to eq(created_transaction)
+      expect(found_transaction.graphql_id).not_to be_nil
     end
 
     it "finds the vaulted transaction with the given id" do
@@ -6465,12 +6631,12 @@ describe Braintree::Transaction do
         },
         :options => {:store_in_vault => true},
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       created_transaction = result.transaction
       found_transaction = Braintree::Transaction.find(created_transaction.id)
-      found_transaction.should == created_transaction
+      expect(found_transaction).to eq(created_transaction)
 
-      found_transaction.credit_card_details.unique_number_identifier.should_not be_nil
+      expect(found_transaction.credit_card_details.unique_number_identifier).not_to be_nil
     end
 
     it "raises a NotFoundError exception if transaction cannot be found" do
@@ -6482,23 +6648,23 @@ describe Braintree::Transaction do
     it "finds a transaction and returns an acquirer_reference_number if the transaction has one" do
       transaction = Braintree::Transaction.find("transactionwithacquirerreferencenumber")
 
-      transaction.acquirer_reference_number.should == "123456789 091019"
+      expect(transaction.acquirer_reference_number).to eq("123456789 091019")
     end
 
     context "disbursement_details" do
       it "includes disbursement_details on found transactions" do
         found_transaction = Braintree::Transaction.find("deposittransaction")
 
-        found_transaction.disbursed?.should == true
+        expect(found_transaction.disbursed?).to eq(true)
         disbursement = found_transaction.disbursement_details
 
         expect(disbursement.disbursement_date).to be_a Date
         expect(disbursement.disbursement_date).to eq Date.parse("2013-04-10")
-        disbursement.settlement_amount.should == "100.00"
-        disbursement.settlement_currency_iso_code.should == "USD"
-        disbursement.settlement_currency_exchange_rate.should == "1"
-        disbursement.funds_held?.should == false
-        disbursement.success?.should be(true)
+        expect(disbursement.settlement_amount).to eq("100.00")
+        expect(disbursement.settlement_currency_iso_code).to eq("USD")
+        expect(disbursement.settlement_currency_exchange_rate).to eq("1")
+        expect(disbursement.funds_held?).to eq(false)
+        expect(disbursement.success?).to be(true)
       end
 
       it "is not disbursed" do
@@ -6510,10 +6676,10 @@ describe Braintree::Transaction do
             :expiration_date => "05/2009"
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         created_transaction = result.transaction
 
-        created_transaction.disbursed?.should == false
+        expect(created_transaction.disbursed?).to eq(false)
       end
     end
 
@@ -6521,34 +6687,34 @@ describe Braintree::Transaction do
       it "includes disputes on found transactions" do
         found_transaction = Braintree::Transaction.find("disputedtransaction")
 
-        found_transaction.disputes.count.should == 1
+        expect(found_transaction.disputes.count).to eq(1)
 
         dispute = found_transaction.disputes.first
-        dispute.received_date.should == Date.new(2014, 3, 1)
-        dispute.reply_by_date.should == Date.new(2014, 3, 21)
-        dispute.amount.should == Braintree::Util.to_big_decimal("250.00")
-        dispute.currency_iso_code.should == "USD"
-        dispute.reason.should == Braintree::Dispute::Reason::Fraud
-        dispute.status.should == Braintree::Dispute::Status::Won
-        dispute.transaction_details.amount.should == Braintree::Util.to_big_decimal("1000.00")
-        dispute.transaction_details.id.should == "disputedtransaction"
-        dispute.kind.should == Braintree::Dispute::Kind::Chargeback
-        dispute.date_opened.should == Date.new(2014, 3, 1)
-        dispute.date_won.should == Date.new(2014, 3, 7)
+        expect(dispute.received_date).to eq(Date.new(2014, 3, 1))
+        expect(dispute.reply_by_date).to eq(Date.new(2014, 3, 21))
+        expect(dispute.amount).to eq(Braintree::Util.to_big_decimal("250.00"))
+        expect(dispute.currency_iso_code).to eq("USD")
+        expect(dispute.reason).to eq(Braintree::Dispute::Reason::Fraud)
+        expect(dispute.status).to eq(Braintree::Dispute::Status::Won)
+        expect(dispute.transaction_details.amount).to eq(Braintree::Util.to_big_decimal("1000.00"))
+        expect(dispute.transaction_details.id).to eq("disputedtransaction")
+        expect(dispute.kind).to eq(Braintree::Dispute::Kind::Chargeback)
+        expect(dispute.date_opened).to eq(Date.new(2014, 3, 1))
+        expect(dispute.date_won).to eq(Date.new(2014, 3, 7))
       end
 
       it "includes disputes on found transactions" do
         found_transaction = Braintree::Transaction.find("retrievaltransaction")
 
-        found_transaction.disputes.count.should == 1
+        expect(found_transaction.disputes.count).to eq(1)
 
         dispute = found_transaction.disputes.first
-        dispute.amount.should == Braintree::Util.to_big_decimal("1000.00")
-        dispute.currency_iso_code.should == "USD"
-        dispute.reason.should == Braintree::Dispute::Reason::Retrieval
-        dispute.status.should == Braintree::Dispute::Status::Open
-        dispute.transaction_details.amount.should == Braintree::Util.to_big_decimal("1000.00")
-        dispute.transaction_details.id.should == "retrievaltransaction"
+        expect(dispute.amount).to eq(Braintree::Util.to_big_decimal("1000.00"))
+        expect(dispute.currency_iso_code).to eq("USD")
+        expect(dispute.reason).to eq(Braintree::Dispute::Reason::Retrieval)
+        expect(dispute.status).to eq(Braintree::Dispute::Status::Open)
+        expect(dispute.transaction_details.amount).to eq(Braintree::Util.to_big_decimal("1000.00"))
+        expect(dispute.transaction_details.id).to eq("retrievaltransaction")
       end
 
       it "is not disputed" do
@@ -6560,10 +6726,10 @@ describe Braintree::Transaction do
             :expiration_date => "05/2009"
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         created_transaction = result.transaction
 
-        created_transaction.disputes.should == []
+        expect(created_transaction.disputes).to eq([])
       end
     end
 
@@ -6599,20 +6765,20 @@ describe Braintree::Transaction do
       it "returns all the required paypal fields" do
         transaction = Braintree::Transaction.find("settledtransaction")
 
-        transaction.paypal_details.debug_id.should_not be_nil
-        transaction.paypal_details.payer_email.should_not be_nil
-        transaction.paypal_details.authorization_id.should_not be_nil
-        transaction.paypal_details.payer_id.should_not be_nil
-        transaction.paypal_details.payer_first_name.should_not be_nil
-        transaction.paypal_details.payer_last_name.should_not be_nil
-        transaction.paypal_details.payer_status.should_not be_nil
-        transaction.paypal_details.seller_protection_status.should_not be_nil
-        transaction.paypal_details.capture_id.should_not be_nil
-        transaction.paypal_details.refund_id.should_not be_nil
-        transaction.paypal_details.transaction_fee_amount.should_not be_nil
-        transaction.paypal_details.transaction_fee_currency_iso_code.should_not be_nil
-        transaction.paypal_details.refund_from_transaction_fee_amount.should_not be_nil
-        transaction.paypal_details.refund_from_transaction_fee_currency_iso_code.should_not be_nil
+        expect(transaction.paypal_details.debug_id).not_to be_nil
+        expect(transaction.paypal_details.payer_email).not_to be_nil
+        expect(transaction.paypal_details.authorization_id).not_to be_nil
+        expect(transaction.paypal_details.payer_id).not_to be_nil
+        expect(transaction.paypal_details.payer_first_name).not_to be_nil
+        expect(transaction.paypal_details.payer_last_name).not_to be_nil
+        expect(transaction.paypal_details.payer_status).not_to be_nil
+        expect(transaction.paypal_details.seller_protection_status).not_to be_nil
+        expect(transaction.paypal_details.capture_id).not_to be_nil
+        expect(transaction.paypal_details.refund_id).not_to be_nil
+        expect(transaction.paypal_details.transaction_fee_amount).not_to be_nil
+        expect(transaction.paypal_details.transaction_fee_currency_iso_code).not_to be_nil
+        expect(transaction.paypal_details.refund_from_transaction_fee_amount).not_to be_nil
+        expect(transaction.paypal_details.refund_from_transaction_fee_currency_iso_code).not_to be_nil
       end
     end
   end
@@ -6630,11 +6796,11 @@ describe Braintree::Transaction do
         :service_fee_amount => "10.00",
       )
 
-      result.transaction.escrow_status.should be_nil
+      expect(result.transaction.escrow_status).to be_nil
       result = Braintree::Transaction.hold_in_escrow(result.transaction.id)
 
-      result.success?.should be(true)
-      result.transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
+      expect(result.success?).to be(true)
+      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::HoldPending)
     end
 
     it "returns an error result if the transaction cannot be held in escrow" do
@@ -6648,7 +6814,7 @@ describe Braintree::Transaction do
       )
 
       result = Braintree::Transaction.hold_in_escrow(transaction.id)
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotHoldInEscrow)
     end
   end
 
@@ -6665,10 +6831,10 @@ describe Braintree::Transaction do
         :service_fee_amount => "10.00",
       )
 
-      result.transaction.escrow_status.should be_nil
+      expect(result.transaction.escrow_status).to be_nil
       transaction = Braintree::Transaction.hold_in_escrow!(result.transaction.id)
 
-      transaction.escrow_status.should == Braintree::Transaction::EscrowStatus::HoldPending
+      expect(transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::HoldPending)
     end
 
     it "raises an error if the transaction cannot be held in escrow" do
@@ -6697,9 +6863,9 @@ describe Braintree::Transaction do
         },
       )
       result = Braintree::Transaction.void(transaction.id)
-      result.success?.should == true
-      result.transaction.id.should == transaction.id
-      result.transaction.status.should == Braintree::Transaction::Status::Voided
+      expect(result.success?).to eq(true)
+      expect(result.transaction.id).to eq(transaction.id)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::Voided)
     end
 
     it "returns an error result if unsuccessful" do
@@ -6711,8 +6877,8 @@ describe Braintree::Transaction do
         },
       ).transaction
       result = Braintree::Transaction.void(transaction.id)
-      result.success?.should == false
-      result.errors.for(:transaction).on(:base)[0].code.should == Braintree::ErrorCodes::Transaction::CannotBeVoided
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotBeVoided)
     end
   end
 
@@ -6726,8 +6892,8 @@ describe Braintree::Transaction do
         },
       )
       returned_transaction = Braintree::Transaction.void!(transaction.id)
-      returned_transaction.should == transaction
-      returned_transaction.status.should == Braintree::Transaction::Status::Voided
+      expect(returned_transaction).to eq(transaction)
+      expect(returned_transaction.status).to eq(Braintree::Transaction::Status::Voided)
     end
 
     it "raises a ValidationsFailed if unsuccessful" do
@@ -6754,9 +6920,9 @@ describe Braintree::Transaction do
         },
       )
       result = Braintree::Transaction.submit_for_settlement!(transaction.id)
-      result.status_history.size.should == 2
-      result.status_history[0].status.should == Braintree::Transaction::Status::Authorized
-      result.status_history[1].status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(result.status_history.size).to eq(2)
+      expect(result.status_history[0].status).to eq(Braintree::Transaction::Status::Authorized)
+      expect(result.status_history[1].status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
   end
 
@@ -6764,42 +6930,42 @@ describe Braintree::Transaction do
     it "includes authorization adjustments on found transactions" do
       found_transaction = Braintree::Transaction.find("authadjustmenttransaction")
 
-      found_transaction.authorization_adjustments.count.should == 1
+      expect(found_transaction.authorization_adjustments.count).to eq(1)
 
       authorization_adjustment = found_transaction.authorization_adjustments.first
-      authorization_adjustment.amount.should == "-20.00"
-      authorization_adjustment.success.should == true
-      authorization_adjustment.timestamp.should be_a Time
-      authorization_adjustment.processor_response_code.should == "1000"
-      authorization_adjustment.processor_response_text.should == "Approved"
+      expect(authorization_adjustment.amount).to eq("-20.00")
+      expect(authorization_adjustment.success).to eq(true)
+      expect(authorization_adjustment.timestamp).to be_a Time
+      expect(authorization_adjustment.processor_response_code).to eq("1000")
+      expect(authorization_adjustment.processor_response_text).to eq("Approved")
     end
 
     it "includes authorization adjustments soft declined on found transactions" do
       found_transaction = Braintree::Transaction.find("authadjustmenttransactionsoftdeclined")
 
-      found_transaction.authorization_adjustments.count.should == 1
+      expect(found_transaction.authorization_adjustments.count).to eq(1)
 
       authorization_adjustment = found_transaction.authorization_adjustments.first
-      authorization_adjustment.amount.should == "-20.00"
-      authorization_adjustment.success.should == false
-      authorization_adjustment.timestamp.should be_a Time
-      authorization_adjustment.processor_response_code.should == "3000"
-      authorization_adjustment.processor_response_text.should == "Processor Network Unavailable - Try Again"
-      authorization_adjustment.processor_response_type.should == Braintree::ProcessorResponseTypes::SoftDeclined
+      expect(authorization_adjustment.amount).to eq("-20.00")
+      expect(authorization_adjustment.success).to eq(false)
+      expect(authorization_adjustment.timestamp).to be_a Time
+      expect(authorization_adjustment.processor_response_code).to eq("3000")
+      expect(authorization_adjustment.processor_response_text).to eq("Processor Network Unavailable - Try Again")
+      expect(authorization_adjustment.processor_response_type).to eq(Braintree::ProcessorResponseTypes::SoftDeclined)
     end
 
     it "includes authorization adjustments hard declined on found transactions" do
       found_transaction = Braintree::Transaction.find("authadjustmenttransactionharddeclined")
 
-      found_transaction.authorization_adjustments.count.should == 1
+      expect(found_transaction.authorization_adjustments.count).to eq(1)
 
       authorization_adjustment = found_transaction.authorization_adjustments.first
-      authorization_adjustment.amount.should == "-20.00"
-      authorization_adjustment.success.should == false
-      authorization_adjustment.timestamp.should be_a Time
-      authorization_adjustment.processor_response_code.should == "2015"
-      authorization_adjustment.processor_response_text.should == "Transaction Not Allowed"
-      authorization_adjustment.processor_response_type.should == Braintree::ProcessorResponseTypes::HardDeclined
+      expect(authorization_adjustment.amount).to eq("-20.00")
+      expect(authorization_adjustment.success).to eq(false)
+      expect(authorization_adjustment.timestamp).to be_a Time
+      expect(authorization_adjustment.processor_response_code).to eq("2015")
+      expect(authorization_adjustment.processor_response_text).to eq("Transaction Not Allowed")
+      expect(authorization_adjustment.processor_response_type).to eq(Braintree::ProcessorResponseTypes::HardDeclined)
     end
   end
 
@@ -6812,7 +6978,7 @@ describe Braintree::Transaction do
         },
       )
       transaction = Braintree::CreditCard.sale(customer.credit_cards[0].token, {:amount => "100.00"}).transaction
-      transaction.vault_credit_card.should == customer.credit_cards[0]
+      expect(transaction.vault_credit_card).to eq(customer.credit_cards[0])
     end
 
     it "returns nil if the transaction credit card is not stored in the vault" do
@@ -6824,7 +6990,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2010"
         },
       )
-      transaction.vault_credit_card.should == nil
+      expect(transaction.vault_credit_card).to eq(nil)
     end
   end
 
@@ -6837,7 +7003,7 @@ describe Braintree::Transaction do
         },
       )
       transaction = Braintree::CreditCard.sale(customer.credit_cards[0].token, :amount => "100.00").transaction
-      transaction.vault_customer.should == customer
+      expect(transaction.vault_customer).to eq(customer)
     end
 
     it "returns nil if the transaction customer is not stored in the vault" do
@@ -6849,7 +7015,7 @@ describe Braintree::Transaction do
           :expiration_date => "05/2010"
         },
       )
-      transaction.vault_customer.should == nil
+      expect(transaction.vault_customer).to eq(nil)
     end
   end
 
@@ -6908,11 +7074,11 @@ describe Braintree::Transaction do
         :amount => "10.00",
         :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
       )
-      result.success?.should == true
-      result.transaction.paypal_details.payer_email.should == "payer@example.com"
-      result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-      result.transaction.paypal_details.authorization_id.should match(/AUTH-\w+/)
-      result.transaction.paypal_details.image_url.should_not be_nil
+      expect(result.success?).to eq(true)
+      expect(result.transaction.paypal_details.payer_email).to eq("payer@example.com")
+      expect(result.transaction.paypal_details.payment_id).to match(/PAY-\w+/)
+      expect(result.transaction.paypal_details.authorization_id).to match(/AUTH-\w+/)
+      expect(result.transaction.paypal_details.image_url).not_to be_nil
     end
 
     it "can vault a paypal account on a transaction" do
@@ -6923,11 +7089,11 @@ describe Braintree::Transaction do
           :store_in_vault => true
         },
       )
-      result.success?.should == true
-      result.transaction.paypal_details.token.should_not be_nil
-      result.transaction.paypal_details.payer_email.should == "payer@example.com"
-      result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-      result.transaction.paypal_details.authorization_id.should match(/AUTH-\w+/)
+      expect(result.success?).to eq(true)
+      expect(result.transaction.paypal_details.token).not_to be_nil
+      expect(result.transaction.paypal_details.payer_email).to eq("payer@example.com")
+      expect(result.transaction.paypal_details.payment_id).to match(/PAY-\w+/)
+      expect(result.transaction.paypal_details.authorization_id).to match(/AUTH-\w+/)
     end
 
     it "can create a transaction from a vaulted paypal account" do
@@ -6937,8 +7103,8 @@ describe Braintree::Transaction do
         :customer_id => customer.id,
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::PayPalAccount)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::PayPalAccount)
       payment_method_token = result.payment_method.token
 
       result = Braintree::Transaction.sale(
@@ -6947,11 +7113,11 @@ describe Braintree::Transaction do
         :payment_method_token => payment_method_token,
       )
 
-      result.should be_success
-      result.transaction.paypal_details.token.should == payment_method_token
-      result.transaction.paypal_details.payer_email.should == "payer@example.com"
-      result.transaction.paypal_details.payment_id.should match(/PAY-\w+/)
-      result.transaction.paypal_details.authorization_id.should match(/AUTH-\w+/)
+      expect(result).to be_success
+      expect(result.transaction.paypal_details.token).to eq(payment_method_token)
+      expect(result.transaction.paypal_details.payer_email).to eq("payer@example.com")
+      expect(result.transaction.paypal_details.payment_id).to match(/PAY-\w+/)
+      expect(result.transaction.paypal_details.authorization_id).to match(/AUTH-\w+/)
     end
 
     context "validation failure" do
@@ -6961,8 +7127,8 @@ describe Braintree::Transaction do
           :amount => "10.00",
           :payment_method_nonce => nonce,
         )
-        result.should_not be_success
-        result.errors.for(:transaction).for(:paypal_account).first.code.should == Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount
+        expect(result).not_to be_success
+        expect(result.errors.for(:transaction).for(:paypal_account).first.code).to eq(Braintree::ErrorCodes::PayPalAccount::IncompletePayPalAccount)
       end
     end
   end
@@ -7026,12 +7192,12 @@ describe Braintree::Transaction do
         :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
-      result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
-      result.transaction.facilitated_details.merchant_name.should == "14ladders"
-      result.transaction.facilitated_details.payment_method_nonce.should == grant_result.payment_method_nonce.nonce
-      result.transaction.facilitator_details.should_not == nil
-      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
-      result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+      expect(result.transaction.facilitated_details.merchant_id).to eq("integration_merchant_id")
+      expect(result.transaction.facilitated_details.merchant_name).to eq("14ladders")
+      expect(result.transaction.facilitated_details.payment_method_nonce).to eq(grant_result.payment_method_nonce.nonce)
+      expect(result.transaction.facilitator_details).not_to eq(nil)
+      expect(result.transaction.facilitator_details.oauth_application_client_id).to eq("client_id$#{Braintree::Configuration.environment}$integration_client_id")
+      expect(result.transaction.facilitator_details.oauth_application_name).to eq("PseudoShop")
       result.transaction.billing_details.postal_code == nil
     end
 
@@ -7054,9 +7220,9 @@ describe Braintree::Transaction do
         :shared_billing_address_id => @address.id,
         :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
-      result.success?.should == true
-      result.transaction.shipping_details.first_name.should == @address.first_name
-      result.transaction.billing_details.first_name.should == @address.first_name
+      expect(result.success?).to eq(true)
+      expect(result.transaction.shipping_details.first_name).to eq(@address.first_name)
+      expect(result.transaction.billing_details.first_name).to eq(@address.first_name)
     end
 
     it "facilitated details are returned on transaction created via a shared_payment_method_token" do
@@ -7064,12 +7230,12 @@ describe Braintree::Transaction do
         :shared_payment_method_token => @credit_card.token,
         :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
-      result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
-      result.transaction.facilitated_details.merchant_name.should == "14ladders"
-      result.transaction.facilitated_details.payment_method_nonce.should == nil
-      result.transaction.facilitator_details.should_not == nil
-      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
-      result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+      expect(result.transaction.facilitated_details.merchant_id).to eq("integration_merchant_id")
+      expect(result.transaction.facilitated_details.merchant_name).to eq("14ladders")
+      expect(result.transaction.facilitated_details.payment_method_nonce).to eq(nil)
+      expect(result.transaction.facilitator_details).not_to eq(nil)
+      expect(result.transaction.facilitator_details.oauth_application_client_id).to eq("client_id$#{Braintree::Configuration.environment}$integration_client_id")
+      expect(result.transaction.facilitator_details.oauth_application_name).to eq("PseudoShop")
     end
 
     it "facilitated details are returned on transaction created via a shared_payment_method_nonce" do
@@ -7081,47 +7247,47 @@ describe Braintree::Transaction do
         :shared_payment_method_nonce => shared_nonce,
         :amount => Braintree::Test::TransactionAmounts::Authorize,
       )
-      result.transaction.facilitated_details.merchant_id.should == "integration_merchant_id"
-      result.transaction.facilitated_details.merchant_name.should == "14ladders"
-      result.transaction.facilitated_details.payment_method_nonce.should == nil
-      result.transaction.facilitator_details.should_not == nil
-      result.transaction.facilitator_details.oauth_application_client_id.should == "client_id$#{Braintree::Configuration.environment}$integration_client_id"
-      result.transaction.facilitator_details.oauth_application_name.should == "PseudoShop"
+      expect(result.transaction.facilitated_details.merchant_id).to eq("integration_merchant_id")
+      expect(result.transaction.facilitated_details.merchant_name).to eq("14ladders")
+      expect(result.transaction.facilitated_details.payment_method_nonce).to eq(nil)
+      expect(result.transaction.facilitator_details).not_to eq(nil)
+      expect(result.transaction.facilitator_details.oauth_application_client_id).to eq("client_id$#{Braintree::Configuration.environment}$integration_client_id")
+      expect(result.transaction.facilitator_details.oauth_application_name).to eq("PseudoShop")
     end
   end
 
   context "paypal here" do
     it "gets the details of an auth/capture transaction" do
       result = Braintree::Transaction.find("paypal_here_auth_capture_id")
-      result.payment_instrument_type.should eq(Braintree::PaymentInstrumentType::PayPalHere)
-      result.paypal_here_details.should_not be_nil
+      expect(result.payment_instrument_type).to eq(Braintree::PaymentInstrumentType::PayPalHere)
+      expect(result.paypal_here_details).not_to be_nil
 
       details = result.paypal_here_details
-      details.authorization_id.should_not be_nil
-      details.capture_id.should_not be_nil
-      details.invoice_id.should_not be_nil
-      details.last_4.should_not be_nil
-      details.payment_type.should_not be_nil
-      details.transaction_fee_amount.should_not be_nil
-      details.transaction_fee_currency_iso_code.should_not be_nil
-      details.transaction_initiation_date.should_not be_nil
-      details.transaction_updated_date.should_not be_nil
+      expect(details.authorization_id).not_to be_nil
+      expect(details.capture_id).not_to be_nil
+      expect(details.invoice_id).not_to be_nil
+      expect(details.last_4).not_to be_nil
+      expect(details.payment_type).not_to be_nil
+      expect(details.transaction_fee_amount).not_to be_nil
+      expect(details.transaction_fee_currency_iso_code).not_to be_nil
+      expect(details.transaction_initiation_date).not_to be_nil
+      expect(details.transaction_updated_date).not_to be_nil
     end
 
     it "gets the details of a sale transaction" do
       result = Braintree::Transaction.find("paypal_here_sale_id")
-      result.paypal_here_details.should_not be_nil
+      expect(result.paypal_here_details).not_to be_nil
 
       details = result.paypal_here_details
-      details.payment_id.should_not be_nil
+      expect(details.payment_id).not_to be_nil
     end
 
     it "gets the details of a refunded sale transaction" do
       result = Braintree::Transaction.find("paypal_here_refund_id")
-      result.paypal_here_details.should_not be_nil
+      expect(result.paypal_here_details).not_to be_nil
 
       details = result.paypal_here_details
-      details.refund_id.should_not be_nil
+      expect(details.refund_id).not_to be_nil
     end
   end
 
@@ -7131,11 +7297,11 @@ describe Braintree::Transaction do
         :amount => "112.44",
         :payment_method_token => "network_tokenized_credit_card",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal("112.44")
-      transaction.processed_with_network_token?.should == true
+      expect(transaction.amount).to eq(BigDecimal("112.44"))
+      expect(transaction.processed_with_network_token?).to eq(true)
     end
 
     it "creates a transaction with a vaulted, non-tokenized credit card" do
@@ -7150,11 +7316,11 @@ describe Braintree::Transaction do
         :amount => "112.44",
         :payment_method_token => payment_method_token,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       transaction = result.transaction
 
-      transaction.amount.should == BigDecimal("112.44")
-      transaction.processed_with_network_token?.should == false
+      expect(transaction.amount).to eq(BigDecimal("112.44"))
+      expect(transaction.processed_with_network_token?).to eq(false)
     end
   end
 
@@ -7166,7 +7332,7 @@ describe Braintree::Transaction do
       )
 
       transaction = result.transaction
-      transaction.retried.should == true
+      expect(transaction.retried).to eq(true)
     end
 
     it "creates a non-retried transaction" do
@@ -7204,26 +7370,26 @@ describe Braintree::Transaction do
         )
 
         transaction = result.transaction
-        transaction.retried_transaction_id.should == nil
-        transaction.retry_ids.should_not == []
-        transaction.retry_ids.count.should == 2
+        expect(transaction.retried_transaction_id).to eq(nil)
+        expect(transaction.retry_ids).not_to eq([])
+        expect(transaction.retry_ids.count).to eq(2)
 
         # verify retried_transaction_id is in the all retried transactions
         retry_transaction_1 = transaction.retry_ids[0]
         collection_1 = Braintree::Transaction.search do |search|
           search.id.is retry_transaction_1
         end
-        collection_1.maximum_size.should == 1
-        collection_1.first.retried_transaction_id.should_not == nil
-        collection_1.first.retried_transaction_id.should == transaction.id
+        expect(collection_1.maximum_size).to eq(1)
+        expect(collection_1.first.retried_transaction_id).not_to eq(nil)
+        expect(collection_1.first.retried_transaction_id).to eq(transaction.id)
 
         retry_transaction_2 = transaction.retry_ids[1]
         collection_2 = Braintree::Transaction.search do |search|
           search.id.is retry_transaction_2
         end
-        collection_2.maximum_size.should == 1
-        collection_2.first.retried_transaction_id.should_not == nil
-        collection_2.first.retried_transaction_id.should == transaction.id
+        expect(collection_2.maximum_size).to eq(1)
+        expect(collection_2.first.retried_transaction_id).not_to eq(nil)
+        expect(collection_2.first.retried_transaction_id).to eq(transaction.id)
       end
     end
 
@@ -7235,8 +7401,8 @@ describe Braintree::Transaction do
         )
 
         transaction = result.transaction
-        transaction.retried_transaction_id.should == nil
-        transaction.retry_ids.should == []
+        expect(transaction.retried_transaction_id).to eq(nil)
+        expect(transaction.retry_ids).to eq([])
       end
     end
   end
@@ -7395,7 +7561,7 @@ describe Braintree::Transaction do
         )
 
         expect(adjustment_transaction.success?).to eq(true)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("85.50"))
+        expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("85.50"))
       end
     end
 
@@ -7417,7 +7583,7 @@ describe Braintree::Transaction do
 
 
         expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
         expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::ProcessorDoesNotSupportAuthAdjustment)
       end
 
@@ -7430,7 +7596,7 @@ describe Braintree::Transaction do
         )
 
         expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
         expect(adjustment_transaction.errors.for(:authorization_adjustment).on(:amount).first.code).to eq(Braintree::ErrorCodes::Transaction::AdjustmentAmountMustBeGreaterThanZero)
       end
 
@@ -7443,7 +7609,7 @@ describe Braintree::Transaction do
         )
 
         expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
         expect(adjustment_transaction.errors.for(:authorization_adjustment).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::NoNetAmountToPerformAuthAdjustment)
       end
 
@@ -7457,7 +7623,7 @@ describe Braintree::Transaction do
         )
 
         expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
         expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionMustBeInStateAuthorized)
       end
 
@@ -7471,7 +7637,7 @@ describe Braintree::Transaction do
         )
 
         expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount.should).to eq(BigDecimal("75.50"))
+        expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
         expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionIsNotEligibleForAdjustment)
       end
     end

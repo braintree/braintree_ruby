@@ -20,15 +20,15 @@ describe Braintree::AddOn do
       add_ons = Braintree::AddOn.all
       add_on = add_ons.select { |add_on| add_on.id == id }.first
 
-      add_on.should_not be_nil
-      add_on.amount.should == BigDecimal(expected[:amount])
-      add_on.created_at.should_not be_nil
-      add_on.description.should == expected[:description]
-      add_on.kind.should == expected[:kind]
-      add_on.name.should == expected[:name]
-      add_on.never_expires.should == expected[:never_expires]
-      add_on.number_of_billing_cycles.should == expected[:number_of_billing_cycles]
-      add_on.updated_at.should_not be_nil
+      expect(add_on).not_to be_nil
+      expect(add_on.amount).to eq(BigDecimal(expected[:amount]))
+      expect(add_on.created_at).not_to be_nil
+      expect(add_on.description).to eq(expected[:description])
+      expect(add_on.kind).to eq(expected[:kind])
+      expect(add_on.name).to eq(expected[:name])
+      expect(add_on.never_expires).to eq(expected[:never_expires])
+      expect(add_on.number_of_billing_cycles).to eq(expected[:number_of_billing_cycles])
+      expect(add_on.updated_at).not_to be_nil
     end
 
     it "raises with a helpful error if public_key and private_key are not set" do

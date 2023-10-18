@@ -6,9 +6,9 @@ describe Braintree::CredentialsParser do
       parser = Braintree::CredentialsParser.new
       parser.parse_client_credentials("client_id$development$integration_client_id", "client_secret$development$integration_client_secret")
 
-      parser.client_id.should == "client_id$development$integration_client_id"
-      parser.client_secret.should == "client_secret$development$integration_client_secret"
-      parser.environment.should == :development
+      expect(parser.client_id).to eq("client_id$development$integration_client_id")
+      expect(parser.client_secret).to eq("client_secret$development$integration_client_secret")
+      expect(parser.environment).to eq(:development)
     end
 
     it "raises error on inconsistent environment" do
@@ -57,9 +57,9 @@ describe Braintree::CredentialsParser do
       parser = Braintree::CredentialsParser.new
       parser.parse_access_token("access_token$development$integration_merchant_id$fb27c79dd")
 
-      parser.merchant_id.should == "integration_merchant_id"
-      parser.access_token.should == "access_token$development$integration_merchant_id$fb27c79dd"
-      parser.environment.should == :development
+      expect(parser.merchant_id).to eq("integration_merchant_id")
+      expect(parser.access_token).to eq("access_token$development$integration_merchant_id$fb27c79dd")
+      expect(parser.environment).to eq(:development)
     end
 
     it "raises error on nil access_token" do

@@ -30,21 +30,21 @@ describe Braintree::Dispute do
     it "changes the dispute status to accepted" do
       result = Braintree::Dispute.accept(dispute.id)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       refreshed_dispute = Braintree::Dispute.find(dispute.id)
-      refreshed_dispute.status.should == Braintree::Dispute::Status::Accepted
+      expect(refreshed_dispute.status).to eq(Braintree::Dispute::Status::Accepted)
 
       dispute_from_transaction = Braintree::Transaction.find(dispute.transaction.id).disputes[0]
-      dispute_from_transaction.status.should == Braintree::Dispute::Status::Accepted
+      expect(dispute_from_transaction.status).to eq(Braintree::Dispute::Status::Accepted)
     end
 
     it "returns an error response if the dispute is not in open status" do
       result = Braintree::Dispute.accept("wells_dispute")
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAcceptOpenDispute
-      result.errors.for(:dispute)[0].message.should == "Disputes can only be accepted when they are in an Open state"
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::CanOnlyAcceptOpenDispute)
+      expect(result.errors.for(:dispute)[0].message).to eq("Disputes can only be accepted when they are in an Open state")
     end
 
     it "raises a NotFound exception if the dispute cannot be found" do
@@ -58,13 +58,13 @@ describe Braintree::Dispute do
     it "creates file evidence for the dispute" do
       result = Braintree::Dispute.add_file_evidence(dispute.id, document_upload.id)
 
-      result.success?.should == true
-      result.evidence.category.should be_nil
-      result.evidence.comment.should be_nil
-      result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
-      result.evidence.id.should =~ /^\w{16,}$/
-      result.evidence.sent_to_processor_at.should == nil
-      result.evidence.url.should include("bt_logo.png")
+      expect(result.success?).to eq(true)
+      expect(result.evidence.category).to be_nil
+      expect(result.evidence.comment).to be_nil
+      expect(result.evidence.created_at.between?(Time.now - 10, Time.now)).to eq(true)
+      expect(result.evidence.id).to match(/^\w{16,}$/)
+      expect(result.evidence.sent_to_processor_at).to eq(nil)
+      expect(result.evidence.url).to include("bt_logo.png")
     end
 
     it "returns a NotFoundError if the dispute doesn't exist" do
@@ -77,9 +77,9 @@ describe Braintree::Dispute do
       Braintree::Dispute.accept(dispute.id)
 
       result = Braintree::Dispute.add_file_evidence(dispute.id, document_upload.id)
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceToOpenDispute
-      result.errors.for(:dispute)[0].message.should == "Evidence can only be attached to disputes that are in an Open state"
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceToOpenDispute)
+      expect(result.errors.for(:dispute)[0].message).to eq("Evidence can only be attached to disputes that are in an Open state")
     end
 
     it "returns the new evidence record in subsequent dispute finds" do
@@ -87,17 +87,17 @@ describe Braintree::Dispute do
       refreshed_dispute = Braintree::Dispute.find(dispute.id)
 
       expected_evidence = refreshed_dispute.evidence.find { |e| e.id == result.evidence.id }
-      expected_evidence.should_not == nil
-      expected_evidence.comment.should be_nil
-      expected_evidence.url.should include("bt_logo.png")
+      expect(expected_evidence).not_to eq(nil)
+      expect(expected_evidence.comment).to be_nil
+      expect(expected_evidence.url).to include("bt_logo.png")
     end
 
     it "creates file evidence with a category when provided" do
       result = Braintree::Dispute.add_file_evidence(dispute.id, {category: "GENERAL", document_id: document_upload.id})
 
-      result.success?.should == true
-      result.evidence.category.should == "GENERAL"
-      result.evidence.url.should include("bt_logo.png")
+      expect(result.success?).to eq(true)
+      expect(result.evidence.category).to eq("GENERAL")
+      expect(result.evidence.url).to include("bt_logo.png")
     end
   end
 
@@ -105,15 +105,15 @@ describe Braintree::Dispute do
     it "creates text evidence for the dispute" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence")
 
-      result.success?.should == true
-      result.evidence.category.should == nil
-      result.evidence.comment.should == "text evidence"
-      result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
-      result.evidence.id.should =~ /^\w{16,}$/
-      result.evidence.sent_to_processor_at.should == nil
-      result.evidence.url.should == nil
-      result.evidence.tag.should == nil
-      result.evidence.sequence_number.should == nil
+      expect(result.success?).to eq(true)
+      expect(result.evidence.category).to eq(nil)
+      expect(result.evidence.comment).to eq("text evidence")
+      expect(result.evidence.created_at.between?(Time.now - 10, Time.now)).to eq(true)
+      expect(result.evidence.id).to match(/^\w{16,}$/)
+      expect(result.evidence.sent_to_processor_at).to eq(nil)
+      expect(result.evidence.url).to eq(nil)
+      expect(result.evidence.tag).to eq(nil)
+      expect(result.evidence.sequence_number).to eq(nil)
     end
 
     it "returns a NotFoundError if the dispute doesn't exist" do
@@ -126,9 +126,9 @@ describe Braintree::Dispute do
       Braintree::Dispute.accept(dispute.id)
 
       result = Braintree::Dispute.add_text_evidence(dispute.id, "text evidence")
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceToOpenDispute
-      result.errors.for(:dispute)[0].message.should == "Evidence can only be attached to disputes that are in an Open state"
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::CanOnlyAddEvidenceToOpenDispute)
+      expect(result.errors.for(:dispute)[0].message).to eq("Evidence can only be attached to disputes that are in an Open state")
     end
 
     it "returns the new evidence record in subsequent dispute finds" do
@@ -136,47 +136,47 @@ describe Braintree::Dispute do
       refreshed_dispute = Braintree::Dispute.find(dispute.id)
 
       expected_evidence = refreshed_dispute.evidence.find { |e| e.id == result.evidence.id }
-      expected_evidence.should_not == nil
-      expected_evidence.comment.should == "text evidence"
+      expect(expected_evidence).not_to eq(nil)
+      expect(expected_evidence.comment).to eq("text evidence")
     end
 
     it "creates text evidence for the dispute with optional parameters" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "123456789", category: "REFUND_ID", sequence_number: 7})
 
-      result.success?.should == true
-      result.evidence.category.should == "REFUND_ID"
-      result.evidence.comment.should == "123456789"
-      result.evidence.created_at.between?(Time.now - 10, Time.now).should == true
-      result.evidence.id.should =~ /^\w{16,}$/
-      result.evidence.sent_to_processor_at.should == nil
-      result.evidence.sequence_number.should == 7
+      expect(result.success?).to eq(true)
+      expect(result.evidence.category).to eq("REFUND_ID")
+      expect(result.evidence.comment).to eq("123456789")
+      expect(result.evidence.created_at.between?(Time.now - 10, Time.now)).to eq(true)
+      expect(result.evidence.id).to match(/^\w{16,}$/)
+      expect(result.evidence.sent_to_processor_at).to eq(nil)
+      expect(result.evidence.sequence_number).to eq(7)
     end
 
     it "creates text evidence for the dispute with CARRIER_NAME shipping tracking" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "UPS", category: "CARRIER_NAME", sequence_number: 0})
 
-      result.success?.should == true
-      result.evidence.category.should == "CARRIER_NAME"
-      result.evidence.comment.should == "UPS"
-      result.evidence.sequence_number.should == 0
+      expect(result.success?).to eq(true)
+      expect(result.evidence.category).to eq("CARRIER_NAME")
+      expect(result.evidence.comment).to eq("UPS")
+      expect(result.evidence.sequence_number).to eq(0)
     end
 
     it "creates text evidence for the dispute with TRACKING_NUMBER shipping tracking" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "3", category: "TRACKING_NUMBER", sequence_number: 0})
 
-      result.success?.should == true
-      result.evidence.category.should == "TRACKING_NUMBER"
-      result.evidence.comment.should == "3"
-      result.evidence.sequence_number.should == 0
+      expect(result.success?).to eq(true)
+      expect(result.evidence.category).to eq("TRACKING_NUMBER")
+      expect(result.evidence.comment).to eq("3")
+      expect(result.evidence.sequence_number).to eq(0)
     end
 
     it "creates text evidence for the dispute with TRACKING_URL shipping tracking" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {content: "https://example.com/tracking-number/abc12345", category: "TRACKING_URL", sequence_number: 1})
 
-      result.success?.should == true
-      result.evidence.category.should == "TRACKING_URL"
-      result.evidence.comment.should == "https://example.com/tracking-number/abc12345"
-      result.evidence.sequence_number.should == 1
+      expect(result.success?).to eq(true)
+      expect(result.evidence.category).to eq("TRACKING_URL")
+      expect(result.evidence.comment).to eq("https://example.com/tracking-number/abc12345")
+      expect(result.evidence.sequence_number).to eq(1)
     end
   end
 
@@ -184,18 +184,18 @@ describe Braintree::Dispute do
     it "changes the dispute status to disputed" do
       result = Braintree::Dispute.finalize(dispute.id)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       refreshed_dispute = Braintree::Dispute.find(dispute.id)
-      refreshed_dispute.status.should == Braintree::Dispute::Status::Disputed
+      expect(refreshed_dispute.status).to eq(Braintree::Dispute::Status::Disputed)
     end
 
     it "returns an error response if the dispute is not in open status" do
       result = Braintree::Dispute.finalize("wells_dispute")
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyFinalizeOpenDispute
-      result.errors.for(:dispute)[0].message.should == "Disputes can only be finalized when they are in an Open state"
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::CanOnlyFinalizeOpenDispute)
+      expect(result.errors.for(:dispute)[0].message).to eq("Disputes can only be finalized when they are in an Open state")
     end
 
     it "raises a NotFound exception if the dispute cannot be found" do
@@ -209,13 +209,13 @@ describe Braintree::Dispute do
     it "finds the dispute with the given id" do
       dispute = Braintree::Dispute.find("open_dispute")
 
-      dispute.amount_disputed.should == 31.0
-      dispute.amount_won.should == 0.0
-      dispute.id.should == "open_dispute"
-      dispute.graphql_id.should_not be_nil
-      dispute.status.should == Braintree::Dispute::Status::Open
-      dispute.transaction.amount.should == 31.0
-      dispute.transaction.id.should == "open_disputed_transaction"
+      expect(dispute.amount_disputed).to eq(31.0)
+      expect(dispute.amount_won).to eq(0.0)
+      expect(dispute.id).to eq("open_dispute")
+      expect(dispute.graphql_id).not_to be_nil
+      expect(dispute.status).to eq(Braintree::Dispute::Status::Open)
+      expect(dispute.transaction.amount).to eq(31.0)
+      expect(dispute.transaction.id).to eq("open_disputed_transaction")
     end
 
     it "raises an ArgumentError if dispute_id is not a string" do
@@ -243,7 +243,7 @@ describe Braintree::Dispute do
     it "removes evidence from the dispute" do
       result = Braintree::Dispute.remove_evidence(dispute.id, evidence.id)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "returns a NotFoundError if the dispute doesn't exist" do
@@ -263,9 +263,9 @@ describe Braintree::Dispute do
       Braintree::Dispute.accept(dispute.id)
 
       result = Braintree::Dispute.remove_evidence(dispute.id, evidence.id)
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyRemoveEvidenceFromOpenDispute
-      result.errors.for(:dispute)[0].message.should == "Evidence can only be removed from disputes that are in an Open state"
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::CanOnlyRemoveEvidenceFromOpenDispute)
+      expect(result.errors.for(:dispute)[0].message).to eq("Evidence can only be removed from disputes that are in an Open state")
     end
   end
 
@@ -273,61 +273,61 @@ describe Braintree::Dispute do
     it "fails to create file evidence for an unsupported category" do
       result = Braintree::Dispute.add_file_evidence(dispute.id, {category: "NOTREALCATEGORY", document_id: document_upload.id})
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyCreateEvidenceWithValidCategory
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::CanOnlyCreateEvidenceWithValidCategory)
     end
 
     it "fails to create text evidence for an unsupported category" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "NOTREALCATEGORY", content: "evidence"})
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::CanOnlyCreateEvidenceWithValidCategory
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::CanOnlyCreateEvidenceWithValidCategory)
     end
 
     it "fails to create text evidence for a file only category MERCHANT_WEBSITE_OR_APP_ACCESS" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "MERCHANT_WEBSITE_OR_APP_ACCESS", content: "evidence"})
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::EvidenceCategoryDocumentOnly
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::EvidenceCategoryDocumentOnly)
     end
 
     it "fails to create file evidence for a text only category DEVICE_ID" do
       result = Braintree::Dispute.add_file_evidence(dispute.id, {category: "DEVICE_ID", document_id: document_upload.id})
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::EvidenceCategoryTextOnly
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::EvidenceCategoryTextOnly)
     end
 
     it "fails to create evidence with an invalid date time format" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "DOWNLOAD_DATE_TIME", content: "baddate"})
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::EvidenceContentDateInvalid
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::EvidenceContentDateInvalid)
     end
 
     it "successfully creates text evidence with an valid date time format" do
       result = Braintree::Dispute.add_text_evidence(dispute.id, {category: "DOWNLOAD_DATE_TIME", content: "2018-10-20T18:00:00-0500"})
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "fails to finalize a dispute with digital goods missing" do
       Braintree::Dispute.add_text_evidence(dispute.id, {category: "DEVICE_ID", content: "iphone_id"})
       result = Braintree::Dispute.finalize(dispute.id)
 
-      result.success?.should == false
+      expect(result.success?).to eq(false)
       error_codes = result.errors.for(:dispute).map(&:code)
 
-      error_codes.should include(Braintree::ErrorCodes::Dispute::DigitalGoodsMissingDownloadDate)
-      error_codes.should include(Braintree::ErrorCodes::Dispute::DigitalGoodsMissingEvidence)
+      expect(error_codes).to include(Braintree::ErrorCodes::Dispute::DigitalGoodsMissingDownloadDate)
+      expect(error_codes).to include(Braintree::ErrorCodes::Dispute::DigitalGoodsMissingEvidence)
     end
 
     it "fails to finalize a dispute with partial non-disputed transaction information provided" do
       Braintree::Dispute.add_text_evidence(dispute.id, {category: "PRIOR_NON_DISPUTED_TRANSACTION_ARN", content: "123"})
       result = Braintree::Dispute.finalize(dispute.id)
 
-      result.success?.should == false
-      result.errors.for(:dispute)[0].code.should == Braintree::ErrorCodes::Dispute::NonDisputedPriorTransactionEvidenceMissingDate
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:dispute)[0].code).to eq(Braintree::ErrorCodes::Dispute::NonDisputedPriorTransactionEvidenceMissingDate)
     end
   end
 end

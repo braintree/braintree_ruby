@@ -11,12 +11,12 @@ describe Braintree::TestTransaction do
         :submit_for_settlement => true
       },
       )
-      sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(sale_result.success?).to eq(true)
+      expect(sale_result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
 
       settle_result = Braintree::TestTransaction.settle(sale_result.transaction.id)
-      settle_result.transaction.status.should == Braintree::Transaction::Status::Settled
-      settle_result.success?.should == true
+      expect(settle_result.transaction.status).to eq(Braintree::Transaction::Status::Settled)
+      expect(settle_result.success?).to eq(true)
     end
 
     it "changes transaction status to settlement_confirmed" do
@@ -27,12 +27,12 @@ describe Braintree::TestTransaction do
           :submit_for_settlement => true
         },
       )
-      sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(sale_result.success?).to eq(true)
+      expect(sale_result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
 
       settle_result = Braintree::TestTransaction.settlement_confirm(sale_result.transaction.id)
-      settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementConfirmed
-      settle_result.success?.should == true
+      expect(settle_result.transaction.status).to eq(Braintree::Transaction::Status::SettlementConfirmed)
+      expect(settle_result.success?).to eq(true)
     end
 
     it "changes transaction status to settlement_declined" do
@@ -43,12 +43,12 @@ describe Braintree::TestTransaction do
           :submit_for_settlement => true
         },
       )
-      sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(sale_result.success?).to eq(true)
+      expect(sale_result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
 
       settle_result = Braintree::TestTransaction.settlement_decline(sale_result.transaction.id)
-      settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementDeclined
-      settle_result.success?.should == true
+      expect(settle_result.transaction.status).to eq(Braintree::Transaction::Status::SettlementDeclined)
+      expect(settle_result.success?).to eq(true)
     end
 
     it "changes transaction status to settlement_pending" do
@@ -59,12 +59,12 @@ describe Braintree::TestTransaction do
           :submit_for_settlement => true
         },
       )
-      sale_result.success?.should == true
-      sale_result.transaction.status.should == Braintree::Transaction::Status::SubmittedForSettlement
+      expect(sale_result.success?).to eq(true)
+      expect(sale_result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
 
       settle_result = Braintree::TestTransaction.settlement_pending(sale_result.transaction.id)
-      settle_result.transaction.status.should == Braintree::Transaction::Status::SettlementPending
-      settle_result.success?.should == true
+      expect(settle_result.transaction.status).to eq(Braintree::Transaction::Status::SettlementPending)
+      expect(settle_result.success?).to eq(true)
     end
 
     it "returns a validation error when invalid transition is specified" do
@@ -72,11 +72,11 @@ describe Braintree::TestTransaction do
         :amount => "100",
         :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
       )
-      sale_result.success?.should == true
+      expect(sale_result.success?).to eq(true)
 
       settle_result = Braintree::TestTransaction.settlement_decline(sale_result.transaction.id)
-      settle_result.success?.should be(false)
-      settle_result.errors.for(:transaction).on(:base).first.code.should == Braintree::ErrorCodes::Transaction::CannotSimulateTransactionSettlement
+      expect(settle_result.success?).to be(false)
+      expect(settle_result.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::CannotSimulateTransactionSettlement)
     end
   end
 

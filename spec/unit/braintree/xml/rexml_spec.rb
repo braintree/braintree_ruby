@@ -4,7 +4,7 @@ describe Braintree::Xml::Rexml do
   describe "self.parse" do
     it "typecasts integers" do
       xml = "<root><foo type=\"integer\">123</foo></root>"
-      Braintree::Xml::Rexml.parse(xml).should == {"root"=>{"foo"=>{"__content__"=>"123", "type"=>"integer"}}}
+      expect(Braintree::Xml::Rexml.parse(xml)).to eq({"root"=>{"foo"=>{"__content__"=>"123", "type"=>"integer"}}})
     end
 
     it "works with dashes or underscores" do
@@ -14,7 +14,7 @@ describe Braintree::Xml::Rexml do
           <under_scores />
         </root>
       END
-      Braintree::Xml::Rexml.parse(xml).should == {"root"=>{"dash-es"=>{}, "under_scores"=>{}}}
+      expect(Braintree::Xml::Rexml.parse(xml)).to eq({"root"=>{"dash-es"=>{}, "under_scores"=>{}}})
     end
 
     it "uses nil if nil=true, otherwise uses empty string" do
@@ -24,7 +24,7 @@ describe Braintree::Xml::Rexml do
           <an_empty_string></an_empty_string>
         </root>
       END
-      Braintree::Xml::Rexml.parse(xml).should == {"root"=>{"a_nil_value"=>{"nil"=>"true"}, "an_empty_string"=>{}}}
+      expect(Braintree::Xml::Rexml.parse(xml)).to eq({"root"=>{"a_nil_value"=>{"nil"=>"true"}, "an_empty_string"=>{}}})
     end
 
     it "typecasts dates and times" do
@@ -33,7 +33,7 @@ describe Braintree::Xml::Rexml do
           <created-at type="datetime">2009-10-28T10:19:49Z</created-at>
         </root>
       END
-      Braintree::Xml::Rexml.parse(xml).should == {"root"=>{"created-at"=>{"__content__"=>"2009-10-28T10:19:49Z", "type"=>"datetime"}}}
+      expect(Braintree::Xml::Rexml.parse(xml)).to eq({"root"=>{"created-at"=>{"__content__"=>"2009-10-28T10:19:49Z", "type"=>"datetime"}}})
     end
 
     it "builds an array if type=array" do
@@ -45,7 +45,7 @@ describe Braintree::Xml::Rexml do
           </customers>
         </root>
       END
-      Braintree::Xml::Rexml.parse(xml).should == {"root"=>{"customers"=>{"type"=>"array", "customer"=>[{"name"=>{"__content__"=>"Adam"}}, {"name"=>{"__content__"=>"Ben"}}]}}}
+      expect(Braintree::Xml::Rexml.parse(xml)).to eq({"root"=>{"customers"=>{"type"=>"array", "customer"=>[{"name"=>{"__content__"=>"Adam"}}, {"name"=>{"__content__"=>"Ben"}}]}}})
     end
   end
 end

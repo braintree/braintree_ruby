@@ -30,19 +30,20 @@ unless defined?(SPEC_HELPER_LOADED)
 
   module SpecHelper
 
+    AdyenMerchantAccountId = "adyen_ma"
+    AibSwedenMaMerchantAccountId = "aib_swe_ma"
+    AnotherUsBankMerchantAccountId = "another_us_bank_merchant_account"
+    CardProcessorBRLMerchantAccountId = "card_processor_brl"
     DefaultMerchantAccountId = "sandbox_credit_card"
+    FakeAmexDirectMerchantAccountId = "fake_amex_direct_usd"
+    FakeFirstDataMerchantAccountId = "fake_first_data_merchant_account"
+    FakeVenmoAccountMerchantAccountId = "fake_first_data_venmo_account"
+    HiperBRLMerchantAccountId = "hiper_brl"
     NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
     NonDefaultSubMerchantAccountId = "sandbox_sub_merchant_account"
+    PinlessDebitMerchantAccountId = "pinless_debit"
     ThreeDSecureMerchantAccountId = "three_d_secure_merchant_account"
-    FakeAmexDirectMerchantAccountId = "fake_amex_direct_usd"
-    FakeVenmoAccountMerchantAccountId = "fake_first_data_venmo_account"
     UsBankMerchantAccountId = "us_bank_merchant_account"
-    AnotherUsBankMerchantAccountId = "another_us_bank_merchant_account"
-    AdyenMerchantAccountId = "adyen_ma"
-    HiperBRLMerchantAccountId = "hiper_brl"
-    CardProcessorBRLMerchantAccountId = "card_processor_brl"
-    FakeFirstDataMerchantAccountId = "fake_first_data_merchant_account"
-    AibSwedenMaMerchantAccountId = "aib_swe_ma"
 
     TrialPlan = {
       :description => "Plan for integration tests -- with trial",

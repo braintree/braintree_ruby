@@ -24,11 +24,11 @@ describe Braintree::PayPalAccount do
 
   describe "default?" do
     it "is true if the paypal account is the default payment method for the customer" do
-      Braintree::PayPalAccount._new(:gateway, :default => true).default?.should == true
+      expect(Braintree::PayPalAccount._new(:gateway, :default => true).default?).to eq(true)
     end
 
     it "is false if the paypal account is not the default payment methodfor the customer" do
-      Braintree::PayPalAccount._new(:gateway, :default => false).default?.should == false
+      expect(Braintree::PayPalAccount._new(:gateway, :default => false).default?).to eq(false)
     end
   end
 
@@ -37,8 +37,8 @@ describe Braintree::PayPalAccount do
       now = Time.now
       paypal_account = Braintree::PayPalAccount._new(:gateway, :updated_at => now, :created_at => now)
 
-      paypal_account.created_at.should == now
-      paypal_account.updated_at.should == now
+      expect(paypal_account.created_at).to eq(now)
+      expect(paypal_account.updated_at).to eq(now)
     end
   end
 end

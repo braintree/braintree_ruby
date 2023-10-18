@@ -20,15 +20,15 @@ describe Braintree::Discount do
       discounts = Braintree::Discount.all
       discount = discounts.select { |discount| discount.id == id }.first
 
-      discount.should_not be_nil
-      discount.amount.should == BigDecimal(expected[:amount])
-      discount.created_at.should_not be_nil
-      discount.description.should == expected[:description]
-      discount.kind.should == expected[:kind]
-      discount.name.should == expected[:name]
-      discount.never_expires.should == expected[:never_expires]
-      discount.number_of_billing_cycles.should == expected[:number_of_billing_cycles]
-      discount.updated_at.should_not be_nil
+      expect(discount).not_to be_nil
+      expect(discount.amount).to eq(BigDecimal(expected[:amount]))
+      expect(discount.created_at).not_to be_nil
+      expect(discount.description).to eq(expected[:description])
+      expect(discount.kind).to eq(expected[:kind])
+      expect(discount.name).to eq(expected[:name])
+      expect(discount.never_expires).to eq(expected[:never_expires])
+      expect(discount.number_of_billing_cycles).to eq(expected[:number_of_billing_cycles])
+      expect(discount.updated_at).not_to be_nil
     end
   end
 end

@@ -31,15 +31,15 @@ describe Braintree::Disbursement do
         :success => false,
       )
 
-      disbursement.inspect.should include('id: "123456"')
-      disbursement.inspect.should include('amount: "100.0"')
-      disbursement.inspect.should include('exception_message: "invalid_account_number"')
-      disbursement.inspect.should include("disbursement_date: 2013-04-10")
-      disbursement.inspect.should include('follow_up_action: "update"')
-      disbursement.inspect.should include("merchant_account: #<Braintree::MerchantAccount: ")
-      disbursement.inspect.should include('transaction_ids: ["sub_merchant_transaction"]')
-      disbursement.inspect.should include("retry: false")
-      disbursement.inspect.should include("success: false")
+      expect(disbursement.inspect).to include('id: "123456"')
+      expect(disbursement.inspect).to include('amount: "100.0"')
+      expect(disbursement.inspect).to include('exception_message: "invalid_account_number"')
+      expect(disbursement.inspect).to include("disbursement_date: 2013-04-10")
+      expect(disbursement.inspect).to include('follow_up_action: "update"')
+      expect(disbursement.inspect).to include("merchant_account: #<Braintree::MerchantAccount: ")
+      expect(disbursement.inspect).to include('transaction_ids: ["sub_merchant_transaction"]')
+      expect(disbursement.inspect).to include("retry: false")
+      expect(disbursement.inspect).to include("success: false")
     end
   end
 
@@ -58,7 +58,7 @@ describe Braintree::Disbursement do
         :success => false,
         :disbursement_date => "2013-04-10",
       )
-      disbursement.success?.should == false
+      expect(disbursement.success?).to eq(false)
 
       disbursement = Braintree::Disbursement._new(
         :gateway,
@@ -73,7 +73,7 @@ describe Braintree::Disbursement do
         :success => true,
         :disbursement_date => "2013-04-10",
       )
-      disbursement.success?.should == true
+      expect(disbursement.success?).to eq(true)
     end
   end
 

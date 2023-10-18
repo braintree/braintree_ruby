@@ -15,22 +15,22 @@ describe Braintree::MerchantGateway do
         :payment_methods => ["credit_card", "paypal"],
       )
 
-      result.should be_success
+      expect(result).to be_success
 
       merchant = result.merchant
-      merchant.id.should_not be_nil
-      merchant.email.should == "name@email.com"
-      merchant.company_name.should == "name@email.com"
-      merchant.country_code_alpha3.should == "USA"
-      merchant.country_code_alpha2.should == "US"
-      merchant.country_code_numeric.should == "840"
-      merchant.country_name.should == "United States of America"
+      expect(merchant.id).not_to be_nil
+      expect(merchant.email).to eq("name@email.com")
+      expect(merchant.company_name).to eq("name@email.com")
+      expect(merchant.country_code_alpha3).to eq("USA")
+      expect(merchant.country_code_alpha2).to eq("US")
+      expect(merchant.country_code_numeric).to eq("840")
+      expect(merchant.country_name).to eq("United States of America")
 
       credentials = result.credentials
-      credentials.access_token.should_not be_nil
-      credentials.refresh_token.should_not be_nil
-      credentials.expires_at.should_not be_nil
-      credentials.token_type.should == "bearer"
+      expect(credentials.access_token).not_to be_nil
+      expect(credentials.refresh_token).not_to be_nil
+      expect(credentials.expires_at).not_to be_nil
+      expect(credentials.token_type).to eq("bearer")
     end
 
     it "gives an error when using invalid payment_methods" do
@@ -46,10 +46,10 @@ describe Braintree::MerchantGateway do
         :payment_methods => ["fake_money"],
       )
 
-      result.should_not be_success
+      expect(result).not_to be_success
       errors = result.errors.for(:merchant).on(:payment_methods)
 
-      errors[0].code.should == Braintree::ErrorCodes::Merchant::PaymentMethodsAreInvalid
+      expect(errors[0].code).to eq(Braintree::ErrorCodes::Merchant::PaymentMethodsAreInvalid)
     end
 
     context "credentials" do
@@ -74,7 +74,7 @@ describe Braintree::MerchantGateway do
           :payment_methods => ["credit_card", "paypal"],
         )
 
-        result.should be_success
+        expect(result).to be_success
       end
     end
 
@@ -96,30 +96,30 @@ describe Braintree::MerchantGateway do
         )
 
         merchant = result.merchant
-        merchant.id.should_not be_nil
-        merchant.email.should == "name@email.com"
-        merchant.company_name.should == "name@email.com"
-        merchant.country_code_alpha3.should == "USA"
-        merchant.country_code_alpha2.should == "US"
-        merchant.country_code_numeric.should == "840"
-        merchant.country_name.should == "United States of America"
+        expect(merchant.id).not_to be_nil
+        expect(merchant.email).to eq("name@email.com")
+        expect(merchant.company_name).to eq("name@email.com")
+        expect(merchant.country_code_alpha3).to eq("USA")
+        expect(merchant.country_code_alpha2).to eq("US")
+        expect(merchant.country_code_numeric).to eq("840")
+        expect(merchant.country_name).to eq("United States of America")
 
         credentials = result.credentials
-        credentials.access_token.should_not be_nil
-        credentials.refresh_token.should_not be_nil
-        credentials.expires_at.should_not be_nil
-        credentials.token_type.should == "bearer"
+        expect(credentials.access_token).not_to be_nil
+        expect(credentials.refresh_token).not_to be_nil
+        expect(credentials.expires_at).not_to be_nil
+        expect(credentials.token_type).to eq("bearer")
 
         merchant_accounts = merchant.merchant_accounts
-        merchant_accounts.count.should == 2
+        expect(merchant_accounts.count).to eq(2)
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
-        merchant_account.default.should == true
-        merchant_account.currency_iso_code.should == "USD"
+        expect(merchant_account.default).to eq(true)
+        expect(merchant_account.currency_iso_code).to eq("USD")
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "GBP" }
-        merchant_account.default.should == false
-        merchant_account.currency_iso_code.should == "GBP"
+        expect(merchant_account.default).to eq(false)
+        expect(merchant_account.currency_iso_code).to eq("GBP")
       end
 
       it "creates an EU multi currency merchant for paypal and credit_card" do
@@ -131,30 +131,30 @@ describe Braintree::MerchantGateway do
         )
 
         merchant = result.merchant
-        merchant.id.should_not be_nil
-        merchant.email.should == "name@email.com"
-        merchant.company_name.should == "name@email.com"
-        merchant.country_code_alpha3.should == "GBR"
-        merchant.country_code_alpha2.should == "GB"
-        merchant.country_code_numeric.should == "826"
-        merchant.country_name.should == "United Kingdom"
+        expect(merchant.id).not_to be_nil
+        expect(merchant.email).to eq("name@email.com")
+        expect(merchant.company_name).to eq("name@email.com")
+        expect(merchant.country_code_alpha3).to eq("GBR")
+        expect(merchant.country_code_alpha2).to eq("GB")
+        expect(merchant.country_code_numeric).to eq("826")
+        expect(merchant.country_name).to eq("United Kingdom")
 
         credentials = result.credentials
-        credentials.access_token.should_not be_nil
-        credentials.refresh_token.should_not be_nil
-        credentials.expires_at.should_not be_nil
-        credentials.token_type.should == "bearer"
+        expect(credentials.access_token).not_to be_nil
+        expect(credentials.refresh_token).not_to be_nil
+        expect(credentials.expires_at).not_to be_nil
+        expect(credentials.token_type).to eq("bearer")
 
         merchant_accounts = merchant.merchant_accounts
-        merchant_accounts.count.should == 2
+        expect(merchant_accounts.count).to eq(2)
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "GBP" }
-        merchant_account.default.should == true
-        merchant_account.currency_iso_code.should == "GBP"
+        expect(merchant_account.default).to eq(true)
+        expect(merchant_account.currency_iso_code).to eq("GBP")
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
-        merchant_account.default.should == false
-        merchant_account.currency_iso_code.should == "USD"
+        expect(merchant_account.default).to eq(false)
+        expect(merchant_account.currency_iso_code).to eq("USD")
       end
 
 
@@ -170,33 +170,33 @@ describe Braintree::MerchantGateway do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         merchant = result.merchant
-        merchant.id.should_not be_nil
-        merchant.email.should == "name@email.com"
-        merchant.company_name.should == "name@email.com"
-        merchant.country_code_alpha3.should == "USA"
-        merchant.country_code_alpha2.should == "US"
-        merchant.country_code_numeric.should == "840"
-        merchant.country_name.should == "United States of America"
+        expect(merchant.id).not_to be_nil
+        expect(merchant.email).to eq("name@email.com")
+        expect(merchant.company_name).to eq("name@email.com")
+        expect(merchant.country_code_alpha3).to eq("USA")
+        expect(merchant.country_code_alpha2).to eq("US")
+        expect(merchant.country_code_numeric).to eq("840")
+        expect(merchant.country_name).to eq("United States of America")
 
         credentials = result.credentials
-        credentials.access_token.should_not be_nil
-        credentials.refresh_token.should_not be_nil
-        credentials.expires_at.should_not be_nil
-        credentials.token_type.should == "bearer"
+        expect(credentials.access_token).not_to be_nil
+        expect(credentials.refresh_token).not_to be_nil
+        expect(credentials.expires_at).not_to be_nil
+        expect(credentials.token_type).to eq("bearer")
 
         merchant_accounts = merchant.merchant_accounts
-        merchant_accounts.count.should == 2
+        expect(merchant_accounts.count).to eq(2)
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
-        merchant_account.default.should == true
-        merchant_account.currency_iso_code.should == "USD"
+        expect(merchant_account.default).to eq(true)
+        expect(merchant_account.currency_iso_code).to eq("USD")
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "GBP" }
-        merchant_account.default.should == false
-        merchant_account.currency_iso_code.should == "GBP"
+        expect(merchant_account.default).to eq(false)
+        expect(merchant_account.currency_iso_code).to eq("GBP")
       end
 
       it "allows creation of non-US merchant if onboarding application is internal" do
@@ -210,29 +210,29 @@ describe Braintree::MerchantGateway do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         merchant = result.merchant
-        merchant.id.should_not be_nil
-        merchant.email.should == "name@email.com"
-        merchant.company_name.should == "name@email.com"
-        merchant.country_code_alpha3.should == "JPN"
-        merchant.country_code_alpha2.should == "JP"
-        merchant.country_code_numeric.should == "392"
-        merchant.country_name.should == "Japan"
+        expect(merchant.id).not_to be_nil
+        expect(merchant.email).to eq("name@email.com")
+        expect(merchant.company_name).to eq("name@email.com")
+        expect(merchant.country_code_alpha3).to eq("JPN")
+        expect(merchant.country_code_alpha2).to eq("JP")
+        expect(merchant.country_code_numeric).to eq("392")
+        expect(merchant.country_name).to eq("Japan")
 
         credentials = result.credentials
-        credentials.access_token.should_not be_nil
-        credentials.refresh_token.should_not be_nil
-        credentials.expires_at.should_not be_nil
-        credentials.token_type.should == "bearer"
+        expect(credentials.access_token).not_to be_nil
+        expect(credentials.refresh_token).not_to be_nil
+        expect(credentials.expires_at).not_to be_nil
+        expect(credentials.token_type).to eq("bearer")
 
         merchant_accounts = merchant.merchant_accounts
-        merchant_accounts.count.should == 1
+        expect(merchant_accounts.count).to eq(1)
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "JPY" }
-        merchant_account.default.should == true
-        merchant_account.currency_iso_code.should == "JPY"
+        expect(merchant_account.default).to eq(true)
+        expect(merchant_account.currency_iso_code).to eq("JPY")
       end
 
       it "defaults to USD for non-US merchant if onboarding application is internal and country currency not supported" do
@@ -246,29 +246,29 @@ describe Braintree::MerchantGateway do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         merchant = result.merchant
-        merchant.id.should_not be_nil
-        merchant.email.should == "name@email.com"
-        merchant.company_name.should == "name@email.com"
-        merchant.country_code_alpha3.should == "YEM"
-        merchant.country_code_alpha2.should == "YE"
-        merchant.country_code_numeric.should == "887"
-        merchant.country_name.should == "Yemen"
+        expect(merchant.id).not_to be_nil
+        expect(merchant.email).to eq("name@email.com")
+        expect(merchant.company_name).to eq("name@email.com")
+        expect(merchant.country_code_alpha3).to eq("YEM")
+        expect(merchant.country_code_alpha2).to eq("YE")
+        expect(merchant.country_code_numeric).to eq("887")
+        expect(merchant.country_name).to eq("Yemen")
 
         credentials = result.credentials
-        credentials.access_token.should_not be_nil
-        credentials.refresh_token.should_not be_nil
-        credentials.expires_at.should_not be_nil
-        credentials.token_type.should == "bearer"
+        expect(credentials.access_token).not_to be_nil
+        expect(credentials.refresh_token).not_to be_nil
+        expect(credentials.expires_at).not_to be_nil
+        expect(credentials.token_type).to eq("bearer")
 
         merchant_accounts = merchant.merchant_accounts
-        merchant_accounts.count.should == 1
+        expect(merchant_accounts.count).to eq(1)
 
         merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
-        merchant_account.default.should == true
-        merchant_account.currency_iso_code.should == "USD"
+        expect(merchant_account.default).to eq(true)
+        expect(merchant_account.currency_iso_code).to eq("USD")
       end
 
       it "returns error if invalid currency is passed" do
@@ -283,10 +283,10 @@ describe Braintree::MerchantGateway do
           },
         )
 
-        result.should_not be_success
+        expect(result).not_to be_success
         errors = result.errors.for(:merchant).on(:currencies)
 
-        errors[0].code.should == Braintree::ErrorCodes::Merchant::CurrenciesAreInvalid
+        expect(errors[0].code).to eq(Braintree::ErrorCodes::Merchant::CurrenciesAreInvalid)
       end
     end
   end
@@ -304,16 +304,16 @@ describe Braintree::MerchantGateway do
 
       it "succeeds" do
         result = Braintree::Merchant.provision_raw_apple_pay
-        result.should be_success
-        result.supported_networks.should == ["visa", "mastercard", "amex", "discover", "maestro", "elo"]
+        expect(result).to be_success
+        expect(result.supported_networks).to eq(["visa", "mastercard", "amex", "discover", "maestro", "elo"])
       end
 
       it "is repeatable" do
         result = Braintree::Merchant.provision_raw_apple_pay
-        result.should be_success
+        expect(result).to be_success
         result = Braintree::Merchant.provision_raw_apple_pay
-        result.should be_success
-        result.supported_networks.should == ["visa", "mastercard", "amex", "discover", "maestro", "elo"]
+        expect(result).to be_success
+        expect(result.supported_networks).to eq(["visa", "mastercard", "amex", "discover", "maestro", "elo"])
       end
     end
 
@@ -326,8 +326,8 @@ describe Braintree::MerchantGateway do
 
       it "returns a validation error" do
         result = Braintree::Merchant.provision_raw_apple_pay
-        result.should_not be_success
-        result.errors.for(:apple_pay).first.code.should == Braintree::ErrorCodes::ApplePay::ApplePayCardsAreNotAccepted
+        expect(result).not_to be_success
+        expect(result.errors.for(:apple_pay).first.code).to eq(Braintree::ErrorCodes::ApplePay::ApplePayCardsAreNotAccepted)
       end
     end
 

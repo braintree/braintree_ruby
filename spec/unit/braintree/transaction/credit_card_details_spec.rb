@@ -7,7 +7,7 @@ describe Braintree::Transaction::CreditCardDetails do
         :expiration_month => "08",
         :expiration_year => "2009",
       )
-      details.expiration_date.should == "08/2009"
+      expect(details.expiration_date).to eq("08/2009")
     end
   end
 
@@ -34,7 +34,7 @@ describe Braintree::Transaction::CreditCardDetails do
         :image_url => "example.com/visa.png",
         :unique_number_identifier => "abc123",
       )
-      details.inspect.should == %(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US", prepaid: "Yes", healthcare: "No", durbin_regulated: "No", debit: "Yes", commercial: "Unknown", payroll: "Unknown", product_id: "Unknown", country_of_issuance: "Lilliput", issuing_bank: "Gulliver Bank", image_url: "example.com/visa.png", unique_number_identifier: "abc123">)
+      expect(details.inspect).to eq(%(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US", prepaid: "Yes", healthcare: "No", durbin_regulated: "No", debit: "Yes", commercial: "Unknown", payroll: "Unknown", product_id: "Unknown", country_of_issuance: "Lilliput", issuing_bank: "Gulliver Bank", image_url: "example.com/visa.png", unique_number_identifier: "abc123">))
     end
   end
 
@@ -43,7 +43,7 @@ describe Braintree::Transaction::CreditCardDetails do
       details = Braintree::Transaction::CreditCardDetails.new(
         :bin => "510510", :last_4 => "5100",
       )
-      details.masked_number.should == "510510******5100"
+      expect(details.masked_number).to eq("510510******5100")
     end
   end
 
@@ -52,14 +52,14 @@ describe Braintree::Transaction::CreditCardDetails do
       details = Braintree::Transaction::CreditCardDetails.new(
         :is_network_tokenized => true,
       )
-      details.is_network_tokenized?.should == true
+      expect(details.is_network_tokenized?).to eq(true)
     end
 
     it "returns false if is_network_tokenized is false" do
       details = Braintree::Transaction::CreditCardDetails.new(
         :is_network_tokenized => false,
       )
-      details.is_network_tokenized?.should == false
+      expect(details.is_network_tokenized?).to eq(false)
     end
   end
 end

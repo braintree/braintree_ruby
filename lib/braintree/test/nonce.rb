@@ -53,6 +53,7 @@ module Braintree
       TransactableCountryOfIssuanceUSA = "fake-valid-country-of-issuance-usa-nonce"
       TransactableCountryOfIssuanceCAD = "fake-valid-country-of-issuance-cad-nonce"
       TransactableIssuingBankNetworkOnly = "fake-valid-issuing-bank-network-only-nonce"
+      TransactablePinlessDebitVisa = "fake-pinless-debit-visa-nonce"
       ProcessorDeclinedVisa = "fake-processor-declined-visa-nonce"
       ProcessorDeclinedMasterCard = "fake-processor-declined-mastercard-nonce"
       ProcessorDeclinedAmEx = "fake-processor-declined-amex-nonce"

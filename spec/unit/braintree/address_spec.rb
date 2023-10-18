@@ -6,29 +6,29 @@ describe Braintree::Address do
       first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
       second = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
 
-      first.should == second
-      second.should == first
+      expect(first).to eq(second)
+      expect(second).to eq(first)
     end
 
     it "returns false if given an address with a different id and the same customer_id" do
       first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
       second = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "not a1")
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false if given an address with a different customer_id and the same id" do
       first = Braintree::Address._new(:gateway, :customer_id => "c1", :id => "a1")
       second = Braintree::Address._new(:gateway, :customer_id => "not c1", :id => "a1")
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false when not given an address" do
       address = Braintree::Address._new(:gateway, :id => "a1")
-      address.should_not == "not an address"
+      expect(address).not_to eq("not an address")
     end
   end
 
@@ -80,7 +80,7 @@ describe Braintree::Address do
     end
 
     it "does not raise an error if address_id does not respond to strip" do
-      Braintree::Http.stub(:new).and_return double.as_null_object
+      allow(Braintree::Http).to receive(:new).and_return double.as_null_object
       expect do
         Braintree::Address.find("customer_id", 8675309)
       end.to_not raise_error

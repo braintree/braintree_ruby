@@ -39,20 +39,20 @@ describe Braintree::UsBankAccountVerification do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         verification = result.payment_method.verifications.first
-        verification.verification_method.should == Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers
-        verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+        expect(verification.verification_method).to eq(Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers)
+        expect(verification.status).to eq(Braintree::UsBankAccountVerification::Status::Pending)
 
         response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [17, 29])
 
-        response.should be_success
-        response.us_bank_account_verification.status.should == Braintree::UsBankAccountVerification::Status::Verified
+        expect(response).to be_success
+        expect(response.us_bank_account_verification.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
 
         us_bank_account = Braintree::UsBankAccount.find(response.us_bank_account_verification.us_bank_account[:token])
 
-        us_bank_account.verified.should be_truthy
+        expect(us_bank_account.verified).to be_truthy
       end
 
       it "successfully confirms not-yet-settled amounts" do
@@ -67,16 +67,16 @@ describe Braintree::UsBankAccountVerification do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         verification = result.payment_method.verifications.first
-        verification.verification_method.should == Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers
-        verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+        expect(verification.verification_method).to eq(Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers)
+        expect(verification.status).to eq(Braintree::UsBankAccountVerification::Status::Pending)
 
         response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [17, 29])
 
-        response.should be_success
-        response.us_bank_account_verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+        expect(response).to be_success
+        expect(response.us_bank_account_verification.status).to eq(Braintree::UsBankAccountVerification::Status::Pending)
       end
 
       it "attempts to confirm" do
@@ -89,16 +89,16 @@ describe Braintree::UsBankAccountVerification do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         verification = result.payment_method.verifications.first
-        verification.verification_method.should == Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers
-        verification.status.should == Braintree::UsBankAccountVerification::Status::Pending
+        expect(verification.verification_method).to eq(Braintree::UsBankAccountVerification::VerificationMethod::MicroTransfers)
+        expect(verification.status).to eq(Braintree::UsBankAccountVerification::Status::Pending)
 
         response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
 
-        response.should_not be_success
-        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::AmountsDoNotMatch
+        expect(response).not_to be_success
+        expect(response.errors.for(:us_bank_account_verification)[0].code).to eq(Braintree::ErrorCodes::UsBankAccountVerification::AmountsDoNotMatch)
       end
 
       it "exceeds the confirmation attempt threshold" do
@@ -111,7 +111,7 @@ describe Braintree::UsBankAccountVerification do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         verification = result.payment_method.verifications.first
 
@@ -119,17 +119,17 @@ describe Braintree::UsBankAccountVerification do
         4.times do
           response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
 
-          response.should_not be_success
-          response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::AmountsDoNotMatch
+          expect(response).not_to be_success
+          expect(response.errors.for(:us_bank_account_verification)[0].code).to eq(Braintree::ErrorCodes::UsBankAccountVerification::AmountsDoNotMatch)
         end
 
         response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
-        response.should_not be_success
-        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::TooManyConfirmationAttempts
+        expect(response).not_to be_success
+        expect(response.errors.for(:us_bank_account_verification)[0].code).to eq(Braintree::ErrorCodes::UsBankAccountVerification::TooManyConfirmationAttempts)
 
         response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
-        response.should_not be_success
-        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::TooManyConfirmationAttempts
+        expect(response).not_to be_success
+        expect(response.errors.for(:us_bank_account_verification)[0].code).to eq(Braintree::ErrorCodes::UsBankAccountVerification::TooManyConfirmationAttempts)
       end
 
       it "returns an error for invalid deposit amounts" do
@@ -142,13 +142,13 @@ describe Braintree::UsBankAccountVerification do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         verification = result.payment_method.verifications.first
         response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, ["abc"])
 
-        response.should_not be_success
-        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::InvalidDepositAmounts
+        expect(response).not_to be_success
+        expect(response.errors.for(:us_bank_account_verification)[0].code).to eq(Braintree::ErrorCodes::UsBankAccountVerification::InvalidDepositAmounts)
       end
     end
 
@@ -163,13 +163,13 @@ describe Braintree::UsBankAccountVerification do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
 
         verification = result.payment_method.verifications.first
         response = Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts(verification.id, [1, 1])
 
-        response.should_not be_success
-        response.errors.for(:us_bank_account_verification)[0].code.should == Braintree::ErrorCodes::UsBankAccountVerification::MustBeMicroTransfersVerification
+        expect(response).not_to be_success
+        expect(response.errors.for(:us_bank_account_verification)[0].code).to eq(Braintree::ErrorCodes::UsBankAccountVerification::MustBeMicroTransfersVerification)
       end
     end
   end
@@ -185,12 +185,12 @@ describe Braintree::UsBankAccountVerification do
         },
       )
 
-      result.should be_success
+      expect(result).to be_success
 
       created_verification = result.payment_method.verifications.first
       found_verification = Braintree::UsBankAccountVerification.find(created_verification.id)
 
-      found_verification.should == created_verification
+      expect(found_verification).to eq(created_verification)
     end
 
     it "raises a NotFoundError exception if verification cannot be found" do
@@ -224,7 +224,7 @@ describe Braintree::UsBankAccountVerification do
         search.verification_method.in created_verification.verification_method
       end
 
-      found_verifications.should include(created_verification)
+      expect(found_verifications).to include(created_verification)
     end
 
     it "searches and finds verifications using customer fields" do
@@ -234,7 +234,7 @@ describe Braintree::UsBankAccountVerification do
         search.payment_method_token.is payment_method.token
       end
 
-      found_verifications.count.should eq(1)
+      expect(found_verifications.count).to eq(1)
     end
   end
 end

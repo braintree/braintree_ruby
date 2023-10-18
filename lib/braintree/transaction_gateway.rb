@@ -9,6 +9,14 @@ module Braintree
     end
 
     def create(attributes)
+      # NEXT_MAJOR_VERSION remove this check
+      if attributes.has_key?(:venmo_sdk_payment_method_code) || attributes.has_key?(:venmo_sdk_session)
+        warn "[DEPRECATED] The Venmo SDK integration is Unsupported. Please update your integration to use Pay with Venmo instead."
+      end
+      # NEXT_MAJOR_VERSION remove this check
+      if attributes.has_key?(:three_d_secure_token)
+        warn "[DEPRECATED] Passing :three_d_secure_token to create is deprecated. Please use :three_d_secure_authentication_id"
+      end
       Util.verify_keys(TransactionGateway._create_signature, attributes)
       _do_create "/transactions", :transaction => attributes
     end
@@ -183,6 +191,10 @@ module Braintree
       [:amount, :channel, {:options => [:submit_for_settlement]}]
     end
 
+
+    # NEXT_MAJOR_VERSION Remove venmo_sdk_payment_method_code, venmo_sdk_session, and three_d_secure_token
+    # The old venmo SDK class has been deprecated
+    # three_d_secure_token has been deprecated in favor of three_d_secure_authentication_id
     def self._create_signature # :nodoc:
       [
         :amount, :billing_address_id, :channel, :customer_id, :device_data, :discount_amount,
@@ -190,8 +202,8 @@ module Braintree
         :product_sku, :purchase_order_number, :service_fee_amount, :shared_billing_address_id,
         :shared_customer_id, :shared_payment_method_nonce, :shared_payment_method_token,
         :shared_shipping_address_id, :shipping_address_id, :shipping_amount,
-        :ships_from_postal_code, :tax_amount, :tax_exempt, :three_d_secure_authentication_id,
-        :three_d_secure_token, :transaction_source, :type, :venmo_sdk_payment_method_code,
+        :ships_from_postal_code, :tax_amount, :tax_exempt, :three_d_secure_authentication_id,:three_d_secure_token, #Deprecated
+        :transaction_source, :type, :venmo_sdk_payment_method_code, # Deprecated
         :sca_exemption, :currency_iso_code, :exchange_rate_quote_id,
         {:line_items => [:quantity, :name, :description, :kind, :unit_amount, :unit_tax_amount, :total_amount, :discount_amount, :tax_amount, :unit_of_measure, :product_code, :commodity_code, :url]},
         {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
@@ -222,7 +234,7 @@ module Braintree
           :submit_for_settlement,
           :add_billing_address_to_payment_method,
           :store_shipping_address_in_vault,
-          :venmo_sdk_session,
+          :venmo_sdk_session, # Deprecated
           :payee_id,
           :payee_email,
           :skip_advanced_fraud_checking,

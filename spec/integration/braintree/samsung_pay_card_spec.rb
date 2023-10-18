@@ -21,42 +21,42 @@ describe Braintree::SamsungPayCard do
           :country_name => "United States of America"
       },
     )
-    result.should be_success
+    expect(result).to be_success
 
     samsung_pay_card = result.payment_method
-    samsung_pay_card.should be_a(Braintree::SamsungPayCard)
-    samsung_pay_card.billing_address.should_not be_nil
-    samsung_pay_card.bin.should_not be_nil
-    samsung_pay_card.cardholder_name.should_not be_nil
-    samsung_pay_card.card_type.should_not be_nil
-    samsung_pay_card.commercial.should_not be_nil
-    samsung_pay_card.country_of_issuance.should_not be_nil
-    samsung_pay_card.created_at.should_not be_nil
-    samsung_pay_card.customer_id.should_not be_nil
-    samsung_pay_card.customer_location.should_not be_nil
-    samsung_pay_card.debit.should_not be_nil
-    samsung_pay_card.default?.should_not be_nil
-    samsung_pay_card.durbin_regulated.should_not be_nil
-    samsung_pay_card.expiration_date.should_not be_nil
-    samsung_pay_card.expiration_month.should_not be_nil
-    samsung_pay_card.expiration_year.should_not be_nil
-    samsung_pay_card.expired?.should_not be_nil
-    samsung_pay_card.healthcare.should_not be_nil
-    samsung_pay_card.image_url.should_not be_nil
-    samsung_pay_card.issuing_bank.should_not be_nil
-    samsung_pay_card.last_4.should_not be_nil
-    samsung_pay_card.payroll.should_not be_nil
-    samsung_pay_card.prepaid.should_not be_nil
-    samsung_pay_card.product_id.should_not be_nil
-    samsung_pay_card.source_card_last_4.should_not be_nil
-    samsung_pay_card.subscriptions.should_not be_nil
-    samsung_pay_card.token.should_not be_nil
-    samsung_pay_card.unique_number_identifier.should_not be_nil
-    samsung_pay_card.updated_at.should_not be_nil
+    expect(samsung_pay_card).to be_a(Braintree::SamsungPayCard)
+    expect(samsung_pay_card.billing_address).not_to be_nil
+    expect(samsung_pay_card.bin).not_to be_nil
+    expect(samsung_pay_card.cardholder_name).not_to be_nil
+    expect(samsung_pay_card.card_type).not_to be_nil
+    expect(samsung_pay_card.commercial).not_to be_nil
+    expect(samsung_pay_card.country_of_issuance).not_to be_nil
+    expect(samsung_pay_card.created_at).not_to be_nil
+    expect(samsung_pay_card.customer_id).not_to be_nil
+    expect(samsung_pay_card.customer_location).not_to be_nil
+    expect(samsung_pay_card.debit).not_to be_nil
+    expect(samsung_pay_card.default?).not_to be_nil
+    expect(samsung_pay_card.durbin_regulated).not_to be_nil
+    expect(samsung_pay_card.expiration_date).not_to be_nil
+    expect(samsung_pay_card.expiration_month).not_to be_nil
+    expect(samsung_pay_card.expiration_year).not_to be_nil
+    expect(samsung_pay_card.expired?).not_to be_nil
+    expect(samsung_pay_card.healthcare).not_to be_nil
+    expect(samsung_pay_card.image_url).not_to be_nil
+    expect(samsung_pay_card.issuing_bank).not_to be_nil
+    expect(samsung_pay_card.last_4).not_to be_nil
+    expect(samsung_pay_card.payroll).not_to be_nil
+    expect(samsung_pay_card.prepaid).not_to be_nil
+    expect(samsung_pay_card.product_id).not_to be_nil
+    expect(samsung_pay_card.source_card_last_4).not_to be_nil
+    expect(samsung_pay_card.subscriptions).not_to be_nil
+    expect(samsung_pay_card.token).not_to be_nil
+    expect(samsung_pay_card.unique_number_identifier).not_to be_nil
+    expect(samsung_pay_card.updated_at).not_to be_nil
 
     customer = Braintree::Customer.find(customer.id)
-    customer.samsung_pay_cards.size.should == 1
-    customer.samsung_pay_cards.first.should == samsung_pay_card
+    expect(customer.samsung_pay_cards.size).to eq(1)
+    expect(customer.samsung_pay_cards.first).to eq(samsung_pay_card)
   end
 
   it "returns cardholder_name and billing_address" do
@@ -79,18 +79,18 @@ describe Braintree::SamsungPayCard do
       },
     )
 
-    result.should be_success
-    result.payment_method.cardholder_name.should == "Jenny Block"
+    expect(result).to be_success
+    expect(result.payment_method.cardholder_name).to eq("Jenny Block")
 
     address = result.payment_method.billing_address
-    address.first_name.should == "New First Name"
-    address.last_name.should == "New Last Name"
-    address.company.should == "New Company"
-    address.street_address.should == "123 New St"
-    address.extended_address.should == "Apt New"
-    address.locality.should == "New City"
-    address.region.should == "New State"
-    address.postal_code.should == "56789"
+    expect(address.first_name).to eq("New First Name")
+    expect(address.last_name).to eq("New Last Name")
+    expect(address.company).to eq("New Company")
+    expect(address.street_address).to eq("123 New St")
+    expect(address.extended_address).to eq("Apt New")
+    expect(address.locality).to eq("New City")
+    expect(address.region).to eq("New State")
+    expect(address.postal_code).to eq("56789")
   end
 
   it "can search for transactions" do
@@ -98,14 +98,14 @@ describe Braintree::SamsungPayCard do
       :payment_method_nonce => Braintree::Test::Nonce::SamsungPayDiscover,
       :amount => "47.00",
     )
-    transaction_create_result.should be_success
+    expect(transaction_create_result).to be_success
     transaction_id = transaction_create_result.transaction.id
 
     search_results = Braintree::Transaction.search do |search|
       search.id.is transaction_id
       search.payment_instrument_type.is Braintree::PaymentInstrumentType::SamsungPayCard
     end
-    search_results.first.id.should == transaction_id
+    expect(search_results.first.id).to eq(transaction_id)
   end
 
   it "can create transaction from nonce and vault" do
@@ -117,28 +117,28 @@ describe Braintree::SamsungPayCard do
       :amount => "47.00",
       :options => {:store_in_vault => true},
     )
-    result.should be_success
+    expect(result).to be_success
 
     samsung_pay_card_details = result.transaction.samsung_pay_card_details
-    samsung_pay_card_details.bin.should_not be_nil
-    samsung_pay_card_details.card_type.should_not be_nil
-    samsung_pay_card_details.commercial.should_not be_nil
-    samsung_pay_card_details.country_of_issuance.should_not be_nil
-    samsung_pay_card_details.customer_location.should_not be_nil
-    samsung_pay_card_details.debit.should_not be_nil
-    samsung_pay_card_details.durbin_regulated.should_not be_nil
-    samsung_pay_card_details.expiration_date.should_not be_nil
-    samsung_pay_card_details.expiration_month.should_not be_nil
-    samsung_pay_card_details.expiration_year.should_not be_nil
-    samsung_pay_card_details.healthcare.should_not be_nil
-    samsung_pay_card_details.image_url.should_not be_nil
-    samsung_pay_card_details.issuing_bank.should_not be_nil
-    samsung_pay_card_details.last_4.should_not be_nil
-    samsung_pay_card_details.payroll.should_not be_nil
-    samsung_pay_card_details.prepaid.should_not be_nil
-    samsung_pay_card_details.product_id.should_not be_nil
-    samsung_pay_card_details.source_card_last_4.should_not be_nil
-    samsung_pay_card_details.source_card_last_4.should == "3333"
-    samsung_pay_card_details.token.should_not be_nil
+    expect(samsung_pay_card_details.bin).not_to be_nil
+    expect(samsung_pay_card_details.card_type).not_to be_nil
+    expect(samsung_pay_card_details.commercial).not_to be_nil
+    expect(samsung_pay_card_details.country_of_issuance).not_to be_nil
+    expect(samsung_pay_card_details.customer_location).not_to be_nil
+    expect(samsung_pay_card_details.debit).not_to be_nil
+    expect(samsung_pay_card_details.durbin_regulated).not_to be_nil
+    expect(samsung_pay_card_details.expiration_date).not_to be_nil
+    expect(samsung_pay_card_details.expiration_month).not_to be_nil
+    expect(samsung_pay_card_details.expiration_year).not_to be_nil
+    expect(samsung_pay_card_details.healthcare).not_to be_nil
+    expect(samsung_pay_card_details.image_url).not_to be_nil
+    expect(samsung_pay_card_details.issuing_bank).not_to be_nil
+    expect(samsung_pay_card_details.last_4).not_to be_nil
+    expect(samsung_pay_card_details.payroll).not_to be_nil
+    expect(samsung_pay_card_details.prepaid).not_to be_nil
+    expect(samsung_pay_card_details.product_id).not_to be_nil
+    expect(samsung_pay_card_details.source_card_last_4).not_to be_nil
+    expect(samsung_pay_card_details.source_card_last_4).to eq("3333")
+    expect(samsung_pay_card_details.token).not_to be_nil
   end
 end

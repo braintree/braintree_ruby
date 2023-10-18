@@ -27,9 +27,9 @@ describe Braintree::Configuration do
         :private_key => "private_key",
       )
 
-      config.merchant_id.should == "merchant_id"
-      config.public_key.should == "public_key"
-      config.private_key.should == "private_key"
+      expect(config.merchant_id).to eq("merchant_id")
+      expect(config.public_key).to eq("public_key")
+      expect(config.private_key).to eq("private_key")
     end
 
     it "accepts partner credentials" do
@@ -39,9 +39,9 @@ describe Braintree::Configuration do
         :private_key => "private_key",
       )
 
-      config.merchant_id.should == "partner_id"
-      config.public_key.should == "public_key"
-      config.private_key.should == "private_key"
+      expect(config.merchant_id).to eq("partner_id")
+      expect(config.public_key).to eq("public_key")
+      expect(config.private_key).to eq("private_key")
     end
 
     it "raises if combining client_id/secret with access_token" do
@@ -82,7 +82,7 @@ describe Braintree::Configuration do
           :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
           :environment => "sandbox",
         )
-        $stderr.string.should == "Braintree::Gateway should not be initialized with mixed environments: environment parameter and access_token do not match, environment from access_token is used.\n"
+        expect($stderr.string).to eq("Braintree::Gateway should not be initialized with mixed environments: environment parameter and access_token do not match, environment from access_token is used.\n")
       end
 
       it "does not warn if both environment and access_token are provided and their environments match" do
@@ -90,7 +90,7 @@ describe Braintree::Configuration do
           :access_token => "access_token$development$integration_merchant_id$fb27c79dd",
           :environment => "development",
         )
-        $stderr.string.should == ""
+        expect($stderr.string).to eq("")
       end
     end
 
@@ -102,10 +102,10 @@ describe Braintree::Configuration do
         :proxy_pass => "test",
       )
 
-      config.proxy_address.should == "localhost"
-      config.proxy_port.should == 8080
-      config.proxy_user.should == "user"
-      config.proxy_pass.should == "test"
+      expect(config.proxy_address).to eq("localhost")
+      expect(config.proxy_port).to eq(8080)
+      expect(config.proxy_user).to eq("user")
+      expect(config.proxy_pass).to eq("test")
     end
 
     it "accepts ssl version" do
@@ -113,13 +113,13 @@ describe Braintree::Configuration do
         :ssl_version => :TLSv1_2,
       )
 
-      config.ssl_version.should == :TLSv1_2
+      expect(config.ssl_version).to eq(:TLSv1_2)
     end
   end
 
   describe "base_merchant_path" do
     it "returns /merchants/{merchant_id}" do
-      Braintree::Configuration.instantiate.base_merchant_path.should == "/merchants/integration_merchant_id"
+      expect(Braintree::Configuration.instantiate.base_merchant_path).to eq("/merchants/integration_merchant_id")
     end
   end
 
@@ -127,17 +127,17 @@ describe Braintree::Configuration do
     it "returns the expected url for the development env" do
       Braintree::Configuration.environment = :development
       port = Braintree::Configuration.instantiate.port
-      Braintree::Configuration.instantiate.base_merchant_url.should == "http://localhost:#{port}/merchants/integration_merchant_id"
+      expect(Braintree::Configuration.instantiate.base_merchant_url).to eq("http://localhost:#{port}/merchants/integration_merchant_id")
     end
 
     it "returns the expected url for the sandbox env" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.base_merchant_url.should == "https://api.sandbox.braintreegateway.com:443/merchants/integration_merchant_id"
+      expect(Braintree::Configuration.instantiate.base_merchant_url).to eq("https://api.sandbox.braintreegateway.com:443/merchants/integration_merchant_id")
     end
 
     it "returns the expected url for the production env" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.base_merchant_url.should == "https://api.braintreegateway.com:443/merchants/integration_merchant_id"
+      expect(Braintree::Configuration.instantiate.base_merchant_url).to eq("https://api.braintreegateway.com:443/merchants/integration_merchant_id")
     end
   end
 
@@ -145,27 +145,27 @@ describe Braintree::Configuration do
     it "sandbox" do
       Braintree::Configuration.environment = :sandbox
       ca_file = Braintree::Configuration.instantiate.ca_file
-      ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
-      File.exist?(ca_file).should == true
+      expect(ca_file).to match(/api_braintreegateway_com\.ca\.crt$/)
+      expect(File.exist?(ca_file)).to eq(true)
     end
 
     it "production" do
       Braintree::Configuration.environment = :production
       ca_file = Braintree::Configuration.instantiate.ca_file
-      ca_file.should match(/api_braintreegateway_com\.ca\.crt$/)
-      File.exist?(ca_file).should == true
+      expect(ca_file).to match(/api_braintreegateway_com\.ca\.crt$/)
+      expect(File.exist?(ca_file)).to eq(true)
     end
   end
 
   describe "logger" do
     it "defaults to logging to stdout with log_level info" do
       config = Braintree::Configuration.new
-      config.logger.level.should == Logger::INFO
+      expect(config.logger.level).to eq(Logger::INFO)
     end
 
     it "lazily initializes so that you can do Braintree::Configuration.logger.level = when configuring the client lib" do
       config = Braintree::Configuration.new :logger => nil
-      config.logger.should_not == nil
+      expect(config.logger).not_to eq(nil)
     end
 
     it "can set logger on gateway instance" do
@@ -215,17 +215,17 @@ describe Braintree::Configuration do
 
       gateway = Braintree::Configuration.gateway
 
-      gateway.config.proxy_address.should == "localhost"
-      gateway.config.proxy_port.should == 8080
-      gateway.config.proxy_user.should == "user"
-      gateway.config.proxy_pass.should == "test"
+      expect(gateway.config.proxy_address).to eq("localhost")
+      expect(gateway.config.proxy_port).to eq(8080)
+      expect(gateway.config.proxy_user).to eq("user")
+      expect(gateway.config.proxy_pass).to eq("test")
     end
 
     it "sets the ssl version" do
       Braintree::Configuration.ssl_version = :TLSv1_2
       gateway = Braintree::Configuration.gateway
 
-      gateway.config.ssl_version.should == :TLSv1_2
+      expect(gateway.config.ssl_version).to eq(:TLSv1_2)
     end
   end
 
@@ -253,7 +253,7 @@ describe Braintree::Configuration do
       begin
         old_logger = Braintree::Configuration.logger
         Braintree::Configuration.logger = nil
-        Braintree::Configuration.instantiate.logger.level.should == Logger::INFO
+        expect(Braintree::Configuration.instantiate.logger.level).to eq(Logger::INFO)
       ensure
         Braintree::Configuration.logger = old_logger
       end
@@ -261,7 +261,7 @@ describe Braintree::Configuration do
 
     it "lazily initializes so that you can do Braintree::Configuration.logger.level = when configuring the client lib" do
       Braintree::Configuration.logger = nil
-      Braintree::Configuration.logger.should_not == nil
+      expect(Braintree::Configuration.logger).not_to eq(nil)
     end
   end
 
@@ -316,12 +316,12 @@ describe Braintree::Configuration do
   describe "self.port" do
     it "is 443 for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.port.should == 443
+      expect(Braintree::Configuration.instantiate.port).to eq(443)
     end
 
     it "is 443 for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.port.should == 443
+      expect(Braintree::Configuration.instantiate.port).to eq(443)
     end
 
     it "is 3000 or GATEWAY_PORT environment variable for development" do
@@ -329,10 +329,10 @@ describe Braintree::Configuration do
       old_gateway_port = ENV["GATEWAY_PORT"]
       begin
         ENV["GATEWAY_PORT"] = nil
-        Braintree::Configuration.instantiate.port.should == 3000
+        expect(Braintree::Configuration.instantiate.port).to eq(3000)
 
         ENV["GATEWAY_PORT"] = "1234"
-        Braintree::Configuration.instantiate.port.should == "1234"
+        expect(Braintree::Configuration.instantiate.port).to eq("1234")
       ensure
         ENV["GATEWAY_PORT"] = old_gateway_port
       end
@@ -342,17 +342,17 @@ describe Braintree::Configuration do
   describe "self.protocol" do
     it "is http for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.instantiate.protocol.should == "http"
+      expect(Braintree::Configuration.instantiate.protocol).to eq("http")
     end
 
     it "is https for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.protocol.should == "https"
+      expect(Braintree::Configuration.instantiate.protocol).to eq("https")
     end
 
     it "is https for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.protocol.should == "https"
+      expect(Braintree::Configuration.instantiate.protocol).to eq("https")
     end
   end
 
@@ -362,10 +362,10 @@ describe Braintree::Configuration do
       old_gateway_url = ENV["GRAPHQL_HOST"]
       begin
         ENV["GRAPHQL_HOST"] = nil
-        Braintree::Configuration.instantiate.graphql_server.should == "graphql.bt.local"
+        expect(Braintree::Configuration.instantiate.graphql_server).to eq("graphql.bt.local")
 
         ENV["GRAPHQL_HOST"] = "gateway"
-        Braintree::Configuration.instantiate.graphql_server.should == "gateway"
+        expect(Braintree::Configuration.instantiate.graphql_server).to eq("gateway")
       ensure
         ENV["GRAPHQL_HOST"] = old_gateway_url
       end
@@ -378,10 +378,10 @@ describe Braintree::Configuration do
       old_gateway_url = ENV["GATEWAY_HOST"]
       begin
         ENV["GATEWAY_HOST"] = nil
-        Braintree::Configuration.instantiate.server.should == "localhost"
+        expect(Braintree::Configuration.instantiate.server).to eq("localhost")
 
         ENV["GATEWAY_HOST"] = "gateway"
-        Braintree::Configuration.instantiate.server.should == "gateway"
+        expect(Braintree::Configuration.instantiate.server).to eq("gateway")
       ensure
         ENV["GATEWAY_HOST"] = old_gateway_url
       end
@@ -389,62 +389,62 @@ describe Braintree::Configuration do
 
     it "is api.braintreegateway.com for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.server.should == "api.braintreegateway.com"
+      expect(Braintree::Configuration.instantiate.server).to eq("api.braintreegateway.com")
     end
 
     it "is api.sandbox.braintreegateway.com for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.server.should == "api.sandbox.braintreegateway.com"
+      expect(Braintree::Configuration.instantiate.server).to eq("api.sandbox.braintreegateway.com")
     end
 
     it "is qa.braintreegateway.com for qa" do
       Braintree::Configuration.environment = :qa
-      Braintree::Configuration.instantiate.server.should == "gateway.qa.braintreepayments.com"
+      expect(Braintree::Configuration.instantiate.server).to eq("gateway.qa.braintreepayments.com")
     end
 
     it "can by changed by configuring the production endpoint" do
       Braintree::Configuration.environment = :production
       Braintree::Configuration.endpoint = "custom-endpoint"
-      Braintree::Configuration.instantiate.server.should == "custom-endpoint.braintreegateway.com"
+      expect(Braintree::Configuration.instantiate.server).to eq("custom-endpoint.braintreegateway.com")
     end
   end
 
   describe "auth_url" do
     it "is http://auth.venmo.dev for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.instantiate.auth_url.should == "http://auth.venmo.dev:9292"
+      expect(Braintree::Configuration.instantiate.auth_url).to eq("http://auth.venmo.dev:9292")
     end
 
     it "is https://auth.venmo.com for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.com"
+      expect(Braintree::Configuration.instantiate.auth_url).to eq("https://auth.venmo.com")
     end
 
     it "is https://auth.sandbox.venmo.com for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.sandbox.braintreegateway.com"
+      expect(Braintree::Configuration.instantiate.auth_url).to eq("https://auth.venmo.sandbox.braintreegateway.com")
     end
 
     it "is https://auth.qa.venmo.com for qa" do
       Braintree::Configuration.environment = :qa
-      Braintree::Configuration.instantiate.auth_url.should == "https://auth.venmo.qa2.braintreegateway.com"
+      expect(Braintree::Configuration.instantiate.auth_url).to eq("https://auth.venmo.qa2.braintreegateway.com")
     end
   end
 
   describe "ssl?" do
     it "returns false for development" do
       Braintree::Configuration.environment = :development
-      Braintree::Configuration.instantiate.ssl?.should == false
+      expect(Braintree::Configuration.instantiate.ssl?).to eq(false)
     end
 
     it "returns true for production" do
       Braintree::Configuration.environment = :production
-      Braintree::Configuration.instantiate.ssl?.should == true
+      expect(Braintree::Configuration.instantiate.ssl?).to eq(true)
     end
 
     it "returns true for sandbox" do
       Braintree::Configuration.environment = :sandbox
-      Braintree::Configuration.instantiate.ssl?.should == true
+      expect(Braintree::Configuration.instantiate.ssl?).to eq(true)
     end
   end
 
@@ -455,20 +455,20 @@ describe Braintree::Configuration do
 
     it "appends the default user_agent with the given value" do
       Braintree::Configuration.custom_user_agent = "ActiveMerchant 1.2.3"
-      Braintree::Configuration.instantiate.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)"
+      expect(Braintree::Configuration.instantiate.user_agent).to eq("Braintree Ruby Gem #{Braintree::Version::String} (ActiveMerchant 1.2.3)")
     end
 
     it "does not append anything if there is no custom_user_agent" do
       Braintree::Configuration.custom_user_agent = nil
-      Braintree::Configuration.instantiate.user_agent.should == "Braintree Ruby Gem #{Braintree::Version::String}"
+      expect(Braintree::Configuration.instantiate.user_agent).to eq("Braintree Ruby Gem #{Braintree::Version::String}")
     end
   end
 
   describe "inspect" do
     it "masks the private_key" do
       config = Braintree::Configuration.new(:private_key => "secret_key")
-      config.inspect.should include('@private_key="[FILTERED]"')
-      config.inspect.should_not include("secret_key")
+      expect(config.inspect).to include('@private_key="[FILTERED]"')
+      expect(config.inspect).not_to include("secret_key")
     end
   end
 
@@ -476,7 +476,7 @@ describe Braintree::Configuration do
     it "has a signature service initialized with the private key" do
       config = Braintree::Configuration.new(:private_key => "secret_key")
 
-      config.signature_service.key.should == "secret_key"
+      expect(config.signature_service.key).to eq("secret_key")
     end
   end
 end

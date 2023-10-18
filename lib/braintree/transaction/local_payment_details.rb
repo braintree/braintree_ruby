@@ -8,6 +8,8 @@ module Braintree
       attr_reader :debug_id
       attr_reader :description
       attr_reader :funding_source
+      attr_reader :implicitly_vaulted_payment_method_global_id
+      attr_reader :implicitly_vaulted_payment_method_token
       attr_reader :payer_id
       attr_reader :payment_id
       attr_reader :refund_from_transaction_fee_amount

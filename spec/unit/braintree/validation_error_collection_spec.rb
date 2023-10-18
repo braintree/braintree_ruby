@@ -8,9 +8,9 @@ describe Braintree::ValidationErrorCollection do
         hash = {:errors => [{:attribute => "some model attribute", :code => 1, :message => "bad juju"}]}
         collection = Braintree::ValidationErrorCollection.new(hash)
         error = collection[0]
-        error.attribute.should == "some model attribute"
-        error.code.should == 1
-        error.message.should == "bad juju"
+        expect(error.attribute).to eq("some model attribute")
+        expect(error.code).to eq(1)
+        expect(error.message).to eq("bad juju")
       end
     end
 
@@ -23,9 +23,9 @@ describe Braintree::ValidationErrorCollection do
           }
         }
         errors = Braintree::ValidationErrorCollection.new(hash)
-        errors.for(:nested).on(:number)[0].code.should == 2
-        errors.for(:nested).on(:number)[0].message.should == "badder juju"
-        errors.for(:nested).on(:number)[0].attribute.should == "number"
+        expect(errors.for(:nested).on(:number)[0].code).to eq(2)
+        expect(errors.for(:nested).on(:number)[0].message).to eq("badder juju")
+        expect(errors.for(:nested).on(:number)[0].attribute).to eq("number")
       end
     end
 
@@ -35,7 +35,7 @@ describe Braintree::ValidationErrorCollection do
           {:attribute => "name", :code => "code1", :message => "message1"},
           {:attribute => "name", :code => "code2", :message => "message2"}
         ])
-        errors.inspect.should == "#<Braintree::ValidationErrorCollection errors:[(code1) message1, (code2) message2]>"
+        expect(errors.inspect).to eq("#<Braintree::ValidationErrorCollection errors:[(code1) message1, (code2) message2]>")
       end
 
       it "shows errors 1 level deep" do
@@ -47,7 +47,7 @@ describe Braintree::ValidationErrorCollection do
             :errors => [{:attribute => "name", :code => "code2", :message => "message2"}]
           },
         )
-        errors.inspect.should == "#<Braintree::ValidationErrorCollection errors:[(code1) message1], level1:[(code2) message2]>"
+        expect(errors.inspect).to eq("#<Braintree::ValidationErrorCollection errors:[(code1) message1], level1:[(code2) message2]>")
       end
 
       it "shows errors 2 levels deep" do
@@ -62,7 +62,7 @@ describe Braintree::ValidationErrorCollection do
             }
           },
         )
-        errors.inspect.should == "#<Braintree::ValidationErrorCollection errors:[(code1) message1], level1:[(code2) message2], level1/level2:[(code3) message3]>"
+        expect(errors.inspect).to eq("#<Braintree::ValidationErrorCollection errors:[(code1) message1], level1:[(code2) message2], level1/level2:[(code3) message3]>")
       end
     end
 
@@ -73,16 +73,16 @@ describe Braintree::ValidationErrorCollection do
           {:attribute => "name", :code => 2, :message => "contains invalid chars"},
           {:attribute => "not name", :code => 3, :message => "is invalid"}
         ])
-        errors.on("name").size.should == 2
-        errors.on("name").map { |e| e.code }.should == [1, 2]
+        expect(errors.on("name").size).to eq(2)
+        expect(errors.on("name").map { |e| e.code }).to eq([1, 2])
       end
 
       it "has indifferent access" do
         errors = Braintree::ValidationErrorCollection.new(:errors => [
           {:attribute => "name", :code => 3, :message => "is too long"},
         ])
-        errors.on(:name).size.should == 1
-        errors.on(:name)[0].code.should == 3
+        expect(errors.on(:name).size).to eq(1)
+        expect(errors.on(:name)[0].code).to eq(3)
 
       end
     end
@@ -94,7 +94,7 @@ describe Braintree::ValidationErrorCollection do
           {:attribute => "two", :code => 2, :message => "contains invalid chars"},
           {:attribute => "thr", :code => 3, :message => "is invalid"}
         ])
-        errors.deep_size.should == 3
+        expect(errors.deep_size).to eq(3)
       end
 
       it "returns the size of nested errors as well" do
@@ -104,7 +104,7 @@ describe Braintree::ValidationErrorCollection do
             :errors => [{:attribute => "number", :code => 2, :message => "badder juju"}]
           },
         )
-        errors.deep_size.should == 2
+        expect(errors.deep_size).to eq(2)
       end
 
       it "returns the size of multiple nestings of errors" do
@@ -122,7 +122,7 @@ describe Braintree::ValidationErrorCollection do
             :errors => [{:attribute => "five", :code => 2, :message => "badder juju"}],
           },
         )
-        errors.deep_size.should == 5
+        expect(errors.deep_size).to eq(5)
       end
     end
 
@@ -142,7 +142,7 @@ describe Braintree::ValidationErrorCollection do
             :errors => [{:attribute => "five", :code => 5, :message => "badder juju"}],
           },
         )
-        errors.deep_errors.map { |e| e.code }.sort.should == [1, 2, 3, 4, 5]
+        expect(errors.deep_errors.map { |e| e.code }.sort).to eq([1, 2, 3, 4, 5])
       end
     end
 
@@ -159,8 +159,8 @@ describe Braintree::ValidationErrorCollection do
             }
           },
         )
-        errors.shallow_errors.map { |e| e.code }.should == [1, 2]
-        errors.for(:nested).shallow_errors.map { |e| e.code }.should == [3]
+        expect(errors.shallow_errors.map { |e| e.code }).to eq([1, 2])
+        expect(errors.for(:nested).shallow_errors.map { |e| e.code }).to eq([3])
       end
 
       it "returns an clone of the real array" do
@@ -170,7 +170,7 @@ describe Braintree::ValidationErrorCollection do
             {:attribute => "two", :code => 2, :message => "bad juju"}],
         )
         errors.shallow_errors.pop
-        errors.shallow_errors.map { |e| e.code }.should == [1, 2]
+        expect(errors.shallow_errors.map { |e| e.code }).to eq([1, 2])
       end
     end
   end
@@ -186,9 +186,9 @@ describe Braintree::ValidationErrorCollection do
                 }]}
         collection = Braintree::ValidationErrorCollection.new(hash)
         error = collection[0]
-        error.attribute.should == "two"
-        error.code.should == 1
-        error.message.should == "bad juju"
+        expect(error.attribute).to eq("two")
+        expect(error.code).to eq(1)
+        expect(error.message).to eq("bad juju")
         !error.respond_to? :untracked_param
       end
     end
@@ -210,9 +210,9 @@ describe Braintree::ValidationErrorCollection do
           }
         }
         errors = Braintree::ValidationErrorCollection.new(hash)
-        errors.for(:nested).on(:nested_attribute)[0].code.should == 2
-        errors.for(:nested).on(:nested_attribute)[0].message.should == "badder juju"
-        errors.for(:nested).on(:nested_attribute)[0].attribute.should == "nested_attribute"
+        expect(errors.for(:nested).on(:nested_attribute)[0].code).to eq(2)
+        expect(errors.for(:nested).on(:nested_attribute)[0].message).to eq("badder juju")
+        expect(errors.for(:nested).on(:nested_attribute)[0].attribute).to eq("nested_attribute")
       end
     end
 
@@ -234,7 +234,7 @@ describe Braintree::ValidationErrorCollection do
           }],
         }
         errors = Braintree::ValidationErrorCollection.new(hash)
-        errors.deep_size.should == 3
+        expect(errors.deep_size).to eq(3)
       end
 
       it "returns the size of nested errors as well" do
@@ -253,7 +253,7 @@ describe Braintree::ValidationErrorCollection do
           }
         }
         errors = Braintree::ValidationErrorCollection.new(hash)
-        errors.deep_size.should == 2
+        expect(errors.deep_size).to eq(2)
       end
 
       it "returns the size of multiple nestings of errors" do
@@ -290,7 +290,7 @@ describe Braintree::ValidationErrorCollection do
           }
         }
         errors = Braintree::ValidationErrorCollection.new(hash)
-        errors.deep_size.should == 5
+        expect(errors.deep_size).to eq(5)
       end
     end
 
@@ -329,7 +329,7 @@ describe Braintree::ValidationErrorCollection do
           }
         }
         errors = Braintree::ValidationErrorCollection.new(hash)
-        errors.deep_errors.map { |e| e.code }.sort.should == [1, 2, 3, 4, 5]
+        expect(errors.deep_errors.map { |e| e.code }.sort).to eq([1, 2, 3, 4, 5])
       end
     end
 
@@ -368,10 +368,10 @@ describe Braintree::ValidationErrorCollection do
           }
         }
         errors = Braintree::ValidationErrorCollection.new(hash)
-        errors.shallow_errors.map { |e| e.code }.should == [1]
-        errors.for(:nested).shallow_errors.map { |e| e.code }.should == [2,3]
-        errors.for(:nested).for(:deeply_nested).shallow_errors.map { |e| e.code }.should == [4]
-        errors.for(:nested_again).shallow_errors.map { |e| e.code }.should == [5]
+        expect(errors.shallow_errors.map { |e| e.code }).to eq([1])
+        expect(errors.for(:nested).shallow_errors.map { |e| e.code }).to eq([2,3])
+        expect(errors.for(:nested).for(:deeply_nested).shallow_errors.map { |e| e.code }).to eq([4])
+        expect(errors.for(:nested_again).shallow_errors.map { |e| e.code }).to eq([5])
       end
     end
   end

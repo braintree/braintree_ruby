@@ -6,10 +6,10 @@ describe Braintree::Customer do
   describe "self.all" do
     it "gets more than a page of customers" do
       customers = Braintree::Customer.all
-      customers.maximum_size.should > 100
+      expect(customers.maximum_size).to be > 100
 
       customer_ids = customers.map { |c| c.id }.uniq.compact
-      customer_ids.size.should == customers.maximum_size
+      expect(customer_ids.size).to eq(customers.maximum_size)
     end
   end
 
@@ -19,11 +19,11 @@ describe Braintree::Customer do
         :first_name => "Joe",
         :last_name => "Cool",
       )
-      create_result.success?.should == true
+      expect(create_result.success?).to eq(true)
       customer = create_result.customer
 
       delete_result = Braintree::Customer.delete(customer.id)
-      delete_result.success?.should == true
+      expect(delete_result.success?).to eq(true)
       expect do
         Braintree::Customer.find(customer.id)
       end.to raise_error(Braintree::NotFoundError)
@@ -42,17 +42,17 @@ describe Braintree::Customer do
         :website => "www.microsoft.com",
         :tax_identifiers => [{:country_code => "US", :identifier => "987654321"}],
       )
-      result.success?.should == true
-      result.customer.id.should =~ /^\d{6,}$/
-      result.customer.first_name.should == "Bill"
-      result.customer.last_name.should == "Gates"
-      result.customer.company.should == "Microsoft"
-      result.customer.email.should == "bill@microsoft.com"
-      result.customer.phone.should == "312.555.1234"
-      result.customer.fax.should == "614.555.5678"
-      result.customer.website.should == "www.microsoft.com"
-      result.customer.created_at.between?(Time.now - 10, Time.now).should == true
-      result.customer.updated_at.between?(Time.now - 10, Time.now).should == true
+      expect(result.success?).to eq(true)
+      expect(result.customer.id).to match(/^\d{6,}$/)
+      expect(result.customer.first_name).to eq("Bill")
+      expect(result.customer.last_name).to eq("Gates")
+      expect(result.customer.company).to eq("Microsoft")
+      expect(result.customer.email).to eq("bill@microsoft.com")
+      expect(result.customer.phone).to eq("312.555.1234")
+      expect(result.customer.fax).to eq("614.555.5678")
+      expect(result.customer.website).to eq("www.microsoft.com")
+      expect(result.customer.created_at.between?(Time.now - 10, Time.now)).to eq(true)
+      expect(result.customer.updated_at.between?(Time.now - 10, Time.now)).to eq(true)
     end
 
     it "returns a successful result if successful using an access token" do
@@ -80,10 +80,10 @@ describe Braintree::Customer do
         :fax => "614.555.5678",
         :website => "www.example.com",
       )
-      result.success?.should == true
-      result.customer.id.should =~ /^\d{6,}$/
-      result.customer.first_name.should == "Joe"
-      result.customer.last_name.should == "Brown"
+      expect(result.success?).to eq(true)
+      expect(result.customer.id).to match(/^\d{6,}$/)
+      expect(result.customer.first_name).to eq("Joe")
+      expect(result.customer.last_name).to eq("Brown")
     end
 
     it "supports creation with device_data" do
@@ -96,7 +96,7 @@ describe Braintree::Customer do
         },
       )
 
-      result.should be_success
+      expect(result).to be_success
     end
 
     it "supports creation including risk data with customer_browser and customer_ip" do
@@ -112,7 +112,7 @@ describe Braintree::Customer do
         },
       )
 
-      result.should be_success
+      expect(result).to be_success
     end
 
     it "includes risk data when skip_advanced_fraud_checking is false" do
@@ -163,38 +163,38 @@ describe Braintree::Customer do
         ],
       )
 
-      result.should be_success
+      expect(result).to be_success
     end
 
     it "can create without any attributes" do
       result = Braintree::Customer.create
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "supports utf-8" do
       first_name = "Jos\303\251"
       last_name = "Mu\303\261oz"
       result = Braintree::Customer.create(:first_name => first_name, :last_name => last_name)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       if RUBY_VERSION =~ /^1.8/
-        result.customer.first_name.should == first_name
-        result.customer.last_name.should == last_name
+        expect(result.customer.first_name).to eq(first_name)
+        expect(result.customer.last_name).to eq(last_name)
 
         found_customer = Braintree::Customer.find(result.customer.id)
-        found_customer.first_name.should == first_name
-        found_customer.last_name.should == last_name
+        expect(found_customer.first_name).to eq(first_name)
+        expect(found_customer.last_name).to eq(last_name)
       else
-        result.customer.first_name.should == "José"
-        result.customer.first_name.bytes.map { |b| b.to_s(8) }.should == ["112", "157", "163", "303", "251"]
-        result.customer.last_name.should == "Muñoz"
-        result.customer.last_name.bytes.map { |b| b.to_s(8) }.should == ["115", "165", "303", "261", "157", "172"]
+        expect(result.customer.first_name).to eq("José")
+        expect(result.customer.first_name.bytes.map { |b| b.to_s(8) }).to eq(["112", "157", "163", "303", "251"])
+        expect(result.customer.last_name).to eq("Muñoz")
+        expect(result.customer.last_name.bytes.map { |b| b.to_s(8) }).to eq(["115", "165", "303", "261", "157", "172"])
 
         found_customer = Braintree::Customer.find(result.customer.id)
-        found_customer.first_name.should == "José"
-        found_customer.first_name.bytes.map { |b| b.to_s(8) }.should == ["112", "157", "163", "303", "251"]
-        found_customer.last_name.should == "Muñoz"
-        found_customer.last_name.bytes.map { |b| b.to_s(8) }.should == ["115", "165", "303", "261", "157", "172"]
+        expect(found_customer.first_name).to eq("José")
+        expect(found_customer.first_name.bytes.map { |b| b.to_s(8) }).to eq(["112", "157", "163", "303", "251"])
+        expect(found_customer.last_name).to eq("Muñoz")
+        expect(found_customer.last_name.bytes.map { |b| b.to_s(8) }).to eq(["115", "165", "303", "261", "157", "172"])
       end
     end
 
@@ -202,8 +202,8 @@ describe Braintree::Customer do
       result = Braintree::Customer.create(
         :email => "@invalid.com",
       )
-      result.success?.should == false
-      result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).on(:email)[0].message).to eq("Email is an invalid format.")
     end
 
     it "can create a customer and a payment method at the same time" do
@@ -217,13 +217,13 @@ describe Braintree::Customer do
         },
       )
 
-      result.success?.should == true
-      result.customer.first_name.should == "Mike"
-      result.customer.last_name.should == "Jones"
-      result.customer.credit_cards[0].bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      result.customer.credit_cards[0].expiration_date.should == "05/2010"
-      result.customer.credit_cards[0].unique_number_identifier.should =~ /\A\w{32}\z/
+      expect(result.success?).to eq(true)
+      expect(result.customer.first_name).to eq("Mike")
+      expect(result.customer.last_name).to eq("Jones")
+      expect(result.customer.credit_cards[0].bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(result.customer.credit_cards[0].last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+      expect(result.customer.credit_cards[0].expiration_date).to eq("05/2010")
+      expect(result.customer.credit_cards[0].unique_number_identifier).to match(/\A\w{32}\z/)
     end
 
     it "can create a customer and a paypal account at the same time" do
@@ -237,11 +237,11 @@ describe Braintree::Customer do
         },
       )
 
-      result.success?.should == true
-      result.customer.first_name.should == "Mike"
-      result.customer.last_name.should == "Jones"
-      result.customer.paypal_accounts[0].billing_agreement_id.should == "B-123456"
-      result.customer.paypal_accounts[0].email.should == "other@example.com"
+      expect(result.success?).to eq(true)
+      expect(result.customer.first_name).to eq("Mike")
+      expect(result.customer.last_name).to eq("Jones")
+      expect(result.customer.paypal_accounts[0].billing_agreement_id).to eq("B-123456")
+      expect(result.customer.paypal_accounts[0].email).to eq("other@example.com")
     end
 
     it "verifies the card if credit_card[options][verify_card]=true" do
@@ -254,8 +254,8 @@ describe Braintree::Customer do
           :options => {:verify_card => true}
         },
       )
-      result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      expect(result.success?).to eq(false)
+      expect(result.credit_card_verification.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
     end
 
     it "allows a verification_amount" do
@@ -268,7 +268,7 @@ describe Braintree::Customer do
           :options => {:verify_card => true, :verification_amount => "2.00"}
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "fails on create if credit_card[options][fail_on_duplicate_payment_method]=true and there is a duplicated payment method" do
@@ -288,8 +288,8 @@ describe Braintree::Customer do
           :options => {:fail_on_duplicate_payment_method => true}
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Duplicate card exists in the vault."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).for(:credit_card).on(:number)[0].message).to eq("Duplicate card exists in the vault.")
     end
 
     it "allows the user to specify the merchant account for verification" do
@@ -305,8 +305,8 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == false
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
+      expect(result.success?).to eq(false)
+      expect(result.credit_card_verification.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
     end
 
     it "can create a customer and a payment method at the same time after validating verification_currency_iso_code" do
@@ -324,13 +324,13 @@ describe Braintree::Customer do
         },
       )
 
-      result.success?.should == true
-      result.customer.first_name.should == "Mike"
-      result.customer.last_name.should == "Jones"
-      result.customer.credit_cards[0].bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      result.customer.credit_cards[0].expiration_date.should == "05/2010"
-      result.customer.credit_cards[0].unique_number_identifier.should =~ /\A\w{32}\z/
+      expect(result.success?).to eq(true)
+      expect(result.customer.first_name).to eq("Mike")
+      expect(result.customer.last_name).to eq("Jones")
+      expect(result.customer.credit_cards[0].bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(result.customer.credit_cards[0].last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+      expect(result.customer.credit_cards[0].expiration_date).to eq("05/2010")
+      expect(result.customer.credit_cards[0].unique_number_identifier).to match(/\A\w{32}\z/)
       result.customer.credit_cards[0].verification.currency_iso_code == "USD"
     end
 
@@ -366,14 +366,14 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       result.customer.credit_cards[0].verification.currency_iso_code == "USD"
-      result.customer.first_name.should == "Mike"
-      result.customer.last_name.should == "Jones"
-      result.customer.credit_cards[0].bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      result.customer.credit_cards[0].expiration_date.should == "05/2010"
-      result.customer.credit_cards[0].unique_number_identifier.should =~ /\A\w{32}\z/
+      expect(result.customer.first_name).to eq("Mike")
+      expect(result.customer.last_name).to eq("Jones")
+      expect(result.customer.credit_cards[0].bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(result.customer.credit_cards[0].last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+      expect(result.customer.credit_cards[0].expiration_date).to eq("05/2010")
+      expect(result.customer.credit_cards[0].unique_number_identifier).to match(/\A\w{32}\z/)
     end
 
     it "validates verification_currency_iso_code of the given verification_merchant_account_id and returns error" do
@@ -412,20 +412,20 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == true
-      result.customer.first_name.should == "Mike"
-      result.customer.last_name.should == "Jones"
-      result.customer.credit_cards[0].bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      result.customer.credit_cards[0].last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      result.customer.credit_cards[0].expiration_date.should == "05/2010"
-      result.customer.credit_cards[0].billing_address.id.should == result.customer.addresses[0].id
-      result.customer.addresses[0].id.should =~ /\w+/
-      result.customer.addresses[0].street_address.should == "1 E Main St"
-      result.customer.addresses[0].extended_address.should == "Suite 3"
-      result.customer.addresses[0].locality.should == "Chicago"
-      result.customer.addresses[0].region.should == "Illinois"
-      result.customer.addresses[0].postal_code.should == "60622"
-      result.customer.addresses[0].country_name.should == "United States of America"
+      expect(result.success?).to eq(true)
+      expect(result.customer.first_name).to eq("Mike")
+      expect(result.customer.last_name).to eq("Jones")
+      expect(result.customer.credit_cards[0].bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(result.customer.credit_cards[0].last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+      expect(result.customer.credit_cards[0].expiration_date).to eq("05/2010")
+      expect(result.customer.credit_cards[0].billing_address.id).to eq(result.customer.addresses[0].id)
+      expect(result.customer.addresses[0].id).to match(/\w+/)
+      expect(result.customer.addresses[0].street_address).to eq("1 E Main St")
+      expect(result.customer.addresses[0].extended_address).to eq("Suite 3")
+      expect(result.customer.addresses[0].locality).to eq("Chicago")
+      expect(result.customer.addresses[0].region).to eq("Illinois")
+      expect(result.customer.addresses[0].postal_code).to eq("60622")
+      expect(result.customer.addresses[0].country_name).to eq("United States of America")
     end
 
     it "can use any country code" do
@@ -443,11 +443,11 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == true
-      result.customer.addresses[0].country_name.should == "Comoros"
-      result.customer.addresses[0].country_code_alpha2.should == "KM"
-      result.customer.addresses[0].country_code_alpha3.should == "COM"
-      result.customer.addresses[0].country_code_numeric.should == "174"
+      expect(result.success?).to eq(true)
+      expect(result.customer.addresses[0].country_name).to eq("Comoros")
+      expect(result.customer.addresses[0].country_code_alpha2).to eq("KM")
+      expect(result.customer.addresses[0].country_code_alpha3).to eq("COM")
+      expect(result.customer.addresses[0].country_code_numeric).to eq("174")
     end
 
     it "stores custom fields when valid" do
@@ -458,8 +458,8 @@ describe Braintree::Customer do
           :store_me => "custom value"
         },
       )
-      result.success?.should == true
-      result.customer.custom_fields[:store_me].should == "custom value"
+      expect(result.success?).to eq(true)
+      expect(result.customer.custom_fields[:store_me]).to eq("custom value")
     end
 
     it "returns empty hash for custom fields when blank" do
@@ -468,8 +468,8 @@ describe Braintree::Customer do
         :last_name => "Gates",
         :custom_fields => {:store_me => ""},
       )
-      result.success?.should == true
-      result.customer.custom_fields.should == {}
+      expect(result.success?).to eq(true)
+      expect(result.customer.custom_fields).to eq({})
     end
 
     it "returns nested errors if credit card and/or billing address are invalid" do
@@ -482,10 +482,10 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
-      result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Credit card number is invalid."
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_name)[0].message.should == "Country name is not an accepted country."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).on(:email)[0].message).to eq("Email is an invalid format.")
+      expect(result.errors.for(:customer).for(:credit_card).on(:number)[0].message).to eq("Credit card number is invalid.")
+      expect(result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_name)[0].message).to eq("Country name is not an accepted country.")
     end
 
     it "returns errors if country codes are inconsistent" do
@@ -502,8 +502,8 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::InconsistentCountry)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:base).map { |e| e.code }).to include(Braintree::ErrorCodes::Address::InconsistentCountry)
     end
 
     it "returns an error if country code alpha2 is invalid" do
@@ -518,8 +518,8 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha2).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha2).map { |e| e.code }).to include(Braintree::ErrorCodes::Address::CountryCodeAlpha2IsNotAccepted)
     end
 
     it "returns an error if country code alpha3 is invalid" do
@@ -534,8 +534,8 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha3).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_alpha3).map { |e| e.code }).to include(Braintree::ErrorCodes::Address::CountryCodeAlpha3IsNotAccepted)
     end
 
     it "returns an error if country code numeric is invalid" do
@@ -550,8 +550,8 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_numeric).map { |e| e.code }.should include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).for(:credit_card).for(:billing_address).on(:country_code_numeric).map { |e| e.code }).to include(Braintree::ErrorCodes::Address::CountryCodeNumericIsNotAccepted)
     end
 
     it "returns errors if custom_fields are not registered" do
@@ -562,8 +562,8 @@ describe Braintree::Customer do
           :spouse_name => "Jacqueline"
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).on(:custom_fields)[0].message.should == "Custom field is invalid: spouse_name."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).on(:custom_fields)[0].message).to eq("Custom field is invalid: spouse_name.")
     end
 
     context "client API" do
@@ -583,24 +583,24 @@ describe Braintree::Customer do
           },
         )
 
-        result.success?.should == true
-        result.customer.credit_cards.first.bin.should == "411111"
-        result.customer.credit_cards.first.last_4.should == "1111"
+        expect(result.success?).to eq(true)
+        expect(result.customer.credit_cards.first.bin).to eq("411111")
+        expect(result.customer.credit_cards.first.last_4).to eq("1111")
       end
     end
 
     it "can create a customer with an apple pay payment method" do
       result = Braintree::Customer.create(:payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa)
 
-      result.success?.should == true
-      result.customer.payment_methods.should_not be_empty
-      result.customer.payment_methods.first.token.should_not be_nil
+      expect(result.success?).to eq(true)
+      expect(result.customer.payment_methods).not_to be_empty
+      expect(result.customer.payment_methods.first.token).not_to be_nil
     end
 
     it "can create a customer with an unknown payment method" do
       result = Braintree::Customer.create(:payment_method_nonce => Braintree::Test::Nonce::AbstractTransactable)
 
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     context "verification_account_type" do
@@ -701,14 +701,14 @@ describe Braintree::Customer do
         :first_name => "Jim",
         :last_name => "Smith",
       )
-      customer.id.should =~ /\d+/
-      customer.first_name.should == "Jim"
-      customer.last_name.should == "Smith"
+      expect(customer.id).to match(/\d+/)
+      expect(customer.first_name).to eq("Jim")
+      expect(customer.last_name).to eq("Smith")
     end
 
     it "can create without any attributes" do
       customer = Braintree::Customer.create!
-      customer.id.should =~ /\d+/
+      expect(customer.id).to match(/\d+/)
     end
 
     it "raises an exception if not successful" do
@@ -727,14 +727,14 @@ describe Braintree::Customer do
         },
       )
       result = Braintree::Customer.credit(customer.id, :amount => "100.00")
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "credit"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("100.00"))
+      expect(result.transaction.type).to eq("credit")
+      expect(result.transaction.customer_details.id).to eq(customer.id)
+      expect(result.transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -747,13 +747,13 @@ describe Braintree::Customer do
         },
       )
       transaction = Braintree::Customer.credit!(customer.id, :amount => "100.00")
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "credit"
-      transaction.customer_details.id.should == customer.id
-      transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(transaction.amount).to eq(BigDecimal("100.00"))
+      expect(transaction.type).to eq("credit")
+      expect(transaction.customer_details.id).to eq(customer.id)
+      expect(transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -766,14 +766,14 @@ describe Braintree::Customer do
         },
       )
       result = Braintree::Customer.sale(customer.id, :amount => "100.00")
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "sale"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("100.00"))
+      expect(result.transaction.type).to eq("sale")
+      expect(result.transaction.customer_details.id).to eq(customer.id)
+      expect(result.transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -786,13 +786,13 @@ describe Braintree::Customer do
         },
       )
       transaction = Braintree::Customer.sale!(customer.id, :amount => "100.00")
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "sale"
-      transaction.customer_details.id.should == customer.id
-      transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(transaction.amount).to eq(BigDecimal("100.00"))
+      expect(transaction.type).to eq("sale")
+      expect(transaction.customer_details.id).to eq(customer.id)
+      expect(transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -806,7 +806,7 @@ describe Braintree::Customer do
       )
       transaction = Braintree::Customer.sale!(customer.id, :amount => "100.00")
       collection = Braintree::Customer.transactions(customer.id)
-      collection.first.should == transaction
+      expect(collection.first).to eq(transaction)
     end
   end
 
@@ -821,14 +821,14 @@ describe Braintree::Customer do
       result = customer.credit(
         :amount => "100.00",
       )
-      result.success?.should == true
-      result.transaction.amount.should == BigDecimal("100.00")
-      result.transaction.type.should == "credit"
-      result.transaction.customer_details.id.should == customer.id
-      result.transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      result.transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      result.transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      result.transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(result.success?).to eq(true)
+      expect(result.transaction.amount).to eq(BigDecimal("100.00"))
+      expect(result.transaction.type).to eq("credit")
+      expect(result.transaction.customer_details.id).to eq(customer.id)
+      expect(result.transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(result.transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(result.transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(result.transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -841,13 +841,13 @@ describe Braintree::Customer do
         },
       )
       transaction = customer.credit!(:amount => "100.00")
-      transaction.amount.should == BigDecimal("100.00")
-      transaction.type.should == "credit"
-      transaction.customer_details.id.should == customer.id
-      transaction.credit_card_details.token.should == customer.credit_cards[0].token
-      transaction.credit_card_details.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-      transaction.credit_card_details.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-      transaction.credit_card_details.expiration_date.should == "05/2010"
+      expect(transaction.amount).to eq(BigDecimal("100.00"))
+      expect(transaction.type).to eq("credit")
+      expect(transaction.customer_details.id).to eq(customer.id)
+      expect(transaction.credit_card_details.token).to eq(customer.credit_cards[0].token)
+      expect(transaction.credit_card_details.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+      expect(transaction.credit_card_details.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(transaction.credit_card_details.expiration_date).to eq("05/2010")
     end
   end
 
@@ -857,10 +857,10 @@ describe Braintree::Customer do
         :first_name => "Joe",
         :last_name => "Cool",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       customer = result.customer
-      customer.delete.success?.should == true
+      expect(customer.delete.success?).to eq(true)
       expect do
         Braintree::Customer.find(customer.id)
       end.to raise_error(Braintree::NotFoundError)
@@ -874,13 +874,13 @@ describe Braintree::Customer do
         :first_name => "Joe",
         :last_name => "Cool",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       customer = Braintree::Customer.find(result.customer.id)
-      customer.id.should == result.customer.id
-      customer.graphql_id.should_not be_nil
-      customer.first_name.should == "Joe"
-      customer.last_name.should == "Cool"
+      expect(customer.id).to eq(result.customer.id)
+      expect(customer.graphql_id).not_to be_nil
+      expect(customer.first_name).to eq("Joe")
+      expect(customer.last_name).to eq("Cool")
     end
 
     it "returns associated subscriptions" do
@@ -898,10 +898,10 @@ describe Braintree::Customer do
       ).subscription
 
       found_customer = Braintree::Customer.find(customer.id)
-      found_customer.credit_cards.first.subscriptions.first.id.should == subscription.id
-      found_customer.credit_cards.first.subscriptions.first.plan_id.should == "integration_trialless_plan"
-      found_customer.credit_cards.first.subscriptions.first.payment_method_token.should == credit_card.token
-      found_customer.credit_cards.first.subscriptions.first.price.should == BigDecimal("1.00")
+      expect(found_customer.credit_cards.first.subscriptions.first.id).to eq(subscription.id)
+      expect(found_customer.credit_cards.first.subscriptions.first.plan_id).to eq("integration_trialless_plan")
+      expect(found_customer.credit_cards.first.subscriptions.first.payment_method_token).to eq(credit_card.token)
+      expect(found_customer.credit_cards.first.subscriptions.first.price).to eq(BigDecimal("1.00"))
     end
 
     context "when given an association filter id" do
@@ -933,10 +933,10 @@ describe Braintree::Customer do
         found_customer = Braintree::Customer.find(customer.id, {
           :association_filter_id => "customernoassociations"
         })
-        found_customer.credit_cards.length.should == 0
-        found_customer.payment_methods.length.should == 0
-        found_customer.addresses.length.should == 0
-        found_customer.custom_fields.should == {}
+        expect(found_customer.credit_cards.length).to eq(0)
+        expect(found_customer.payment_methods.length).to eq(0)
+        expect(found_customer.addresses.length).to eq(0)
+        expect(found_customer.custom_fields).to eq({})
       end
 
       it "filters out nested filterable associations" do
@@ -968,12 +968,12 @@ describe Braintree::Customer do
          :association_filter_id =>  "customertoplevelassociations"
         })
 
-        found_customer.credit_cards.length.should == 1
-        found_customer.credit_cards.first.subscriptions.length.should == 0
-        found_customer.payment_methods.length.should == 1
-        found_customer.payment_methods.first.subscriptions.length.should == 0
-        found_customer.addresses.length.should == 1
-        found_customer.custom_fields.length.should == 1
+        expect(found_customer.credit_cards.length).to eq(1)
+        expect(found_customer.credit_cards.first.subscriptions.length).to eq(0)
+        expect(found_customer.payment_methods.length).to eq(1)
+        expect(found_customer.payment_methods.first.subscriptions.length).to eq(0)
+        expect(found_customer.addresses.length).to eq(1)
+        expect(found_customer.custom_fields.length).to eq(1)
       end
     end
 
@@ -981,89 +981,89 @@ describe Braintree::Customer do
       result = Braintree::Customer.create(
         :payment_method_nonce => Braintree::Test::Nonce::ApplePayAmEx,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.apple_pay_cards.should_not be_nil
+      expect(found_customer.apple_pay_cards).not_to be_nil
       apple_pay_card = found_customer.apple_pay_cards.first
-      apple_pay_card.should be_a Braintree::ApplePayCard
-      apple_pay_card.token.should_not be_nil
-      apple_pay_card.expiration_year.should_not be_nil
-      apple_pay_card.payment_instrument_name.should == "AmEx 41002"
-      apple_pay_card.commercial.should_not be_nil
-      apple_pay_card.country_of_issuance.should_not be_nil
-      apple_pay_card.debit.should_not be_nil
-      apple_pay_card.durbin_regulated.should_not be_nil
-      apple_pay_card.healthcare.should_not be_nil
-      apple_pay_card.issuing_bank.should_not be_nil
-      apple_pay_card.payroll.should_not be_nil
-      apple_pay_card.prepaid.should_not be_nil
-      apple_pay_card.product_id.should_not be_nil
+      expect(apple_pay_card).to be_a Braintree::ApplePayCard
+      expect(apple_pay_card.token).not_to be_nil
+      expect(apple_pay_card.expiration_year).not_to be_nil
+      expect(apple_pay_card.payment_instrument_name).to eq("AmEx 41002")
+      expect(apple_pay_card.commercial).not_to be_nil
+      expect(apple_pay_card.country_of_issuance).not_to be_nil
+      expect(apple_pay_card.debit).not_to be_nil
+      expect(apple_pay_card.durbin_regulated).not_to be_nil
+      expect(apple_pay_card.healthcare).not_to be_nil
+      expect(apple_pay_card.issuing_bank).not_to be_nil
+      expect(apple_pay_card.payroll).not_to be_nil
+      expect(apple_pay_card.prepaid).not_to be_nil
+      expect(apple_pay_card.product_id).not_to be_nil
     end
 
     it "returns associated google pay proxy cards" do
       result = Braintree::Customer.create(
         :payment_method_nonce => Braintree::Test::Nonce::GooglePayDiscover,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.google_pay_cards.size.should == 1
-      found_customer.payment_methods.size.should == 1
+      expect(found_customer.google_pay_cards.size).to eq(1)
+      expect(found_customer.payment_methods.size).to eq(1)
       google_pay_card = found_customer.google_pay_cards.first
-      google_pay_card.should be_a Braintree::GooglePayCard
-      google_pay_card.token.should_not be_nil
-      google_pay_card.expiration_year.should_not be_nil
-      google_pay_card.is_network_tokenized?.should == false
-      google_pay_card.commercial.should_not be_nil
-      google_pay_card.country_of_issuance.should_not be_nil
-      google_pay_card.debit.should_not be_nil
-      google_pay_card.durbin_regulated.should_not be_nil
-      google_pay_card.healthcare.should_not be_nil
-      google_pay_card.issuing_bank.should_not be_nil
-      google_pay_card.payroll.should_not be_nil
-      google_pay_card.prepaid.should_not be_nil
-      google_pay_card.product_id.should_not be_nil
+      expect(google_pay_card).to be_a Braintree::GooglePayCard
+      expect(google_pay_card.token).not_to be_nil
+      expect(google_pay_card.expiration_year).not_to be_nil
+      expect(google_pay_card.is_network_tokenized?).to eq(false)
+      expect(google_pay_card.commercial).not_to be_nil
+      expect(google_pay_card.country_of_issuance).not_to be_nil
+      expect(google_pay_card.debit).not_to be_nil
+      expect(google_pay_card.durbin_regulated).not_to be_nil
+      expect(google_pay_card.healthcare).not_to be_nil
+      expect(google_pay_card.issuing_bank).not_to be_nil
+      expect(google_pay_card.payroll).not_to be_nil
+      expect(google_pay_card.prepaid).not_to be_nil
+      expect(google_pay_card.product_id).not_to be_nil
     end
 
     it "returns associated google pay network tokens" do
       result = Braintree::Customer.create(
         :payment_method_nonce => Braintree::Test::Nonce::GooglePayMasterCard,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.google_pay_cards.size.should == 1
-      found_customer.payment_methods.size.should == 1
+      expect(found_customer.google_pay_cards.size).to eq(1)
+      expect(found_customer.payment_methods.size).to eq(1)
       google_pay_card = found_customer.google_pay_cards.first
-      google_pay_card.should be_a Braintree::GooglePayCard
-      google_pay_card.token.should_not be_nil
-      google_pay_card.expiration_year.should_not be_nil
-      google_pay_card.is_network_tokenized?.should == true
-      google_pay_card.commercial.should_not be_nil
-      google_pay_card.country_of_issuance.should_not be_nil
-      google_pay_card.debit.should_not be_nil
-      google_pay_card.durbin_regulated.should_not be_nil
-      google_pay_card.healthcare.should_not be_nil
-      google_pay_card.issuing_bank.should_not be_nil
-      google_pay_card.payroll.should_not be_nil
-      google_pay_card.prepaid.should_not be_nil
-      google_pay_card.product_id.should_not be_nil
+      expect(google_pay_card).to be_a Braintree::GooglePayCard
+      expect(google_pay_card.token).not_to be_nil
+      expect(google_pay_card.expiration_year).not_to be_nil
+      expect(google_pay_card.is_network_tokenized?).to eq(true)
+      expect(google_pay_card.commercial).not_to be_nil
+      expect(google_pay_card.country_of_issuance).not_to be_nil
+      expect(google_pay_card.debit).not_to be_nil
+      expect(google_pay_card.durbin_regulated).not_to be_nil
+      expect(google_pay_card.healthcare).not_to be_nil
+      expect(google_pay_card.issuing_bank).not_to be_nil
+      expect(google_pay_card.payroll).not_to be_nil
+      expect(google_pay_card.prepaid).not_to be_nil
+      expect(google_pay_card.product_id).not_to be_nil
     end
 
     it "returns associated venmo accounts" do
       result = Braintree::Customer.create(
         :payment_method_nonce => Braintree::Test::Nonce::VenmoAccount,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.venmo_accounts.size.should == 1
-      found_customer.payment_methods.size.should == 1
+      expect(found_customer.venmo_accounts.size).to eq(1)
+      expect(found_customer.payment_methods.size).to eq(1)
       venmo_account = found_customer.venmo_accounts.first
-      venmo_account.should be_a Braintree::VenmoAccount
-      venmo_account.token.should_not be_nil
-      venmo_account.username.should_not be_nil
+      expect(venmo_account).to be_a Braintree::VenmoAccount
+      expect(venmo_account.token).not_to be_nil
+      expect(venmo_account.username).not_to be_nil
     end
 
     xit "returns associated us bank accounts" do
@@ -1075,25 +1075,25 @@ describe Braintree::Customer do
           }
         },
       )
-      result.should be_success
+      expect(result).to be_success
 
       found_customer = Braintree::Customer.find(result.customer.id)
-      found_customer.us_bank_accounts.size.should == 1
-      found_customer.payment_methods.size.should == 1
+      expect(found_customer.us_bank_accounts.size).to eq(1)
+      expect(found_customer.payment_methods.size).to eq(1)
 
       us_bank_account = found_customer.us_bank_accounts.first
-      us_bank_account.should be_a(Braintree::UsBankAccount)
-      us_bank_account.routing_number.should == "021000021"
-      us_bank_account.last_4.should == "0000"
-      us_bank_account.account_type.should == "checking"
-      us_bank_account.account_holder_name.should == "John Doe"
-      us_bank_account.bank_name.should =~ /CHASE/
+      expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+      expect(us_bank_account.routing_number).to eq("021000021")
+      expect(us_bank_account.last_4).to eq("0000")
+      expect(us_bank_account.account_type).to eq("checking")
+      expect(us_bank_account.account_holder_name).to eq("John Doe")
+      expect(us_bank_account.bank_name).to match(/CHASE/)
     end
 
     it "works for a blank customer" do
       created_customer = Braintree::Customer.create!
       found_customer = Braintree::Customer.find(created_customer.id)
-      found_customer.id.should == created_customer.id
+      expect(found_customer.id).to eq(created_customer.id)
     end
 
     it "raises an ArgumentError if customer_id is not a string" do
@@ -1144,11 +1144,11 @@ describe Braintree::Customer do
             :options => {:verify_card => true},
           },
         )
-        result.success?.should == true
-        result.customer.id.should == customer.id
-        result.customer.first_name.should == "Mr. Joe"
-        result.customer.last_name.should == "Super Cool"
-        result.customer.custom_fields[:store_me].should == "a value"
+        expect(result.success?).to eq(true)
+        expect(result.customer.id).to eq(customer.id)
+        expect(result.customer.first_name).to eq("Mr. Joe")
+        expect(result.customer.last_name).to eq("Super Cool")
+        expect(result.customer.custom_fields[:store_me]).to eq("a value")
       end
 
       it "validates the presence of three_d_secure_version while passing three_d_secure_pass_thru in update" do
@@ -1197,11 +1197,11 @@ describe Braintree::Customer do
           :store_me => "a value"
         },
       )
-      result.success?.should == true
-      result.customer.id.should == customer.id
-      result.customer.first_name.should == "Mr. Joe"
-      result.customer.last_name.should == "Super Cool"
-      result.customer.custom_fields[:store_me].should == "a value"
+      expect(result.success?).to eq(true)
+      expect(result.customer.id).to eq(customer.id)
+      expect(result.customer.first_name).to eq("Mr. Joe")
+      expect(result.customer.last_name).to eq("Super Cool")
+      expect(result.customer.custom_fields[:store_me]).to eq("a value")
     end
 
     it "does not update customer with duplicate payment method if fail_on_payment_method option set" do
@@ -1221,8 +1221,8 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == false
-      result.errors.for(:customer).for(:credit_card).on(:number)[0].message.should == "Duplicate card exists in the vault."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).for(:credit_card).on(:number)[0].message).to eq("Duplicate card exists in the vault.")
     end
 
     it "updates the default payment method" do
@@ -1240,7 +1240,7 @@ describe Braintree::Customer do
       )
 
       payment_method1 = Braintree::PaymentMethod.find(token1)
-      payment_method1.should be_default
+      expect(payment_method1).to be_default
 
       token2 = random_payment_method_token
 
@@ -1255,7 +1255,7 @@ describe Braintree::Customer do
       )
 
       payment_method2 = Braintree::PaymentMethod.find(token2)
-      payment_method2.should be_default
+      expect(payment_method2).to be_default
     end
 
     it "updates the default payment method in the options" do
@@ -1273,7 +1273,7 @@ describe Braintree::Customer do
       )
 
       payment_method1 = Braintree::PaymentMethod.find(token1)
-      payment_method1.should be_default
+      expect(payment_method1).to be_default
 
       token2 = random_payment_method_token
 
@@ -1293,7 +1293,7 @@ describe Braintree::Customer do
       )
 
       payment_method2 = Braintree::PaymentMethod.find(token2)
-      payment_method2.should be_default
+      expect(payment_method2).to be_default
     end
 
     it "can use any country code" do
@@ -1316,11 +1316,11 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == true
-      result.customer.addresses[0].country_name.should == "Fiji"
-      result.customer.addresses[0].country_code_alpha2.should == "FJ"
-      result.customer.addresses[0].country_code_alpha3.should == "FJI"
-      result.customer.addresses[0].country_code_numeric.should == "242"
+      expect(result.success?).to eq(true)
+      expect(result.customer.addresses[0].country_name).to eq("Fiji")
+      expect(result.customer.addresses[0].country_code_alpha2).to eq("FJ")
+      expect(result.customer.addresses[0].country_code_alpha3).to eq("FJI")
+      expect(result.customer.addresses[0].country_code_numeric).to eq("242")
     end
 
     it "can update the customer, credit card, and billing address in one request" do
@@ -1349,18 +1349,18 @@ describe Braintree::Customer do
           }
         },
       )
-      result.success?.should == true
-      result.customer.id.should == customer.id
-      result.customer.first_name.should == "New Joe"
+      expect(result.success?).to eq(true)
+      expect(result.customer.id).to eq(customer.id)
+      expect(result.customer.first_name).to eq("New Joe")
 
-      result.customer.credit_cards.size.should == 1
+      expect(result.customer.credit_cards.size).to eq(1)
       credit_card = result.customer.credit_cards.first
-      credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa.slice(0, 6)
-      credit_card.cardholder_name.should == "New Joe Cardholder"
+      expect(credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::Visa.slice(0, 6))
+      expect(credit_card.cardholder_name).to eq("New Joe Cardholder")
 
-      credit_card.billing_address.first_name.should == "Joe"
-      credit_card.billing_address.last_name.should == "Cool"
-      credit_card.billing_address.postal_code.should == "60666"
+      expect(credit_card.billing_address.first_name).to eq("Joe")
+      expect(credit_card.billing_address.last_name).to eq("Cool")
+      expect(credit_card.billing_address.postal_code).to eq("60666")
     end
 
     it "can update the customer and verify_card with a specific verification_amount" do
@@ -1378,7 +1378,7 @@ describe Braintree::Customer do
           :options => {:verify_card => true, :verification_amount => "2.00"}
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "includes risk data when skip_advanced_fraud_checking is false" do
@@ -1443,7 +1443,7 @@ describe Braintree::Customer do
         customer.id,
         :tax_identifiers => [{:country_code => "US", :identifier => "567891234"}],
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
     end
 
     it "validates presence of three_d_secure_version in 3ds pass thru params" do
@@ -1498,18 +1498,18 @@ describe Braintree::Customer do
           :options => {:verify_card => true}
         },
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       three_d_secure_info = result.customer.payment_methods.first.verification.three_d_secure_info
-      three_d_secure_info.enrolled.should == "Y"
-      three_d_secure_info.should be_liability_shifted
-      three_d_secure_info.should be_liability_shift_possible
-      three_d_secure_info.status.should == "authenticate_successful"
-      three_d_secure_info.cavv.should == "cavv_value"
-      three_d_secure_info.xid.should == "xid_value"
-      three_d_secure_info.eci_flag.should == "05"
-      three_d_secure_info.three_d_secure_version.should == "1.0.2"
-      three_d_secure_info.ds_transaction_id.should == nil
+      expect(three_d_secure_info.enrolled).to eq("Y")
+      expect(three_d_secure_info).to be_liability_shifted
+      expect(three_d_secure_info).to be_liability_shift_possible
+      expect(three_d_secure_info.status).to eq("authenticate_successful")
+      expect(three_d_secure_info.cavv).to eq("cavv_value")
+      expect(three_d_secure_info.xid).to eq("xid_value")
+      expect(three_d_secure_info.eci_flag).to eq("05")
+      expect(three_d_secure_info.three_d_secure_version).to eq("1.0.2")
+      expect(three_d_secure_info.ds_transaction_id).to eq(nil)
     end
 
     it "can update the nested billing address with billing_address_id" do
@@ -1531,9 +1531,9 @@ describe Braintree::Customer do
       ).customer
 
       billing_address = customer.credit_cards.first.billing_address
-      billing_address.id.should == address.id
-      billing_address.first_name.should == "John"
-      billing_address.last_name.should == "Doe"
+      expect(billing_address.id).to eq(address.id)
+      expect(billing_address.first_name).to eq("John")
+      expect(billing_address.last_name).to eq("Doe")
     end
 
     it "returns an error response if invalid" do
@@ -1542,8 +1542,8 @@ describe Braintree::Customer do
         customer.id,
         :email => "@invalid.com",
       )
-      result.success?.should == false
-      result.errors.for(:customer).on(:email)[0].message.should == "Email is an invalid format."
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:customer).on(:email)[0].message).to eq("Email is an invalid format.")
     end
 
     context "verification_currency_iso_code" do
@@ -1562,7 +1562,7 @@ describe Braintree::Customer do
             :options => {:verify_card => true, :verification_currency_iso_code => "USD"}
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         result.customer.credit_cards[0].verification.currency_iso_code == "USD"
       end
 
@@ -1581,7 +1581,7 @@ describe Braintree::Customer do
             :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "USD"}
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         result.customer.credit_cards[0].verification.currency_iso_code == "USD"
         result.customer.credit_cards[0].verification.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
       end
@@ -1601,7 +1601,7 @@ describe Braintree::Customer do
             :options => {:verify_card => true, :verification_currency_iso_code => "GBP"}
           },
         )
-        result.success?.should == false
+        expect(result.success?).to eq(false)
         expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
 
       end
@@ -1621,7 +1621,7 @@ describe Braintree::Customer do
             :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId, :verification_currency_iso_code => "GBP"}
           },
         )
-        result.success?.should == false
+        expect(result.success?).to eq(false)
         expect(result.errors.for(:customer).for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
 
       end
@@ -1679,9 +1679,9 @@ describe Braintree::Customer do
         :first_name => "Mr. Joe",
         :last_name => "Super Cool",
       )
-      updated_customer.first_name.should == "Mr. Joe"
-      updated_customer.last_name.should == "Super Cool"
-      updated_customer.updated_at.between?(Time.now - 60, Time.now).should == true
+      expect(updated_customer.first_name).to eq("Mr. Joe")
+      expect(updated_customer.last_name).to eq("Super Cool")
+      expect(updated_customer.updated_at.between?(Time.now - 60, Time.now)).to eq(true)
     end
 
     it "raises an error if unsuccessful" do
@@ -1715,7 +1715,7 @@ describe Braintree::Customer do
 
       customer = Braintree::Customer.find(customer.id)
 
-      customer.default_payment_method.should == default_payment_method
+      expect(customer.default_payment_method).to eq(default_payment_method)
     end
   end
 
@@ -1726,7 +1726,7 @@ describe Braintree::Customer do
           :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
         )
 
-        result.should be_success
+        expect(result).to be_success
       end
 
       it "updates a customer with a future paypal account" do
@@ -1754,8 +1754,8 @@ describe Braintree::Customer do
           :payment_method_nonce => nonce,
         )
 
-        result.should be_success
-        result.customer.default_payment_method.token.should == paypal_account_token
+        expect(result).to be_success
+        expect(result.customer.default_payment_method.token).to eq(paypal_account_token)
       end
     end
 
@@ -1792,7 +1792,7 @@ describe Braintree::Customer do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
       end
 
       it "updates a customer with payment_method_nonce and paypal options" do
@@ -1838,8 +1838,8 @@ describe Braintree::Customer do
           },
         )
 
-        result.should be_success
-        result.customer.default_payment_method.token.should == paypal_account_token
+        expect(result).to be_success
+        expect(result.customer.default_payment_method.token).to eq(paypal_account_token)
       end
     end
 
@@ -1849,7 +1849,7 @@ describe Braintree::Customer do
           :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
         )
 
-        result.should_not be_success
+        expect(result).not_to be_success
       end
 
       it "does not update a customer with a onetime paypal account" do
@@ -1879,8 +1879,8 @@ describe Braintree::Customer do
           :payment_method_nonce => nonce,
         )
 
-        result.should_not be_success
-        customer.default_payment_method.token.should == credit_card_token
+        expect(result).not_to be_success
+        expect(customer.default_payment_method.token).to eq(credit_card_token)
       end
     end
   end

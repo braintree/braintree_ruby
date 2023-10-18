@@ -4,7 +4,7 @@ describe Braintree::Xml do
   describe "self.hash_from_xml" do
     it "typecasts integers" do
       hash = Braintree::Xml.hash_from_xml("<root><foo type=\"integer\">123</foo></root>")
-      hash.should == {:root => {:foo => 123}}
+      expect(hash).to eq({:root => {:foo => 123}})
     end
 
     it "works with dashes or underscores" do
@@ -16,7 +16,7 @@ describe Braintree::Xml do
       END
 
       hash = Braintree::Xml.hash_from_xml(xml)
-      hash.should == {:root => {:dash_es => "", :under_scores => ""}}
+      expect(hash).to eq({:root => {:dash_es => "", :under_scores => ""}})
     end
 
     it "uses nil if nil=true, otherwise uses empty string" do
@@ -27,7 +27,7 @@ describe Braintree::Xml do
         </root>
       END
       hash = Braintree::Xml.hash_from_xml(xml)
-      hash.should == {:root => {:a_nil_value => nil, :an_empty_string => ""}}
+      expect(hash).to eq({:root => {:a_nil_value => nil, :an_empty_string => ""}})
     end
 
     it "typecasts dates and times" do
@@ -36,7 +36,7 @@ describe Braintree::Xml do
           <created-at type="datetime">2009-10-28T10:19:49Z</created-at>
         </root>
       END
-      hash.should == {:root => {:created_at => Time.utc(2009, 10, 28, 10, 19, 49)}}
+      expect(hash).to eq({:root => {:created_at => Time.utc(2009, 10, 28, 10, 19, 49)}})
     end
 
     it "builds an array if type=array" do
@@ -48,7 +48,7 @@ describe Braintree::Xml do
           </customers>
         </root>
       END
-      hash.should == {:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]}}
+      expect(hash).to eq({:root => {:customers => [{:name => "Adam"}, {:name => "Ben"}]}})
     end
 
     it "turns 1 and true to boolean if type = boolean" do
@@ -61,10 +61,10 @@ describe Braintree::Xml do
           <uncasted-true>true</uncasted-true>
         </root>
       END
-      hash.should == {:root => {
+      expect(hash).to eq({:root => {
         :casted_true => true, :casted_one => true, :casted_anything => false, :casted_false => false,
         :uncasted_true => "true"
-      }}
+      }})
     end
 
     it "handles values that are arrays of hashes" do
@@ -75,13 +75,13 @@ describe Braintree::Xml do
           <elem><value>three</value></elem>
         </container>
       ")
-      hash.should == {:container => {:elem => [{:value => "one"}, {:value => "two"}, {:value => "three"}]}}
+      expect(hash).to eq({:container => {:elem => [{:value => "one"}, {:value => "two"}, {:value => "three"}]}})
     end
   end
 
   describe "self.hash_to_xml" do
     def verify_to_xml_and_back(hash)
-      Braintree::Xml.hash_from_xml(Braintree::Xml.hash_to_xml(hash)).should == hash
+      expect(Braintree::Xml.hash_from_xml(Braintree::Xml.hash_to_xml(hash))).to eq(hash)
     end
 
     it "works for a simple case" do
@@ -102,30 +102,30 @@ describe Braintree::Xml do
     context "Integer" do
       it "works for integers" do
         hash = {:root => {:foo => 1}}
-        Braintree::Xml.hash_to_xml(hash).should include("<foo type=\"integer\">1</foo>")
+        expect(Braintree::Xml.hash_to_xml(hash)).to include("<foo type=\"integer\">1</foo>")
       end
     end
 
     context "BigDecimal" do
       it "works for BigDecimals" do
         hash = {:root => {:foo => BigDecimal("123.45")}}
-        Braintree::Xml.hash_to_xml(hash).should include("<foo>123.45</foo>")
+        expect(Braintree::Xml.hash_to_xml(hash)).to include("<foo>123.45</foo>")
       end
 
       it "works for BigDecimals with fewer than 2 digits" do
         hash = {:root => {:foo => BigDecimal("1000.0")}}
-        Braintree::Xml.hash_to_xml(hash).should include("<foo>1000.00</foo>")
+        expect(Braintree::Xml.hash_to_xml(hash)).to include("<foo>1000.00</foo>")
       end
 
       it "works for BigDecimals with more than 2 digits" do
         hash = {:root => {:foo => BigDecimal("12.345")}}
-        Braintree::Xml.hash_to_xml(hash).should include("<foo>12.345</foo>")
+        expect(Braintree::Xml.hash_to_xml(hash)).to include("<foo>12.345</foo>")
       end
     end
 
     it "works for symbols" do
       hash = {:root => {:foo => :bar}}
-      Braintree::Xml.hash_to_xml(hash).should include("<foo>bar</foo>")
+      expect(Braintree::Xml.hash_to_xml(hash)).to include("<foo>bar</foo>")
     end
 
     it "type casts booleans" do
@@ -145,7 +145,7 @@ describe Braintree::Xml do
 
     it "includes the encoding" do
       xml = Braintree::Xml.hash_to_xml(:root => {:root => "bar"})
-      xml.should include("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+      expect(xml).to include("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
     end
 
     it "works for only a root node and a string" do
@@ -155,12 +155,12 @@ describe Braintree::Xml do
 
     it "escapes keys and values" do
       hash = {"ke<y" => "val>ue"}
-      Braintree::Xml.hash_to_xml(hash).should include("<ke&lt;y>val&gt;ue</ke&lt;y>")
+      expect(Braintree::Xml.hash_to_xml(hash)).to include("<ke&lt;y>val&gt;ue</ke&lt;y>")
     end
 
     it "escapes nested keys and values" do
       hash = {"top<" => {"ke<y" => "val>ue"}}
-      Braintree::Xml.hash_to_xml(hash).gsub(/\s/, "").should include("<top&lt;><ke&lt;y>val&gt;ue</ke&lt;y></top&lt;>")
+      expect(Braintree::Xml.hash_to_xml(hash).gsub(/\s/, "")).to include("<top&lt;><ke&lt;y>val&gt;ue</ke&lt;y></top&lt;>")
     end
   end
 end

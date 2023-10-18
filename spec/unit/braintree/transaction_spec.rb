@@ -76,14 +76,14 @@ describe Braintree::Transaction do
           :fax => "012-161-8055"
         },
       )
-      transaction.customer_details.id.should == "123"
-      transaction.customer_details.first_name.should == "Adam"
-      transaction.customer_details.last_name.should == "Taylor"
-      transaction.customer_details.company.should == "Ledner LLC"
-      transaction.customer_details.email.should == "adam.taylor@lednerllc.com"
-      transaction.customer_details.website.should == "lednerllc.com"
-      transaction.customer_details.phone.should == "1-999-652-4189 x56883"
-      transaction.customer_details.fax.should == "012-161-8055"
+      expect(transaction.customer_details.id).to eq("123")
+      expect(transaction.customer_details.first_name).to eq("Adam")
+      expect(transaction.customer_details.last_name).to eq("Taylor")
+      expect(transaction.customer_details.company).to eq("Ledner LLC")
+      expect(transaction.customer_details.email).to eq("adam.taylor@lednerllc.com")
+      expect(transaction.customer_details.website).to eq("lednerllc.com")
+      expect(transaction.customer_details.phone).to eq("1-999-652-4189 x56883")
+      expect(transaction.customer_details.fax).to eq("012-161-8055")
     end
 
     it "sets up disbursement attributes in disbursement_details" do
@@ -99,12 +99,12 @@ describe Braintree::Transaction do
         },
       )
       disbursement = transaction.disbursement_details
-      disbursement.disbursement_date.should == Date.parse("2013-04-03")
-      disbursement.settlement_amount.should == "120.00"
-      disbursement.settlement_currency_iso_code.should == "USD"
-      disbursement.settlement_currency_exchange_rate.should == "1"
-      disbursement.funds_held?.should be(false)
-      disbursement.success?.should be(true)
+      expect(disbursement.disbursement_date).to eq(Date.parse("2013-04-03"))
+      expect(disbursement.settlement_amount).to eq("120.00")
+      expect(disbursement.settlement_currency_iso_code).to eq("USD")
+      expect(disbursement.settlement_currency_exchange_rate).to eq("1")
+      expect(disbursement.funds_held?).to be(false)
+      expect(disbursement.success?).to be(true)
     end
 
     it "sets up credit card attributes in credit_card_details" do
@@ -129,22 +129,22 @@ describe Braintree::Transaction do
           :issuing_bank => "Mr Tumnus"
         },
       )
-      transaction.credit_card_details.token.should == "mzg2"
-      transaction.credit_card_details.bin.should == "411111"
-      transaction.credit_card_details.last_4.should == "1111"
-      transaction.credit_card_details.card_type.should == "Visa"
-      transaction.credit_card_details.expiration_month.should == "08"
-      transaction.credit_card_details.expiration_year.should == "2009"
-      transaction.credit_card_details.customer_location.should == "US"
-      transaction.credit_card_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
-      transaction.credit_card_details.healthcare.should == Braintree::CreditCard::Healthcare::Yes
-      transaction.credit_card_details.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
-      transaction.credit_card_details.debit.should == Braintree::CreditCard::Debit::Yes
-      transaction.credit_card_details.commercial.should == Braintree::CreditCard::Commercial::No
-      transaction.credit_card_details.payroll.should == Braintree::CreditCard::Payroll::Unknown
-      transaction.credit_card_details.product_id.should == Braintree::CreditCard::ProductId::Unknown
-      transaction.credit_card_details.country_of_issuance.should == "Narnia"
-      transaction.credit_card_details.issuing_bank.should == "Mr Tumnus"
+      expect(transaction.credit_card_details.token).to eq("mzg2")
+      expect(transaction.credit_card_details.bin).to eq("411111")
+      expect(transaction.credit_card_details.last_4).to eq("1111")
+      expect(transaction.credit_card_details.card_type).to eq("Visa")
+      expect(transaction.credit_card_details.expiration_month).to eq("08")
+      expect(transaction.credit_card_details.expiration_year).to eq("2009")
+      expect(transaction.credit_card_details.customer_location).to eq("US")
+      expect(transaction.credit_card_details.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
+      expect(transaction.credit_card_details.healthcare).to eq(Braintree::CreditCard::Healthcare::Yes)
+      expect(transaction.credit_card_details.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Yes)
+      expect(transaction.credit_card_details.debit).to eq(Braintree::CreditCard::Debit::Yes)
+      expect(transaction.credit_card_details.commercial).to eq(Braintree::CreditCard::Commercial::No)
+      expect(transaction.credit_card_details.payroll).to eq(Braintree::CreditCard::Payroll::Unknown)
+      expect(transaction.credit_card_details.product_id).to eq(Braintree::CreditCard::ProductId::Unknown)
+      expect(transaction.credit_card_details.country_of_issuance).to eq("Narnia")
+      expect(transaction.credit_card_details.issuing_bank).to eq("Mr Tumnus")
     end
 
     it "sets up network token attributes in network_token_details" do
@@ -170,23 +170,23 @@ describe Braintree::Transaction do
           :is_network_tokenized => true
         },
       )
-      transaction.network_token_details.token.should == "mzg2"
-      transaction.network_token_details.bin.should == "411111"
-      transaction.network_token_details.last_4.should == "1111"
-      transaction.network_token_details.card_type.should == "Visa"
-      transaction.network_token_details.expiration_month.should == "08"
-      transaction.network_token_details.expiration_year.should == "2009"
-      transaction.network_token_details.customer_location.should == "US"
-      transaction.network_token_details.prepaid.should == Braintree::CreditCard::Prepaid::Yes
-      transaction.network_token_details.healthcare.should == Braintree::CreditCard::Healthcare::Yes
-      transaction.network_token_details.durbin_regulated.should == Braintree::CreditCard::DurbinRegulated::Yes
-      transaction.network_token_details.debit.should == Braintree::CreditCard::Debit::Yes
-      transaction.network_token_details.commercial.should == Braintree::CreditCard::Commercial::No
-      transaction.network_token_details.payroll.should == Braintree::CreditCard::Payroll::Unknown
-      transaction.network_token_details.product_id.should == Braintree::CreditCard::ProductId::Unknown
-      transaction.network_token_details.country_of_issuance.should == "Narnia"
-      transaction.network_token_details.issuing_bank.should == "Mr Tumnus"
-      transaction.network_token_details.is_network_tokenized?.should == true
+      expect(transaction.network_token_details.token).to eq("mzg2")
+      expect(transaction.network_token_details.bin).to eq("411111")
+      expect(transaction.network_token_details.last_4).to eq("1111")
+      expect(transaction.network_token_details.card_type).to eq("Visa")
+      expect(transaction.network_token_details.expiration_month).to eq("08")
+      expect(transaction.network_token_details.expiration_year).to eq("2009")
+      expect(transaction.network_token_details.customer_location).to eq("US")
+      expect(transaction.network_token_details.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
+      expect(transaction.network_token_details.healthcare).to eq(Braintree::CreditCard::Healthcare::Yes)
+      expect(transaction.network_token_details.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Yes)
+      expect(transaction.network_token_details.debit).to eq(Braintree::CreditCard::Debit::Yes)
+      expect(transaction.network_token_details.commercial).to eq(Braintree::CreditCard::Commercial::No)
+      expect(transaction.network_token_details.payroll).to eq(Braintree::CreditCard::Payroll::Unknown)
+      expect(transaction.network_token_details.product_id).to eq(Braintree::CreditCard::ProductId::Unknown)
+      expect(transaction.network_token_details.country_of_issuance).to eq("Narnia")
+      expect(transaction.network_token_details.issuing_bank).to eq("Mr Tumnus")
+      expect(transaction.network_token_details.is_network_tokenized?).to eq(true)
     end
 
     it "sets up three_d_secure_info" do
@@ -200,10 +200,10 @@ describe Braintree::Transaction do
         },
       )
 
-      transaction.three_d_secure_info.enrolled.should == "Y"
-      transaction.three_d_secure_info.status.should == "authenticate_successful"
-      transaction.three_d_secure_info.liability_shifted.should == true
-      transaction.three_d_secure_info.liability_shift_possible.should == true
+      expect(transaction.three_d_secure_info.enrolled).to eq("Y")
+      expect(transaction.three_d_secure_info.status).to eq("authenticate_successful")
+      expect(transaction.three_d_secure_info.liability_shifted).to eq(true)
+      expect(transaction.three_d_secure_info.liability_shift_possible).to eq(true)
     end
 
     it "sets up history attributes in status_history" do
@@ -216,13 +216,13 @@ describe Braintree::Transaction do
           {:timestamp => Time.utc(2010,1,15), :amount => "12.00", :transaction_source => "API",
             :user => "curly", :status => "scheduled_for_settlement"}
         ])
-      transaction.status_history.size.should == 2
-      transaction.status_history[0].user.should == "larry"
-      transaction.status_history[0].amount.should == "12.00"
-      transaction.status_history[0].status.should == Braintree::Transaction::Status::Authorized
-      transaction.status_history[0].transaction_source.should == "API"
-      transaction.status_history[0].timestamp.should == time
-      transaction.status_history[1].user.should == "curly"
+      expect(transaction.status_history.size).to eq(2)
+      expect(transaction.status_history[0].user).to eq("larry")
+      expect(transaction.status_history[0].amount).to eq("12.00")
+      expect(transaction.status_history[0].status).to eq(Braintree::Transaction::Status::Authorized)
+      expect(transaction.status_history[0].transaction_source).to eq("API")
+      expect(transaction.status_history[0].timestamp).to eq(time)
+      expect(transaction.status_history[1].user).to eq("curly")
     end
 
     it "sets up authorization_adjustments" do
@@ -233,17 +233,17 @@ describe Braintree::Transaction do
           {:timestamp => timestamp, :processor_response_code => "1000", :processor_response_text => "Approved", :amount => "12.00", :success => true},
           {:timestamp => timestamp, :processor_response_code => "3000", :processor_response_text => "Processor Network Unavailable - Try Again", :amount => "12.34", :success => false},
         ])
-      transaction.authorization_adjustments.size.should == 2
-      transaction.authorization_adjustments[0].amount.should == "12.00"
-      transaction.authorization_adjustments[0].success.should == true
-      transaction.authorization_adjustments[0].timestamp.should == timestamp
-      transaction.authorization_adjustments[0].processor_response_code.should == "1000"
-      transaction.authorization_adjustments[0].processor_response_text.should == "Approved"
-      transaction.authorization_adjustments[1].amount.should == "12.34"
-      transaction.authorization_adjustments[1].success.should == false
-      transaction.authorization_adjustments[1].timestamp.should == timestamp
-      transaction.authorization_adjustments[1].processor_response_code.should == "3000"
-      transaction.authorization_adjustments[1].processor_response_text.should == "Processor Network Unavailable - Try Again"
+      expect(transaction.authorization_adjustments.size).to eq(2)
+      expect(transaction.authorization_adjustments[0].amount).to eq("12.00")
+      expect(transaction.authorization_adjustments[0].success).to eq(true)
+      expect(transaction.authorization_adjustments[0].timestamp).to eq(timestamp)
+      expect(transaction.authorization_adjustments[0].processor_response_code).to eq("1000")
+      expect(transaction.authorization_adjustments[0].processor_response_text).to eq("Approved")
+      expect(transaction.authorization_adjustments[1].amount).to eq("12.34")
+      expect(transaction.authorization_adjustments[1].success).to eq(false)
+      expect(transaction.authorization_adjustments[1].timestamp).to eq(timestamp)
+      expect(transaction.authorization_adjustments[1].processor_response_code).to eq("3000")
+      expect(transaction.authorization_adjustments[1].processor_response_text).to eq("Processor Network Unavailable - Try Again")
     end
 
     it "accepts retry_ids and retried_transaction_id attributes in a transactions" do
@@ -252,9 +252,9 @@ describe Braintree::Transaction do
         :retry_ids => ["retry_id_1"],
         :retried_transaction_id => "original_retried_tranction_id",
       )
-      transaction.retry_ids.count.should == 1
-      transaction.retry_ids[0].should == "retry_id_1"
-      transaction.retried_transaction_id.should == "original_retried_tranction_id"
+      expect(transaction.retry_ids.count).to eq(1)
+      expect(transaction.retry_ids[0]).to eq("retry_id_1")
+      expect(transaction.retried_transaction_id).to eq("original_retried_tranction_id")
     end
 
     it "handles receiving custom as an empty string" do
@@ -265,8 +265,8 @@ describe Braintree::Transaction do
     end
 
     it "accepts amount as either a String or a BigDecimal" do
-      Braintree::Transaction._new(:gateway, :amount => "12.34").amount.should == BigDecimal("12.34")
-      Braintree::Transaction._new(:gateway, :amount => BigDecimal("12.34")).amount.should == BigDecimal("12.34")
+      expect(Braintree::Transaction._new(:gateway, :amount => "12.34").amount).to eq(BigDecimal("12.34"))
+      expect(Braintree::Transaction._new(:gateway, :amount => BigDecimal("12.34")).amount).to eq(BigDecimal("12.34"))
     end
 
     it "blows up if amount is not a string or BigDecimal" do
@@ -280,7 +280,7 @@ describe Braintree::Transaction do
         :gateway,
         :risk_data => nil,
       )
-      transaction.risk_data.should be_nil
+      expect(transaction.risk_data).to be_nil
     end
 
     it "accepts network_transaction_id" do
@@ -288,7 +288,7 @@ describe Braintree::Transaction do
         :gateway,
         :network_transaction_id => "123456789012345",
       )
-      transaction.network_transaction_id.should == "123456789012345"
+      expect(transaction.network_transaction_id).to eq("123456789012345")
     end
 
     it "accepts ach_return_code" do
@@ -339,7 +339,15 @@ describe Braintree::Transaction do
         },
       )
       details = transaction.sepa_direct_debit_account_details
-      details.token.should == "1234"
+      expect(details.token).to eq("1234")
+    end
+
+    it "accepts debit_network" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :debit_network => "STAR",
+      )
+      expect(transaction.debit_network).to eq "STAR"
     end
   end
 
@@ -354,8 +362,8 @@ describe Braintree::Transaction do
         :processed_with_network_token => false,
       )
       output = transaction.inspect
-      output.should include(%Q(#<Braintree::Transaction id: "1234", type: "sale", amount: "100.0", status: "authorized"))
-      output.should include(%Q(processed_with_network_token?: false))
+      expect(output).to include(%Q(#<Braintree::Transaction id: "1234", type: "sale", amount: "100.0", status: "authorized"))
+      expect(output).to include(%Q(processed_with_network_token?: false))
     end
   end
 
@@ -364,27 +372,27 @@ describe Braintree::Transaction do
       first = Braintree::Transaction._new(:gateway, :id => 123)
       second = Braintree::Transaction._new(:gateway, :id => 123)
 
-      first.should == second
-      second.should == first
+      expect(first).to eq(second)
+      expect(second).to eq(first)
     end
 
     it "returns false for transactions with different ids" do
       first = Braintree::Transaction._new(:gateway, :id => 123)
       second = Braintree::Transaction._new(:gateway, :id => 124)
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false when comparing to nil" do
-      Braintree::Transaction._new(:gateway, {}).should_not == nil
+      expect(Braintree::Transaction._new(:gateway, {})).not_to eq(nil)
     end
 
     it "returns false when comparing to non-transactions" do
       same_id_different_object = Object.new
       def same_id_different_object.id; 123; end
       transaction = Braintree::Transaction._new(:gateway, :id => 123)
-      transaction.should_not == same_id_different_object
+      expect(transaction).not_to eq(same_id_different_object)
     end
   end
 
@@ -399,12 +407,12 @@ describe Braintree::Transaction do
   describe "refunded?" do
     it "is true if the transaciton has been refunded" do
       transaction = Braintree::Transaction._new(:gateway, :refund_id => "123")
-      transaction.refunded?.should == true
+      expect(transaction.refunded?).to eq(true)
     end
 
     it "is false if the transaciton has not been refunded" do
       transaction = Braintree::Transaction._new(:gateway, :refund_id => nil)
-      transaction.refunded?.should == false
+      expect(transaction.refunded?).to eq(false)
     end
   end
 
@@ -417,7 +425,7 @@ describe Braintree::Transaction do
     end
 
     it "accepts skip_advanced_fraud_checking options with value true" do
-      Braintree::Http.stub(:new).and_return http_stub
+      allow(Braintree::Http).to receive(:new).and_return http_stub
       expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(true)).and_return(mock_response)
 
       Braintree::Transaction.sale(
@@ -433,7 +441,7 @@ describe Braintree::Transaction do
     end
 
     it "accepts skip_advanced_fraud_checking options with value false" do
-      Braintree::Http.stub(:new).and_return http_stub
+      allow(Braintree::Http).to receive(:new).and_return http_stub
       expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(false)).and_return(mock_response)
 
       Braintree::Transaction.sale(
@@ -449,7 +457,7 @@ describe Braintree::Transaction do
     end
 
     it "doesn't include skip_advanced_fraud_checking in params if its not specified" do
-      Braintree::Http.stub(:new).and_return http_stub
+      allow(Braintree::Http).to receive(:new).and_return http_stub
       expect(http_stub).to receive(:post).with(anything, skip_advanced_fraud_check_value_is(nil)).and_return(mock_response)
 
       Braintree::Transaction.sale(
@@ -468,19 +476,19 @@ describe Braintree::Transaction do
   describe "processed_with_network_token?" do
     it "is true if the transaction was processed with a network token" do
       transaction = Braintree::Transaction._new(:gateway, :processed_with_network_token => true)
-      transaction.processed_with_network_token?.should == true
+      expect(transaction.processed_with_network_token?).to eq(true)
     end
 
     it "is false if the transaction was not processed with a network token" do
       transaction = Braintree::Transaction._new(:gateway, :processed_with_network_token => false)
-      transaction.processed_with_network_token?.should == false
+      expect(transaction.processed_with_network_token?).to eq(false)
     end
   end
 
   describe "gateway rejection reason" do
     it "verifies excessive_retry mapping" do
       transaction = Braintree::Transaction._new(:gateway, :gateway_rejection_reason => "excessive_retry")
-      transaction.gateway_rejection_reason.should == Braintree::Transaction::GatewayRejectionReason::ExcessiveRetry
+      expect(transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::ExcessiveRetry)
     end
   end
 end

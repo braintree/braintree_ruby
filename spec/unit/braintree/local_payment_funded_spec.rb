@@ -23,12 +23,12 @@ describe Braintree::LocalPaymentFunded do
       }
       local_payment_funded = Braintree::LocalPaymentFunded._new(params)
 
-      local_payment_funded.payment_id.should eq("a-payment-id")
-      local_payment_funded.payment_context_id.should eq("a-payment-context-id")
-      local_payment_funded.transaction.id.should eq("a-transaction-id")
-      local_payment_funded.transaction.amount.should eq(31.0)
-      local_payment_funded.transaction.order_id.should eq("an-order-id")
-      local_payment_funded.transaction.status.should eq(Braintree::Transaction::Status::Settled)
+      expect(local_payment_funded.payment_id).to eq("a-payment-id")
+      expect(local_payment_funded.payment_context_id).to eq("a-payment-context-id")
+      expect(local_payment_funded.transaction.id).to eq("a-transaction-id")
+      expect(local_payment_funded.transaction.amount).to eq(31.0)
+      expect(local_payment_funded.transaction.order_id).to eq("an-order-id")
+      expect(local_payment_funded.transaction.status).to eq(Braintree::Transaction::Status::Settled)
     end
   end
 end

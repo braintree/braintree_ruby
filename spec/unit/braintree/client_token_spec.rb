@@ -7,8 +7,8 @@ module Braintree
       it "delegates to ClientTokenGateway#generate" do
         options = {:foo => :bar}
         client_token_gateway = double(:client_token_gateway)
-        client_token_gateway.should_receive(:generate).with(options).once
-        ClientTokenGateway.stub(:new).and_return(client_token_gateway)
+        expect(client_token_gateway).to receive(:generate).with(options).once
+        allow(ClientTokenGateway).to receive(:new).and_return(client_token_gateway)
         ClientToken.generate(options)
       end
 

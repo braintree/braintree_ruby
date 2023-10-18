@@ -7,7 +7,7 @@ describe Braintree::UsBankAccountVerification, "search" do
       search.account_holder_name.is "thisnameisnotreal"
     end
 
-    collection.maximum_size.should == 0
+    expect(collection.maximum_size).to eq(0)
   end
 
   let(:nonce) { generate_non_plaid_us_bank_account_nonce }
@@ -40,14 +40,14 @@ describe Braintree::UsBankAccountVerification, "search" do
         search.id.is verification.id
         search.send(criterion).is value
       end
-      collection.maximum_size.should == 1
-      collection.first.id.should == verification.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(verification.id)
 
       collection = Braintree::UsBankAccountVerification.search do |search|
         search.id.is verification.id
         search.send(criterion).is "invalid_attribute"
       end
-      collection.should be_empty
+      expect(collection).to be_empty
     end
 
     collection = Braintree::UsBankAccountVerification.search do |search|
@@ -57,8 +57,8 @@ describe Braintree::UsBankAccountVerification, "search" do
       end
     end
 
-    collection.maximum_size.should == 1
-    collection.first.id.should == verification.id
+    expect(collection.maximum_size).to eq(1)
+    expect(collection.first.id).to eq(verification.id)
   end
 
   describe "multiple value fields" do
@@ -87,7 +87,7 @@ describe Braintree::UsBankAccountVerification, "search" do
         search.ids.in verification1.id, verification2.id
       end
 
-      collection.maximum_size.should == 2
+      expect(collection.maximum_size).to eq(2)
     end
   end
 
@@ -114,24 +114,24 @@ describe Braintree::UsBankAccountVerification, "search" do
         )
       end
 
-      collection.maximum_size.should == 1
-      collection.first.id.should == verification.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(verification.id)
 
       collection = Braintree::UsBankAccountVerification.search do |search|
         search.id.is verification.id
         search.created_at >= created_at - 1
       end
 
-      collection.maximum_size.should == 1
-      collection.first.id.should == verification.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(verification.id)
 
       collection = Braintree::UsBankAccountVerification.search do |search|
         search.id.is verification.id
         search.created_at <= created_at + 1
       end
 
-      collection.maximum_size.should == 1
-      collection.first.id.should == verification.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(verification.id)
 
       collection = Braintree::UsBankAccountVerification.search do |search|
         search.id.is verification.id
@@ -141,15 +141,15 @@ describe Braintree::UsBankAccountVerification, "search" do
         )
       end
 
-      collection.maximum_size.should == 0
+      expect(collection.maximum_size).to eq(0)
 
       collection = Braintree::UsBankAccountVerification.search do |search|
         search.id.is verification.id
         search.created_at.is created_at
       end
 
-      collection.maximum_size.should == 1
-      collection.first.id.should == verification.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(verification.id)
     end
   end
 
@@ -171,8 +171,8 @@ describe Braintree::UsBankAccountVerification, "search" do
         search.account_number.ends_with "0000"
       end
 
-      collection.maximum_size.should == 1
-      collection.first.id.should == verification.id
+      expect(collection.maximum_size).to eq(1)
+      expect(collection.first.id).to eq(verification.id)
     end
   end
 end

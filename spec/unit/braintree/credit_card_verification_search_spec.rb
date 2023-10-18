@@ -7,11 +7,11 @@ module Braintree
       it "allows All card types" do
         search = CreditCardVerificationSearch.new
 
-        lambda do
+        expect do
           search.credit_card_card_type.in(
             *Braintree::CreditCard::CardType::All,
           )
-        end.should_not raise_error
+        end.not_to raise_error
       end
     end
 
@@ -20,7 +20,7 @@ module Braintree
         search = CreditCardVerificationSearch.new
         search.id.is "v_id"
 
-        search.to_hash.should == {:id => {:is => "v_id"}}
+        expect(search.to_hash).to eq({:id => {:is => "v_id"}})
       end
     end
 
@@ -29,7 +29,7 @@ module Braintree
         search = CreditCardVerificationSearch.new
         search.ids.in("id1","id2")
 
-        search.to_hash.should == {:ids => ["id1", "id2"]}
+        expect(search.to_hash).to eq({:ids => ["id1", "id2"]})
       end
     end
 
@@ -38,7 +38,7 @@ module Braintree
         search = CreditCardVerificationSearch.new
         search.credit_card_cardholder_name.is "v_cardholder_name"
 
-        search.to_hash.should == {:credit_card_cardholder_name => {:is => "v_cardholder_name"}}
+        expect(search.to_hash).to eq({:credit_card_cardholder_name => {:is => "v_cardholder_name"}})
       end
     end
 
@@ -47,7 +47,7 @@ module Braintree
         search = CreditCardVerificationSearch.new
         search.credit_card_expiration_date.is_not "v_credit_card_expiration_date"
 
-        search.to_hash.should == {:credit_card_expiration_date => {:is_not => "v_credit_card_expiration_date"}}
+        expect(search.to_hash).to eq({:credit_card_expiration_date => {:is_not => "v_credit_card_expiration_date"}})
       end
     end
 
@@ -57,7 +57,7 @@ module Braintree
 
         search.credit_card_number.starts_with "v_credit_card_bin"
 
-        search.to_hash.should == {:credit_card_number => {:starts_with => "v_credit_card_bin"}}
+        expect(search.to_hash).to eq({:credit_card_number => {:starts_with => "v_credit_card_bin"}})
       end
 
       it "ends with" do
@@ -65,14 +65,14 @@ module Braintree
 
         search.credit_card_number.ends_with "v_credit_card_last_4"
 
-        search.to_hash.should == {:credit_card_number => {:ends_with => "v_credit_card_last_4"}}
+        expect(search.to_hash).to eq({:credit_card_number => {:ends_with => "v_credit_card_last_4"}})
       end
     end
 
     context "created_at" do
       it "is a range node" do
         search = CreditCardVerificationSearch.new
-        search.created_at.should be_kind_of(Braintree::AdvancedSearch::RangeNode)
+        expect(search.created_at).to be_kind_of(Braintree::AdvancedSearch::RangeNode)
       end
     end
   end

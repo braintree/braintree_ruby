@@ -72,6 +72,8 @@ module Braintree
         _disbursement_exception_sample_xml(id)
       when Braintree::WebhookNotification::Kind::Disbursement
         _disbursement_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::SubscriptionBillingSkipped
+        _subscription_billing_skipped(id)
       when Braintree::WebhookNotification::Kind::SubscriptionChargedSuccessfully
         _subscription_charged_successfully(id)
       when Braintree::WebhookNotification::Kind::SubscriptionChargedUnsuccessfully
@@ -109,6 +111,21 @@ module Braintree
 
       <<-XML
         <check type="boolean">true</check>
+      XML
+    end
+
+    def _subscription_billing_skipped(id)
+
+      <<-XML
+        <subscription>
+          <id>#{id}</id>
+          <transactions type="array">
+          </transactions>
+          <add_ons type="array">
+          </add_ons>
+          <discounts type="array">
+          </discounts>
+        </subscription>
       XML
     end
 

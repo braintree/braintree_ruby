@@ -23,7 +23,7 @@ describe Braintree::SepaDirectDebitAccountNonceDetails do
 
   describe "inspect" do
     it "prints the attributes" do
-      subject.inspect.should == %(#<SepaDirectDebitAccountNonceDetailsbank_reference_token: "a-bank-reference-token", last_4: "abcd", mandate_type: "ONE_OFF", merchant_or_partner_customer_id: "a-mp-customer-id">)
+      expect(subject.inspect).to eq(%(#<SepaDirectDebitAccountNonceDetailsbank_reference_token: "a-bank-reference-token", last_4: "abcd", mandate_type: "ONE_OFF", merchant_or_partner_customer_id: "a-mp-customer-id">))
     end
   end
 end

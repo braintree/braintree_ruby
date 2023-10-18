@@ -11,8 +11,8 @@ describe Braintree::Subscription do
 
   context "price" do
     it "accepts price as either a String or a BigDecimal" do
-      Braintree::Subscription._new(:gateway, default_params.merge(:price => "12.34")).price.should == BigDecimal("12.34")
-      Braintree::Subscription._new(:gateway, default_params.merge(:price => BigDecimal("12.34"))).price.should == BigDecimal("12.34")
+      expect(Braintree::Subscription._new(:gateway, default_params.merge(:price => "12.34")).price).to eq(BigDecimal("12.34"))
+      expect(Braintree::Subscription._new(:gateway, default_params.merge(:price => BigDecimal("12.34"))).price).to eq(BigDecimal("12.34"))
     end
 
     it "blows up if price is not a string or BigDecimal" do
@@ -42,7 +42,7 @@ describe Braintree::Subscription do
     end
 
     it "does not raise an error if subscription id does not respond to strip" do
-      Braintree::Http.stub(:new).and_return double(:get => {:subscription => default_params})
+      allow(Braintree::Http).to receive(:new).and_return double(:get => {:subscription => default_params})
       expect do
         Braintree::Subscription.find(8675309)
       end.to_not raise_error
@@ -51,11 +51,11 @@ describe Braintree::Subscription do
 
   describe "self.search" do
     it "only allows specified values for status" do
-      lambda do
+      expect do
         Braintree::Subscription.search do |search|
           search.status.in "Hammer"
         end
-      end.should raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
   end
 
@@ -63,18 +63,18 @@ describe Braintree::Subscription do
     it "returns true for subscriptions with the same id" do
       subscription1 = Braintree::Subscription._new(:gateway, default_params.merge(:id => "123"))
       subscription2 = Braintree::Subscription._new(:gateway, default_params.merge(:id => "123"))
-      subscription1.should == subscription2
+      expect(subscription1).to eq(subscription2)
     end
 
     it "returns false for subscriptions with different ids" do
       subscription1 = Braintree::Subscription._new(:gateway, default_params.merge(:id => "123"))
       subscription2 = Braintree::Subscription._new(:gateway, default_params.merge(:id => "not_123"))
-      subscription1.should_not == subscription2
+      expect(subscription1).not_to eq(subscription2)
     end
 
     it "returns false if not comparing to a subscription" do
       subscription = Braintree::Subscription._new(:gateway, default_params.merge(:id => "123"))
-      subscription.should_not == "not a subscription"
+      expect(subscription).not_to eq("not a subscription")
     end
   end
 end

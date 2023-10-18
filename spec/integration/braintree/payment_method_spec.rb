@@ -25,7 +25,7 @@ describe Braintree::PaymentMethod do
         :expirationMonth => 12,
         :expirationYear => 2020,
       )
-      response.code.should == "201"
+      expect(response.code).to eq("201")
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
@@ -33,12 +33,12 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::CreditCard)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::CreditCard)
       token = result.payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
+      expect(found_credit_card).not_to be_nil
     end
 
     it "creates a payment method from an unvalidated credit card nonce" do
@@ -60,7 +60,7 @@ describe Braintree::PaymentMethod do
         :expirationYear => "2020",
         :options => {:validate => false},
       )
-      response.code.should == "202"
+      expect(response.code).to eq("202")
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
@@ -68,12 +68,12 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::CreditCard)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::CreditCard)
       token = result.payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
+      expect(found_credit_card).not_to be_nil
     end
 
     it "creates a payment method from a fake apple pay nonce" do
@@ -85,29 +85,29 @@ describe Braintree::PaymentMethod do
         :token => token,
       )
 
-      result.should be_success
+      expect(result).to be_success
       apple_pay_card = result.payment_method
-      apple_pay_card.should be_a(Braintree::ApplePayCard)
-      apple_pay_card.should_not be_nil
-      apple_pay_card.bin.should_not be_nil
-      apple_pay_card.token.should == token
-      apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
-      apple_pay_card.payment_instrument_name.should == "AmEx 41002"
-      apple_pay_card.source_description.should == "AmEx 41002"
-      apple_pay_card.default.should == true
-      apple_pay_card.image_url.should =~ /apple_pay/
-      apple_pay_card.expiration_month.to_i.should > 0
-      apple_pay_card.expiration_year.to_i.should > 0
-      apple_pay_card.customer_id.should == customer.id
-      apple_pay_card.commercial.should_not be_nil
-      apple_pay_card.country_of_issuance.should_not be_nil
-      apple_pay_card.debit.should_not be_nil
-      apple_pay_card.durbin_regulated.should_not be_nil
-      apple_pay_card.healthcare.should_not be_nil
-      apple_pay_card.issuing_bank.should_not be_nil
-      apple_pay_card.payroll.should_not be_nil
-      apple_pay_card.prepaid.should_not be_nil
-      apple_pay_card.product_id.should_not be_nil
+      expect(apple_pay_card).to be_a(Braintree::ApplePayCard)
+      expect(apple_pay_card).not_to be_nil
+      expect(apple_pay_card.bin).not_to be_nil
+      expect(apple_pay_card.token).to eq(token)
+      expect(apple_pay_card.card_type).to eq(Braintree::ApplePayCard::CardType::AmEx)
+      expect(apple_pay_card.payment_instrument_name).to eq("AmEx 41002")
+      expect(apple_pay_card.source_description).to eq("AmEx 41002")
+      expect(apple_pay_card.default).to eq(true)
+      expect(apple_pay_card.image_url).to match(/apple_pay/)
+      expect(apple_pay_card.expiration_month.to_i).to be > 0
+      expect(apple_pay_card.expiration_year.to_i).to be > 0
+      expect(apple_pay_card.customer_id).to eq(customer.id)
+      expect(apple_pay_card.commercial).not_to be_nil
+      expect(apple_pay_card.country_of_issuance).not_to be_nil
+      expect(apple_pay_card.debit).not_to be_nil
+      expect(apple_pay_card.durbin_regulated).not_to be_nil
+      expect(apple_pay_card.healthcare).not_to be_nil
+      expect(apple_pay_card.issuing_bank).not_to be_nil
+      expect(apple_pay_card.payroll).not_to be_nil
+      expect(apple_pay_card.prepaid).not_to be_nil
+      expect(apple_pay_card.product_id).not_to be_nil
     end
 
     it "creates a payment method from a fake apple pay mpan nonce" do
@@ -119,31 +119,31 @@ describe Braintree::PaymentMethod do
         :token => token,
       )
 
-      result.should be_success
+      expect(result).to be_success
       apple_pay_card = result.payment_method
-      apple_pay_card.should be_a(Braintree::ApplePayCard)
-      apple_pay_card.should_not be_nil
-      apple_pay_card.bin.should_not be_nil
-      apple_pay_card.token.should == token
-      apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::Visa
-      apple_pay_card.payment_instrument_name.should == "Visa 8886"
-      apple_pay_card.source_description.should == "Visa 8886"
-      apple_pay_card.default.should == true
-      apple_pay_card.image_url.should =~ /apple_pay/
-      apple_pay_card.expiration_month.to_i.should > 0
-      apple_pay_card.expiration_year.to_i.should > 0
-      apple_pay_card.customer_id.should == customer.id
-      apple_pay_card.commercial.should_not be_nil
-      apple_pay_card.country_of_issuance.should_not be_nil
-      apple_pay_card.debit.should_not be_nil
-      apple_pay_card.durbin_regulated.should_not be_nil
-      apple_pay_card.healthcare.should_not be_nil
-      apple_pay_card.issuing_bank.should_not be_nil
-      apple_pay_card.payroll.should_not be_nil
-      apple_pay_card.prepaid.should_not be_nil
-      apple_pay_card.product_id.should_not be_nil
-      apple_pay_card.merchant_token_identifier.should_not be_nil
-      apple_pay_card.source_card_last4.should_not be_nil
+      expect(apple_pay_card).to be_a(Braintree::ApplePayCard)
+      expect(apple_pay_card).not_to be_nil
+      expect(apple_pay_card.bin).not_to be_nil
+      expect(apple_pay_card.token).to eq(token)
+      expect(apple_pay_card.card_type).to eq(Braintree::ApplePayCard::CardType::Visa)
+      expect(apple_pay_card.payment_instrument_name).to eq("Visa 8886")
+      expect(apple_pay_card.source_description).to eq("Visa 8886")
+      expect(apple_pay_card.default).to eq(true)
+      expect(apple_pay_card.image_url).to match(/apple_pay/)
+      expect(apple_pay_card.expiration_month.to_i).to be > 0
+      expect(apple_pay_card.expiration_year.to_i).to be > 0
+      expect(apple_pay_card.customer_id).to eq(customer.id)
+      expect(apple_pay_card.commercial).not_to be_nil
+      expect(apple_pay_card.country_of_issuance).not_to be_nil
+      expect(apple_pay_card.debit).not_to be_nil
+      expect(apple_pay_card.durbin_regulated).not_to be_nil
+      expect(apple_pay_card.healthcare).not_to be_nil
+      expect(apple_pay_card.issuing_bank).not_to be_nil
+      expect(apple_pay_card.payroll).not_to be_nil
+      expect(apple_pay_card.prepaid).not_to be_nil
+      expect(apple_pay_card.product_id).not_to be_nil
+      expect(apple_pay_card.merchant_token_identifier).not_to be_nil
+      expect(apple_pay_card.source_card_last4).not_to be_nil
     end
 
     it "creates a payment method from a fake google pay proxy card nonce" do
@@ -155,32 +155,32 @@ describe Braintree::PaymentMethod do
         :token => token,
       )
 
-      result.should be_success
+      expect(result).to be_success
       google_pay_card = result.payment_method
-      google_pay_card.should be_a(Braintree::GooglePayCard)
-      google_pay_card.should_not be_nil
-      google_pay_card.token.should == token
-      google_pay_card.card_type.should == Braintree::CreditCard::CardType::Discover
-      google_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
-      google_pay_card.expiration_month.to_i.should > 0
-      google_pay_card.expiration_year.to_i.should > 0
-      google_pay_card.default.should == true
-      google_pay_card.image_url.should =~ /android_pay/
-      google_pay_card.is_network_tokenized?.should == false
-      google_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Discover
-      google_pay_card.source_card_last_4.should == "1111"
-      google_pay_card.google_transaction_id.should == "google_transaction_id"
-      google_pay_card.source_description.should == "Discover 1111"
-      google_pay_card.customer_id.should == customer.id
-      google_pay_card.commercial.should_not be_nil
-      google_pay_card.country_of_issuance.should_not be_nil
-      google_pay_card.debit.should_not be_nil
-      google_pay_card.durbin_regulated.should_not be_nil
-      google_pay_card.healthcare.should_not be_nil
-      google_pay_card.issuing_bank.should_not be_nil
-      google_pay_card.payroll.should_not be_nil
-      google_pay_card.prepaid.should_not be_nil
-      google_pay_card.product_id.should_not be_nil
+      expect(google_pay_card).to be_a(Braintree::GooglePayCard)
+      expect(google_pay_card).not_to be_nil
+      expect(google_pay_card.token).to eq(token)
+      expect(google_pay_card.card_type).to eq(Braintree::CreditCard::CardType::Discover)
+      expect(google_pay_card.virtual_card_type).to eq(Braintree::CreditCard::CardType::Discover)
+      expect(google_pay_card.expiration_month.to_i).to be > 0
+      expect(google_pay_card.expiration_year.to_i).to be > 0
+      expect(google_pay_card.default).to eq(true)
+      expect(google_pay_card.image_url).to match(/android_pay/)
+      expect(google_pay_card.is_network_tokenized?).to eq(false)
+      expect(google_pay_card.source_card_type).to eq(Braintree::CreditCard::CardType::Discover)
+      expect(google_pay_card.source_card_last_4).to eq("1111")
+      expect(google_pay_card.google_transaction_id).to eq("google_transaction_id")
+      expect(google_pay_card.source_description).to eq("Discover 1111")
+      expect(google_pay_card.customer_id).to eq(customer.id)
+      expect(google_pay_card.commercial).not_to be_nil
+      expect(google_pay_card.country_of_issuance).not_to be_nil
+      expect(google_pay_card.debit).not_to be_nil
+      expect(google_pay_card.durbin_regulated).not_to be_nil
+      expect(google_pay_card.healthcare).not_to be_nil
+      expect(google_pay_card.issuing_bank).not_to be_nil
+      expect(google_pay_card.payroll).not_to be_nil
+      expect(google_pay_card.prepaid).not_to be_nil
+      expect(google_pay_card.product_id).not_to be_nil
     end
 
     it "creates a payment method from a google pay network token nonce" do
@@ -192,32 +192,32 @@ describe Braintree::PaymentMethod do
         :token => token,
       )
 
-      result.should be_success
+      expect(result).to be_success
       google_pay_card = result.payment_method
-      google_pay_card.should be_a(Braintree::GooglePayCard)
-      google_pay_card.should_not be_nil
-      google_pay_card.token.should == token
-      google_pay_card.card_type.should == Braintree::CreditCard::CardType::MasterCard
-      google_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::MasterCard
-      google_pay_card.expiration_month.to_i.should > 0
-      google_pay_card.expiration_year.to_i.should > 0
-      google_pay_card.default.should == true
-      google_pay_card.image_url.should =~ /android_pay/
-      google_pay_card.is_network_tokenized?.should == true
-      google_pay_card.source_card_type.should == Braintree::CreditCard::CardType::MasterCard
-      google_pay_card.source_card_last_4.should == "4444"
-      google_pay_card.google_transaction_id.should == "google_transaction_id"
-      google_pay_card.source_description.should == "MasterCard 4444"
-      google_pay_card.customer_id.should == customer.id
-      google_pay_card.commercial.should_not be_nil
-      google_pay_card.country_of_issuance.should_not be_nil
-      google_pay_card.debit.should_not be_nil
-      google_pay_card.durbin_regulated.should_not be_nil
-      google_pay_card.healthcare.should_not be_nil
-      google_pay_card.issuing_bank.should_not be_nil
-      google_pay_card.payroll.should_not be_nil
-      google_pay_card.prepaid.should_not be_nil
-      google_pay_card.product_id.should_not be_nil
+      expect(google_pay_card).to be_a(Braintree::GooglePayCard)
+      expect(google_pay_card).not_to be_nil
+      expect(google_pay_card.token).to eq(token)
+      expect(google_pay_card.card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+      expect(google_pay_card.virtual_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+      expect(google_pay_card.expiration_month.to_i).to be > 0
+      expect(google_pay_card.expiration_year.to_i).to be > 0
+      expect(google_pay_card.default).to eq(true)
+      expect(google_pay_card.image_url).to match(/android_pay/)
+      expect(google_pay_card.is_network_tokenized?).to eq(true)
+      expect(google_pay_card.source_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+      expect(google_pay_card.source_card_last_4).to eq("4444")
+      expect(google_pay_card.google_transaction_id).to eq("google_transaction_id")
+      expect(google_pay_card.source_description).to eq("MasterCard 4444")
+      expect(google_pay_card.customer_id).to eq(customer.id)
+      expect(google_pay_card.commercial).not_to be_nil
+      expect(google_pay_card.country_of_issuance).not_to be_nil
+      expect(google_pay_card.debit).not_to be_nil
+      expect(google_pay_card.durbin_regulated).not_to be_nil
+      expect(google_pay_card.healthcare).not_to be_nil
+      expect(google_pay_card.issuing_bank).not_to be_nil
+      expect(google_pay_card.payroll).not_to be_nil
+      expect(google_pay_card.prepaid).not_to be_nil
+      expect(google_pay_card.product_id).not_to be_nil
     end
 
     it "creates a payment method from venmo account nonce" do
@@ -229,17 +229,17 @@ describe Braintree::PaymentMethod do
         :token => token,
       )
 
-      result.should be_success
+      expect(result).to be_success
       venmo_account = result.payment_method
-      venmo_account.should be_a(Braintree::VenmoAccount)
+      expect(venmo_account).to be_a(Braintree::VenmoAccount)
 
-      venmo_account.default.should == true
-      venmo_account.token.should == token
-      venmo_account.username.should == "venmojoe"
-      venmo_account.venmo_user_id.should == "1234567891234567891"
-      venmo_account.image_url.should include(".png")
-      venmo_account.source_description.should == "Venmo Account: venmojoe"
-      venmo_account.customer_id.should == customer.id
+      expect(venmo_account.default).to eq(true)
+      expect(venmo_account.token).to eq(token)
+      expect(venmo_account.username).to eq("venmojoe")
+      expect(venmo_account.venmo_user_id).to eq("1234567891234567891")
+      expect(venmo_account.image_url).to include(".png")
+      expect(venmo_account.source_description).to eq("Venmo Account: venmojoe")
+      expect(venmo_account.customer_id).to eq(customer.id)
     end
 
     it "allows passing the make_default option alongside the nonce" do
@@ -250,9 +250,9 @@ describe Braintree::PaymentMethod do
         :expiration_date => "05/2009",
         :cvv => "100",
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
       original_payment_method = result.credit_card
-      original_payment_method.should be_default
+      expect(original_payment_method).to be_default
 
       nonce = nonce_for_paypal_account(:consent_code => "PAYPAL_CONSENT_CODE")
       result = Braintree::PaymentMethod.create(
@@ -261,9 +261,9 @@ describe Braintree::PaymentMethod do
         :options => {:make_default => true},
       )
 
-      result.should be_success
+      expect(result).to be_success
       new_payment_method = result.payment_method
-      new_payment_method.should be_default
+      expect(new_payment_method).to be_default
     end
 
     it "overrides the token in the nonce" do
@@ -281,9 +281,9 @@ describe Braintree::PaymentMethod do
         :token => second_token,
       )
 
-      result.should be_success
+      expect(result).to be_success
       payment_method = result.payment_method
-      payment_method.token.should ==  second_token
+      expect(payment_method.token).to eq(second_token)
     end
 
     it "respects verify_card and verification_merchant_account_id when included outside of the nonce" do
@@ -304,11 +304,11 @@ describe Braintree::PaymentMethod do
         },
       )
 
-      result.should_not be_success
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
-      result.credit_card_verification.processor_response_code.should == "2000"
-      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.merchant_account_id.should == SpecHelper::NonDefaultMerchantAccountId
+      expect(result).not_to be_success
+      expect(result.credit_card_verification.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+      expect(result.credit_card_verification.processor_response_code).to eq("2000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Do Not Honor")
+      expect(result.credit_card_verification.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
     end
 
     it "respects verification amount when included outside of the nonce" do
@@ -329,11 +329,11 @@ describe Braintree::PaymentMethod do
         },
       )
 
-      result.should_not be_success
-      result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
-      result.credit_card_verification.processor_response_code.should == "2000"
-      result.credit_card_verification.processor_response_text.should == "Do Not Honor"
-      result.credit_card_verification.amount.should == BigDecimal("100.00")
+      expect(result).not_to be_success
+      expect(result.credit_card_verification.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+      expect(result.credit_card_verification.processor_response_code).to eq("2000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Do Not Honor")
+      expect(result.credit_card_verification.amount).to eq(BigDecimal("100.00"))
     end
 
     it "validates presence of three_d_secure_version in 3ds pass thru params" do
@@ -387,18 +387,18 @@ describe Braintree::PaymentMethod do
         :options => {:verify_card => true},
         :customer_id => customer.id,
       )
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       three_d_secure_info = result.payment_method.verification.three_d_secure_info
-      three_d_secure_info.enrolled.should == "Y"
-      three_d_secure_info.should be_liability_shifted
-      three_d_secure_info.should be_liability_shift_possible
-      three_d_secure_info.status.should == "authenticate_successful"
-      three_d_secure_info.cavv.should == "cavv_value"
-      three_d_secure_info.xid.should == "xid_value"
-      three_d_secure_info.eci_flag.should == "05"
-      three_d_secure_info.three_d_secure_version.should == "1.0.2"
-      three_d_secure_info.ds_transaction_id.should == nil
+      expect(three_d_secure_info.enrolled).to eq("Y")
+      expect(three_d_secure_info).to be_liability_shifted
+      expect(three_d_secure_info).to be_liability_shift_possible
+      expect(three_d_secure_info.status).to eq("authenticate_successful")
+      expect(three_d_secure_info.cavv).to eq("cavv_value")
+      expect(three_d_secure_info.xid).to eq("xid_value")
+      expect(three_d_secure_info.eci_flag).to eq("05")
+      expect(three_d_secure_info.three_d_secure_version).to eq("1.0.2")
+      expect(three_d_secure_info.ds_transaction_id).to eq(nil)
     end
 
     it "respects fail_on_duplicate_payment_method when included outside of the nonce" do
@@ -408,7 +408,7 @@ describe Braintree::PaymentMethod do
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2012",
       )
-      result.should be_success
+      expect(result).to be_success
 
       nonce = nonce_for_new_payment_method(
         :credit_card => {
@@ -424,8 +424,8 @@ describe Braintree::PaymentMethod do
         },
       )
 
-      result.should_not be_success
-      result.errors.first.code.should == "81724"
+      expect(result).not_to be_success
+      expect(result.errors.first.code).to eq("81724")
     end
 
     it "allows passing the billing address outside of the nonce" do
@@ -447,7 +447,7 @@ describe Braintree::PaymentMethod do
         :expirationYear => "2020",
         :options => {:validate => false},
       )
-      response.code.should == "202"
+      expect(response.code).to eq("202")
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
@@ -458,13 +458,13 @@ describe Braintree::PaymentMethod do
         },
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::CreditCard)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::CreditCard)
       token = result.payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
-      found_credit_card.billing_address.street_address.should == "123 Abc Way"
+      expect(found_credit_card).not_to be_nil
+      expect(found_credit_card.billing_address.street_address).to eq("123 Abc Way")
     end
 
     it "allows passing a billing address id outside of the nonce" do
@@ -486,7 +486,7 @@ describe Braintree::PaymentMethod do
         :expirationYear => "2020",
         :options => {:validate => false},
       )
-      response.code.should == "202"
+      expect(response.code).to eq("202")
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
 
@@ -497,14 +497,14 @@ describe Braintree::PaymentMethod do
         :billing_address_id => address.id,
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::CreditCard)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::CreditCard)
       token = result.payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
-      found_credit_card.billing_address.first_name.should == "Bobby"
-      found_credit_card.billing_address.last_name.should == "Tables"
+      expect(found_credit_card).not_to be_nil
+      expect(found_credit_card.billing_address.first_name).to eq("Bobby")
+      expect(found_credit_card.billing_address.last_name).to eq("Tables")
     end
 
     it "overrides the billing address in the nonce" do
@@ -529,7 +529,7 @@ describe Braintree::PaymentMethod do
           :street_address => "456 Xyz Way"
         },
       )
-      response.code.should == "202"
+      expect(response.code).to eq("202")
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
@@ -540,13 +540,13 @@ describe Braintree::PaymentMethod do
         },
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::CreditCard)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::CreditCard)
       token = result.payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
-      found_credit_card.billing_address.street_address.should == "123 Abc Way"
+      expect(found_credit_card).not_to be_nil
+      expect(found_credit_card.billing_address.street_address).to eq("123 Abc Way")
     end
 
     it "does not override the billing address for a vaulted credit card" do
@@ -570,7 +570,7 @@ describe Braintree::PaymentMethod do
           :street_address => "456 Xyz Way"
         },
       )
-      response.code.should == "201"
+      expect(response.code).to eq("201")
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       result = Braintree::PaymentMethod.create(
@@ -581,13 +581,13 @@ describe Braintree::PaymentMethod do
         },
       )
 
-      result.should be_success
-      result.payment_method.should be_a(Braintree::CreditCard)
+      expect(result).to be_success
+      expect(result.payment_method).to be_a(Braintree::CreditCard)
       token = result.payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
-      found_credit_card.billing_address.street_address.should == "456 Xyz Way"
+      expect(found_credit_card).not_to be_nil
+      expect(found_credit_card.billing_address.street_address).to eq("456 Xyz Way")
     end
 
     it "includes risk data when skip_advanced_fraud_checking is false" do
@@ -662,8 +662,8 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should be_success
-        result.payment_method.verification.credit_card[:account_type].should == "debit"
+        expect(result).to be_success
+        expect(result.payment_method.verification.credit_card[:account_type]).to eq("debit")
       end
 
       it "verifies card with account_type credit" do
@@ -685,8 +685,8 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should be_success
-        result.payment_method.verification.credit_card[:account_type].should == "credit"
+        expect(result).to be_success
+        expect(result.payment_method.verification.credit_card[:account_type]).to eq("credit")
       end
 
       it "errors with invalid account_type" do
@@ -708,8 +708,8 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should_not be_success
-        result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code.should == Braintree::ErrorCodes::CreditCard::VerificationAccountTypeIsInvalid
+        expect(result).not_to be_success
+        expect(result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code).to eq(Braintree::ErrorCodes::CreditCard::VerificationAccountTypeIsInvalid)
       end
 
       it "errors when account_type not supported by merchant" do
@@ -730,8 +730,8 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should_not be_success
-        result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code.should == Braintree::ErrorCodes::CreditCard::VerificationAccountTypeNotSupported
+        expect(result).not_to be_success
+        expect(result.errors.for(:credit_card).for(:options).on(:verification_account_type)[0].code).to eq(Braintree::ErrorCodes::CreditCard::VerificationAccountTypeNotSupported)
       end
 
       it "updates the credit card with account_type credit" do
@@ -754,8 +754,8 @@ describe Braintree::PaymentMethod do
             :verification_account_type => "credit",
           },
         )
-        update_result.success?.should == true
-        update_result.payment_method.verification.credit_card[:account_type].should == "credit"
+        expect(update_result.success?).to eq(true)
+        expect(update_result.payment_method.verification.credit_card[:account_type]).to eq("credit")
       end
 
       it "updates the credit card with account_type debit" do
@@ -778,8 +778,8 @@ describe Braintree::PaymentMethod do
             :verification_account_type => "debit",
           },
         )
-        update_result.success?.should == true
-        update_result.payment_method.verification.credit_card[:account_type].should == "debit"
+        expect(update_result.success?).to eq(true)
+        expect(update_result.payment_method.verification.credit_card[:account_type]).to eq("debit")
       end
     end
 
@@ -792,13 +792,13 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
         )
 
-        result.should be_success
-        result.payment_method.should be_a(Braintree::PayPalAccount)
-        result.payment_method.image_url.should_not be_nil
+        expect(result).to be_success
+        expect(result.payment_method).to be_a(Braintree::PayPalAccount)
+        expect(result.payment_method.image_url).not_to be_nil
         token = result.payment_method.token
 
         found_paypal_account = Braintree::PayPalAccount.find(token)
-        found_paypal_account.should_not be_nil
+        expect(found_paypal_account).not_to be_nil
       end
 
       it "creates a limited use payment method from a paypal account nonce for a paypal intent==order payment" do
@@ -831,15 +831,15 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should be_success
-        result.payment_method.should be_a(Braintree::PayPalAccount)
-        result.payment_method.image_url.should_not be_nil
-        result.payment_method.payer_id.should_not be_nil
+        expect(result).to be_success
+        expect(result.payment_method).to be_a(Braintree::PayPalAccount)
+        expect(result.payment_method.image_url).not_to be_nil
+        expect(result.payment_method.payer_id).not_to be_nil
         token = result.payment_method.token
 
         found_paypal_account = Braintree::PayPalAccount.find(token)
-        found_paypal_account.should_not be_nil
-        found_paypal_account.payer_id.should_not be_nil
+        expect(found_paypal_account).not_to be_nil
+        expect(found_paypal_account.payer_id).not_to be_nil
       end
 
       it "creates a billing agreement payment method from a refresh token" do
@@ -849,16 +849,16 @@ describe Braintree::PaymentMethod do
           :paypal_refresh_token => "some_future_payment_token",
         )
 
-        result.should be_success
-        result.payment_method.should be_a(Braintree::PayPalAccount)
-        result.payment_method.billing_agreement_id.should eq("B_FAKE_ID")
-        result.payment_method.payer_id.should_not be_nil
+        expect(result).to be_success
+        expect(result.payment_method).to be_a(Braintree::PayPalAccount)
+        expect(result.payment_method.billing_agreement_id).to eq("B_FAKE_ID")
+        expect(result.payment_method.payer_id).not_to be_nil
         token = result.payment_method.token
 
         found_paypal_account = Braintree::PayPalAccount.find(token)
-        found_paypal_account.should_not be_nil
-        found_paypal_account.billing_agreement_id.should eq("B_FAKE_ID")
-        found_paypal_account.payer_id.should_not be_nil
+        expect(found_paypal_account).not_to be_nil
+        expect(found_paypal_account.billing_agreement_id).to eq("B_FAKE_ID")
+        expect(found_paypal_account.payer_id).not_to be_nil
       end
 
       it "does not create a payment method from an unvalidated onetime paypal account nonce" do
@@ -869,8 +869,8 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
         )
 
-        result.should_not be_success
-        result.errors.first.code.should == "82902"
+        expect(result).not_to be_success
+        expect(result.errors.first.code).to eq("82902")
       end
 
       it "ignores passed billing address params" do
@@ -884,13 +884,13 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should be_success
-        result.payment_method.should be_a(Braintree::PayPalAccount)
-        result.payment_method.image_url.should_not be_nil
+        expect(result).to be_success
+        expect(result.payment_method).to be_a(Braintree::PayPalAccount)
+        expect(result.payment_method.image_url).not_to be_nil
         token = result.payment_method.token
 
         found_paypal_account = Braintree::PayPalAccount.find(token)
-        found_paypal_account.should_not be_nil
+        expect(found_paypal_account).not_to be_nil
       end
 
       it "ignores passed billing address id" do
@@ -902,13 +902,13 @@ describe Braintree::PaymentMethod do
           :billing_address_id => "address_id",
         )
 
-        result.should be_success
-        result.payment_method.should be_a(Braintree::PayPalAccount)
-        result.payment_method.image_url.should_not be_nil
+        expect(result).to be_success
+        expect(result.payment_method).to be_a(Braintree::PayPalAccount)
+        expect(result.payment_method.image_url).not_to be_nil
         token = result.payment_method.token
 
         found_paypal_account = Braintree::PayPalAccount.find(token)
-        found_paypal_account.should_not be_nil
+        expect(found_paypal_account).not_to be_nil
       end
 
       it "returns appropriate validation errors" do
@@ -919,10 +919,10 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
         )
 
-        result.should_not be_success
+        expect(result).not_to be_success
         errors = result.errors.map(&:code)
-        errors.should include("82901")
-        errors.should include("82902")
+        expect(errors).to include("82901")
+        expect(errors).to include("82902")
       end
 
       it "doesn't return an error if credit card options are present for a paypal nonce" do
@@ -943,7 +943,7 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
       end
     end
 
@@ -957,11 +957,11 @@ describe Braintree::PaymentMethod do
           :token => token,
         )
 
-        result.should be_success
+        expect(result).to be_success
         payment_method = result.payment_method
-        payment_method.should_not be_nil
-        payment_method.token.should == token
-        payment_method.should be_a Braintree::UnknownPaymentMethod
+        expect(payment_method).not_to be_nil
+        expect(payment_method.token).to eq(token)
+        expect(payment_method).to be_a Braintree::UnknownPaymentMethod
       end
     end
 
@@ -984,7 +984,7 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
         result.payment_method.verification.currency_iso_code  == "USD"
       end
 
@@ -1007,7 +1007,7 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should be_success
+        expect(result).to be_success
         result.payment_method.verification.currency_iso_code  == "USD"
         result.payment_method.verification.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
       end
@@ -1030,8 +1030,8 @@ describe Braintree::PaymentMethod do
             :verification_currency_iso_code => "GBP"
           },
         )
-        result.should_not be_success
-        result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+        expect(result).not_to be_success
+        expect(result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq(Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount)
       end
 
       it "errors with invalid presentment currency due to verification_currency_iso_code not matching with currency configured in verification_merchant_account_id" do
@@ -1053,8 +1053,8 @@ describe Braintree::PaymentMethod do
           },
         )
 
-        result.should_not be_success
-        result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+        expect(result).not_to be_success
+        expect(result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq(Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount)
       end
     end
   end
@@ -1078,7 +1078,7 @@ describe Braintree::PaymentMethod do
         :expirationMonth => 12,
         :expirationYear => 2020,
       )
-      response.code.should == "201"
+      expect(response.code).to eq("201")
 
       nonce = JSON.parse(response.body)["creditCards"].first["nonce"]
       payment_method = Braintree::PaymentMethod.create!(
@@ -1086,11 +1086,11 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
       )
 
-      payment_method.should be_a(Braintree::CreditCard)
+      expect(payment_method).to be_a(Braintree::CreditCard)
       token = payment_method.token
 
       found_credit_card = Braintree::CreditCard.find(token)
-      found_credit_card.should_not be_nil
+      expect(found_credit_card).not_to be_nil
     end
   end
 
@@ -1103,13 +1103,13 @@ describe Braintree::PaymentMethod do
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_date => "05/2012",
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
 
         credit_card = Braintree::PaymentMethod.find(result.credit_card.token)
-        credit_card.bin.should == Braintree::Test::CreditCardNumbers::Visa[0, 6]
-        credit_card.last_4.should == Braintree::Test::CreditCardNumbers::Visa[-4..-1]
-        credit_card.token.should == result.credit_card.token
-        credit_card.expiration_date.should == "05/2012"
+        expect(credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::Visa[0, 6])
+        expect(credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+        expect(credit_card.token).to eq(result.credit_card.token)
+        expect(credit_card.expiration_date).to eq("05/2012")
       end
 
       it "returns associated subscriptions with the credit card" do
@@ -1127,10 +1127,10 @@ describe Braintree::PaymentMethod do
         ).subscription
 
         found_card = Braintree::PaymentMethod.find(credit_card.token)
-        found_card.subscriptions.first.id.should == subscription.id
-        found_card.subscriptions.first.plan_id.should == "integration_trialless_plan"
-        found_card.subscriptions.first.payment_method_token.should == credit_card.token
-        found_card.subscriptions.first.price.should == BigDecimal("1.00")
+        expect(found_card.subscriptions.first.id).to eq(subscription.id)
+        expect(found_card.subscriptions.first.plan_id).to eq("integration_trialless_plan")
+        expect(found_card.subscriptions.first.payment_method_token).to eq(credit_card.token)
+        expect(found_card.subscriptions.first.price).to eq(BigDecimal("1.00"))
       end
     end
 
@@ -1146,13 +1146,13 @@ describe Braintree::PaymentMethod do
           :payment_method_nonce => nonce,
           :customer_id => customer.id,
         )
-        result.should be_success
+        expect(result).to be_success
 
         paypal_account = Braintree::PaymentMethod.find(payment_method_token)
-        paypal_account.should be_a(Braintree::PayPalAccount)
-        paypal_account.token.should == payment_method_token
-        paypal_account.email.should == "jane.doe@example.com"
-        paypal_account.customer_id.should == customer.id
+        expect(paypal_account).to be_a(Braintree::PayPalAccount)
+        expect(paypal_account.token).to eq(payment_method_token)
+        expect(paypal_account.email).to eq("jane.doe@example.com")
+        expect(paypal_account.customer_id).to eq(customer.id)
       end
     end
 
@@ -1165,19 +1165,19 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :token => payment_method_token,
         )
-        result.should be_success
+        expect(result).to be_success
 
         apple_pay_card = Braintree::PaymentMethod.find(payment_method_token)
-        apple_pay_card.should be_a(Braintree::ApplePayCard)
-        apple_pay_card.should_not be_nil
-        apple_pay_card.token.should == payment_method_token
-        apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::AmEx
-        apple_pay_card.default.should == true
-        apple_pay_card.image_url.should =~ /apple_pay/
-        apple_pay_card.expiration_month.to_i.should > 0
-        apple_pay_card.expiration_year.to_i.should > 0
-        apple_pay_card.source_description.should == "AmEx 41002"
-        apple_pay_card.customer_id.should == customer.id
+        expect(apple_pay_card).to be_a(Braintree::ApplePayCard)
+        expect(apple_pay_card).not_to be_nil
+        expect(apple_pay_card.token).to eq(payment_method_token)
+        expect(apple_pay_card.card_type).to eq(Braintree::ApplePayCard::CardType::AmEx)
+        expect(apple_pay_card.default).to eq(true)
+        expect(apple_pay_card.image_url).to match(/apple_pay/)
+        expect(apple_pay_card.expiration_month.to_i).to be > 0
+        expect(apple_pay_card.expiration_year.to_i).to be > 0
+        expect(apple_pay_card.source_description).to eq("AmEx 41002")
+        expect(apple_pay_card.customer_id).to eq(customer.id)
       end
 
       it "finds the payment method with the given mpan token" do
@@ -1188,19 +1188,19 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :token => payment_method_token,
         )
-        result.should be_success
+        expect(result).to be_success
 
         apple_pay_card = Braintree::PaymentMethod.find(payment_method_token)
-        apple_pay_card.should be_a(Braintree::ApplePayCard)
-        apple_pay_card.should_not be_nil
-        apple_pay_card.token.should == payment_method_token
-        apple_pay_card.card_type.should == Braintree::ApplePayCard::CardType::Visa
-        apple_pay_card.default.should == true
-        apple_pay_card.image_url.should =~ /apple_pay/
-        apple_pay_card.expiration_month.to_i.should > 0
-        apple_pay_card.expiration_year.to_i.should > 0
-        apple_pay_card.source_description.should == "Visa 8886"
-        apple_pay_card.customer_id.should == customer.id
+        expect(apple_pay_card).to be_a(Braintree::ApplePayCard)
+        expect(apple_pay_card).not_to be_nil
+        expect(apple_pay_card.token).to eq(payment_method_token)
+        expect(apple_pay_card.card_type).to eq(Braintree::ApplePayCard::CardType::Visa)
+        expect(apple_pay_card.default).to eq(true)
+        expect(apple_pay_card.image_url).to match(/apple_pay/)
+        expect(apple_pay_card.expiration_month.to_i).to be > 0
+        expect(apple_pay_card.expiration_year.to_i).to be > 0
+        expect(apple_pay_card.source_description).to eq("Visa 8886")
+        expect(apple_pay_card.customer_id).to eq(customer.id)
         apple_pay_card.merchant_token_identifier == "DNITHE302308980427388297"
         apple_pay_card.source_card_last4 == "2006"
       end
@@ -1215,18 +1215,18 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :token => payment_method_token,
         )
-        result.should be_success
+        expect(result).to be_success
 
         venmo_account = Braintree::PaymentMethod.find(payment_method_token)
-        venmo_account.should be_a(Braintree::VenmoAccount)
-        venmo_account.should_not be_nil
-        venmo_account.token.should == payment_method_token
-        venmo_account.default.should == true
-        venmo_account.image_url.should =~ /venmo/
-        venmo_account.username.should == "venmojoe"
-        venmo_account.venmo_user_id.should == "1234567891234567891"
-        venmo_account.source_description.should == "Venmo Account: venmojoe"
-        venmo_account.customer_id.should == customer.id
+        expect(venmo_account).to be_a(Braintree::VenmoAccount)
+        expect(venmo_account).not_to be_nil
+        expect(venmo_account.token).to eq(payment_method_token)
+        expect(venmo_account.default).to eq(true)
+        expect(venmo_account.image_url).to match(/venmo/)
+        expect(venmo_account.username).to eq("venmojoe")
+        expect(venmo_account.venmo_user_id).to eq("1234567891234567891")
+        expect(venmo_account.source_description).to eq("Venmo Account: venmojoe")
+        expect(venmo_account.customer_id).to eq(customer.id)
       end
     end
 
@@ -1239,24 +1239,24 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :token => payment_method_token,
         )
-        result.should be_success
+        expect(result).to be_success
 
         google_pay_card = Braintree::PaymentMethod.find(payment_method_token)
-        google_pay_card.should be_a(Braintree::GooglePayCard)
-        google_pay_card.should_not be_nil
-        google_pay_card.token.should == payment_method_token
-        google_pay_card.card_type.should == Braintree::CreditCard::CardType::Discover
-        google_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::Discover
-        google_pay_card.expiration_month.to_i.should > 0
-        google_pay_card.expiration_year.to_i.should > 0
-        google_pay_card.default.should == true
-        google_pay_card.image_url.should =~ /android_pay/
-        google_pay_card.is_network_tokenized?.should == false
-        google_pay_card.source_card_type.should == Braintree::CreditCard::CardType::Discover
-        google_pay_card.source_card_last_4.should == "1111"
-        google_pay_card.google_transaction_id.should == "google_transaction_id"
-        google_pay_card.source_description.should == "Discover 1111"
-        google_pay_card.customer_id.should == customer.id
+        expect(google_pay_card).to be_a(Braintree::GooglePayCard)
+        expect(google_pay_card).not_to be_nil
+        expect(google_pay_card.token).to eq(payment_method_token)
+        expect(google_pay_card.card_type).to eq(Braintree::CreditCard::CardType::Discover)
+        expect(google_pay_card.virtual_card_type).to eq(Braintree::CreditCard::CardType::Discover)
+        expect(google_pay_card.expiration_month.to_i).to be > 0
+        expect(google_pay_card.expiration_year.to_i).to be > 0
+        expect(google_pay_card.default).to eq(true)
+        expect(google_pay_card.image_url).to match(/android_pay/)
+        expect(google_pay_card.is_network_tokenized?).to eq(false)
+        expect(google_pay_card.source_card_type).to eq(Braintree::CreditCard::CardType::Discover)
+        expect(google_pay_card.source_card_last_4).to eq("1111")
+        expect(google_pay_card.google_transaction_id).to eq("google_transaction_id")
+        expect(google_pay_card.source_description).to eq("Discover 1111")
+        expect(google_pay_card.customer_id).to eq(customer.id)
       end
 
       it "finds the network token payment method with the given token" do
@@ -1267,24 +1267,24 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :token => payment_method_token,
         )
-        result.should be_success
+        expect(result).to be_success
 
         google_pay_card = Braintree::PaymentMethod.find(payment_method_token)
-        google_pay_card.should be_a(Braintree::GooglePayCard)
-        google_pay_card.should_not be_nil
-        google_pay_card.token.should == payment_method_token
-        google_pay_card.card_type.should == Braintree::CreditCard::CardType::MasterCard
-        google_pay_card.virtual_card_type.should == Braintree::CreditCard::CardType::MasterCard
-        google_pay_card.expiration_month.to_i.should > 0
-        google_pay_card.expiration_year.to_i.should > 0
-        google_pay_card.default.should == true
-        google_pay_card.image_url.should =~ /android_pay/
-        google_pay_card.is_network_tokenized?.should == true
-        google_pay_card.source_card_type.should == Braintree::CreditCard::CardType::MasterCard
-        google_pay_card.source_card_last_4.should == "4444"
-        google_pay_card.google_transaction_id.should == "google_transaction_id"
-        google_pay_card.source_description.should == "MasterCard 4444"
-        google_pay_card.customer_id.should == customer.id
+        expect(google_pay_card).to be_a(Braintree::GooglePayCard)
+        expect(google_pay_card).not_to be_nil
+        expect(google_pay_card.token).to eq(payment_method_token)
+        expect(google_pay_card.card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+        expect(google_pay_card.virtual_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+        expect(google_pay_card.expiration_month.to_i).to be > 0
+        expect(google_pay_card.expiration_year.to_i).to be > 0
+        expect(google_pay_card.default).to eq(true)
+        expect(google_pay_card.image_url).to match(/android_pay/)
+        expect(google_pay_card.is_network_tokenized?).to eq(true)
+        expect(google_pay_card.source_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
+        expect(google_pay_card.source_card_last_4).to eq("4444")
+        expect(google_pay_card.google_transaction_id).to eq("google_transaction_id")
+        expect(google_pay_card.source_description).to eq("MasterCard 4444")
+        expect(google_pay_card.customer_id).to eq(customer.id)
       end
     end
 
@@ -1297,14 +1297,14 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :token => payment_method_token,
         )
-        result.should be_success
+        expect(result).to be_success
 
         payment_method = Braintree::PaymentMethod.find(payment_method_token)
-        payment_method.should_not be_nil
-        payment_method.token.should == payment_method_token
-        payment_method.image_url.should_not be_nil
-        payment_method.should be_a Braintree::UnknownPaymentMethod
-        payment_method.customer_id.should == customer.id
+        expect(payment_method).not_to be_nil
+        expect(payment_method.token).to eq(payment_method_token)
+        expect(payment_method.image_url).not_to be_nil
+        expect(payment_method).to be_a Braintree::UnknownPaymentMethod
+        expect(payment_method.customer_id).to eq(customer.id)
       end
     end
 
@@ -1327,10 +1327,10 @@ describe Braintree::PaymentMethod do
       token = create_result.payment_method.token
 
       google_card = Braintree::PaymentMethod.find(token)
-      google_card.should be_a(Braintree::GooglePayCard)
+      expect(google_card).to be_a(Braintree::GooglePayCard)
 
       delete_result = Braintree::PaymentMethod.delete(token)
-      delete_result.success?.should == true
+      expect(delete_result.success?).to eq(true)
 
       expect do
         Braintree::PaymentMethod.find(token)
@@ -1347,10 +1347,10 @@ describe Braintree::PaymentMethod do
       token = create_result.payment_method.token
 
       apple_pay_card = Braintree::PaymentMethod.find(token)
-      apple_pay_card.should be_a(Braintree::ApplePayCard)
+      expect(apple_pay_card).to be_a(Braintree::ApplePayCard)
 
       delete_result = Braintree::PaymentMethod.delete(token)
-      delete_result.success?.should == true
+      expect(delete_result.success?).to eq(true)
 
       expect do
         Braintree::PaymentMethod.find(token)
@@ -1371,10 +1371,10 @@ describe Braintree::PaymentMethod do
       )
 
       paypal_account = Braintree::PaymentMethod.find(paypal_account_token)
-      paypal_account.should be_a(Braintree::PayPalAccount)
+      expect(paypal_account).to be_a(Braintree::PayPalAccount)
 
       result = Braintree::PaymentMethod.delete(paypal_account_token, {:revoke_all_grants => false})
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       expect do
         Braintree::PaymentMethod.find(paypal_account_token)
@@ -1400,7 +1400,7 @@ describe Braintree::PaymentMethod do
       )
 
       result = Braintree::PaymentMethod.delete(token)
-      result.success?.should == true
+      expect(result.success?).to eq(true)
 
       expect do
         Braintree::PaymentMethod.find(token)
@@ -1475,13 +1475,13 @@ describe Braintree::PaymentMethod do
           },
           :options => {:verify_card => true},
         )
-        update_result.success?.should == true
-        update_result.payment_method.should == credit_card
+        expect(update_result.success?).to eq(true)
+        expect(update_result.payment_method).to eq(credit_card)
         updated_credit_card = update_result.payment_method
-        updated_credit_card.cardholder_name.should == "New Holder"
-        updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-        updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-        updated_credit_card.expiration_date.should == "06/2013"
+        expect(updated_credit_card.cardholder_name).to eq("New Holder")
+        expect(updated_credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+        expect(updated_credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+        expect(updated_credit_card.expiration_date).to eq("06/2013")
       end
 
       it "updates the credit card" do
@@ -1499,13 +1499,13 @@ describe Braintree::PaymentMethod do
           :number => Braintree::Test::CreditCardNumbers::MasterCard,
           :expiration_date => "06/2013",
         )
-        update_result.success?.should == true
-        update_result.payment_method.should == credit_card
+        expect(update_result.success?).to eq(true)
+        expect(update_result.payment_method).to eq(credit_card)
         updated_credit_card = update_result.payment_method
-        updated_credit_card.cardholder_name.should == "New Holder"
-        updated_credit_card.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-        updated_credit_card.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-        updated_credit_card.expiration_date.should == "06/2013"
+        expect(updated_credit_card.cardholder_name).to eq("New Holder")
+        expect(updated_credit_card.bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+        expect(updated_credit_card.last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+        expect(updated_credit_card.expiration_date).to eq("06/2013")
       end
 
       it "includes risk data when skip_advanced_fraud_checking is false" do
@@ -1577,7 +1577,7 @@ describe Braintree::PaymentMethod do
                                                           :expiration_date => "06/2013",
                                                           :options => {:verify_card => true, :verification_currency_iso_code => "USD"},
                                                          )
-          update_result.success?.should == true
+          expect(update_result.success?).to eq(true)
           update_result.payment_method.verification.currency_iso_code  == "USD"
         end
 
@@ -1597,7 +1597,7 @@ describe Braintree::PaymentMethod do
                                                           :expiration_date => "06/2013",
                                                           :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "USD"},
                                                          )
-          update_result.success?.should == true
+          expect(update_result.success?).to eq(true)
           update_result.payment_method.verification.currency_iso_code  == "USD"
           update_result.payment_method.verification.merchant_account_id == SpecHelper::NonDefaultMerchantAccountId
         end
@@ -1619,7 +1619,7 @@ describe Braintree::PaymentMethod do
                                                           :options => {:verify_card => true, :verification_currency_iso_code => "GBP"},
                                                          )
           expect(update_result).to_not be_success
-          update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+          expect(update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq(Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount)
         end
 
         it "throws validation error when passing invalid verification_currency_iso_code of the given verification merchant account id" do
@@ -1639,7 +1639,7 @@ describe Braintree::PaymentMethod do
                                                           :options => {:verify_card => true, :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,  :verification_currency_iso_code => "GBP"},
                                                          )
           expect(update_result).to_not be_success
-          update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code.should == Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount
+          expect(update_result.errors.for(:credit_card).for(:options).on(:verification_currency_iso_code)[0].code).to eq(Braintree::ErrorCodes::CreditCard::CurrencyCodeNotSupportedByMerchantAccount)
         end
       end
 
@@ -1660,11 +1660,11 @@ describe Braintree::PaymentMethod do
               :region => "IL"
             },
           )
-          update_result.success?.should == true
+          expect(update_result.success?).to eq(true)
           updated_credit_card = update_result.payment_method
-          updated_credit_card.billing_address.region.should == "IL"
-          updated_credit_card.billing_address.street_address.should == nil
-          updated_credit_card.billing_address.id.should_not == credit_card.billing_address.id
+          expect(updated_credit_card.billing_address.region).to eq("IL")
+          expect(updated_credit_card.billing_address.street_address).to eq(nil)
+          expect(updated_credit_card.billing_address.id).not_to eq(credit_card.billing_address.id)
         end
 
         it "updates the billing address if option is specified" do
@@ -1683,11 +1683,11 @@ describe Braintree::PaymentMethod do
               :options => {:update_existing => true}
             },
           )
-          update_result.success?.should == true
+          expect(update_result.success?).to eq(true)
           updated_credit_card = update_result.payment_method
-          updated_credit_card.billing_address.region.should == "IL"
-          updated_credit_card.billing_address.street_address.should == "123 Nigeria Ave"
-          updated_credit_card.billing_address.id.should == credit_card.billing_address.id
+          expect(updated_credit_card.billing_address.region).to eq("IL")
+          expect(updated_credit_card.billing_address.street_address).to eq("123 Nigeria Ave")
+          expect(updated_credit_card.billing_address.id).to eq(credit_card.billing_address.id)
         end
 
         it "updates the country via codes" do
@@ -1709,12 +1709,12 @@ describe Braintree::PaymentMethod do
               :options => {:update_existing => true}
             },
           )
-          update_result.success?.should == true
+          expect(update_result.success?).to eq(true)
           updated_credit_card = update_result.payment_method
-          updated_credit_card.billing_address.country_name.should == "American Samoa"
-          updated_credit_card.billing_address.country_code_alpha2.should == "AS"
-          updated_credit_card.billing_address.country_code_alpha3.should == "ASM"
-          updated_credit_card.billing_address.country_code_numeric.should == "016"
+          expect(updated_credit_card.billing_address.country_name).to eq("American Samoa")
+          expect(updated_credit_card.billing_address.country_code_alpha2).to eq("AS")
+          expect(updated_credit_card.billing_address.country_code_alpha3).to eq("ASM")
+          expect(updated_credit_card.billing_address.country_code_numeric).to eq("016")
         end
       end
 
@@ -1730,11 +1730,11 @@ describe Braintree::PaymentMethod do
           :expiration_month => "07",
           :expiration_year => "2011",
         )
-        update_result.success?.should == true
-        update_result.payment_method.should == credit_card
-        update_result.payment_method.expiration_month.should == "07"
-        update_result.payment_method.expiration_year.should == "2011"
-        update_result.payment_method.expiration_date.should == "07/2011"
+        expect(update_result.success?).to eq(true)
+        expect(update_result.payment_method).to eq(credit_card)
+        expect(update_result.payment_method.expiration_month).to eq("07")
+        expect(update_result.payment_method.expiration_year).to eq("2011")
+        expect(update_result.payment_method.expiration_date).to eq("07/2011")
       end
 
       it "verifies the update if options[verify_card]=true" do
@@ -1753,9 +1753,9 @@ describe Braintree::PaymentMethod do
           :expiration_date => "06/2013",
           :options => {:verify_card => true},
         )
-        update_result.success?.should == false
-        update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
-        update_result.credit_card_verification.gateway_rejection_reason.should be_nil
+        expect(update_result.success?).to eq(false)
+        expect(update_result.credit_card_verification.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+        expect(update_result.credit_card_verification.gateway_rejection_reason).to be_nil
       end
 
       it "accepts a custom verification amount" do
@@ -1771,10 +1771,10 @@ describe Braintree::PaymentMethod do
           :payment_method_nonce => Braintree::Test::Nonce::ProcessorDeclinedMasterCard,
           :options => {:verify_card => true, :verification_amount => "2.34"},
         )
-        update_result.success?.should == false
-        update_result.credit_card_verification.status.should == Braintree::Transaction::Status::ProcessorDeclined
-        update_result.credit_card_verification.gateway_rejection_reason.should be_nil
-        update_result.credit_card_verification.amount.should == BigDecimal("2.34")
+        expect(update_result.success?).to eq(false)
+        expect(update_result.credit_card_verification.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
+        expect(update_result.credit_card_verification.gateway_rejection_reason).to be_nil
+        expect(update_result.credit_card_verification.amount).to eq(BigDecimal("2.34"))
       end
 
       it "can update the billing address" do
@@ -1811,17 +1811,17 @@ describe Braintree::PaymentMethod do
             :country_name => "United States of America"
           },
         )
-        result.success?.should == true
+        expect(result.success?).to eq(true)
         address = result.payment_method.billing_address
-        address.first_name.should == "New First Name"
-        address.last_name.should == "New Last Name"
-        address.company.should == "New Company"
-        address.street_address.should == "123 New St"
-        address.extended_address.should == "Apt New"
-        address.locality.should == "New City"
-        address.region.should == "New State"
-        address.postal_code.should == "56789"
-        address.country_name.should == "United States of America"
+        expect(address.first_name).to eq("New First Name")
+        expect(address.last_name).to eq("New Last Name")
+        expect(address.company).to eq("New Company")
+        expect(address.street_address).to eq("123 New St")
+        expect(address.extended_address).to eq("Apt New")
+        expect(address.locality).to eq("New City")
+        expect(address.region).to eq("New State")
+        expect(address.postal_code).to eq("56789")
+        expect(address.country_name).to eq("United States of America")
       end
 
       it "returns an error response if invalid" do
@@ -1837,8 +1837,8 @@ describe Braintree::PaymentMethod do
           :number => "invalid",
           :expiration_date => "05/2014",
         )
-        update_result.success?.should == false
-        update_result.errors.for(:credit_card).on(:number)[0].message.should == "Credit card number must be 12-19 digits."
+        expect(update_result.success?).to eq(false)
+        expect(update_result.errors.for(:credit_card).on(:number)[0].message).to eq("Credit card number must be 12-19 digits.")
       end
 
       it "can update the default" do
@@ -1854,13 +1854,13 @@ describe Braintree::PaymentMethod do
           :expiration_date => "05/2009",
         ).credit_card
 
-        card1.should be_default
-        card2.should_not be_default
+        expect(card1).to be_default
+        expect(card2).not_to be_default
 
         Braintree::PaymentMethod.update(card2.token, :options => {:make_default => true})
 
-        Braintree::CreditCard.find(card1.token).should_not be_default
-        Braintree::CreditCard.find(card2.token).should be_default
+        expect(Braintree::CreditCard.find(card1.token)).not_to be_default
+        expect(Braintree::CreditCard.find(card2.token)).to be_default
       end
     end
 
@@ -1884,7 +1884,7 @@ describe Braintree::PaymentMethod do
         )
 
         updated_paypal_account = Braintree::PayPalAccount.find(updated_token)
-        updated_paypal_account.email.should == original_result.payment_method.email
+        expect(updated_paypal_account.email).to eq(original_result.payment_method.email)
 
         expect do
           Braintree::PayPalAccount.find(original_token)
@@ -1899,7 +1899,7 @@ describe Braintree::PaymentMethod do
           :expiration_date => "05/2009",
           :options => {:make_default => true},
         )
-        result.should be_success
+        expect(result).to be_success
 
         nonce = nonce_for_paypal_account(:consent_code => "consent-code")
         original_token = Braintree::PaymentMethod.create(
@@ -1913,7 +1913,7 @@ describe Braintree::PaymentMethod do
         )
 
         updated_paypal_account = Braintree::PayPalAccount.find(original_token)
-        updated_paypal_account.should be_default
+        expect(updated_paypal_account).to be_default
       end
 
       it "returns an error if a token for account is used to attempt an update" do
@@ -1944,8 +1944,8 @@ describe Braintree::PaymentMethod do
           :token => second_token,
         )
 
-        updated_result.should_not be_success
-        updated_result.errors.first.code.should == "92906"
+        expect(updated_result).not_to be_success
+        expect(updated_result.errors.first.code).to eq("92906")
       end
     end
   end
@@ -1966,11 +1966,11 @@ describe Braintree::PaymentMethod do
         :number => Braintree::Test::CreditCardNumbers::MasterCard,
         :expiration_date => "06/2013",
       )
-      payment_method.should == credit_card
-      payment_method.cardholder_name.should == "New Holder"
-      payment_method.bin.should == Braintree::Test::CreditCardNumbers::MasterCard[0, 6]
-      payment_method.last_4.should == Braintree::Test::CreditCardNumbers::MasterCard[-4..-1]
-      payment_method.expiration_date.should == "06/2013"
+      expect(payment_method).to eq(credit_card)
+      expect(payment_method.cardholder_name).to eq("New Holder")
+      expect(payment_method.bin).to eq(Braintree::Test::CreditCardNumbers::MasterCard[0, 6])
+      expect(payment_method.last_4).to eq(Braintree::Test::CreditCardNumbers::MasterCard[-4..-1])
+      expect(payment_method.expiration_date).to eq("06/2013")
     end
   end
 
@@ -2018,24 +2018,24 @@ describe Braintree::PaymentMethod do
     describe "self.grant" do
       it "returns an error result when the grant doesn't succeed" do
         grant_result = @granting_gateway.payment_method.grant("payment_method_from_grant", true)
-        grant_result.should_not be_success
+        expect(grant_result).not_to be_success
       end
 
       it "returns a nonce that is transactable by a partner merchant exactly once" do
         grant_result = @granting_gateway.payment_method.grant(@credit_card.token, :allow_vaulting => false)
-        grant_result.should be_success
+        expect(grant_result).to be_success
 
         result = Braintree::Transaction.sale(
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
           :amount => Braintree::Test::TransactionAmounts::Authorize,
         )
-        result.should be_success
+        expect(result).to be_success
 
         result2 = Braintree::Transaction.sale(
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
           :amount => Braintree::Test::TransactionAmounts::Authorize,
         )
-        result2.should_not be_success
+        expect(result2).not_to be_success
       end
 
       it "returns a nonce that is not vaultable" do
@@ -2047,7 +2047,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer_result.customer.id,
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
-        result.should_not be_success
+        expect(result).not_to be_success
       end
 
       it "returns a nonce that is vaultable" do
@@ -2059,7 +2059,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer_result.customer.id,
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
-        result.should be_success
+        expect(result).to be_success
       end
 
       it "raises an error if the token isn't found" do
@@ -2071,7 +2071,7 @@ describe Braintree::PaymentMethod do
       it "returns a valid nonce with no options set" do
         expect do
           grant_result = @granting_gateway.payment_method.grant(@credit_card.token)
-          grant_result.should be_success
+          expect(grant_result).to be_success
         end
       end
     end
@@ -2086,7 +2086,7 @@ describe Braintree::PaymentMethod do
       it "renders a granted nonce useless" do
         grant_result = @granting_gateway.payment_method.grant(@credit_card.token)
         revoke_result = @granting_gateway.payment_method.revoke(@credit_card.token)
-        revoke_result.should be_success
+        expect(revoke_result).to be_success
 
         customer_result = Braintree::Customer.create()
 
@@ -2094,13 +2094,13 @@ describe Braintree::PaymentMethod do
           :customer_id => customer_result.customer.id,
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
-        result.should_not be_success
+        expect(result).not_to be_success
       end
 
       it "renders a granted nonce obtained uisng options hash, useless" do
         grant_result = @granting_gateway.payment_method.grant(@credit_card.token, :allow_vaulting => true)
         revoke_result = @granting_gateway.payment_method.revoke(@credit_card.token)
-        revoke_result.should be_success
+        expect(revoke_result).to be_success
 
         customer_result = Braintree::Customer.create()
 
@@ -2108,7 +2108,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer_result.customer.id,
           :payment_method_nonce => grant_result.payment_method_nonce.nonce,
         )
-        result.should_not be_success
+        expect(result).not_to be_success
       end
     end
   end

@@ -21,12 +21,12 @@ describe "OAuth" do
         :scope => "read_write",
       )
 
-      result.should be_success
+      expect(result).to be_success
       credentials = result.credentials
-      credentials.access_token.should_not be_nil
-      credentials.refresh_token.should_not be_nil
-      credentials.expires_at.should_not be_nil
-      credentials.token_type.should == "bearer"
+      expect(credentials.access_token).not_to be_nil
+      expect(credentials.refresh_token).not_to be_nil
+      expect(credentials.expires_at).not_to be_nil
+      expect(credentials.token_type).to eq("bearer")
     end
 
     it "returns validation errors for bad params" do
@@ -35,9 +35,9 @@ describe "OAuth" do
         :scope => "read_write",
       )
 
-      result.should_not be_success
-      errors = result.errors.for(:credentials).on(:code)[0].code.should == Braintree::ErrorCodes::OAuth::InvalidGrant
-      result.message.should =~ /Invalid grant: code not found/
+      expect(result).not_to be_success
+      errors = expect(result.errors.for(:credentials).on(:code)[0].code).to eq(Braintree::ErrorCodes::OAuth::InvalidGrant)
+      expect(result.message).to match(/Invalid grant: code not found/)
     end
 
     it "raises with a helpful error if client_id and client_secret are not set" do
@@ -71,12 +71,12 @@ describe "OAuth" do
         :scope => "read_write",
       )
 
-      result.should be_success
+      expect(result).to be_success
       credentials = result.credentials
-      credentials.access_token.should_not be_nil
-      credentials.refresh_token.should_not be_nil
-      credentials.expires_at.should_not be_nil
-      credentials.token_type.should == "bearer"
+      expect(credentials.access_token).not_to be_nil
+      expect(credentials.refresh_token).not_to be_nil
+      expect(credentials.expires_at).not_to be_nil
+      expect(credentials.token_type).to eq("bearer")
     end
   end
 
@@ -92,7 +92,7 @@ describe "OAuth" do
       ).credentials.access_token
 
       result = @gateway.oauth.revoke_access_token(access_token)
-      result.should be_success
+      expect(result).to be_success
 
       gateway = Braintree::Gateway.new(
         :access_token => access_token,
@@ -150,49 +150,49 @@ describe "OAuth" do
       )
 
       uri = URI.parse(url)
-      uri.host.should == Braintree::Configuration.instantiate.server
-      uri.path.should == "/oauth/connect"
+      expect(uri.host).to eq(Braintree::Configuration.instantiate.server)
+      expect(uri.path).to eq("/oauth/connect")
 
       query = CGI.parse(uri.query)
-      query["merchant_id"].should == ["integration_merchant_id"]
-      query["client_id"].should == ["client_id$#{Braintree::Configuration.environment}$integration_client_id"]
-      query["redirect_uri"].should == ["http://bar.example.com"]
-      query["scope"].should == ["read_write"]
-      query["state"].should == ["baz_state"]
-      query["landing_page"].should == ["signup"]
-      query["login_only"].should == ["false"]
+      expect(query["merchant_id"]).to eq(["integration_merchant_id"])
+      expect(query["client_id"]).to eq(["client_id$#{Braintree::Configuration.environment}$integration_client_id"])
+      expect(query["redirect_uri"]).to eq(["http://bar.example.com"])
+      expect(query["scope"]).to eq(["read_write"])
+      expect(query["state"]).to eq(["baz_state"])
+      expect(query["landing_page"]).to eq(["signup"])
+      expect(query["login_only"]).to eq(["false"])
 
-      query["user[country]"].should == ["USA"]
-      query["business[name]"].should == ["14 Ladders"]
+      expect(query["user[country]"]).to eq(["USA"])
+      expect(query["business[name]"]).to eq(["14 Ladders"])
 
-      query["user[email]"].should == ["foo@example.com"]
-      query["user[first_name]"].should == ["Bob"]
-      query["user[last_name]"].should == ["Jones"]
-      query["user[phone]"].should == ["555-555-5555"]
-      query["user[dob_year]"].should == ["1970"]
-      query["user[dob_month]"].should == ["01"]
-      query["user[dob_day]"].should == ["01"]
-      query["user[street_address]"].should == ["222 W Merchandise Mart"]
-      query["user[locality]"].should == ["Chicago"]
-      query["user[region]"].should == ["IL"]
-      query["user[postal_code]"].should == ["60606"]
+      expect(query["user[email]"]).to eq(["foo@example.com"])
+      expect(query["user[first_name]"]).to eq(["Bob"])
+      expect(query["user[last_name]"]).to eq(["Jones"])
+      expect(query["user[phone]"]).to eq(["555-555-5555"])
+      expect(query["user[dob_year]"]).to eq(["1970"])
+      expect(query["user[dob_month]"]).to eq(["01"])
+      expect(query["user[dob_day]"]).to eq(["01"])
+      expect(query["user[street_address]"]).to eq(["222 W Merchandise Mart"])
+      expect(query["user[locality]"]).to eq(["Chicago"])
+      expect(query["user[region]"]).to eq(["IL"])
+      expect(query["user[postal_code]"]).to eq(["60606"])
 
-      query["business[name]"].should == ["14 Ladders"]
-      query["business[registered_as]"].should == ["14.0 Ladders"]
-      query["business[industry]"].should == ["Ladders"]
-      query["business[description]"].should == ["We sell the best ladders"]
-      query["business[street_address]"].should == ["111 N Canal"]
-      query["business[locality]"].should == ["Chicago"]
-      query["business[region]"].should == ["IL"]
-      query["business[postal_code]"].should == ["60606"]
-      query["business[country]"].should == ["USA"]
-      query["business[annual_volume_amount]"].should == ["1000000"]
-      query["business[average_transaction_amount]"].should == ["100"]
-      query["business[maximum_transaction_amount]"].should == ["10000"]
-      query["business[ship_physical_goods]"].should == ["true"]
-      query["business[fulfillment_completed_in]"].should == ["7"]
-      query["business[currency]"].should == ["USD"]
-      query["business[website]"].should == ["http://example.com"]
+      expect(query["business[name]"]).to eq(["14 Ladders"])
+      expect(query["business[registered_as]"]).to eq(["14.0 Ladders"])
+      expect(query["business[industry]"]).to eq(["Ladders"])
+      expect(query["business[description]"]).to eq(["We sell the best ladders"])
+      expect(query["business[street_address]"]).to eq(["111 N Canal"])
+      expect(query["business[locality]"]).to eq(["Chicago"])
+      expect(query["business[region]"]).to eq(["IL"])
+      expect(query["business[postal_code]"]).to eq(["60606"])
+      expect(query["business[country]"]).to eq(["USA"])
+      expect(query["business[annual_volume_amount]"]).to eq(["1000000"])
+      expect(query["business[average_transaction_amount]"]).to eq(["100"])
+      expect(query["business[maximum_transaction_amount]"]).to eq(["10000"])
+      expect(query["business[ship_physical_goods]"]).to eq(["true"])
+      expect(query["business[fulfillment_completed_in]"]).to eq(["7"])
+      expect(query["business[currency]"]).to eq(["USD"])
+      expect(query["business[website]"]).to eq(["http://example.com"])
     end
 
     it "builds the query string with multiple payment_methods" do
@@ -205,13 +205,13 @@ describe "OAuth" do
       )
 
       uri = URI.parse(url)
-      uri.host.should == Braintree::Configuration.instantiate.server
-      uri.path.should == "/oauth/connect"
+      expect(uri.host).to eq(Braintree::Configuration.instantiate.server)
+      expect(uri.path).to eq("/oauth/connect")
 
       query = CGI.parse(CGI.unescape(uri.query))
-      query["payment_methods[]"].length.should == 2
-      query["payment_methods[]"].should include("paypal")
-      query["payment_methods[]"].should include("credit_card")
+      expect(query["payment_methods[]"].length).to eq(2)
+      expect(query["payment_methods[]"]).to include("paypal")
+      expect(query["payment_methods[]"]).to include("credit_card")
     end
 
     it "doesn't mutate the options" do
@@ -219,7 +219,7 @@ describe "OAuth" do
 
       @gateway.oauth.connect_url(params)
 
-      params.should == {:payment_methods => ["credit_card"]}
+      expect(params).to eq({:payment_methods => ["credit_card"]})
     end
   end
 end

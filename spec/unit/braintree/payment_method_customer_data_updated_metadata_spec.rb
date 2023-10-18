@@ -34,12 +34,12 @@ describe Braintree::PaymentMethodCustomerDataUpdatedMetadata do
 
       payment_method_customer_data_updated = Braintree::PaymentMethodCustomerDataUpdatedMetadata._new(:gateway, params)
 
-      payment_method_customer_data_updated.token.should eq("a-token")
-      payment_method_customer_data_updated.datetime_updated.should eq("2022-01-01T21:28:37Z")
-      payment_method_customer_data_updated.payment_method.should be_a(Braintree::VenmoAccount)
-      payment_method_customer_data_updated.enriched_customer_data.profile_data.first_name.should eq("a-first-name")
-      payment_method_customer_data_updated.enriched_customer_data.profile_data.last_name.should eq("a-last-name")
-      payment_method_customer_data_updated.enriched_customer_data.fields_updated.should eq(["username"])
+      expect(payment_method_customer_data_updated.token).to eq("a-token")
+      expect(payment_method_customer_data_updated.datetime_updated).to eq("2022-01-01T21:28:37Z")
+      expect(payment_method_customer_data_updated.payment_method).to be_a(Braintree::VenmoAccount)
+      expect(payment_method_customer_data_updated.enriched_customer_data.profile_data.first_name).to eq("a-first-name")
+      expect(payment_method_customer_data_updated.enriched_customer_data.profile_data.last_name).to eq("a-last-name")
+      expect(payment_method_customer_data_updated.enriched_customer_data.fields_updated).to eq(["username"])
     end
   end
 end

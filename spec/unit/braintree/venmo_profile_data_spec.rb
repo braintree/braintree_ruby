@@ -22,11 +22,11 @@ describe Braintree::VenmoProfileData do
 
       payment_method_customer_data_updated = Braintree::VenmoProfileData._new(params)
 
-      payment_method_customer_data_updated.username.should eq("a-username")
-      payment_method_customer_data_updated.first_name.should eq("a-first-name")
-      payment_method_customer_data_updated.last_name.should eq("a-last-name")
-      payment_method_customer_data_updated.phone_number.should eq("12312312343")
-      payment_method_customer_data_updated.email.should eq("a-email")
+      expect(payment_method_customer_data_updated.username).to eq("a-username")
+      expect(payment_method_customer_data_updated.first_name).to eq("a-first-name")
+      expect(payment_method_customer_data_updated.last_name).to eq("a-last-name")
+      expect(payment_method_customer_data_updated.phone_number).to eq("12312312343")
+      expect(payment_method_customer_data_updated.email).to eq("a-email")
     end
   end
 end

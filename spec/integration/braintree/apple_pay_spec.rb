@@ -23,13 +23,13 @@ describe Braintree::ApplePayGateway do
   describe "register_domain" do
     it "registers an apple pay domain" do
       result = @gateway.apple_pay.register_domain("www.example.com")
-      result.should be_success
+      expect(result).to be_success
     end
 
     it "gets a validation error when attempting to register no domains" do
       result = @gateway.apple_pay.register_domain("")
-      result.should_not be_success
-      result.errors.for(:apple_pay)[0].message.should eq("Domain name is required.")
+      expect(result).not_to be_success
+      expect(result.errors.for(:apple_pay)[0].message).to eq("Domain name is required.")
     end
   end
 
@@ -37,27 +37,27 @@ describe Braintree::ApplePayGateway do
     it "unregisters an apple pay domain" do
       domain = "example.org"
       result = @gateway.apple_pay.unregister_domain(domain)
-      result.should be_success
+      expect(result).to be_success
     end
 
     it "unregisters an apple pay domain with scheme in url" do
       domain = "http://example.org"
       result = @gateway.apple_pay.unregister_domain(domain)
-      result.should be_success
+      expect(result).to be_success
     end
 
     it "escapes the unregistered domain query parameter" do
       domain = "ex&mple.org"
       result = @gateway.apple_pay.unregister_domain(domain)
-      result.should be_success
+      expect(result).to be_success
     end
   end
 
   describe "registered_domains" do
     it "returns stubbed registered domains" do
       result = @gateway.apple_pay.registered_domains
-      result.should be_success
-      result.apple_pay_options.domains.should == ["www.example.com"]
+      expect(result).to be_success
+      expect(result.apple_pay_options.domains).to eq(["www.example.com"])
     end
   end
 end

@@ -12,7 +12,7 @@ describe Braintree::UsBankAccountVerification do
     end
 
     it "has a status" do
-      verification.status.should == Braintree::UsBankAccountVerification::Status::Verified
+      expect(verification.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
     end
   end
 
@@ -67,27 +67,27 @@ describe Braintree::UsBankAccountVerification do
       first = Braintree::UsBankAccountVerification._new(:id => "123")
       second = Braintree::UsBankAccountVerification._new(:id => "123")
 
-      first.should == second
-      second.should == first
+      expect(first).to eq(second)
+      expect(second).to eq(first)
     end
 
     it "returns false for verifications with different ids" do
       first = Braintree::UsBankAccountVerification._new(:id => "123")
       second = Braintree::UsBankAccountVerification._new(:id => "124")
 
-      first.should_not == second
-      second.should_not == first
+      expect(first).not_to eq(second)
+      expect(second).not_to eq(first)
     end
 
     it "returns false when comparing to nil" do
-      Braintree::UsBankAccountVerification._new({}).should_not == nil
+      expect(Braintree::UsBankAccountVerification._new({})).not_to eq(nil)
     end
 
     it "returns false when comparing to non-verifications" do
       same_id_different_object = Object.new
       def same_id_different_object.id; "123"; end
       verification = Braintree::UsBankAccountVerification._new(:id => "123")
-      verification.should_not == same_id_different_object
+      expect(verification).not_to eq(same_id_different_object)
     end
   end
 end
