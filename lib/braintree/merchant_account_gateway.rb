@@ -1,5 +1,5 @@
 module Braintree
-  class MerchantAccountGateway # :nodoc:
+  class MerchantAccountGateway
     include BaseModule
 
     def initialize(gateway)
@@ -51,7 +51,7 @@ module Braintree
       _create_for_currency(params)
     end
 
-    def _do_create(path, params=nil) # :nodoc:
+    def _do_create(path, params=nil)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
@@ -60,7 +60,7 @@ module Braintree
       end
     end
 
-    def _do_update(path, params=nil) # :nodoc:
+    def _do_update(path, params=nil)
       response = @config.http.put("#{@config.base_merchant_path}#{path}", params)
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
@@ -83,7 +83,7 @@ module Braintree
       end
     end
 
-    # this is part of Marketplace and shouldn't be removed unless we're removing all Marketplace code
+    # NEXT_MAJOR_VERSION this is part of Marketplace and shouldn't be removed unless we're removing all Marketplace code
     def self._detect_signature(attributes)
       if attributes.has_key?(:applicant_details)
         warn "[DEPRECATED] Passing :applicant_details to create is deprecated. Please use :individual, :business, and :funding."
@@ -93,8 +93,8 @@ module Braintree
       end
     end
 
-    # this is part of Marketplace and shouldn't be removed unless we're removing all Marketplace code
-    def self._deprecated_create_signature # :nodoc:
+    # NEXT_MAJOR_VERSION this is part of Marketplace and shouldn't be removed unless we're removing all Marketplace code
+    def self._deprecated_create_signature
       [
         {:applicant_details => [
           :first_name, :last_name, :email, :date_of_birth, :ssn, :routing_number,
@@ -105,7 +105,7 @@ module Braintree
       ]
     end
 
-    def self._signature # :nodoc:
+    def self._signature
       [
         {:individual => [
           :first_name, :last_name, :email, :date_of_birth, :ssn, :phone,
@@ -119,11 +119,11 @@ module Braintree
       ]
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       _signature + [:tos_accepted, :master_merchant_account_id, :id]
     end
 
-    def self._update_signature # :nodoc:
+    def self._update_signature
       _signature
     end
   end

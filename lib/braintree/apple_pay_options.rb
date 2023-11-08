@@ -1,10 +1,10 @@
 module Braintree
   class ApplePayOptions
-    include BaseModule # :nodoc:
+    include BaseModule
 
     attr_reader :domains
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       set_instance_variables_from_hash(attributes)
     end
 
@@ -12,7 +12,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
   end

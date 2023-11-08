@@ -1,6 +1,6 @@
 module Braintree
   class VenmoAccount
-    include BaseModule # :nodoc:
+    include BaseModule
 
     attr_reader :created_at
     attr_reader :customer_id
@@ -13,7 +13,7 @@ module Braintree
     attr_reader :username
     attr_reader :venmo_user_id
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
@@ -27,7 +27,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
   end

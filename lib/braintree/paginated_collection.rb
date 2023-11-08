@@ -1,8 +1,8 @@
 module Braintree
-  class PaginatedCollection # :nodoc:
+  class PaginatedCollection
     include Enumerable
 
-    def initialize(&block) # :nodoc:
+    def initialize(&block)
       @next_page_block = block
     end
 

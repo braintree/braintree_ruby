@@ -1,5 +1,5 @@
 module Braintree
-  class AuthorizationAdjustment # :nodoc:
+  class AuthorizationAdjustment
     include BaseModule
 
     attr_reader :amount
@@ -11,12 +11,12 @@ module Braintree
 
     class << self
       protected :new
-      def _new(*args) # :nodoc:
+      def _new(*args)
         self.new(*args)
       end
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       set_instance_variables_from_hash(attributes)
     end
   end

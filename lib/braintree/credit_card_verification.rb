@@ -48,7 +48,7 @@ module Braintree
     attr_reader :three_d_secure_info
     attr_reader :status
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       set_instance_variables_from_hash(attributes)
 
       @amount = Util.to_big_decimal(amount)
@@ -57,7 +57,7 @@ module Braintree
       @three_d_secure_info = ThreeDSecureInfo.new(attributes[:three_d_secure_info]) if attributes[:three_d_secure_info]
     end
 
-    def inspect # :nodoc:
+    def inspect
       attr_order = [
         :status,
         :processor_response_code,
@@ -91,7 +91,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
 

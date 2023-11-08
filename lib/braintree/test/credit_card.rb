@@ -1,8 +1,5 @@
 module Braintree
-  module Test # :nodoc:
-    # The constants contained in the Braintree::Test::CreditCardNumbers module provide
-    # credit card numbers that should be used when working in the sandbox environment. The sandbox
-    # will not accept any credit card numbers other than the ones listed below.
+  module Test
     module CreditCardNumbers
       module CardTypeIndicators
         Prepaid           = "4111111111111210"
@@ -18,16 +15,16 @@ module Braintree
       end
 
       AmExes = %w[378282246310005 371449635398431 378734493671000]
-      CarteBlanches = %w[30569309025904] # :nodoc:
-      DinersClubs = %w[38520000023237] # :nodoc:
+      CarteBlanches = %w[30569309025904]
+      DinersClubs = %w[38520000023237]
 
       Discover = "6011111111111117"
       Discovers = %w[6011111111111117 6011000990139424]
-      JCBs = %w[3530111333300000 3566002020360505] # :nodoc:
+      JCBs = %w[3530111333300000 3566002020360505]
 
-      Maestro = "6304000000000000" # :nodoc:
+      Maestro = "6304000000000000"
       MasterCard = "5555555555554444"
-      MasterCardInternational = "5105105105105100" # :nodoc:
+      MasterCardInternational = "5105105105105100"
 
       MasterCards = %w[5105105105105100 5555555555554444]
 
@@ -37,7 +34,7 @@ module Braintree
 
       Visa = "4012888888881881"
       VisaCountryOfIssuanceIE = "4023490000000008"
-      VisaInternational = "4009348888881881" # :nodoc:
+      VisaInternational = "4009348888881881"
       VisaPrepaid = "4500600000000061"
 
       Fraud = "4000111111111511"

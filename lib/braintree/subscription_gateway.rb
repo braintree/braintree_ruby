@@ -1,5 +1,5 @@
 module Braintree
-  class SubscriptionGateway # :nodoc:
+  class SubscriptionGateway
     include BaseModule
 
     def initialize(gateway)
@@ -70,7 +70,7 @@ module Braintree
       return_object_or_raise(:subscription) { update(*args) }
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       [
         :billing_day_of_month,
         :first_billing_date,
@@ -94,7 +94,7 @@ module Braintree
       ] + _add_on_discount_signature
     end
 
-    def self._update_signature # :nodoc:
+    def self._update_signature
       [
         :id,
         :merchant_account_id,
@@ -114,7 +114,7 @@ module Braintree
       ] + _add_on_discount_signature
     end
 
-    def self._add_on_discount_signature # :nodoc:
+    def self._add_on_discount_signature
       [
         {
           :add_ons => [
@@ -133,7 +133,7 @@ module Braintree
       ]
     end
 
-    def _do_create(path, params) # :nodoc:
+    def _do_create(path, params)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:subscription]
         SuccessfulResult.new(:subscription => Subscription._new(@gateway, response[:subscription]))
@@ -144,7 +144,7 @@ module Braintree
       end
     end
 
-    def _fetch_subscriptions(search, ids) # :nodoc:
+    def _fetch_subscriptions(search, ids)
       search.ids.in ids
       response = @config.http.post("#{@config.base_merchant_path}/subscriptions/advanced_search", {:search => search.to_hash})
       attributes = response[:subscriptions]

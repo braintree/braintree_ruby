@@ -1,6 +1,6 @@
 module Braintree
   class Dispute
-    class Transaction # :nodoc:
+    class Transaction
       include BaseModule
 
       attr_reader :amount

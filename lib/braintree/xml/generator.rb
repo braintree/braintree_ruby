@@ -2,7 +2,7 @@
 # under the MIT license, copyright (c) 2005-2009 David Heinemeier Hansson
 module Braintree
   module Xml
-    module Generator # :nodoc:
+    module Generator
       XML_TYPE_NAMES = {
         "Fixnum"     => "integer",
         "Bignum"     => "integer",

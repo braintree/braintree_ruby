@@ -1,5 +1,5 @@
 module Braintree
-  class CustomerGateway # :nodoc:
+  class CustomerGateway
     include BaseModule
 
     def initialize(gateway)
@@ -60,7 +60,7 @@ module Braintree
       return_object_or_raise(:customer) { update(*args) }
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       credit_card_signature = CreditCardGateway._create_signature - [:customer_id]
       paypal_account_signature = PayPalAccountGateway._create_nested_signature
       paypal_options_shipping_signature = AddressGateway._shared_signature
@@ -86,7 +86,7 @@ module Braintree
       ]
     end
 
-    def _do_create(path, params=nil) # :nodoc:
+    def _do_create(path, params=nil)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:customer]
         SuccessfulResult.new(:customer => Customer._new(@gateway, response[:customer]))
@@ -97,7 +97,7 @@ module Braintree
       end
     end
 
-    def _do_update(http_verb, path, params) # :nodoc:
+    def _do_update(http_verb, path, params)
       response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:customer]
         SuccessfulResult.new(:customer => Customer._new(@gateway, response[:customer]))
@@ -108,14 +108,14 @@ module Braintree
       end
     end
 
-    def _fetch_customers(search, ids) # :nodoc:
+    def _fetch_customers(search, ids)
       search.ids.in ids
       response = @config.http.post("#{@config.base_merchant_path}/customers/advanced_search", {:search => search.to_hash})
       attributes = response[:customers]
       Util.extract_attribute_as_array(attributes, :customer).map { |attrs| Customer._new(@gateway, attrs) }
     end
 
-    def _fetch_transactions(customer_id, ids) # :nodoc:
+    def _fetch_transactions(customer_id, ids)
       response = @config.http.post("#{@config.base_merchant_path}/customers/#{customer_id}/transactions", :search => {:ids => ids})
       attributes = response[:credit_card_transactions]
       Util.extract_attribute_as_array(attributes, :transaction).map do |transaction_attributes|
@@ -123,7 +123,7 @@ module Braintree
       end
     end
 
-    def self._update_signature # :nodoc:
+    def self._update_signature
       credit_card_signature = CreditCardGateway._update_signature - [:customer_id]
       credit_card_options = credit_card_signature.find { |item| item.respond_to?(:keys) && item.keys == [:options] }
       credit_card_options[:options] << :update_existing_token

@@ -1,5 +1,5 @@
 module Braintree
-  class DisputeGateway # :nodoc:
+  class DisputeGateway
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config

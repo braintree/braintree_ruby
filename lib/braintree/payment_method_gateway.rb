@@ -1,5 +1,5 @@
 module Braintree
-  class PaymentMethodGateway # :nodoc:
+  class PaymentMethodGateway
     include BaseModule
 
     def initialize(gateway)
@@ -21,7 +21,7 @@ module Braintree
       return_object_or_raise(:payment_method) { create(*args) }
     end
 
-    def _do_create(path, params=nil) # :nodoc:
+    def _do_create(path, params=nil)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
@@ -76,7 +76,7 @@ module Braintree
       return_object_or_raise(:payment_method) { update(*args) }
     end
 
-    def _do_update(http_verb, path, params) # :nodoc:
+    def _do_update(http_verb, path, params)
       response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:api_error_response]
         ErrorResult.new(@gateway, response[:api_error_response])
@@ -142,19 +142,19 @@ module Braintree
       end
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       _signature(:create)
     end
 
-    def self._update_signature # :nodoc:
+    def self._update_signature
       _signature(:update)
     end
 
-    def self._delete_signature # :nodoc:
+    def self._delete_signature
       [:revoke_all_grants]
     end
 
-    def self._signature(type) # :nodoc:
+    def self._signature(type)
       billing_address_params = AddressGateway._shared_signature
       paypal_options_shipping_signature = AddressGateway._shared_signature
       # NEXT_MAJOR_VERSION Remove venmo_sdk_session
@@ -165,6 +165,7 @@ module Braintree
         :us_bank_account_verification_method,
         :venmo_sdk_session, # Deprecated
         :verification_account_type,
+        :verification_add_ons,
         :verification_amount,
         :verification_currency_iso_code,
         :verification_merchant_account_id,

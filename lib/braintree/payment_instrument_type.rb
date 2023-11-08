@@ -4,6 +4,8 @@ module Braintree
     CreditCard = "credit_card"
     GooglePayCard = "android_pay_card"
     LocalPayment = "local_payment"
+    MetaCheckoutCard = "meta_checkout_card"
+    MetaCheckoutToken = "meta_checkout_token"
     PayPalAccount = "paypal_account"
     PayPalHere = "paypal_here"
     SamsungPayCard = "samsung_pay_card"

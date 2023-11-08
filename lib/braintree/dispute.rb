@@ -1,5 +1,5 @@
 module Braintree
-  class Dispute # :nodoc:
+  class Dispute
     include BaseModule
     include Braintree::Util::IdEquality
 
@@ -97,7 +97,7 @@ module Braintree
 
     class << self
       protected :new
-      def _new(*args) # :nodoc:
+      def _new(*args)
         self.new(*args)
       end
     end
@@ -130,7 +130,7 @@ module Braintree
       Configuration.gateway.dispute.search(&block)
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       set_instance_variables_from_hash(attributes)
       @date_opened = Date.parse(date_opened) unless date_opened.nil?
       @date_won = Date.parse(date_won) unless date_won.nil?

@@ -1,8 +1,9 @@
 module Braintree
   class Configuration
-    API_VERSION = "6" # :nodoc:
-    DEFAULT_ENDPOINT = "api" # :nodoc:
-    GRAPHQL_API_VERSION = "2018-09-10" # :nodoc:
+    API_VERSION = "6"
+    DEFAULT_ENDPOINT = "api"
+    # NEXT_MAJOR_VERSION update to the latest version of GraphQL API
+    GRAPHQL_API_VERSION = "2018-09-10"
 
     READABLE_ATTRIBUTES = [
       :merchant_id,
@@ -47,18 +48,17 @@ module Braintree
     attr_reader(*NON_REQUIRED_READABLE_ATTRIBUTES)
     attr_writer(*WRITABLE_ATTRIBUTES)
 
-    def self.expectant_reader(*attributes) # :nodoc:
+    def self.expectant_reader(*attributes)
       attributes.each do |attribute|
         (class << self; self; end).send(:define_method, attribute) do
           attribute_value = instance_variable_get("@#{attribute}")
-          raise ConfigurationError.new("Braintree::Configuration.#{attribute.to_s} needs to be set") if attribute_value.nil? || attribute_value.to_s.empty?
+          raise ConfigurationError.new("Braintree::Configuration.#{attribute} needs to be set") if attribute_value.nil? || attribute_value.to_s.empty?
           attribute_value
         end
       end
     end
     expectant_reader(*READABLE_ATTRIBUTES)
 
-    # Sets the Braintree environment to use. Valid values are <tt>:sandbox</tt> and <tt>:production</tt>
     def self.environment=(env)
       env = env.to_sym
       unless [:development, :qa, :sandbox, :production].include?(env)
@@ -67,11 +67,11 @@ module Braintree
       @environment = env
     end
 
-    def self.gateway # :nodoc:
+    def self.gateway
       Braintree::Gateway.new(instantiate)
     end
 
-    def self.instantiate # :nodoc:
+    def self.instantiate
       config = new(
         :custom_user_agent => @custom_user_agent,
         :endpoint => @endpoint,
@@ -158,15 +158,15 @@ module Braintree
       end
     end
 
-    def api_version # :nodoc:
+    def api_version
       API_VERSION
     end
 
-    def graphql_api_version # :nodoc:
+    def graphql_api_version
       GRAPHQL_API_VERSION
     end
 
-    def base_merchant_path # :nodoc:
+    def base_merchant_path
       "/merchants/#{merchant_id}"
     end
 
@@ -178,11 +178,11 @@ module Braintree
       "#{protocol}://#{graphql_server}:#{graphql_port}/graphql"
     end
 
-    def base_merchant_url # :nodoc:
+    def base_merchant_url
       "#{base_url}#{base_merchant_path}"
     end
 
-    def ca_file # :nodoc:
+    def ca_file
       File.expand_path(File.join(File.dirname(__FILE__), "..", "ssl", "api_braintreegateway_com.ca.crt"))
     end
 
@@ -190,7 +190,7 @@ module Braintree
       @endpoint || DEFAULT_ENDPOINT
     end
 
-    def http # :nodoc:
+    def http
       Http.new(self)
     end
 
@@ -202,7 +202,7 @@ module Braintree
       @logger ||= self.class._default_logger
     end
 
-    def port # :nodoc:
+    def port
       case @environment
       when :development, :integration
         ENV["GATEWAY_PORT"] || 3000
@@ -211,7 +211,7 @@ module Braintree
       end
     end
 
-    def graphql_port # :nodoc:
+    def graphql_port
       case @environment
       when :development, :integration
         ENV["GRAPHQL_PORT"] || 8080
@@ -220,7 +220,7 @@ module Braintree
       end
     end
 
-    def protocol # :nodoc:
+    def protocol
       ssl? ? "https" : "http"
     end
 
@@ -232,7 +232,7 @@ module Braintree
       @http_read_timeout
     end
 
-    def server # :nodoc:
+    def server
       case @environment
       when :development, :integration
         ENV["GATEWAY_HOST"] || "localhost"
@@ -245,7 +245,7 @@ module Braintree
       end
     end
 
-    def graphql_server # :nodoc:
+    def graphql_server
       case @environment
       when :development, :integration
         ENV["GRAPHQL_HOST"] || "graphql.bt.local"
@@ -271,7 +271,7 @@ module Braintree
       end
     end
 
-    def ssl? # :nodoc:
+    def ssl?
       case @environment
       when :development, :integration
         false
@@ -280,12 +280,12 @@ module Braintree
       end
     end
 
-    def user_agent # :nodoc:
+    def user_agent
       base_user_agent = "Braintree Ruby Gem #{Braintree::Version::String}"
       @custom_user_agent ? "#{base_user_agent} (#{@custom_user_agent})" : base_user_agent
     end
 
-    def self._default_logger # :nodoc:
+    def self._default_logger
       logger = Logger.new(STDOUT)
       logger.level = Logger::INFO
       logger

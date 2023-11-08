@@ -10,7 +10,7 @@ module Braintree
     attr_reader :transaction
     attr_reader :verification
 
-    def initialize(gateway, data) # :nodoc:
+    def initialize(gateway, data)
       @gateway = gateway
       @params = data[:params]
       @credit_card_verification = CreditCardVerification._new(data[:verification]) if data[:verification]
@@ -22,7 +22,7 @@ module Braintree
       @errors = Errors.new(data[:errors])
     end
 
-    def inspect # :nodoc:
+    def inspect
       if @credit_card_verification
         verification_inspect = " credit_card_verification: #{@credit_card_verification.inspect}"
       end
@@ -32,7 +32,6 @@ module Braintree
       "#<#{self.class} params:{...} errors:<#{@errors._inner_inspect}>#{verification_inspect}#{transaction_inspect}>"
     end
 
-    # Always returns false.
     def success?
       false
     end

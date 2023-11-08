@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class AddressDetails # :nodoc:
+    class AddressDetails
       include BaseModule
 
       module ShippingMethod

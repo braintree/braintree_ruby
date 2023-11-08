@@ -2,7 +2,7 @@ module Braintree
   class ValidationErrorCollection
     include Enumerable
 
-    def initialize(data) # :nodoc:
+    def initialize(data)
       return if !data.is_a? Hash
       @errors = (data[:errors] || {}).map { |hash| Braintree::ValidationError.new(hash) }
       @nested = {}
@@ -42,7 +42,7 @@ module Braintree
       self.for("index_#{index}".to_sym)
     end
 
-    def inspect # :nodoc:
+    def inspect
       "#<#{self.class} errors#{_inner_inspect}>"
     end
 
@@ -61,7 +61,7 @@ module Braintree
       @errors.size
     end
 
-    def _inner_inspect(scope = []) # :nodoc:
+    def _inner_inspect(scope = [])
       all = []
       scope_string = scope.join("/")
       if @errors.any?

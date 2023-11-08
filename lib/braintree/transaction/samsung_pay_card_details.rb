@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class SamsungPayCardDetails # :nodoc:
+    class SamsungPayCardDetails
       include BaseModule
 
       attr_reader :bin

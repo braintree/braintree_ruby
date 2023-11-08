@@ -13,7 +13,7 @@ module Braintree
     attr_reader :token
     attr_reader :updated_at
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
@@ -51,7 +51,6 @@ module Braintree
       return_object_or_raise(:transaction) { sale(token, transaction_attributes) }
     end
 
-    # Returns true if this paypal account is the customer's default payment method.
     def default?
       @default
     end

@@ -1,5 +1,5 @@
 module Braintree
-  class ExchangeRateQuoteGateway # :nodoc
+  class ExchangeRateQuoteGateway
     def initialize(gateway)
       @gateway = gateway
     end

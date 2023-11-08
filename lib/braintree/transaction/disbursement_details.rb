@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class DisbursementDetails # :nodoc:
+    class DisbursementDetails
       include BaseModule
 
       attr_reader :disbursement_date

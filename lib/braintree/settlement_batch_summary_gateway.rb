@@ -1,5 +1,5 @@
 module Braintree
-  class SettlementBatchSummaryGateway # :nodoc
+  class SettlementBatchSummaryGateway
     include BaseModule
 
     def initialize(gateway)

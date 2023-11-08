@@ -1,5 +1,5 @@
 module Braintree
-  class DiscountGateway # :nodoc
+  class DiscountGateway
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config

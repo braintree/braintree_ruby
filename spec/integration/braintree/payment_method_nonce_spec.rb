@@ -91,6 +91,26 @@ describe Braintree::PaymentMethodNonce do
       expect(nonce.details.payer_info).to be_nil
     end
 
+    it "return meta_checkout_card_details nonce if exist" do
+      result = Braintree::PaymentMethodNonce.find(Braintree::Test::Nonce::MetaCheckoutCard)
+      nonce = result.payment_method_nonce
+      nonce.details.bin.should == "401288"
+      nonce.details.last_two.should == "81"
+      nonce.details.card_type.should == "Visa"
+      nonce.details.expiration_year.should == "2024"
+      nonce.details.expiration_month.should == "12"
+    end
+
+    it "return meta_checkout_token_details nonce if exist" do
+      result = Braintree::PaymentMethodNonce.find(Braintree::Test::Nonce::MetaCheckoutToken)
+      nonce = result.payment_method_nonce
+      nonce.details.bin.should == "401288"
+      nonce.details.last_two.should == "81"
+      nonce.details.card_type.should == "Visa"
+      nonce.details.expiration_year.should == "2024"
+      nonce.details.expiration_month.should == "12"
+    end
+
     it "return paypal details if details exist" do
       result = Braintree::PaymentMethodNonce.find("fake-paypal-one-time-nonce")
       nonce = result.payment_method_nonce

@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class UsBankAccountDetails # :nodoc:
+    class UsBankAccountDetails
       include BaseModule
 
       attr_reader :account_holder_name

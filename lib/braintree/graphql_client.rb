@@ -1,5 +1,5 @@
 module Braintree
-  class GraphQLClient < Http # :nodoc:
+  class GraphQLClient < Http
 
     def initialize(config)
       @config = config

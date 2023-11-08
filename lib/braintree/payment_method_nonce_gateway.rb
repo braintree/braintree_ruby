@@ -1,5 +1,5 @@
 module Braintree
-  class PaymentMethodNonceGateway # :nodoc:
+  class PaymentMethodNonceGateway
     include BaseModule
 
     def initialize(gateway)

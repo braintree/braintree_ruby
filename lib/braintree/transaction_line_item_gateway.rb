@@ -1,5 +1,5 @@
 module Braintree
-  class TransactionLineItemGateway # :nodoc:
+  class TransactionLineItemGateway
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config

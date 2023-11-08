@@ -1,5 +1,5 @@
 module Braintree
-  class AddOnGateway # :nodoc
+  class AddOnGateway
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config

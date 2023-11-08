@@ -1,5 +1,5 @@
 module Braintree
-  module BaseModule # :nodoc: all
+  module BaseModule
     module Methods
       def return_object_or_raise(object_to_return)
         result = yield

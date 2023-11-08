@@ -78,6 +78,78 @@ describe Braintree::PaymentMethod do
             expect(Braintree::PaymentMethod.find(us_bank_account.token)).to be_a(Braintree::UsBankAccount)
           end
         end
+
+        it "succeeds and verifies with verification_add_ons for NetworkCheck with fake nonce" do
+          customer = Braintree::Customer.create.customer
+          result = Braintree::PaymentMethod.create(
+            :payment_method_nonce => Braintree::Test::Nonce::UsBankAccount,
+            :customer_id => customer.id,
+            :options => {
+              :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck,
+              :verification_add_ons => Braintree::UsBankAccountVerification::VerificationAddOns::CustomerVerification,
+              :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            },
+          )
+
+          expect(result).to be_success
+          us_bank_account = result.payment_method
+          expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+          expect(us_bank_account.routing_number).to eq("123456789")
+          expect(us_bank_account.last_4).to eq("0000")
+          expect(us_bank_account.account_type).to eq("checking")
+          expect(us_bank_account.account_holder_name).to eq("Dan Schulman")
+          expect(us_bank_account.bank_name).to match(/Wells Fargo/)
+          expect(us_bank_account.default).to eq(true)
+          expect(us_bank_account.ach_mandate.text).to eq("example mandate text")
+          expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
+
+          expect(us_bank_account.verifications.count).to eq(1)
+          expect(us_bank_account.verifications.first.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
+          expect(us_bank_account.verifications.first.verification_method).to eq(Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck)
+          expect(us_bank_account.verifications.first.id).not_to be_empty
+          expect(us_bank_account.verifications.first.verification_determined_at).to be_a Time
+          expect(us_bank_account.verifications.first.processor_response_code).to eq("1000")
+          expect(us_bank_account.verified).to eq(true)
+
+          expect(Braintree::PaymentMethod.find(us_bank_account.token)).to be_a(Braintree::UsBankAccount)
+        end
+
+        it "returns additional processor response for failed NetworkCheck" do
+          customer = Braintree::Customer.create.customer
+          invalid_nonce = generate_non_plaid_us_bank_account_nonce(account_number = "1000000005")
+          result = Braintree::PaymentMethod.create(
+            :payment_method_nonce => invalid_nonce,
+            :customer_id => customer.id,
+            :options => {
+              :us_bank_account_verification_method => Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck,
+              :verification_merchant_account_id => SpecHelper::AnotherUsBankMerchantAccountId,
+            },
+          )
+
+          expect(result).to be_success
+          us_bank_account = result.payment_method
+          expect(us_bank_account).to be_a(Braintree::UsBankAccount)
+          expect(us_bank_account.routing_number).to eq("021000021")
+          expect(us_bank_account.last_4).to eq("0005")
+          expect(us_bank_account.account_type).to eq("checking")
+          expect(us_bank_account.account_holder_name).to eq("John Doe")
+          expect(us_bank_account.bank_name).to match(/CHASE/)
+          expect(us_bank_account.default).to eq(true)
+          expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
+          expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
+
+          expect(us_bank_account.verifications.count).to eq(1)
+          expect(us_bank_account.verifications.first.status).to eq(Braintree::UsBankAccountVerification::Status::ProcessorDeclined)
+          expect(us_bank_account.verifications.first.verification_method).to eq(Braintree::UsBankAccountVerification::VerificationMethod::NetworkCheck)
+          expect(us_bank_account.verifications.first.id).not_to be_empty
+          expect(us_bank_account.verifications.first.verification_determined_at).to be_a Time
+          expect(us_bank_account.verifications.first.processor_response_code).to eq("2061")
+          expect(us_bank_account.verifications.first.additional_processor_response).to eq("Invalid routing number")
+
+          expect(us_bank_account.verified).to eq(false)
+
+          expect(Braintree::PaymentMethod.find(us_bank_account.token)).to be_a(Braintree::UsBankAccount)
+        end
       end
 
       it "fails with invalid nonce" do

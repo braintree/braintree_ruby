@@ -20,7 +20,7 @@ module Braintree
 
     alias_method :success?, :success
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @amount = Util.to_big_decimal(amount)
@@ -34,10 +34,10 @@ module Braintree
       end
     end
 
-    def inspect # :nodoc:
+    def inspect
       nice_attributes = self.class._inspect_attributes.map { |attr| "#{attr}: #{send(attr).inspect}" }
       nice_attributes << "amount: #{self.amount.to_s("F").inspect}"
-      nice_attributes << "disbursement_date: #{self.disbursement_date.to_s}"
+      nice_attributes << "disbursement_date: #{self.disbursement_date}"
       "#<#{self.class} #{nice_attributes.join(', ')}>"
     end
 
@@ -51,12 +51,12 @@ module Braintree
 
     class << self
       protected :new
-      def _new(*args) # :nodoc:
+      def _new(*args)
         self.new(*args)
       end
     end
 
-    def self._inspect_attributes # :nodoc:
+    def self._inspect_attributes
       [:id, :exception_message, :follow_up_action, :merchant_account, :transaction_ids, :retry, :success]
     end
   end

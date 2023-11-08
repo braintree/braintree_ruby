@@ -1,6 +1,6 @@
 module Braintree
   class Dispute
-    class StatusHistory # :nodoc:
+    class StatusHistory
       include BaseModule
 
       attr_reader :disbursement_date

@@ -25,7 +25,7 @@ module Braintree
     attr_reader :transaction
     attr_reader :us_bank_account_verification
 
-    def initialize(attributes = {}) # :nodoc:
+    def initialize(attributes = {})
       @attrs = attributes.keys
       attributes.each do |key, value|
         instance_variable_set("@#{key}", value)
@@ -33,7 +33,7 @@ module Braintree
       @credit_card_verification = @verification
     end
 
-    def inspect # :nodoc:
+    def inspect
       inspected_attributes = @attrs.map { |attr| "#{attr}:#{send(attr).inspect}" }
       "#<#{self.class} #{inspected_attributes.join(" ")}>"
     end

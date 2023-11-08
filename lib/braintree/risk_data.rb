@@ -1,5 +1,5 @@
 module Braintree
-  class RiskData # :nodoc:
+  class RiskData
     include BaseModule
 
     attr_reader :customer_device_id

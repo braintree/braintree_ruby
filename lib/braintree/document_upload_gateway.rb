@@ -1,5 +1,5 @@
 module Braintree
-  class DocumentUploadGateway # :nodoc:
+  class DocumentUploadGateway
     include BaseModule
 
     def initialize(gateway)
@@ -17,14 +17,14 @@ module Braintree
       return_object_or_raise(:document_upload) { create(*args) }
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       [
         :kind,
         :file
       ]
     end
 
-    def _do_create(path, params, file) # :nodoc:
+    def _do_create(path, params, file)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params, file)
       if response[:document_upload]
         SuccessfulResult.new(:document_upload => DocumentUpload._new(response[:document_upload]))

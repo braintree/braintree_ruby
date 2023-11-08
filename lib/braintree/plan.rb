@@ -23,7 +23,7 @@ module Braintree
       Configuration.gateway.plan.all
     end
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       add_ons.map! { |attrs| AddOn._new(attrs) }

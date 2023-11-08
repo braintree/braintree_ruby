@@ -1,5 +1,5 @@
 module Braintree
-  class CreditCardVerificationSearch < AdvancedSearch # :nodoc:
+  class CreditCardVerificationSearch < AdvancedSearch
      text_fields(
        :billing_address_details_postal_code,
        :credit_card_cardholder_name,

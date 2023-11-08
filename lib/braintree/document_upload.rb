@@ -23,13 +23,13 @@ module Braintree
       Configuration.gateway.document_upload.create!(*args)
     end
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       set_instance_variables_from_hash(attributes)
     end
 
     class << self
       protected :new
-      def _new(*args) # :nodoc:
+      def _new(*args)
         self.new(*args)
       end
     end

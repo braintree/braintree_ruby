@@ -24,7 +24,6 @@ describe Braintree::Dispute, "search" do
         :number => Braintree::Test::CreditCardNumbers::Disputes::Chargeback,
       },
       :customer_id => customer.id,
-      :merchant_account_id => "14LaddersLLC_instant",
       :options => {
         :submit_for_settlement => true,
       },

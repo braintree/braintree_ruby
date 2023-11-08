@@ -1494,6 +1494,33 @@ describe Braintree::Transaction, "search" do
         }.to raise_error(Braintree::UnexpectedError)
       end
     end
+
+    it "searches by payment instrument type meta checkout" do
+      meta_checkout_card_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :options => {
+          :submit_for_settlement => true
+        },
+        :payment_method_nonce => Braintree::Test::Nonce::MetaCheckoutCard,
+      )
+
+      meta_checkout_token_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :options => {
+          :submit_for_settlement => true
+        },
+        :payment_method_nonce => Braintree::Test::Nonce::MetaCheckoutToken,
+      )
+
+      collection = Braintree::Transaction.search do |search|
+        search.payment_instrument_type.in ["MetaCheckout"]
+      end
+
+      collection.maximum_size.should == 2
+      txn_ids = collection.map(&:id)
+      expect(txn_ids).to include(meta_checkout_card_transaction.id)
+      expect(txn_ids).to include(meta_checkout_token_transaction.id)
+    end
   end
 
   context "pagination" do

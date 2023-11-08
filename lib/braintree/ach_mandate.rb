@@ -1,6 +1,6 @@
 module Braintree
   class AchMandate
-    include BaseModule # :nodoc:
+    include BaseModule
 
     attr_reader :accepted_at
     attr_reader :text

@@ -1,5 +1,5 @@
 module Braintree
-  module Test # :nodoc:
+  module Test
     module MerchantAccount
       Approve = "approve_me"
 

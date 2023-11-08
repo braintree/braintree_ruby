@@ -1,5 +1,5 @@
 module Braintree
-  class AddressGateway # :nodoc
+  class AddressGateway
     include BaseModule
 
     def initialize(gateway)
@@ -62,7 +62,7 @@ module Braintree
       return_object_or_raise(:address) { update(*args) }
     end
 
-    def _determine_customer_id(customer_or_customer_id) # :nodoc:
+    def _determine_customer_id(customer_or_customer_id)
       customer_id = customer_or_customer_id.is_a?(Customer) ? customer_or_customer_id.id : customer_or_customer_id
       unless customer_id =~ /\A[\w_-]+\z/
         raise ArgumentError, "customer_id contains invalid characters"
@@ -70,17 +70,17 @@ module Braintree
       customer_id
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       _shared_signature + [:customer_id]
     end
 
-    def self._shared_signature # :nodoc:
+    def self._shared_signature
       [:company, :country_code_alpha2, :country_code_alpha3, :country_code_numeric,
         :country_name, :extended_address, :first_name, :last_name, :locality, :phone_number,
         :postal_code, :region, :street_address]
     end
 
-    def self._update_signature # :nodoc:
+    def self._update_signature
       _create_signature
     end
   end

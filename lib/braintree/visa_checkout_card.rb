@@ -1,6 +1,6 @@
 module Braintree
   class VisaCheckoutCard
-    include BaseModule # :nodoc:
+    include BaseModule
     include Braintree::Util::TokenEquality
 
     attr_reader :billing_address
@@ -30,7 +30,7 @@ module Braintree
     attr_reader :updated_at
     attr_reader :verification
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
@@ -39,8 +39,8 @@ module Braintree
     end
 
     def _most_recent_verification(attributes)
-      verification = (attributes[:verifications] || []).sort_by { |verification| verification[:created_at] }.reverse.first
-      CreditCardVerification._new(verification) if verification
+      sorted_verifications = (attributes[:verifications] || []).sort_by { |verification| verification[:created_at] }.reverse.first
+      CreditCardVerification._new(sorted_verifications) if sorted_verifications
     end
 
     def default?
@@ -56,7 +56,7 @@ module Braintree
       @expired
     end
 
-    def inspect # :nodoc:
+    def inspect
       first = [:token]
       order = first + (self.class._attributes - first)
       nice_attributes = order.map do |attr|
@@ -73,7 +73,7 @@ module Braintree
       protected :new
     end
 
-    def self._attributes # :nodoc:
+    def self._attributes
       [
         :billing_address, :bin, :card_type, :cardholder_name, :created_at,
         :customer_id, :customer_location, :expiration_month, :expiration_year,
@@ -83,7 +83,7 @@ module Braintree
       ]
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
   end

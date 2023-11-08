@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class VisaCheckoutCardDetails # :nodoc:
+    class VisaCheckoutCardDetails
       include BaseModule
 
       attr_reader :bin

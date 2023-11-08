@@ -1,5 +1,5 @@
 module Braintree
-  class TransactionGateway # :nodoc:
+  class TransactionGateway
     include BaseModule
 
     def initialize(gateway)
@@ -187,15 +187,14 @@ module Braintree
       return_object_or_raise(:transaction) { void(*args) }
     end
 
-    def self._clone_signature # :nodoc:
+    def self._clone_signature
       [:amount, :channel, {:options => [:submit_for_settlement]}]
     end
-
 
     # NEXT_MAJOR_VERSION Remove venmo_sdk_payment_method_code, venmo_sdk_session, and three_d_secure_token
     # The old venmo SDK class has been deprecated
     # three_d_secure_token has been deprecated in favor of three_d_secure_authentication_id
-    def self._create_signature # :nodoc:
+    def self._create_signature
       [
         :amount, :billing_address_id, :channel, :customer_id, :device_data, :discount_amount,
         :merchant_account_id, :order_id, :payment_method_nonce, :payment_method_token,
@@ -258,7 +257,7 @@ module Braintree
         {:industry => [
           :industry_type,
           {:data => [
-            :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
+            :country_code, :date_of_birth, :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
             :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
             :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone, :ticket_issuer_address, :arrival_date,
             {:legs => [
@@ -276,14 +275,14 @@ module Braintree
       ]
     end
 
-    def self._submit_for_settlement_signature # :nodoc:
+    def self._submit_for_settlement_signature
       [
         :order_id,
         {:descriptor => [:name, :phone, :url]},
         {:industry => [
           :industry_type,
           {:data => [
-            :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
+            :country_code, :date_of_birth, :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
             :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
             :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone, :ticket_issuer_address, :arrival_date,
             {:legs => [
@@ -311,7 +310,7 @@ module Braintree
       ]
     end
 
-    def self._update_details_signature # :nodoc:
+    def self._update_details_signature
       [
         :amount,
         :order_id,
@@ -327,7 +326,7 @@ module Braintree
       ]
     end
 
-    def _do_create(path, params=nil) # :nodoc:
+    def _do_create(path, params=nil)
       if !params.nil?
         params = Util.replace_key(params, :google_pay_card, :android_pay_card)
       end
@@ -335,7 +334,7 @@ module Braintree
       _handle_transaction_response(response)
     end
 
-    def _fetch_transactions(search, ids) # :nodoc:
+    def _fetch_transactions(search, ids)
       search.ids.in ids
       response = @config.http.post("#{@config.base_merchant_path}/transactions/advanced_search", {:search => search.to_hash})
       attributes = response[:credit_card_transactions]

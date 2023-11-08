@@ -1,5 +1,5 @@
 module Braintree
-  class PaymentMethodNonceDetailsPayerInfo # :nodoc:
+  class PaymentMethodNonceDetailsPayerInfo
     include BaseModule
 
     attr_reader :billing_agreement_id

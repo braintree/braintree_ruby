@@ -1,6 +1,6 @@
 module Braintree
   class Dispute
-    class Evidence # :nodoc:
+    class Evidence
       include BaseModule
 
       attr_reader :category,

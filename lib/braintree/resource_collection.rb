@@ -1,10 +1,10 @@
 module Braintree
-  class ResourceCollection # :nodoc:
+  class ResourceCollection
     include Enumerable
 
     attr_reader :ids
 
-    def initialize(response, &block) # :nodoc:
+    def initialize(response, &block)
       @ids = Util.extract_attribute_as_array(response[:search_results], :ids)
       @page_size = response[:search_results][:page_size]
       @paging_block = block

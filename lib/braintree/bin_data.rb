@@ -1,5 +1,5 @@
 module Braintree
-  class BinData # :nodoc:
+  class BinData
     include BaseModule
 
     attr_reader :commercial
@@ -23,7 +23,7 @@ module Braintree
       "#<#{self.class} #{formatted_attributes.join(", ")}>"
     end
 
-    def self._attributes # :nodoc:
+    def self._attributes
       [
         :commercial, :country_of_issuance, :debit, :durbin_regulated, :healthcare,
         :issuing_bank, :payroll, :prepaid, :product_id

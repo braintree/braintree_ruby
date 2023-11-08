@@ -1,5 +1,5 @@
 module Braintree
-  class ThreeDSecureInfo # :nodoc:
+  class ThreeDSecureInfo
     include BaseModule
 
     attr_reader :acs_transaction_id

@@ -1,5 +1,5 @@
 module Braintree
-  class WebhookNotificationGateway # :nodoc:
+  class WebhookNotificationGateway
     def initialize(gateway)
       @gateway = gateway
       @config = gateway.config
@@ -36,8 +36,8 @@ module Braintree
       public_key, signature = _matching_signature_pair(signature_string)
       raise InvalidSignature, "no matching public key" if public_key.nil?
 
-      signature_matches = [payload, payload + "\n"].any? do |payload|
-        payload_signature = Braintree::Digest.hexdigest(@config.private_key, payload)
+      signature_matches = [payload, payload + "\n"].any? do |_payload|
+        payload_signature = Braintree::Digest.hexdigest(@config.private_key, _payload)
         Braintree::Digest.secure_compare(signature, payload_signature)
       end
       raise InvalidSignature, "signature does not match payload - one has been modified" unless signature_matches

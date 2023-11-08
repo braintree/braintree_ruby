@@ -91,7 +91,7 @@ module Braintree
       Configuration.gateway.subscription.update!(*args)
     end
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @balance = Util.to_big_decimal(balance)
@@ -114,7 +114,7 @@ module Braintree
 
     class << self
       protected :new
-      def _new(*args) # :nodoc:
+      def _new(*args)
         self.new(*args)
       end
     end

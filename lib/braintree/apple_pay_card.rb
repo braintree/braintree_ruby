@@ -1,6 +1,6 @@
 module Braintree
   class ApplePayCard
-    include BaseModule # :nodoc:
+    include BaseModule
 
     module CardType
       AmEx = "Apple Pay - American Express"
@@ -39,7 +39,7 @@ module Braintree
     attr_reader :token
     attr_reader :updated_at
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
@@ -58,7 +58,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
   end

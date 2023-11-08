@@ -1,6 +1,6 @@
 module Braintree
   class ExchangeRateQuote
-    include BaseModule # :nodoc:
+    include BaseModule
 
     attr_reader :attrs
     attr_reader :base_amount
@@ -11,12 +11,12 @@ module Braintree
     attr_reader :refreshes_at
     attr_reader :trade_rate
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       @attrs = attributes.keys
       set_instance_variables_from_hash(attributes)
     end
 
-    def inspect # :nodoc:
+    def inspect
       inspected_attributes = @attrs.map { |attr| "#{attr}:#{send(attr).inspect}" }
       "#<#{self.class} #{inspected_attributes.join(" ")}>"
     end

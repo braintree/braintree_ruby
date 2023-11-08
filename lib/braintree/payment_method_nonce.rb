@@ -1,6 +1,6 @@
 module Braintree
   class PaymentMethodNonce
-    include BaseModule # :nodoc:
+    include BaseModule
 
     def self.create(*args)
       Configuration.gateway.payment_method_nonce.create(*args)
@@ -22,7 +22,7 @@ module Braintree
     attr_reader :type
     attr_reader :authentication_insight
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @details = PaymentMethodNonceDetails.new(attributes[:details]) if attributes[:details]
@@ -34,7 +34,7 @@ module Braintree
       @default
     end
 
-    def to_s # :nodoc:
+    def to_s
       nonce
     end
 
@@ -42,7 +42,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(gateway, attributes) # :nodoc:
+    def self._new(gateway, attributes)
       new(gateway, attributes)
     end
   end

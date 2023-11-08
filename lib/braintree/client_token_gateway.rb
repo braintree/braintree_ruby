@@ -25,7 +25,7 @@ module Braintree
       end
     end
 
-    def self._generate_signature # :nodoc:
+    def self._generate_signature
       [
         :address_id, :customer_id, :proxy_merchant_id, :merchant_account_id,
         :version,

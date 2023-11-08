@@ -14,7 +14,7 @@ module Braintree
     attr_reader :verifications
     attr_reader :verified
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @ach_mandate = AchMandate.new(attributes[:ach_mandate]) if attributes[:ach_mandate]
@@ -34,7 +34,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
 

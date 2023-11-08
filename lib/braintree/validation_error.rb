@@ -18,7 +18,7 @@ module Braintree
       set_instance_variables_from_hash error_hash
     end
 
-    def inspect # :nodoc:
+    def inspect
       "#<#{self.class} (#{code}) #{message}>"
     end
   end

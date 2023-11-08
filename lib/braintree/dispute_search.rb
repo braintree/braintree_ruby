@@ -1,5 +1,5 @@
 module Braintree
-  class DisputeSearch < AdvancedSearch # :nodoc:
+  class DisputeSearch < AdvancedSearch
     text_fields(
       :case_number,
       :customer_id,

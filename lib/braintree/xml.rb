@@ -1,5 +1,5 @@
 module Braintree
-  module Xml # :nodoc:
+  module Xml
     def self.hash_from_xml(xml)
       Parser.hash_from_xml(xml)
     end

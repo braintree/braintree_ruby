@@ -28,7 +28,7 @@ module Braintree
       @config.http.delete("#{@config.base_merchant_path}/payment_methods/paypal_account/#{token}")
     end
 
-    def _do_create(path, params) # :nodoc:
+    def _do_create(path, params)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:paypal_account]
         SuccessfulResult.new(:paypal_account => PayPalAccount._new(@gateway, response[:paypal_account]))
@@ -39,7 +39,7 @@ module Braintree
       end
     end
 
-    def _do_update(http_verb, path, params) # :nodoc:
+    def _do_update(http_verb, path, params)
       response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:paypal_account]
         SuccessfulResult.new(:paypal_account => PayPalAccount._new(@gateway, response[:paypal_account]))
@@ -50,7 +50,7 @@ module Braintree
       end
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       options = [:fail_on_duplicate_payment_method, :make_default]
       [
         :email, :token, :billing_agreement_id, :customer_id,
@@ -58,14 +58,14 @@ module Braintree
       ]
     end
 
-    def self._create_nested_signature # :nodoc:
+    def self._create_nested_signature
       [
         :email, :token, :billing_agreement_id,
         {:options => [:make_default]}
       ]
     end
 
-    def self._update_signature # :nodoc:
+    def self._update_signature
       options = [:fail_on_duplicate_payment_method, :make_default]
       [:email, :token, :billing_agreement_id, {:options => options}]
     end

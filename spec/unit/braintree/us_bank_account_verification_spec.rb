@@ -8,11 +8,16 @@ describe Braintree::UsBankAccountVerification do
         :status => Braintree::UsBankAccountVerification::Status::Verified,
         :verification_method => Braintree::UsBankAccountVerification::VerificationMethod::IndependentCheck,
         :verification_determined_at => "2018-02-28T12:01:01Z",
+        :additional_processor_response => "some_invalid_processor_response",
       )
     end
 
     it "has a status" do
       expect(verification.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
+    end
+
+    it "has additional processor response" do
+      expect(verification.additional_processor_response).to eq("some_invalid_processor_response")
     end
   end
 

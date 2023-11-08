@@ -6,7 +6,7 @@ module Braintree
     attr_reader :page_size
     attr_reader :total_items
 
-    def initialize(total_items, page_size, current_page) # :nodoc:
+    def initialize(total_items, page_size, current_page)
       @total_items = total_items
       @current_page = current_page
       @page_size = page_size

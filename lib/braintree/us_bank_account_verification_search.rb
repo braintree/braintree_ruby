@@ -1,5 +1,5 @@
 module Braintree
-  class UsBankAccountVerificationSearch < AdvancedSearch # :nodoc:
+  class UsBankAccountVerificationSearch < AdvancedSearch
      text_fields(
        :id,
        :account_holder_name,

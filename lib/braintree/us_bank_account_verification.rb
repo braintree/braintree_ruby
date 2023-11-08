@@ -22,33 +22,41 @@ module Braintree
       All = [IndependentCheck, NetworkCheck, TokenizedCheck, MicroTransfers]
     end
 
+    module VerificationAddOns
+      CustomerVerification = "customer_verification"
+
+      All = [CustomerVerification]
+    end
+
+    attr_reader :additional_processor_response
+    attr_reader :created_at
+    attr_reader :gateway_rejection_reason
     attr_reader :id
-    attr_reader :status
-    attr_reader :verification_determined_at
-    attr_reader :verification_method
+    attr_reader :merchant_account_id
     attr_reader :processor_response_code
     attr_reader :processor_response_text
-    attr_reader :merchant_account_id
-    attr_reader :gateway_rejection_reason
+    attr_reader :status
     attr_reader :us_bank_account
-    attr_reader :created_at
+    attr_reader :verification_determined_at
+    attr_reader :verification_method
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       set_instance_variables_from_hash(attributes)
     end
 
-    def inspect # :nodoc:
+    def inspect
       attr_order = [
-        :status,
-        :processor_response_code,
-        :processor_response_text,
-        :merchant_account_id,
+        :additional_processor_response,
+        :created_at,
         :gateway_rejection_reason,
         :id,
+        :merchant_account_id,
+        :processor_response_code,
+        :processor_response_text,
+        :status,
         :us_bank_account,
-        :verification_method,
         :verification_determined_at,
-        :created_at
+        :verification_method
       ]
 
       formatted_attrs = attr_order.map do |attr|
@@ -62,7 +70,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
 

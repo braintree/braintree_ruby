@@ -1,5 +1,5 @@
 module Braintree
-  class Descriptor # :nodoc:
+  class Descriptor
     include BaseModule
 
     attr_reader :name

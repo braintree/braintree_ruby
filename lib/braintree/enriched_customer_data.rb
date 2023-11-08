@@ -5,7 +5,7 @@ module Braintree
     attr_reader :fields_updated
     attr_reader :profile_data
 
-    def initialize(attributes) # :nodoc:
+    def initialize(attributes)
       set_instance_variables_from_hash(attributes)
       @profile_data = VenmoProfileData._new(attributes[:profile_data])
     end
@@ -14,7 +14,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
   end

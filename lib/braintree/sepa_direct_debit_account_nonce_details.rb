@@ -1,5 +1,5 @@
 module Braintree
-  class SepaDirectDebitAccountNonceDetails# :nodoc:
+  class SepaDirectDebitAccountNonceDetails
     include BaseModule
 
     attr_reader :bank_reference_token

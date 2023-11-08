@@ -2,7 +2,7 @@
 # under the MIT license, copyright (c) 2005-2009 David Heinemeier Hansson
 module Braintree
   module Xml
-    module Libxml # :nodoc:
+    module Libxml
       LIB_XML_LIMIT = 30000000
 
       def self.parse(xml_string)

@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class SepaDirectDebitAccountDetails # :nodoc:
+    class SepaDirectDebitAccountDetails
       include BaseModule
 
       attr_reader :bank_reference_token

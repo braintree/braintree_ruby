@@ -1,10 +1,10 @@
 # Portions of this code were copied and modified from Ruby on Rails, released
 # under the MIT license, copyright (c) 2005-2009 David Heinemeier Hansson
 module Braintree
-  module Xml # :nodoc:
+  module Xml
     CONTENT_ROOT = "__content__"
 
-    module Parser # :nodoc:
+    module Parser
       XML_PARSING = {
         "datetime" => Proc.new { |time| ::Time.parse(time).utc },
         "integer"  => Proc.new { |integer| integer.to_i },

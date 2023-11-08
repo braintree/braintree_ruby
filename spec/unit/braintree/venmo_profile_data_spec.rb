@@ -12,12 +12,21 @@ describe Braintree::VenmoProfileData do
   describe "self._new" do
     it "initializes the object with the appropriate attributes set" do
 
+      address = {
+        street_address: "a-street-address",
+        extended_address: "an-extended-address",
+        locality: "a-locality",
+        region: "a-region",
+        postal_code: "a-postal-code"
+      }
       params = {
         username: "a-username",
         first_name: "a-first-name",
         last_name: "a-last-name",
         phone_number: "12312312343",
         email: "a-email",
+        billing_address: address,
+        shipping_address: address
       }
 
       payment_method_customer_data_updated = Braintree::VenmoProfileData._new(params)
@@ -27,6 +36,8 @@ describe Braintree::VenmoProfileData do
       expect(payment_method_customer_data_updated.last_name).to eq("a-last-name")
       expect(payment_method_customer_data_updated.phone_number).to eq("12312312343")
       expect(payment_method_customer_data_updated.email).to eq("a-email")
+      expect(payment_method_customer_data_updated.billing_address).to eq(address)
+      expect(payment_method_customer_data_updated.shipping_address).to eq(address)
     end
   end
 end

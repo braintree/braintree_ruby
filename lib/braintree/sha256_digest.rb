@@ -1,5 +1,5 @@
 module Braintree
-  module SHA256Digest # :nodoc:
+  module SHA256Digest
     def self.hexdigest(private_key, string)
       _hmac(private_key, string)
     end

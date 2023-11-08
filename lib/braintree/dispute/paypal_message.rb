@@ -1,6 +1,6 @@
 module Braintree
   class Dispute
-    class PayPalMessage # :nodoc:
+    class PayPalMessage
       include BaseModule
 
       attr_reader :message,

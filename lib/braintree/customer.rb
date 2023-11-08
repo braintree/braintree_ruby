@@ -67,7 +67,6 @@ module Braintree
       Configuration.gateway.customer.search(&block)
     end
 
-    # Returns a ResourceCollection of transactions for the customer with the given +customer_id+.
     def self.transactions(*args)
       Configuration.gateway.customer.transactions(*args)
     end
@@ -80,7 +79,7 @@ module Braintree
       Configuration.gateway.customer.update!(*args)
     end
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @credit_cards = (@credit_cards || []).map { |pm| CreditCard._new gateway, pm }
@@ -105,7 +104,6 @@ module Braintree
       return_object_or_raise(:transaction) { credit(transaction_attributes) }
     end
 
-    # Returns the customer's default payment method.
     def default_payment_method
       payment_methods.find { |payment_instrument| payment_instrument.default? }
     end
@@ -114,7 +112,6 @@ module Braintree
       @gateway.customer.delete(id)
     end
 
-    # Returns the customer's payment methods
     def payment_methods
       @credit_cards +
         @paypal_accounts +
@@ -127,7 +124,7 @@ module Braintree
         @sepa_direct_debit_accounts
     end
 
-    def inspect # :nodoc:
+    def inspect
       first = [:id]
       last = [:addresses, :credit_cards, :paypal_accounts, :tax_identifiers]
       order = first + (self.class._attributes - first - last) + last
@@ -137,7 +134,6 @@ module Braintree
       "#<#{self.class} #{nice_attributes.join(', ')}>"
     end
 
-    # Returns a ResourceCollection of transactions for the customer.
     def transactions(options = {})
       @gateway.customer.transactions(id, options)
     end
@@ -146,18 +142,18 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
 
-    def self._attributes # :nodoc:
+    def self._attributes
       [
         :addresses, :company, :credit_cards, :email, :fax, :first_name, :id, :last_name, :phone, :website,
         :created_at, :updated_at, :tax_identifiers
       ]
     end
 
-    def self._now_timestamp # :nodoc:
+    def self._now_timestamp
       Time.now.to_i
     end
   end

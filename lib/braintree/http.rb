@@ -1,5 +1,5 @@
 module Braintree
-  class Http # :nodoc:
+  class Http
 
     LINE_FEED = "\r\n"
 

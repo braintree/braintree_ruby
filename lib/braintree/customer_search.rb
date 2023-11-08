@@ -1,5 +1,5 @@
 module Braintree
-  class CustomerSearch < AdvancedSearch # :nodoc:
+  class CustomerSearch < AdvancedSearch
     text_fields(
       :address_country_name,
       :address_extended_address,

@@ -1,6 +1,6 @@
 module Braintree
   class Address
-    include BaseModule # :nodoc:
+    include BaseModule
 
     attr_reader :company
     attr_reader :country_code_alpha2
@@ -44,12 +44,12 @@ module Braintree
       Configuration.gateway.address.update!(*args)
     end
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
     end
 
-    def ==(other) # :nodoc:
+    def ==(other)
       return false unless other.is_a?(Address)
       id == other.id && customer_id == other.customer_id
     end
@@ -58,7 +58,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
   end

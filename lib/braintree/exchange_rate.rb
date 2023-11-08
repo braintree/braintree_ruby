@@ -1,8 +1,8 @@
 module Braintree
   class ExchangeRate
-    include BaseModule # :nodoc:
+    include BaseModule
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       set_instance_variables_from_hash(attributes)
     end
 

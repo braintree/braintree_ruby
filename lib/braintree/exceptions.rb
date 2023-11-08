@@ -1,5 +1,4 @@
-module Braintree # :nodoc:
-  # Super class for all Braintree exceptions.
+module Braintree
   class BraintreeError < ::StandardError; end
 
   class AuthenticationError < BraintreeError; end

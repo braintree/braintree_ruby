@@ -15,7 +15,7 @@ module Braintree
     attr_reader :commodity_code
     attr_reader :url
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @quantity = Util.to_big_decimal(quantity)
@@ -28,7 +28,7 @@ module Braintree
 
     class << self
       protected :new
-      def _new(*args) # :nodoc:
+      def _new(*args)
         self.new(*args)
       end
     end

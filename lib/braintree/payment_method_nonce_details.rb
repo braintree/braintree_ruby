@@ -1,5 +1,5 @@
 module Braintree
-  class PaymentMethodNonceDetails # :nodoc:
+  class PaymentMethodNonceDetails
     include BaseModule
 
     attr_reader :bin

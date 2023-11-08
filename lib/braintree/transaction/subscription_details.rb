@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class SubscriptionDetails # :nodoc:
+    class SubscriptionDetails
       include BaseModule
 
       attr_reader :billing_period_end_date

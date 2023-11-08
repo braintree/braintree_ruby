@@ -19,7 +19,7 @@ module Braintree
       "https://assets.braintreegateway.com/payment_method_logo/unknown.png"
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
   end

@@ -1,5 +1,5 @@
 module Braintree
-  class FacilitatedDetails # :nodoc:
+  class FacilitatedDetails
     include BaseModule
 
     attr_reader :merchant_id

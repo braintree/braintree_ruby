@@ -49,7 +49,7 @@ module Braintree
       Configuration.gateway.merchant_account.update!(*args)
     end
 
-    def initialize(gateway, attributes) # :nodoc
+    def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @individual_details = IndividualDetails.new(@individual)
@@ -60,7 +60,7 @@ module Braintree
 
     class << self
       protected :new
-      def _new(*args) # :nodoc:
+      def _new(*args)
         self.new(*args)
       end
     end

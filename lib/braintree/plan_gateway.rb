@@ -1,5 +1,5 @@
 module Braintree
-  class PlanGateway # :nodoc:
+  class PlanGateway
     include BaseModule
 
     def initialize(gateway)
@@ -102,7 +102,7 @@ module Braintree
       ]
     end
 
-    def _do_create(path, params) # :nodoc:
+    def _do_create(path, params)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:plan]
         SuccessfulResult.new(:plan => Plan._new(@gateway, response[:plan]))

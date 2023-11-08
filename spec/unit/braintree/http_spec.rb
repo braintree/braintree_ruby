@@ -121,7 +121,7 @@ END
   end
 
   describe "_compose_headers" do
-    before (:each) do
+    before(:each) do
       config = Braintree::Configuration.new
       @http = Braintree::Http.new(config)
     end

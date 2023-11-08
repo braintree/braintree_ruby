@@ -1,5 +1,5 @@
 module Braintree
-  class TestingGateway # :nodoc:
+  class TestingGateway
 
     def initialize(gateway)
       @gateway = gateway

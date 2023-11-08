@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class CreditCardDetails # :nodoc:
+    class CreditCardDetails
       include BaseModule
 
       attr_reader :account_type

@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class StatusDetails # :nodoc:
+    class StatusDetails
       include BaseModule
 
       attr_reader :amount

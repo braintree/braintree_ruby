@@ -18,6 +18,8 @@ module Braintree
       GooglePayVisa = "fake-android-pay-visa-nonce"
       GooglePayMasterCard = "fake-android-pay-mastercard-nonce"
       GooglePayAmEx = "fake-android-pay-amex-nonce"
+      MetaCheckoutCard = "fake-meta-checkout-card-nonce"
+      MetaCheckoutToken = "fake-meta-checkout-token-nonce"
       VenmoAccount = "fake-venmo-account-nonce"
       VenmoAccountTokenIssuanceError = "fake-token-issuance-error-venmo-account-nonce"
       ThreeDSecureVisaFullAuthentication = "fake-three-d-secure-visa-full-authentication-nonce"
@@ -72,6 +74,7 @@ module Braintree
       SamsungPayMasterCard = "tokensam_fake_mastercard"
       SamsungPayVisa = "tokensam_fake_visa"
       SepaDirectDebit = "fake-sepa-direct-debit-nonce"
+      UsBankAccount = "fake-us-bank-account-nonce"
     end
   end
 end

@@ -17,7 +17,7 @@ module Braintree
     attr_reader :updated_at
     attr_reader :view_mandate_url
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @gateway = gateway
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
       set_instance_variables_from_hash(attributes)
@@ -31,7 +31,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
 

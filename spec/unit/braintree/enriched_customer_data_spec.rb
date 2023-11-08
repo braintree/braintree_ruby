@@ -12,6 +12,13 @@ describe Braintree::EnrichedCustomerData do
   describe "self._new" do
     it "initializes the object with the appropriate attributes set" do
 
+      address = {
+        street_address: "a-street-address",
+        extended_address: "an-extended-address",
+        locality: "a-locality",
+        region: "a-region",
+        postal_code: "a-postal-code"
+      }
       params = {
         fields_updated: ["username"],
         profile_data: {
@@ -20,6 +27,8 @@ describe Braintree::EnrichedCustomerData do
           last_name: "a-last-name",
           phone_number: "a-phone-number",
           email: "a-email",
+          billing_address: address,
+          shipping_address: address,
         },
       }
 

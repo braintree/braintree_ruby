@@ -1,5 +1,5 @@
 module Braintree
-  class CreditCardGateway # :nodoc:
+  class CreditCardGateway
     include BaseModule
 
     def initialize(gateway)
@@ -77,15 +77,15 @@ module Braintree
       return_object_or_raise(:credit_card) { update(*args) }
     end
 
-    def self._create_signature # :nodoc:
+    def self._create_signature
       _signature(:create)
     end
 
-    def self._update_signature # :nodoc:
+    def self._update_signature
       _signature(:update)
     end
 
-    def self._signature(type) # :nodoc:
+    def self._signature(type)
       billing_address_params = AddressGateway._shared_signature
       # NEXT_MAJOR_VERSION Remove venmo_sdk_session
       # The old venmo SDK class has been deprecated
@@ -136,7 +136,7 @@ module Braintree
       return signature
     end
 
-    def _do_create(path, params=nil) # :nodoc:
+    def _do_create(path, params=nil)
       response = @config.http.post("#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:credit_card => CreditCard._new(@gateway, response[:credit_card]))
@@ -147,7 +147,7 @@ module Braintree
       end
     end
 
-    def _do_update(http_verb, path, params) # :nodoc:
+    def _do_update(http_verb, path, params)
       response = @config.http.send(http_verb, "#{@config.base_merchant_path}#{path}", params)
       if response[:credit_card]
         SuccessfulResult.new(:credit_card => CreditCard._new(@gateway, response[:credit_card]))
@@ -158,13 +158,13 @@ module Braintree
       end
     end
 
-    def _fetch_expired(ids) # :nodoc:
+    def _fetch_expired(ids)
       response = @config.http.post("#{@config.base_merchant_path}/payment_methods/all/expired", :search => {:ids => ids})
       attributes = response[:payment_methods]
       Util.extract_attribute_as_array(attributes, :credit_card).map { |attrs| CreditCard._new(@gateway, attrs) }
     end
 
-    def _fetch_expiring_between(formatted_start_date, formatted_end_date, ids) # :nodoc:
+    def _fetch_expiring_between(formatted_start_date, formatted_end_date, ids)
       response = @config.http.post(
         "#{@config.base_merchant_path}/payment_methods/all/expiring?start=#{formatted_start_date}&end=#{formatted_end_date}",
         :search => {:ids => ids},

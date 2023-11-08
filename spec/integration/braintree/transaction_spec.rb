@@ -2,6 +2,72 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Transaction do
+  let(:industry_data_flight_params) do
+    {
+      :industry => {
+        :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+        :data => {
+          :country_code => "US",
+          :date_of_birth => "2012-12-12",
+          :passenger_first_name => "John",
+          :passenger_last_name => "Doe",
+          :passenger_middle_initial => "M",
+          :passenger_title => "Mr.",
+          :issued_date => Date.new(2018, 1, 1),
+          :travel_agency_name => "Expedia",
+          :travel_agency_code => "12345678",
+          :ticket_number => "ticket-number",
+          :issuing_carrier_code => "AA",
+          :customer_code => "customer-code",
+          :fare_amount => 70_00,
+          :fee_amount => 10_00,
+          :tax_amount => 20_00,
+          :restricted_ticket => false,
+          :legs => [
+            {
+              :conjunction_ticket => "CJ0001",
+              :exchange_ticket => "ET0001",
+              :coupon_number => "1",
+              :service_class => "Y",
+              :carrier_code => "AA",
+              :fare_basis_code => "W",
+              :flight_number => "AA100",
+              :departure_date => Date.new(2018, 1, 2),
+              :departure_airport_code => "MDW",
+              :departure_time => "08:00",
+              :arrival_airport_code => "ATX",
+              :arrival_time => "10:00",
+              :stopover_permitted => false,
+              :fare_amount => 35_00,
+              :fee_amount => 5_00,
+              :tax_amount => 10_00,
+              :endorsement_or_restrictions => "NOT REFUNDABLE"
+            },
+            {
+              :conjunction_ticket => "CJ0002",
+              :exchange_ticket => "ET0002",
+              :coupon_number => "1",
+              :service_class => "Y",
+              :carrier_code => "AA",
+              :fare_basis_code => "W",
+              :flight_number => "AA200",
+              :departure_date => Date.new(2018, 1, 3),
+              :departure_airport_code => "ATX",
+              :departure_time => "12:00",
+              :arrival_airport_code => "MDW",
+              :arrival_time => "14:00",
+              :stopover_permitted => false,
+              :fare_amount => 35_00,
+              :fee_amount => 5_00,
+              :tax_amount => 10_00,
+              :endorsement_or_restrictions => "NOT REFUNDABLE"
+            }
+          ]
+        }
+      },
+    }
+  end
+
   describe "self.clone_transaction" do
     it "creates a new transaction from the card of the transaction to clone" do
       result = Braintree::Transaction.sale(
@@ -306,8 +372,8 @@ describe Braintree::Transaction do
           check_out_date_must_follow_check_in_date = Braintree::ErrorCodes::Transaction::Industry::Lodging::CheckOutDateMustFollowCheckInDate
           room_rate_format_is_invalid = Braintree::ErrorCodes::Transaction::Industry::Lodging::RoomRateFormatIsInvalid
           invalid_additional_charge_kind = Braintree::ErrorCodes::Transaction::Industry::AdditionalCharge::KindIsInvalid
-          expect(result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort).to include(*[invalid_folio, check_out_date_must_follow_check_in_date, room_rate_format_is_invalid])
-          expect(result.errors.for(:transaction).for(:industry).for(:additional_charges).for(:index_0).on(:kind).map { |e| e.code }.sort).to include(*[invalid_additional_charge_kind])
+          expect(result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort).to include(invalid_folio, check_out_date_must_follow_check_in_date, room_rate_format_is_invalid)
+          expect(result.errors.for(:transaction).for(:industry).for(:additional_charges).for(:index_0).on(:kind).map { |e| e.code }.sort).to include(invalid_additional_charge_kind)
         end
       end
 
@@ -356,74 +422,18 @@ describe Braintree::Transaction do
 
       context "for travel flight" do
         it "accepts valid industry data" do
-          result = Braintree::Transaction.create(
+          params = {
             :type => "sale",
             :amount => 1_00,
             :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
             :options => {
               :submit_for_settlement => true
             },
-            :industry => {
-              :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
-              :data => {
-                :passenger_first_name => "John",
-                :passenger_last_name => "Doe",
-                :passenger_middle_initial => "M",
-                :passenger_title => "Mr.",
-                :issued_date => Date.new(2018, 1, 1),
-                :travel_agency_name => "Expedia",
-                :travel_agency_code => "12345678",
-                :ticket_number => "ticket-number",
-                :issuing_carrier_code => "AA",
-                :customer_code => "customer-code",
-                :fare_amount => 70_00,
-                :fee_amount => 10_00,
-                :tax_amount => 20_00,
-                :restricted_ticket => false,
-                :legs => [
-                  {
-                    :conjunction_ticket => "CJ0001",
-                    :exchange_ticket => "ET0001",
-                    :coupon_number => "1",
-                    :service_class => "Y",
-                    :carrier_code => "AA",
-                    :fare_basis_code => "W",
-                    :flight_number => "AA100",
-                    :departure_date => Date.new(2018, 1, 2),
-                    :departure_airport_code => "MDW",
-                    :departure_time => "08:00",
-                    :arrival_airport_code => "ATX",
-                    :arrival_time => "10:00",
-                    :stopover_permitted => false,
-                    :fare_amount => 35_00,
-                    :fee_amount => 5_00,
-                    :tax_amount => 10_00,
-                    :endorsement_or_restrictions => "NOT REFUNDABLE"
-                  },
-                  {
-                    :conjunction_ticket => "CJ0002",
-                    :exchange_ticket => "ET0002",
-                    :coupon_number => "1",
-                    :service_class => "Y",
-                    :carrier_code => "AA",
-                    :fare_basis_code => "W",
-                    :flight_number => "AA200",
-                    :departure_date => Date.new(2018, 1, 3),
-                    :departure_airport_code => "ATX",
-                    :departure_time => "12:00",
-                    :arrival_airport_code => "MDW",
-                    :arrival_time => "14:00",
-                    :stopover_permitted => false,
-                    :fare_amount => 35_00,
-                    :fee_amount => 5_00,
-                    :tax_amount => 10_00,
-                    :endorsement_or_restrictions => "NOT REFUNDABLE"
-                  }
-                ]
-              }
-            },
-          )
-          expect(result.success?).to be(true)
+          }
+          params.merge(industry_data_flight_params)
+
+          result = Braintree::Transaction.create(params)
+          result.success?.should be(true)
         end
 
         it "returns errors if validations on industry data fails" do
@@ -1452,8 +1462,7 @@ describe Braintree::Transaction do
 
     it "returns an error if no credit card is given" do
       params = {
-        :transaction => {
-        }
+        :transaction => {}
       }
       result = Braintree::Transaction.create(params[:transaction])
       expect(result.success?).to eq(false)
@@ -2105,6 +2114,61 @@ describe Braintree::Transaction do
         expect(result.success?).to eq(true)
         expect(result.transaction.paypal_details).not_to be_nil
         expect(result.transaction.paypal_details.debug_id).not_to be_nil
+      end
+
+      it "can create a transaction with a fake meta checkout card nonce" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::MetaCheckoutCard,
+        )
+
+        result.success?.should == true
+        result.transaction.should_not be_nil
+        meta_checkout_card_details = result.transaction.meta_checkout_card_details
+        meta_checkout_card_details.should_not be_nil
+        meta_checkout_card_details.bin.should == "401288"
+        meta_checkout_card_details.card_type.should == Braintree::CreditCard::CardType::Visa
+        meta_checkout_card_details.cardholder_name.should == "Meta Checkout Card Cardholder"
+        meta_checkout_card_details.container_id.should == "container123"
+        meta_checkout_card_details.customer_location.should == "US"
+        meta_checkout_card_details.expiration_date.should == "12/2024"
+        meta_checkout_card_details.expiration_year.should == "2024"
+        meta_checkout_card_details.expiration_month.should == "12"
+        meta_checkout_card_details.image_url.should == "https://assets.braintreegateway.com/payment_method_logo/visa.png?environment=development"
+        meta_checkout_card_details.is_network_tokenized.should == false
+        meta_checkout_card_details.last_4.should == "1881"
+        meta_checkout_card_details.masked_number.should == "401288******1881"
+        meta_checkout_card_details.prepaid.should == "No"
+      end
+
+      it "can create a transaction with a fake meta checkout token nonce" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::MetaCheckoutToken,
+        )
+
+        result.success?.should == true
+        result.transaction.should_not be_nil
+        meta_checkout_token_details = result.transaction.meta_checkout_token_details
+
+        meta_checkout_token_details.should_not be_nil
+        meta_checkout_token_details.bin.should == "401288"
+        meta_checkout_token_details.card_type.should == Braintree::CreditCard::CardType::Visa
+        meta_checkout_token_details.cardholder_name.should == "Meta Checkout Token Cardholder"
+        meta_checkout_token_details.container_id.should == "container123"
+        meta_checkout_token_details.cryptogram.should == "AlhlvxmN2ZKuAAESNFZ4GoABFA=="
+        meta_checkout_token_details.customer_location.should == "US"
+        meta_checkout_token_details.ecommerce_indicator.should == "07"
+        meta_checkout_token_details.expiration_date.should == "12/2024"
+        meta_checkout_token_details.expiration_year.should == "2024"
+        meta_checkout_token_details.expiration_month.should == "12"
+        meta_checkout_token_details.image_url.should == "https://assets.braintreegateway.com/payment_method_logo/visa.png?environment=development"
+        meta_checkout_token_details.is_network_tokenized.should == true
+        meta_checkout_token_details.last_4.should == "1881"
+        meta_checkout_token_details.masked_number.should == "401288******1881"
+        meta_checkout_token_details.prepaid.should == "No"
       end
 
       it "can create a transaction with a fake apple pay nonce" do
@@ -5935,6 +5999,54 @@ describe Braintree::Transaction do
       end
     end
 
+    it "succeeds when industry data is provided" do
+      transaction = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+        :options => {
+          :submit_for_settlement => false
+        },
+      ).transaction
+
+      result = Braintree::Transaction.submit_for_settlement(transaction.id, Braintree::Test::TransactionAmounts::Authorize, industry_data_flight_params)
+      expect(result.success?).to be_truthy
+    end
+
+    it "returns errors if validations on industry data fails" do
+      transaction = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+        :options => {
+          :submit_for_settlement => false
+        },
+      ).transaction
+
+      options = {
+        :industry => {
+          :industry_type => Braintree::Transaction::IndustryType::TravelAndFlight,
+          :data => {
+            :fare_amount => -1_23,
+            :restricted_ticket => false,
+            :legs => [
+              {
+                :fare_amount => -1_23
+              }
+            ]
+          }
+        },
+      }
+
+      result = Braintree::Transaction.submit_for_settlement(transaction.id, Braintree::Test::TransactionAmounts::Authorize, options)
+      expect(result.success?).to be_falsey
+      industry_errors = result.errors.for(:transaction).for(:industry).map { |e| e.code }.sort
+      expect(industry_errors).to eq([Braintree::ErrorCodes::Transaction::Industry::TravelFlight::FareAmountCannotBeNegative])
+
+      leg_errors = result.errors.for(:transaction).for(:industry).for(:legs).for(:index_0).map { |e| e.code }.sort
+      expect(leg_errors).to eq([Braintree::ErrorCodes::Transaction::Industry::Leg::TravelFlight::FareAmountCannotBeNegative])
+    end
+
     xit "succeeds when level 2 data is provided" do
       result = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -6370,6 +6482,20 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
       expect(result.success?).to eq(false)
       expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement)
+    end
+
+    it "succeeds when industry data is provided" do
+      transaction = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+        :options => {
+          :submit_for_settlement => false
+        },
+      ).transaction
+
+      result = Braintree::Transaction.submit_for_partial_settlement(transaction.id, Braintree::Test::TransactionAmounts::Authorize, industry_data_flight_params)
+      expect(result.success?).to be_truthy
     end
   end
 

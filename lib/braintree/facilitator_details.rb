@@ -1,5 +1,5 @@
 module Braintree
-  class FacilitatorDetails # :nodoc:
+  class FacilitatorDetails
     include BaseModule
 
     attr_reader :oauth_application_client_id

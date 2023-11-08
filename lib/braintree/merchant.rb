@@ -1,6 +1,6 @@
 module Braintree
   class Merchant
-    include BaseModule # :nodoc:
+    include BaseModule
 
     attr_reader :company_name
     attr_reader :country_code_alpha2
@@ -11,7 +11,7 @@ module Braintree
     attr_reader :id
     attr_reader :merchant_accounts
 
-    def initialize(gateway, attributes) # :nodoc:
+    def initialize(gateway, attributes)
       @merchant_accounts = attributes.delete(:merchant_accounts).map do |merchant_account|
         MerchantAccount._new(gateway, merchant_account)
       end
@@ -23,7 +23,7 @@ module Braintree
       protected :new
     end
 
-    def self._new(*args) # :nodoc:
+    def self._new(*args)
       self.new(*args)
     end
 

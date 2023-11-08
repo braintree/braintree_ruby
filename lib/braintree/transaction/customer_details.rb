@@ -1,6 +1,6 @@
 module Braintree
   class Transaction
-    class CustomerDetails # :nodoc:
+    class CustomerDetails
       include BaseModule
 
       attr_reader :company
