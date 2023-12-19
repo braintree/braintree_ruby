@@ -27,7 +27,7 @@ module Braintree
       signature_pairs = signature_string.split("&")
       valid_pairs = signature_pairs.select { |pair| pair.include?("|") }.map { |pair| pair.split("|") }
 
-      valid_pairs.detect do |public_key, signature|
+      valid_pairs.detect do |public_key, _signature|
         public_key == @config.public_key
       end
     end
@@ -36,8 +36,8 @@ module Braintree
       public_key, signature = _matching_signature_pair(signature_string)
       raise InvalidSignature, "no matching public key" if public_key.nil?
 
-      signature_matches = [payload, payload + "\n"].any? do |_payload|
-        payload_signature = Braintree::Digest.hexdigest(@config.private_key, _payload)
+      signature_matches = [payload, payload + "\n"].any? do |p|
+        payload_signature = Braintree::Digest.hexdigest(@config.private_key, p)
         Braintree::Digest.secure_compare(signature, payload_signature)
       end
       raise InvalidSignature, "signature does not match payload - one has been modified" unless signature_matches

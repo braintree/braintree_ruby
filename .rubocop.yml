@@ -311,7 +311,46 @@ Lint/StructNewOverride:
   Enabled: true
 
 Lint/SuppressedException:
-  Enabled: false
+  Enabled: true
+  AllowComments: true
+
+Lint/SymbolConversion:
+  Enabled: true
+
+Lint/Syntax:
+  Enabled: true
+
+Lint/ToEnumArguments:
+  Enabled: true
+
+Lint/ToJSON:
+  Enabled: true
+
+Lint/TopLevelReturnWithArgument:
+  Enabled: true
+
+Lint/TrailingCommaInAttributeDeclaration:
+  Enabled: true
+
+Lint/TripleQuotes:
+  Enabled: true
+
+Lint/UnderscorePrefixedVariableName:
+  Enabled: true
+
+Lint/UnexpectedBlockArity:
+  Enabled: true
+
+Lint/UnreachableCode:
+  Enabled: true
+  Exclude:
+   - lib/braintree/xml/parser.rb
+
+Lint/UnreachableLoop:
+  Enabled: true
+
+Lint/UnusedBlockArgument:
+  Enabled: true
 
 Style/DefWithParentheses:
   Enabled: true

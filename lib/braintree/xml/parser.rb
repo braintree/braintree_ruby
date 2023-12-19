@@ -32,7 +32,7 @@ module Braintree
         case value.class.to_s
           when "Hash"
             if value["type"] == "array"
-              child_key, entries = value.detect { |k,v| k != "type" }   # child_key is throwaway
+              child_key, entries = value.detect { |k,_v| k != "type" }   # child_key is throwaway
               if entries.nil? || ((c = value[CONTENT_ROOT]) && c.strip.empty?)
                 []
               else

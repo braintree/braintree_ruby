@@ -10,6 +10,7 @@ module Braintree
         Ground = "ground"
         Electronic = "electronic"
         ShipToStore = "ship_to_store"
+        PickupInStore = "pickup_in_store"
       end
 
       attr_reader :company

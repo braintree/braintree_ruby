@@ -48,6 +48,51 @@ describe Braintree::CreditCardVerification, "search" do
       expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
     end
 
+    it "creates a new verification from external vault param" do
+      verification_params = {
+        :credit_card => {
+            :expiration_date => "05/2029",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+        :external_vault => {
+            :status => "will_vault"
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
+    end
+
+    it "creates a new verification from risk data param" do
+      verification_params = {
+        :credit_card => {
+            :expiration_date => "05/2029",
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+        :risk_data => {
+            :customer_browser => "IE7",
+            :customer_ip => "192.168.0.1"
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
+    end
+
     it "returns processor response code and text as well as the additional processor response if declined" do
       verification_params = {
         :credit_card => {

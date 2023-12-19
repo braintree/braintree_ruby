@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.17.0
+
+- Add `PickupInStore` to `ShippingMethod` enum
+- Add `external_vault` and `risk_data` to `CreditCardVerification` create request
+
 ## 4.16.0
 
 - Add `meta_checkout_card` and `meta_checkout_token` payment methods 

@@ -282,8 +282,8 @@ class ClientApiHttp
     params = {:credit_card => params}
     params.merge!(
       :authorization_fingerprint => @options[:authorization_fingerprint],
-      :shared_customer_identifier => "fake_identifier",
-      :shared_customer_identifier_type => "testing",
+      :shared_customer_identifier => @options[:shared_customer_identifier],
+      :shared_customer_identifier_type => @options[:shared_customer_identifier_type],
     )
 
     post("/merchants/#{config.merchant_id}/client_api/v1/payment_methods/credit_cards", params)
