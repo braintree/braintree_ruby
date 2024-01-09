@@ -1132,7 +1132,7 @@ describe Braintree::Customer do
             :number => 4111111111111111,
             :expiration_date => "05/2060",
             :three_d_secure_pass_thru => {
-              :eci_flag => "02",
+              :eci_flag => "05",
               :cavv => "some_cavv",
               :xid => "some_xid",
               :three_d_secure_version => "1.0.2",
@@ -1167,7 +1167,7 @@ describe Braintree::Customer do
             :number => 4111111111111111,
             :expiration_date => "05/2060",
             :three_d_secure_pass_thru => {
-              :eci_flag => "02",
+              :eci_flag => "05",
               :cavv => "some_cavv",
               :xid => "some_xid",
               :authentication_response => "Y",
@@ -1451,7 +1451,7 @@ describe Braintree::Customer do
         :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
         :credit_card => {
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "xx",
@@ -1475,7 +1475,7 @@ describe Braintree::Customer do
         :payment_method_nonce => Braintree::Test::Nonce::ThreeDSecureVisaFullAuthentication,
         :credit_card => {
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "2.2.1",

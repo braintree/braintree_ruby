@@ -41,7 +41,7 @@ describe Braintree::TransactionGateway do
         :ships_from_postal_code, :tax_amount, :tax_exempt, :three_d_secure_authentication_id,:three_d_secure_token, #Deprecated
         :transaction_source, :type, :venmo_sdk_payment_method_code, #Deprecated
         :sca_exemption, :currency_iso_code, :exchange_rate_quote_id,
-        {:line_items => [:quantity, :name, :description, :kind, :unit_amount, :unit_tax_amount, :total_amount, :discount_amount, :tax_amount, :unit_of_measure, :product_code, :commodity_code, :url]},
+        {:line_items => [:commodity_code, :description, :discount_amount, :image_url, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :upc_code, :upc_type, :url]},
         {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, {:payment_reader_card_details => [:encrypted_card_data, :key_serial_number]}, {:network_tokenization_attributes => [:cryptogram, :ecommerce_indicator, :token_requestor_id]}]},
         {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
@@ -81,7 +81,7 @@ describe Braintree::TransactionGateway do
           {:three_d_secure => [:required]},
           {:amex_rewards => [:request_id, :points, :currency_amount, :currency_iso_code]},
           {:venmo => [:profile_id]},
-          {:credit_card => [:account_type]},
+          {:credit_card => [:account_type, :process_debit_as_credit]},
         ]
         },
         {:external_vault => [
@@ -137,7 +137,7 @@ describe Braintree::TransactionGateway do
         :discount_amount,
         :shipping_amount,
         :ships_from_postal_code,
-        :line_items => [:commodity_code, :description, :discount_amount, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :url, :tax_amount],
+        :line_items => [:commodity_code, :description, :discount_amount, :image_url, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :upc_code, :upc_type, :url],
       ])
     end
   end

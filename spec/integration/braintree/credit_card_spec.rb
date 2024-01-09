@@ -276,7 +276,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => "02",
+          :eci_flag => "05",
           :cavv => "some_cavv",
           :xid => "some_xid",
           :authentication_response => "Y",
@@ -298,7 +298,7 @@ describe Braintree::CreditCard do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => "02",
+          :eci_flag => "05",
           :cavv => "some_cavv",
           :xid => "some_xid",
           :three_d_secure_version => "1.0.2",
@@ -310,7 +310,6 @@ describe Braintree::CreditCard do
         :options => {:verify_card => true},
       )
       expect(result.success?).to eq(true)
-
     end
 
     it "returns 3DS info on cc verification" do
@@ -793,7 +792,7 @@ describe Braintree::CreditCard do
       result = Braintree::CreditCard.update(credit_card.token,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => "02",
+          :eci_flag => "05",
           :cavv => "some_cavv",
           :xid => "some_xid",
           :authentication_response => "Y",
@@ -821,7 +820,7 @@ describe Braintree::CreditCard do
       result = Braintree::CreditCard.update(credit_card.token,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => "02",
+          :eci_flag => "05",
           :cavv => "some_cavv",
           :three_d_secure_version=> "2.1.0",
           :xid => "some_xid",

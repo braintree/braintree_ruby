@@ -342,7 +342,7 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => "02",
+          :eci_flag => "05",
           :cavv => "some_cavv",
           :xid => "some_xid",
           :three_d_secure_version => "xx",
@@ -365,7 +365,7 @@ describe Braintree::PaymentMethod do
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::Transactable,
         :three_d_secure_pass_thru => {
-          :eci_flag => "02",
+          :eci_flag => "05",
           :cavv => "some_cavv",
           :xid => "some_xid",
           :three_d_secure_version => "1.0.2",

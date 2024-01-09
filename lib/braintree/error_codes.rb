@@ -561,6 +561,10 @@ module Braintree
       UnitTaxAmountCannotBeNegative = "95826"
       UnitTaxAmountFormatIsInvalid = "95824"
       UnitTaxAmountIsTooLarge = "95825"
+      UPCCodeIsMissing = "95830"
+      UPCCodeIsTooLong = "95831"
+      UPCTypeIsMissing = "95832"
+      UPCTypeIsInvalid = "95833"
     end
 
     module Merchant

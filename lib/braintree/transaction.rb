@@ -138,6 +138,7 @@ module Braintree
     attr_reader :network_token_details
     attr_reader :network_transaction_id
     attr_reader :order_id
+    attr_reader :packages
     attr_reader :partial_settlement_transaction_ids
     attr_reader :payment_instrument_type
     attr_reader :payment_receipt
@@ -284,6 +285,14 @@ module Braintree
       return_object_or_raise(:transaction) { update_details(*args) }
     end
 
+    def self.package_tracking(*args)
+      Configuration.gateway.transaction.package_tracking(*args)
+    end
+
+    def self.package_tracking!(*args)
+      Configuration.gateway.transaction.package_tracking!(*args)
+    end
+
     def self.submit_for_partial_settlement(*args)
       Configuration.gateway.transaction.submit_for_partial_settlement(*args)
     end
@@ -325,6 +334,7 @@ module Braintree
       @sca_exemption_requested = attributes[:sca_exemption_requested]
       @sepa_direct_debit_account_details = SepaDirectDebitAccountDetails.new(@sepa_debit_account_detail)
       @service_fee_amount = Util.to_big_decimal(service_fee_amount)
+      @packages = attributes[:shipments] ? attributes[:shipments].map { |pd| PackageDetails.new(pd) } : []
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @subscription_details = SubscriptionDetails.new(@subscription)

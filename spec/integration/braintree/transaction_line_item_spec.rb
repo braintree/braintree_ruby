@@ -18,6 +18,9 @@ describe Braintree::TransactionLineItem do
             :kind => "debit",
             :unit_amount => "45.1232",
             :total_amount => "45.15",
+            :upc_code => "11223344556677889",
+            :upc_type => "UPC-A",
+            :image_url => "https://google.com/image.png",
           },
         ],
       )
@@ -32,6 +35,9 @@ describe Braintree::TransactionLineItem do
       expect(line_item.kind).to eq("debit")
       expect(line_item.unit_amount).to eq(BigDecimal("45.1232"))
       expect(line_item.total_amount).to eq(BigDecimal("45.15"))
+      expect(line_item.upc_type).to eq("UPC-A")
+      expect(line_item.upc_code).to eq("11223344556677889")
+      expect(line_item.image_url).to eq("https://google.com/image.png")
     end
   end
 end

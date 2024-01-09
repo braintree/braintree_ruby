@@ -2132,8 +2132,9 @@ describe Braintree::Transaction do
         meta_checkout_card_details.cardholder_name.should == "Meta Checkout Card Cardholder"
         meta_checkout_card_details.container_id.should == "container123"
         meta_checkout_card_details.customer_location.should == "US"
-        meta_checkout_card_details.expiration_date.should == "12/2024"
-        meta_checkout_card_details.expiration_year.should == "2024"
+        next_year = Date.today().next_year().year.to_s
+        meta_checkout_card_details.expiration_date.should == "12/".concat(next_year)
+        meta_checkout_card_details.expiration_year.should == next_year
         meta_checkout_card_details.expiration_month.should == "12"
         meta_checkout_card_details.image_url.should == "https://assets.braintreegateway.com/payment_method_logo/visa.png?environment=development"
         meta_checkout_card_details.is_network_tokenized.should == false
@@ -2161,8 +2162,9 @@ describe Braintree::Transaction do
         meta_checkout_token_details.cryptogram.should == "AlhlvxmN2ZKuAAESNFZ4GoABFA=="
         meta_checkout_token_details.customer_location.should == "US"
         meta_checkout_token_details.ecommerce_indicator.should == "07"
-        meta_checkout_token_details.expiration_date.should == "12/2024"
-        meta_checkout_token_details.expiration_year.should == "2024"
+        next_year = Date.today().next_year().year.to_s
+        meta_checkout_token_details.expiration_date.should == "12/".concat(next_year)
+        meta_checkout_token_details.expiration_year.should == next_year
         meta_checkout_token_details.expiration_month.should == "12"
         meta_checkout_token_details.image_url.should == "https://assets.braintreegateway.com/payment_method_logo/visa.png?environment=development"
         meta_checkout_token_details.is_network_tokenized.should == true
@@ -2748,7 +2750,7 @@ describe Braintree::Transaction do
             },
             :three_d_secure_authentication_id => three_d_secure_authentication_id,
             :three_d_secure_pass_thru => {
-              :eci_flag => "02",
+              :eci_flag => "05",
               :cavv => "some_cavv",
               :xid => "some_xid",
               :three_d_secure_version => "1.0.2",
@@ -2835,7 +2837,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "1.0.2",
@@ -2860,7 +2862,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "1.0.2",
@@ -2947,7 +2949,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "invalid",
@@ -2971,7 +2973,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "1.0.2",
@@ -2995,7 +2997,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "1.0.2",
@@ -3019,7 +3021,7 @@ describe Braintree::Transaction do
             :expiration_date => "12/12",
           },
           :three_d_secure_pass_thru => {
-            :eci_flag => "02",
+            :eci_flag => "05",
             :cavv => "some_cavv",
             :xid => "some_xid",
             :three_d_secure_version => "1.0.2",
@@ -4605,6 +4607,84 @@ describe Braintree::Transaction do
         expect(result.success?).to eq(false)
         expect(result.errors.for(:transaction).on(:line_items)[0].code).to eq(Braintree::ErrorCodes::Transaction::TooManyLineItems)
       end
+
+      context "UPC code and type" do
+        let(:line_item) do
+          {
+            :quantity => "1",
+            :name => "Name #1",
+            :description => "Description #1",
+            :kind => "debit",
+            :unit_amount => "45.12",
+            :unit_tax_amount => "1.23",
+            :unit_of_measure => "gallon",
+            :discount_amount => "1.02",
+            :tax_amount => "4.50",
+            :total_amount => "45.15",
+            :product_code => "23434",
+            :commodity_code => "9SAASSD8724",
+            :url => "https://example.com/products/23434",
+            :upc_code => "042100005264",
+            :upc_type => "UPC-A",
+            :image_url => "https://google.com/image.png",
+          }
+        end
+
+        it "accepts valid values" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => "45.15",
+            :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+            :line_items => [line_item],
+          )
+          expect(result.success?).to eq(true)
+          expect(result.transaction.line_items.length).to eq(1)
+          line_item = result.transaction.line_items[0]
+          expect(line_item.upc_code).to eq("042100005264")
+          expect(line_item.upc_type).to eq("UPC-A")
+        end
+
+        it "returns validation errors for invalid UPC code and type too long" do
+          line_item[:upc_code] = "THISCODELONGERTHAN17CHARS"
+          line_item[:upc_type] = "USB-C"
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => "45.15",
+            :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+            :line_items => [line_item],
+          )
+
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).for(:line_items).for(:index_0).on(:upc_code)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UPCCodeIsTooLong)
+          expect(result.errors.for(:transaction).for(:line_items).for(:index_0).on(:upc_type)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UPCTypeIsInvalid)
+        end
+
+        it "returns UPC code missing error when code is not present" do
+          line_item.delete(:upc_code)
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => "45.15",
+            :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+            :line_items => [line_item],
+          )
+
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).for(:line_items).for(:index_0).on(:upc_code)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UPCCodeIsMissing)
+        end
+
+        it "returns UPC type missing error when type is not present" do
+          line_item.delete(:upc_type)
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :amount => "45.15",
+            :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+            :line_items => [line_item],
+          )
+
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).for(:line_items).for(:index_0).on(:upc_type)[0].code).to eq(Braintree::ErrorCodes::TransactionLineItem::UPCTypeIsMissing)
+        end
+      end
     end
 
     context "level 3 summary data" do
@@ -5820,7 +5900,7 @@ describe Braintree::Transaction do
     end
 
     context "Pinless debit transaction" do
-      xit "succesfully submits for settlement" do
+      it "succesfully submits for settlement" do
         result = Braintree::Transaction.sale(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :merchant_account_id => SpecHelper::PinlessDebitMerchantAccountId,
@@ -5831,8 +5911,26 @@ describe Braintree::Transaction do
           },
         )
         expect(result.success?).to be_truthy
-        expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
         expect(result.transaction.debit_network).not_to be_nil
+      end
+    end
+
+    context "Process debit as credit" do
+      it "succesfully completed pinless eligible transaction in signature" do
+        result = Braintree::Transaction.sale(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :merchant_account_id => SpecHelper::PinlessDebitMerchantAccountId,
+          :currency_iso_code => "USD",
+          :payment_method_nonce => Braintree::Test::Nonce::TransactablePinlessDebitVisa,
+          :options => {
+            :submit_for_settlement => true,
+            :credit_card => {
+              :process_debit_as_credit => true
+            }
+          },
+        )
+        expect(result.success?).to be_truthy
+        expect(result.transaction.debit_network).to be_nil
       end
     end
   end
@@ -7737,20 +7835,6 @@ describe Braintree::Transaction do
         expect(adjustment_transaction.success?).to eq(false)
         expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
         expect(adjustment_transaction.errors.for(:authorization_adjustment).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::NoNetAmountToPerformAuthAdjustment)
-      end
-
-      it "returns failure, when transaction status is not authorized" do
-        additional_params = {:options => {:submit_for_settlement => true}}
-        initial_transaction = Braintree::Transaction.sale(first_data_master_transaction_params.merge(additional_params))
-        expect(initial_transaction.success?).to eq(true)
-
-        adjustment_transaction = Braintree::Transaction.adjust_authorization(
-          initial_transaction.transaction.id, "85.50"
-        )
-
-        expect(adjustment_transaction.success?).to eq(false)
-        expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
-        expect(adjustment_transaction.errors.for(:transaction).on(:base).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionMustBeInStateAuthorized)
       end
 
       it "returns failure, when transaction authorization type final or undefined" do

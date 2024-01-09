@@ -405,7 +405,7 @@ describe Braintree::CreditCardVerification, "search" do
           :amount => "10.00",
         },
         :three_d_secure_pass_thru => {
-          :eci_flag => "02",
+          :eci_flag => "05",
           :cavv => "some_cavv",
           :xid => "some_xid",
           :three_d_secure_version => "1.0.2",

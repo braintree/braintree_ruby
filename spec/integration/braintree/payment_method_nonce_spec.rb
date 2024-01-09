@@ -97,7 +97,7 @@ describe Braintree::PaymentMethodNonce do
       nonce.details.bin.should == "401288"
       nonce.details.last_two.should == "81"
       nonce.details.card_type.should == "Visa"
-      nonce.details.expiration_year.should == "2024"
+      nonce.details.expiration_year.should == Date.today().next_year().year.to_s
       nonce.details.expiration_month.should == "12"
     end
 
@@ -107,7 +107,7 @@ describe Braintree::PaymentMethodNonce do
       nonce.details.bin.should == "401288"
       nonce.details.last_two.should == "81"
       nonce.details.card_type.should == "Visa"
-      nonce.details.expiration_year.should == "2024"
+      nonce.details.expiration_year.should == Date.today().next_year().year.to_s
       nonce.details.expiration_month.should == "12"
     end
 
