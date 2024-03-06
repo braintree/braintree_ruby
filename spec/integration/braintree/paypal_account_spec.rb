@@ -51,7 +51,7 @@ describe Braintree::PayPalAccount do
 
     it "does not return a different payment method type" do
       customer = Braintree::Customer.create!
-      result = Braintree::CreditCard.create(
+      Braintree::CreditCard.create(
         :customer_id => customer.id,
         :number => Braintree::Test::CreditCardNumbers::Visa,
         :expiration_date => "05/2009",
@@ -171,7 +171,7 @@ describe Braintree::PayPalAccount do
       )
 
       updated_token = "UPDATED_TOKEN-" + rand(36**3).to_s(36)
-      updated_result = Braintree::PayPalAccount.update(
+      Braintree::PayPalAccount.update(
         original_token,
         :token => updated_token,
       )
@@ -200,7 +200,7 @@ describe Braintree::PayPalAccount do
         :customer_id => customer.id,
       ).payment_method.token
 
-      updated_result = Braintree::PayPalAccount.update(
+      Braintree::PayPalAccount.update(
         original_token,
         :options => {:make_default => true},
       )
@@ -218,7 +218,7 @@ describe Braintree::PayPalAccount do
         :consent_code => "consent-code",
         :token => first_token,
       )
-      first_result = Braintree::PaymentMethod.create(
+      Braintree::PaymentMethod.create(
         :payment_method_nonce => first_nonce,
         :customer_id => customer.id,
       )
@@ -227,7 +227,7 @@ describe Braintree::PayPalAccount do
         :consent_code => "consent-code",
         :token => second_token,
       )
-      second_result = Braintree::PaymentMethod.create(
+      Braintree::PaymentMethod.create(
         :payment_method_nonce => second_nonce,
         :customer_id => customer.id,
       )
@@ -256,7 +256,7 @@ describe Braintree::PayPalAccount do
         :customer_id => customer.id,
       )
 
-      result = Braintree::PayPalAccount.delete(token)
+      Braintree::PayPalAccount.delete(token)
 
       expect do
         Braintree::PayPalAccount.find(token)

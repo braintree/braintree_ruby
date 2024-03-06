@@ -5,7 +5,7 @@ describe Braintree::ErrorResult do
     it "ignores data other than params, errors, and message" do
       # so that we can add more data into the response in the future without breaking the client lib
       expect do
-        result = Braintree::ErrorResult.new(
+        Braintree::ErrorResult.new(
           :gateway,
           :params => "params",
           :errors => {:errors => []},

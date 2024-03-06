@@ -29,7 +29,7 @@ module Braintree
     end
 
     def transactions
-      transactions = @gateway.transaction.search do |search|
+      @gateway.transaction.search do |search|
         search.ids.in transaction_ids
       end
     end

@@ -263,19 +263,19 @@ describe Braintree::AdvancedSearch do
   context "multiple_value_or_text_field" do
     describe "in" do
       it "works for the in operator" do
-        subscription1 = Braintree::Subscription.create(
+        Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TriallessPlan[:id],
           :price => "17",
         ).subscription
 
-        subscription2 = Braintree::Subscription.create(
+        Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
           :price => "17",
         ).subscription
 
-        subscription3 = Braintree::Subscription.create(
+        Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::AddOnDiscountPlan[:id],
           :price => "17",

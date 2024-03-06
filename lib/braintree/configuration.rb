@@ -72,7 +72,7 @@ module Braintree
     end
 
     def self.instantiate
-      config = new(
+      new(
         :custom_user_agent => @custom_user_agent,
         :endpoint => @endpoint,
         :environment => environment,

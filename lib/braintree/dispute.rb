@@ -43,6 +43,7 @@ module Braintree
       Expired = "expired"
       Open = "open"
       Lost = "lost"
+      UnderReview = "under_review"
       Won = "won"
 
       All = constants.map { |c| const_get(c) }

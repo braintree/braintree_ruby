@@ -203,7 +203,7 @@ describe Braintree::Address do
 
     it "raises a NotFoundError if it cannot be found because of address id" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
-      address = Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
+      Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
       expect do
         Braintree::Address.find(customer, "invalid")
       end.to raise_error(
@@ -215,7 +215,7 @@ describe Braintree::Address do
   describe "self.update" do
     it "raises NotFoundError if the address can't be found" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
-      address = Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
+      Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
       expect do
         Braintree::Address.update(customer.id, "bad-id", {})
       end.to raise_error(Braintree::NotFoundError)
@@ -293,7 +293,7 @@ describe Braintree::Address do
   describe "self.update!" do
     it "raises NotFoundError if the address can't be found" do
       customer = Braintree::Customer.create!(:last_name => "Wilson")
-      address = Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
+      Braintree::Address.create!(:customer_id => customer.id, :street_address => "123 E Main St")
       expect do
         Braintree::Address.update!(customer.id, "bad-id", {})
       end.to raise_error(Braintree::NotFoundError)

@@ -924,11 +924,11 @@ describe Braintree::Customer do
           },
         ).credit_card
 
-        subscription = Braintree::Subscription.create(
+        Braintree::Subscription.create(
           :payment_method_token => credit_card.token,
           :plan_id => "integration_trialless_plan",
           :price => "1.00",
-        ).subscription
+        )
 
         found_customer = Braintree::Customer.find(customer.id, {
           :association_filter_id => "customernoassociations"
@@ -958,11 +958,11 @@ describe Braintree::Customer do
           },
         ).credit_card
 
-        subscription = Braintree::Subscription.create(
+        Braintree::Subscription.create(
           :payment_method_token => credit_card.token,
           :plan_id => "integration_trialless_plan",
           :price => "1.00",
-        ).subscription
+        )
 
         found_customer = Braintree::Customer.find(customer.id, {
          :association_filter_id =>  "customertoplevelassociations"
@@ -1233,7 +1233,7 @@ describe Braintree::Customer do
 
       token1 = random_payment_method_token
 
-      payment_method1 = Braintree::PaymentMethod.create(
+      Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
         :token => token1,
@@ -1244,7 +1244,7 @@ describe Braintree::Customer do
 
       token2 = random_payment_method_token
 
-      payment_method2 = Braintree::PaymentMethod.create(
+      Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableMasterCard,
         :token => token2,
@@ -1266,7 +1266,7 @@ describe Braintree::Customer do
 
       token1 = random_payment_method_token
 
-      payment_method1 = Braintree::PaymentMethod.create(
+      Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
         :token => token1,
@@ -1277,7 +1277,7 @@ describe Braintree::Customer do
 
       token2 = random_payment_method_token
 
-      payment_method2 = Braintree::PaymentMethod.create(
+      Braintree::PaymentMethod.create(
         :customer_id => customer.id,
         :payment_method_nonce => Braintree::Test::Nonce::TransactableMasterCard,
         :token => token2,

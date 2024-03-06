@@ -144,7 +144,7 @@ def generate_invalid_us_bank_account_nonce
   nonce_characters = "bcdfghjkmnpqrstvwxyz23456789".chars.to_a
   nonce = "tokenusbankacct_"
   nonce += 4.times.map { sample(nonce_characters) }.join("_")
-  nonce += "_xxx"
+  nonce + "_xxx"
 end
 
 def _cosmos_post(token, url, payload)

@@ -8,7 +8,6 @@ module Braintree
     end
 
     def delete(path, query_params = {})
-      full_path = path + _build_query_string(query_params)
       response = _http_do Net::HTTP::Delete, path
       if response.code.to_i == 200 || response.code.to_i == 204
         true
@@ -20,7 +19,6 @@ module Braintree
     end
 
     def get(path, query_params = {})
-      full_path = path + _build_query_string(query_params)
       response = _http_do Net::HTTP::Get, path
       if response.code.to_i == 200 || response.code.to_i == 422
         Xml.hash_from_xml(_body(response))
@@ -69,7 +67,7 @@ module Braintree
 
     def _setup_connection(server = @config.server, port = @config.port)
       if @config.proxy_address
-        connection = Net::HTTP.new(
+        Net::HTTP.new(
           server,
           port,
           @config.proxy_address,
@@ -78,7 +76,7 @@ module Braintree
           @config.proxy_pass,
         )
       else
-        connection = Net::HTTP.new(server, port)
+        Net::HTTP.new(server, port)
       end
     end
 

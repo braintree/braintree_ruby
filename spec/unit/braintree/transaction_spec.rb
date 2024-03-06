@@ -200,8 +200,8 @@ describe Braintree::Transaction do
         },
       )
 
-      expect(transaction.three_d_secure_info.enrolled).to eq("Y")
       expect(transaction.three_d_secure_info.status).to eq("authenticate_successful")
+      expect(transaction.three_d_secure_info.enrolled).to eq("Y")
       expect(transaction.three_d_secure_info.liability_shifted).to eq(true)
       expect(transaction.three_d_secure_info.liability_shift_possible).to eq(true)
     end
@@ -258,7 +258,7 @@ describe Braintree::Transaction do
     end
 
     it "handles receiving custom as an empty string" do
-      transaction = Braintree::Transaction._new(
+      Braintree::Transaction._new(
         :gateway,
         :custom => "\n    ",
       )

@@ -53,8 +53,6 @@ describe Braintree::SepaDirectDebitAccount do
 
     context "subscriptions" do
       it "returns subscriptions associated with a SEPA direct debit account" do
-        customer = Braintree::Customer.create!
-
         subscription1 = Braintree::Subscription.create(
           :payment_method_token => token,
           :plan_id => SpecHelper::TriallessPlan[:id],

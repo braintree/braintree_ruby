@@ -136,7 +136,6 @@ describe Braintree::Subscription do
       end
 
       it "returns an error if the payment_method_nonce hasn't been vaulted" do
-        customer = Braintree::Customer.create!
         result = Braintree::Subscription.create(
           :payment_method_nonce => Braintree::Test::Nonce::PayPalFuturePayment,
           :plan_id => SpecHelper::TriallessPlan[:id],
@@ -937,17 +936,17 @@ describe Braintree::Subscription do
 
       it "has validation errors on duplicate id" do
         duplicate_id = "new_id_#{rand(36**6).to_s(36)}"
-        duplicate = Braintree::Subscription.create(
+        Braintree::Subscription.create(
           :payment_method_token => @credit_card.token,
           :plan_id => SpecHelper::TrialPlan[:id],
           :id => duplicate_id,
         )
-        result = Braintree::Subscription.update(
+        duplicate = Braintree::Subscription.update(
           @subscription.id,
           :id => duplicate_id,
         )
-        expect(result.success?).to eq(false)
-        expect(result.errors.for(:subscription).on(:id)[0].code).to eq(Braintree::ErrorCodes::Subscription::IdIsInUse)
+        expect(duplicate.success?).to eq(false)
+        expect(duplicate.errors.for(:subscription).on(:id)[0].code).to eq(Braintree::ErrorCodes::Subscription::IdIsInUse)
       end
 
       it "cannot update a canceled subscription" do
@@ -1203,7 +1202,7 @@ describe Braintree::Subscription do
 
     it "returns a validation error if record not found" do
       expect {
-        r = Braintree::Subscription.cancel("noSuchSubscription")
+        Braintree::Subscription.cancel("noSuchSubscription")
       }.to raise_error(Braintree::NotFoundError, 'subscription with id "noSuchSubscription" not found')
     end
 

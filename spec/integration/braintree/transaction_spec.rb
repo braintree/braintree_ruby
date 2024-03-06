@@ -2098,7 +2098,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a params nonce with PayPal account params" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2174,7 +2173,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a fake apple pay nonce" do
-        customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -2203,7 +2201,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a vaulted transaction with a fake apple pay nonce" do
-        customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -2225,7 +2222,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a fake google pay proxy card nonce" do
-        customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -2257,7 +2253,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a vaulted transaction with a fake google pay proxy card nonce" do
-        customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -2282,7 +2277,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a fake google pay network token nonce" do
-        customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -2335,7 +2329,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with an unknown nonce" do
-        customer = Braintree::Customer.create!
         result = Braintree::Transaction.create(
           :type => "sale",
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -2364,7 +2357,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a payee id" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2388,7 +2380,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a payee id in the options params" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2413,7 +2404,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a payee id in options.paypal" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2439,7 +2429,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a payee email" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2463,7 +2452,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a payee email in the options params" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2488,7 +2476,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a payee email in options.paypal" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2514,7 +2501,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a paypal custom field" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2540,7 +2526,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with a paypal description" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -2566,7 +2551,6 @@ describe Braintree::Transaction do
       end
 
       it "can create a transaction with STC supplementary data" do
-        customer = Braintree::Customer.create!
         nonce = nonce_for_new_payment_method(
           :paypal_account => {
             :consent_code => "PAYPAL_CONSENT_CODE",
@@ -3300,7 +3284,7 @@ describe Braintree::Transaction do
             )
 
             config = Braintree::Configuration.instantiate
-            response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+            config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
             transaction = Braintree::Transaction.find(transaction.id)
 
             result = Braintree::Transaction.refund(
@@ -3390,7 +3374,7 @@ describe Braintree::Transaction do
             },
           )
           config = Braintree::Configuration.instantiate
-          response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+          config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
           result = Braintree::Transaction.refund(transaction.id, :amount => "2046.00")
           expect(result.success?).to eq(false)
           expect(result.transaction.id).to match(/^\w{6,}$/)
@@ -3411,7 +3395,7 @@ describe Braintree::Transaction do
             },
           )
           config = Braintree::Configuration.instantiate
-          response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+          config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
           result = Braintree::Transaction.refund(transaction.id, :amount => "2009.00")
           expect(result.success?).to eq(false)
           expect(result.transaction.id).to match(/^\w{6,}$/)
@@ -7256,7 +7240,7 @@ describe Braintree::Transaction do
     )
 
     config = Braintree::Configuration.instantiate
-    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+    config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
     Braintree::Transaction.find(transaction.id)
   end
 
@@ -7287,8 +7271,8 @@ describe Braintree::Transaction do
     )
 
     config = Braintree::Configuration.instantiate
-    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
-    response = config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/escrow")
+    config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+    config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/escrow")
     Braintree::Transaction.find(transaction.id)
   end
 

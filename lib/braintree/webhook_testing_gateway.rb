@@ -34,12 +34,6 @@ module Braintree
       case kind
       when Braintree::WebhookNotification::Kind::Check
         _check
-      when Braintree::WebhookNotification::Kind::DisputeOpened
-        _dispute_opened_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::DisputeLost
-        _dispute_lost_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::DisputeWon
-        _dispute_won_sample_xml(id)
       when Braintree::WebhookNotification::Kind::DisputeAccepted
         _dispute_accepted_sample_xml(id)
       when Braintree::WebhookNotification::Kind::DisputeAutoAccepted
@@ -48,6 +42,14 @@ module Braintree
         _dispute_disputed_sample_xml(id)
       when Braintree::WebhookNotification::Kind::DisputeExpired
         _dispute_expired_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisputeLost
+        _dispute_lost_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisputeOpened
+        _dispute_opened_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisputeUnderReview
+        _dispute_under_review_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::DisputeWon
+        _dispute_won_sample_xml(id)
       when Braintree::WebhookNotification::Kind::PartnerMerchantConnected
         _partner_merchant_connected_sample_xml(id)
       when Braintree::WebhookNotification::Kind::PartnerMerchantDisconnected
@@ -324,6 +326,14 @@ module Braintree
       XML
     end
 
+    def _dispute_under_review_sample_xml(id)
+      if id == "legacy_dispute_id"
+        _old_dispute_under_review_sample_xml(id)
+      else
+        _new_dispute_under_review_sample_xml(id)
+      end
+    end
+
     def _dispute_opened_sample_xml(id)
       if id == "legacy_dispute_id"
         _old_dispute_opened_sample_xml(id)
@@ -378,6 +388,26 @@ module Braintree
       else
         _new_dispute_expired_sample_xml(id)
       end
+    end
+
+    def _old_dispute_under_review_sample_xml(id)
+      <<-XML
+        <dispute>
+          <amount>100.00</amount>
+          <currency-iso-code>USD</currency-iso-code>
+          <received-date type="date">2014-03-01</received-date>
+          <reply-by-date type="date">2014-03-21</reply-by-date>
+          <kind>chargeback</kind>
+          <status>under_review</status>
+          <reason>fraud</reason>
+          <id>#{id}</id>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
     end
 
     def _old_dispute_opened_sample_xml(id)
@@ -515,6 +545,48 @@ module Braintree
           <transaction>
             <id>#{id}</id>
             <amount>100.00</amount>
+          </transaction>
+          <date-opened type=\"date\">2014-03-21</date-opened>
+        </dispute>
+      XML
+    end
+
+    def _new_dispute_under_review_sample_xml(id)
+      <<-XML
+        <dispute>
+          <id>#{id}</id>
+          <amount>100.00</amount>
+          <amount-disputed>100.00</amount-disputed>
+          <amount-won>95.00</amount-won>
+          <case-number>CASE-12345</case-number>
+          <created-at type="datetime">2017-06-16T20:44:41Z</created-at>
+          <currency-iso-code>USD</currency-iso-code>
+          <forwarded-comments nil="true"/>
+          <kind>chargeback</kind>
+          <merchant-account-id>ytnlulaloidoqwvzxjrdqputg</merchant-account-id>
+          <reason>fraud</reason>
+          <reason-code nil="true"/>
+          <reason-description nil="true"/>
+          <received-date type="date">2016-02-15</received-date>
+          <reference-number>REF-9876</reference-number>
+          <reply-by-date type="date">2016-02-22</reply-by-date>
+          <status>under_review</status>
+          <updated-at type="datetime">2017-06-16T20:44:41Z</updated-at>
+          <original-dispute-id>9qde5qgp</original-dispute-id>
+          <status-history type="array">
+            <status-history>
+              <status>under_review</status>
+              <timestamp type="datetime">2017-06-16T20:44:41Z</timestamp>
+            </status-history>
+          </status-history>
+          <evidence type="array"/>
+          <transaction>
+            <id>#{id}</id>
+            <amount>100.00</amount>
+            <created-at>2017-06-21T20:44:41Z</created-at>
+            <order-id nil="true"/>
+            <purchase-order-number nil="true"/>
+            <payment-instrument-subtype>Visa</payment-instrument-subtype>
           </transaction>
           <date-opened type=\"date\">2014-03-21</date-opened>
         </dispute>

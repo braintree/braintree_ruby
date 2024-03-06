@@ -168,6 +168,22 @@ describe Braintree::WebhookNotification do
           expect(dispute.kind).to eq(Braintree::Dispute::Kind::Chargeback)
         end
 
+        it "builds a sample notification for a dispute under_review webhook" do
+          sample_notification = Braintree::WebhookTesting.sample_notification(
+            Braintree::WebhookNotification::Kind::DisputeUnderReview,
+            dispute_id,
+          )
+
+          notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+
+          expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::DisputeUnderReview)
+
+          dispute = notification.dispute
+          expect(dispute.status).to eq(Braintree::Dispute::Status::UnderReview)
+          expect(dispute.id).to eq(dispute_id)
+          expect(dispute.kind).to eq(Braintree::Dispute::Kind::Chargeback)
+        end
+
         it "builds a sample notification for a dispute won webhook" do
           sample_notification = Braintree::WebhookTesting.sample_notification(
             Braintree::WebhookNotification::Kind::DisputeWon,

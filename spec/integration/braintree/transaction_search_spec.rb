@@ -640,7 +640,7 @@ describe Braintree::Transaction, "search" do
     context "invalid search" do
       it "raises an exception on invalid transaction type" do
         expect do
-          collection = Braintree::Transaction.search do |search|
+          Braintree::Transaction.search do |search|
             search.customer_id.is "9171566"
             search.type.is "settled"
           end
@@ -649,7 +649,7 @@ describe Braintree::Transaction, "search" do
 
       it "raises an exception on invalid debit network" do
         expect do
-          collection = Braintree::Transaction.search do |search|
+          Braintree::Transaction.search do |search|
             search.debit_network.is "invalid_network"
           end
         end.to raise_error(ArgumentError)
@@ -849,8 +849,6 @@ describe Braintree::Transaction, "search" do
 
       context "ach return response created at" do
         it "it finds records within date range of the custom field" do
-          reason_code = "any_reason_code"
-
           date_search = Braintree::Transaction.search do |search|
             search.ach_return_responses_created_at.between(DateTime.now - 1.0, DateTime.now + 1.0)
           end
@@ -859,8 +857,6 @@ describe Braintree::Transaction, "search" do
         end
 
         it "it does not find records not within date range of the custom field" do
-          reason_code = "any_reason_code"
-
           neg_date_search = Braintree::Transaction.search do |search|
            search.ach_return_responses_created_at.between(DateTime.now + 1.0, DateTime.now - 1.0)
           end
@@ -1488,7 +1484,7 @@ describe Braintree::Transaction, "search" do
     context "when the search times out" do
       it "raises a UnexpectedError" do
         expect {
-          collection = Braintree::Transaction.search do |search|
+          Braintree::Transaction.search do |search|
             search.amount.is(-10)
           end
         }.to raise_error(Braintree::UnexpectedError)

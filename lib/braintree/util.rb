@@ -191,7 +191,7 @@ module Braintree
     def self._get_invalid_keys(valid_keys, hash)
       flattened_valid_keys = _flatten_valid_keys(valid_keys)
       keys = _flatten_hash_keys(hash) - flattened_valid_keys
-      keys = _remove_wildcard_keys(flattened_valid_keys, keys)
+      _remove_wildcard_keys(flattened_valid_keys, keys)
     end
 
     module IdEquality

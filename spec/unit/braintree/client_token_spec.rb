@@ -14,7 +14,7 @@ module Braintree
 
       it "can't overwrite public_key, or created_at" do
         expect {
-          client_token = Braintree::ClientToken.generate(
+          Braintree::ClientToken.generate(
             :public_key => "bad_key",
             :created_at => "bad_time",
           )

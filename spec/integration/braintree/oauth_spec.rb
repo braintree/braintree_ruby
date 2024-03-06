@@ -36,7 +36,7 @@ describe "OAuth" do
       )
 
       expect(result).not_to be_success
-      errors = expect(result.errors.for(:credentials).on(:code)[0].code).to eq(Braintree::ErrorCodes::OAuth::InvalidGrant)
+      expect(result.errors.for(:credentials).on(:code)[0].code).to eq(Braintree::ErrorCodes::OAuth::InvalidGrant)
       expect(result.message).to match(/Invalid grant: code not found/)
     end
 

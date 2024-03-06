@@ -32,7 +32,7 @@ module Braintree
         case value.class.to_s
           when "Hash"
             if value["type"] == "array"
-              child_key, entries = value.detect { |k,_v| k != "type" }   # child_key is throwaway
+              _child_key, entries = value.detect { |k,_v| k != "type" }   # child_key is throwaway
               if entries.nil? || ((c = value[CONTENT_ROOT]) && c.strip.empty?)
                 []
               else
@@ -47,7 +47,7 @@ module Braintree
               end
             elsif value.has_key?(CONTENT_ROOT)
               content = value[CONTENT_ROOT]
-              if (parser = XML_PARSING[value["type"]])
+              if (XML_PARSING[value["type"]])
                 XML_PARSING[value["type"]].call(content)
               else
                 content

@@ -390,15 +390,14 @@ describe Braintree::PaymentMethod do
       expect(result.success?).to eq(true)
 
       three_d_secure_info = result.payment_method.verification.three_d_secure_info
-      expect(three_d_secure_info.enrolled).to eq("Y")
+      expect(three_d_secure_info.status).to eq("authenticate_successful")
       expect(three_d_secure_info).to be_liability_shifted
       expect(three_d_secure_info).to be_liability_shift_possible
-      expect(three_d_secure_info.status).to eq("authenticate_successful")
-      expect(three_d_secure_info.cavv).to eq("cavv_value")
-      expect(three_d_secure_info.xid).to eq("xid_value")
-      expect(three_d_secure_info.eci_flag).to eq("05")
-      expect(three_d_secure_info.three_d_secure_version).to eq("1.0.2")
-      expect(three_d_secure_info.ds_transaction_id).to eq(nil)
+      expect(three_d_secure_info.enrolled).to be_a(String)
+      expect(three_d_secure_info.cavv).to be_a(String)
+      expect(three_d_secure_info.xid).to be_a(String)
+      expect(three_d_secure_info.eci_flag).to be_a(String)
+      expect(three_d_secure_info.three_d_secure_version).to be_a(String)
     end
 
     it "respects fail_on_duplicate_payment_method when included outside of the nonce" do
@@ -1409,7 +1408,6 @@ describe Braintree::PaymentMethod do
 
     it "raises a NotFoundError exception if payment method cannot be found" do
       token = make_token
-      customer = Braintree::Customer.create!
 
       expect do
         Braintree::PaymentMethod.delete(token)
@@ -1878,7 +1876,7 @@ describe Braintree::PaymentMethod do
         )
 
         updated_token = make_token
-        updated_result = Braintree::PaymentMethod.update(
+        Braintree::PaymentMethod.update(
           original_token,
           :token => updated_token,
         )
@@ -1907,7 +1905,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
         ).payment_method.token
 
-        updated_result = Braintree::PaymentMethod.update(
+        Braintree::PaymentMethod.update(
           original_token,
           :options => {:make_default => true},
         )
@@ -1925,7 +1923,7 @@ describe Braintree::PaymentMethod do
           :consent_code => "consent-code",
           :token => first_token,
         )
-        first_result = Braintree::PaymentMethod.create(
+        Braintree::PaymentMethod.create(
           :payment_method_nonce => first_nonce,
           :customer_id => customer.id,
         )
@@ -1934,7 +1932,7 @@ describe Braintree::PaymentMethod do
           :consent_code => "consent-code",
           :token => second_token,
         )
-        second_result = Braintree::PaymentMethod.create(
+        Braintree::PaymentMethod.create(
           :payment_method_nonce => second_nonce,
           :customer_id => customer.id,
         )

@@ -80,8 +80,7 @@ module Braintree
       operators :is
 
       def between(min, max)
-        self >= min
-        self <= max
+        self >= min && self <= max
       end
 
       def >=(min)

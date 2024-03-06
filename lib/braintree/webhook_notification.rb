@@ -15,13 +15,14 @@ module Braintree
       Disbursement = "disbursement"
       DisbursementException = "disbursement_exception"
 
-      DisputeOpened = "dispute_opened"
-      DisputeLost = "dispute_lost"
-      DisputeWon = "dispute_won"
       DisputeAccepted = "dispute_accepted"
       DisputeAutoAccepted = "dispute_auto_accepted"
       DisputeDisputed = "dispute_disputed"
       DisputeExpired = "dispute_expired"
+      DisputeLost = "dispute_lost"
+      DisputeOpened = "dispute_opened"
+      DisputeUnderReview = "dispute_under_review"
+      DisputeWon = "dispute_won"
 
       GrantedPaymentInstrumentRevoked = "granted_payment_instrument_revoked"
 

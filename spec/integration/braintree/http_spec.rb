@@ -255,7 +255,6 @@ describe Braintree::Http do
         old_logger = Braintree::Configuration.logger
         output = StringIO.new
         Braintree::Configuration.logger = Logger.new(output)
-        utc_or_gmt = Time.now.utc.strftime("%Z")
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
         context.error = 19
         expect(Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context)).to eq(false)
@@ -270,7 +269,6 @@ describe Braintree::Http do
         old_logger = Braintree::Configuration.logger
         output = StringIO.new
         Braintree::Configuration.logger = Logger.new(output)
-        utc_or_gmt = Time.now.utc.strftime("%Z")
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
         expect do
           Braintree::Configuration.instantiate.http._verify_ssl_certificate(true, context)

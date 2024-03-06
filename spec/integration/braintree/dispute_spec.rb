@@ -6,7 +6,7 @@ describe Braintree::Dispute do
   let(:document_upload) do
     file = File.new("#{File.dirname(__FILE__)}/../../fixtures/files/bt_logo.png", "r")
     response = Braintree::DocumentUpload.create({:kind => Braintree::DocumentUpload::Kind::EvidenceDocument, :file => file})
-    document_upload = response.document_upload
+    response.document_upload
   end
 
   let(:transaction) do

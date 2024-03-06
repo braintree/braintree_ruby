@@ -116,7 +116,7 @@ describe Braintree::PaymentMethod do
 
         it "returns additional processor response for failed NetworkCheck" do
           customer = Braintree::Customer.create.customer
-          invalid_nonce = generate_non_plaid_us_bank_account_nonce(account_number = "1000000005")
+          invalid_nonce = generate_non_plaid_us_bank_account_nonce("1000000005")
           result = Braintree::PaymentMethod.create(
             :payment_method_nonce => invalid_nonce,
             :customer_id => customer.id,
@@ -189,7 +189,7 @@ describe Braintree::PaymentMethod do
       context "unverified token" do
         let(:payment_method) do
           customer = Braintree::Customer.create.customer
-          result = Braintree::PaymentMethod.create(
+          Braintree::PaymentMethod.create(
             :payment_method_nonce => generate_non_plaid_us_bank_account_nonce,
             :customer_id => customer.id,
             :options => {
@@ -260,7 +260,7 @@ describe Braintree::PaymentMethod do
       context "unverified token" do
         let(:payment_method) do
           customer = Braintree::Customer.create.customer
-          result = Braintree::PaymentMethod.create(
+          Braintree::PaymentMethod.create(
             :payment_method_nonce => generate_non_plaid_us_bank_account_nonce,
             :customer_id => customer.id,
             :options => {

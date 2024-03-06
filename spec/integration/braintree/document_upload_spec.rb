@@ -67,7 +67,7 @@ describe Braintree::DocumentUploadGateway do
 
     it "returns invalid keys error if signature is invalid" do
       expect do
-        response = Braintree::DocumentUpload.create({:invalid_key => "do not add", :kind => Braintree::DocumentUpload::Kind::EvidenceDocument})
+        Braintree::DocumentUpload.create({:invalid_key => "do not add", :kind => Braintree::DocumentUpload::Kind::EvidenceDocument})
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
   end

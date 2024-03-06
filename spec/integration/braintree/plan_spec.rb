@@ -113,7 +113,6 @@ describe Braintree::Plan do
     end
 
     it "returns the updated plan if valid" do
-      new_id = rand(36**9).to_s(36)
       plan = Braintree::Plan.update!(@plan.id,
                                      :name => "updated name",
                                      :price => 99.88,

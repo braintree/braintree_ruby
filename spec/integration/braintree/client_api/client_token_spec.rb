@@ -28,14 +28,12 @@ describe Braintree::ClientToken do
 
     describe "version" do
       it "allows a client token version to be specified" do
-        config = Braintree::Configuration.instantiate
         client_token_string = Braintree::ClientToken.generate(:version => 1)
         client_token = JSON.parse(client_token_string)
         expect(client_token["version"]).to eq(1)
       end
 
       it "defaults to 2" do
-        config = Braintree::Configuration.instantiate
         client_token_string = Braintree::ClientToken.generate
         client_token = decode_client_token(client_token_string)
         expect(client_token["version"]).to eq(2)

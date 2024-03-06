@@ -3,7 +3,6 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe Braintree::Digest do
   describe "self.hexdigest" do
     it "returns the sha1 hmac of the input string (test case 6 from RFC 2202)" do
-      original_key = Braintree::Configuration.private_key
       private_key = "\xaa" * 80
       data = "Test Using Larger Than Block-Size Key - Hash Key First"
       expect(Braintree::Digest.hexdigest(private_key, data)).to eq("aa4ae5e15272d00e95705637ce8a3b55ed402112")

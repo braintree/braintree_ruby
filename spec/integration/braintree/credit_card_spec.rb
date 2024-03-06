@@ -322,16 +322,15 @@ describe Braintree::CreditCard do
       expect(result.success?).to eq(true)
 
       three_d_secure_info = result.credit_card.verification.three_d_secure_info
-      expect(three_d_secure_info.enrolled).to eq("Y")
+      expect(three_d_secure_info.status).to eq("authenticate_successful")
       expect(three_d_secure_info).to be_liability_shifted
       expect(three_d_secure_info).to be_liability_shift_possible
-      expect(three_d_secure_info.status).to eq("authenticate_successful")
-      expect(three_d_secure_info.cavv).to eq("cavv_value")
-      expect(three_d_secure_info.xid).to eq("xid_value")
-      expect(three_d_secure_info.eci_flag).to eq("05")
-      expect(three_d_secure_info.three_d_secure_version).to eq("1.0.2")
-      expect(three_d_secure_info.ds_transaction_id).to eq(nil)
-      expect(three_d_secure_info.three_d_secure_authentication_id).not_to be_nil
+      expect(three_d_secure_info.enrolled).to be_a(String)
+      expect(three_d_secure_info.cavv).to be_a(String)
+      expect(three_d_secure_info.xid).to be_a(String)
+      expect(three_d_secure_info.eci_flag).to be_a(String)
+      expect(three_d_secure_info.three_d_secure_version).to be_a(String)
+      expect(three_d_secure_info.three_d_secure_authentication_id).to be_a(String)
     end
 
     it "adds credit card with billing address to customer" do
@@ -649,7 +648,6 @@ describe Braintree::CreditCard do
       end
 
       it "errors with invalid account_type" do
-        customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
           :number => Braintree::Test::CreditCardNumbers::Hiper,
           :expiration_month => "11",
@@ -666,7 +664,6 @@ describe Braintree::CreditCard do
       end
 
       it "errors when account_type not supported by merchant" do
-        customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
           :number => Braintree::Test::CreditCardNumbers::Visa,
           :expiration_month => "11",

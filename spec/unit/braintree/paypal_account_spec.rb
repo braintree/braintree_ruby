@@ -4,7 +4,7 @@ describe Braintree::PayPalAccount do
   describe "self.create" do
     it "raises an exception if attributes contain an invalid key" do
       expect do
-        result = Braintree::PayPalAccount.create(
+        Braintree::PayPalAccount.create(
           :invalid_key => "bad stuff",
           :options => {
             :invalid_option => "bad option",

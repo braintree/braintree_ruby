@@ -283,7 +283,7 @@ describe Braintree::CreditCardVerification, "search" do
       it "returns prepaid on a prepaid card" do
         cardholder_name = "Tom #{rand(1_000_000)} Smith"
 
-        result = Braintree::Customer.create(
+        Braintree::Customer.create(
           :credit_card => {
           :cardholder_name => cardholder_name,
           :expiration_date => "05/2012",

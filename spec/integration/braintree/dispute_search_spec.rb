@@ -74,7 +74,6 @@ describe Braintree::Dispute, "search" do
       end
 
       expect(collection.disputes.count).to be >= 2
-      dispute = collection.disputes.first
     end
 
     it "correctly returns disputes by chargeback protection level flag" do
