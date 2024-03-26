@@ -20,6 +20,34 @@ describe Braintree::ClientToken do
       expect(response.code).to eq("200")
     end
 
+    describe "domains" do
+      it "allows a domain to be specified" do
+        client_token_string = Braintree::ClientToken.generate(:domains => ["example.com"])
+        client_token = decode_client_token(client_token_string)
+        authorization_fingerprint = Base64.decode64(client_token["authorizationFingerprint"])
+        expect(authorization_fingerprint.include? "example.com").to eq(true)
+      end
+
+      it "raises ClientTokenTooManyDomains on too many domains" do
+        expect do
+          Braintree::ClientToken.generate(
+            :domains => ["example1.com",
+              "example2.com",
+              "example3.com",
+              "example4.com",
+              "example5.com",
+              "example6.com"
+            ])
+        end.to raise_error(ArgumentError, "Cannot specify more than 5 client token domains")
+      end
+
+      it "raises ClientTokenInvalidDomainFormat on invalid format" do
+        expect do
+          Braintree::ClientToken.generate(:domains => ["example"])
+        end.to raise_error(ArgumentError, "Client token domains must be valid domain names (RFC 1035), e.g. example.com")
+      end
+    end
+
     it "raises ArgumentError on invalid parameters (422)" do
       expect do
         Braintree::ClientToken.generate(:options => {:make_default => true})

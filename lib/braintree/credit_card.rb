@@ -81,11 +81,17 @@ module Braintree
       Configuration.gateway.credit_card.create!(*args)
     end
 
+    # NEXT_MAJOR_VERSION remove this method
+    # CreditCard.credit has been deprecated in favor of Transaction.credit
     def self.credit(token, transaction_attributes)
+      warn "[DEPRECATED] CreditCard.credit is deprecated. Use Transaction.credit instead"
       Transaction.credit(transaction_attributes.merge(:payment_method_token => token))
     end
 
+    # NEXT_MAJOR_VERSION remove this method
+    # CreditCard.credit has been deprecated in favor of Transaction.credit
     def self.credit!(token, transaction_attributes)
+      warn "[DEPRECATED] CreditCard.credit is deprecated. Use Transaction.credit instead"
       return_object_or_raise(:transaction) { credit(token, transaction_attributes) }
     end
 
@@ -109,11 +115,17 @@ module Braintree
       Configuration.gateway.credit_card.from_nonce(*args)
     end
 
+    # NEXT_MAJOR_VERSION remove this method
+    # CreditCard.sale has been deprecated in favor of Transaction.sale
     def self.sale(token, transaction_attributes)
+      warn "[DEPRECATED] CreditCard.sale is deprecated. Use Transaction.sale instead"
       Configuration.gateway.transaction.sale(transaction_attributes.merge(:payment_method_token => token))
     end
 
+    # NEXT_MAJOR_VERSION remove this method
+    # CreditCard.sale has been deprecated in favor of Transaction.sale
     def self.sale!(token, transaction_attributes)
+      warn "[DEPRECATED] CreditCard.sale is deprecated. Use Transaction.sale instead"
       return_object_or_raise(:transaction) { sale(token, transaction_attributes) }
     end
 

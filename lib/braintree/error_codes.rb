@@ -708,9 +708,11 @@ module Braintree
     module ClientToken
       CustomerDoesNotExist = "92804"
       FailOnDuplicatePaymentMethodRequiresCustomerId = "92803"
+      InvalidDomainFormat = "92011"
       MakeDefaultRequiresCustomerId = "92801"
       MerchantAccountDoesNotExist = "92807"
       ProxyMerchantDoesNotExist = "92805"
+      TooManyDomains = "92810"
       UnsupportedVersion = "92806"
       VerifyCardRequiresCustomerId = "92802"
     end

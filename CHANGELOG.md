@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.20.0
+
+- Deprecate `credit` method in `credit_card` and `credit_card_gateway`
+- Deprecate `sale` method in `credit_card` and `credit_card_gateway`
+- Add `domains` parameter support to `ClientToken::generate`
+
 ## 4.19.0
 
 - Add `UnderReview` status to `Dispute`

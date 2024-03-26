@@ -29,6 +29,7 @@ module Braintree
       [
         :address_id, :customer_id, :proxy_merchant_id, :merchant_account_id,
         :version,
+        {:domains => [:_any_key_]},
         {:options => [:make_default, :verify_card, :fail_on_duplicate_payment_method]}
       ]
     end

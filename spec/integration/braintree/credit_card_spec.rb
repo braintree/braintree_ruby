@@ -707,6 +707,8 @@ describe Braintree::CreditCard do
     end
   end
 
+  # NEXT_MAJOR_VERSION remove this test
+  # CreditCard.credit has been deprecated in favor of Transaction.credit
   describe "self.credit" do
     it "creates a credit transaction using the payment method token, returning a result object" do
       customer = Braintree::Customer.create!(
@@ -1338,6 +1340,8 @@ describe Braintree::CreditCard do
     end
   end
 
+  # NEXT_MAJOR_VERSION remove these tests
+  # CreditCard.sale has been deprecated in favor of Transaction.sale
   describe "self.sale" do
     it "creates a sale transaction using the credit card, returning a result object" do
       customer = Braintree::Customer.create!(
@@ -1381,6 +1385,8 @@ describe Braintree::CreditCard do
     end
   end
 
+  # NEXT_MAJOR_VERSION remove this test
+  # CreditCard.sale has been deprecated in favor of Transaction.sale
   describe "self.sale!" do
     it "creates a sale transaction using the credit card, returning the transaction" do
       customer = Braintree::Customer.create!(
