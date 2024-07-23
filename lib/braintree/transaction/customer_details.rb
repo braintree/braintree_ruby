@@ -8,6 +8,7 @@ module Braintree
       attr_reader :fax
       attr_reader :first_name
       attr_reader :id
+      attr_reader :international_phone
       attr_reader :last_name
       attr_reader :phone
       attr_reader :website
@@ -17,7 +18,7 @@ module Braintree
       end
 
       def inspect
-        attr_order = [:id, :first_name, :last_name, :email, :company, :website, :phone, :fax]
+        attr_order = [:id, :first_name, :last_name, :email, :company, :website, :phone, :international_phone, :fax]
         formatted_attrs = attr_order.map do |attr|
           "#{attr}: #{send(attr).inspect}"
         end

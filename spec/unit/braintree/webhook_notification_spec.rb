@@ -941,4 +941,16 @@ describe Braintree::WebhookNotification do
       end.to raise_error(Braintree::InvalidChallenge, /challenge contains non-hex characters/)
     end
   end
+
+  describe "refund failed" do
+    it "builds a sample notification for refund failed" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::RefundFailed,
+        "my_id",
+      )
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      expect(notification.kind.should).to eq(Braintree::WebhookNotification::Kind::RefundFailed)
+      expect(notification.transaction.id).to eq("my_id")
+    end
+  end
 end

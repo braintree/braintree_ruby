@@ -76,8 +76,9 @@ module Braintree
 
     def self._shared_signature
       [:company, :country_code_alpha2, :country_code_alpha3, :country_code_numeric,
-        :country_name, :extended_address, :first_name, :last_name, :locality, :phone_number,
-        :postal_code, :region, :street_address]
+       :country_name, :extended_address, :first_name,
+       {:international_phone => [:country_code, :national_number]},
+       :last_name, :locality, :phone_number, :postal_code, :region, :street_address]
     end
 
     def self._update_signature

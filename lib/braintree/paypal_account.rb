@@ -6,6 +6,7 @@ module Braintree
     attr_reader :created_at
     attr_reader :customer_id
     attr_reader :email
+    attr_reader :funding_source_description
     attr_reader :image_url
     attr_reader :payer_id
     attr_reader :revoked_at

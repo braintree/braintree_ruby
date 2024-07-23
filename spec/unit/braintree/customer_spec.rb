@@ -16,6 +16,7 @@ describe Braintree::Customer do
         :first_name => "Patrick",
         :last_name => "Smith",
         :phone => "802-483-5932",
+        :international_phone => {:country_code => "1", :national_number => "3121234567"},
         :website => "patrick.smith.com",
         :created_at => Time.now,
         :updated_at => Time.now,
@@ -27,6 +28,7 @@ describe Braintree::Customer do
       expect(output).to include(%q(first_name: "Patrick"))
       expect(output).to include(%q(last_name: "Smith"))
       expect(output).to include(%q(phone: "802-483-5932"))
+      expect(output).to include(%q(international_phone: {:country_code=>"1", :national_number=>"3121234567"}))
       expect(output).to include(%q(website: "patrick.smith.com"))
       expect(output).to include(%q(addresses: []))
       expect(output).to include(%q(credit_cards: []))
@@ -82,6 +84,7 @@ describe Braintree::Customer do
         :fax,
         :first_name,
         :id,
+        {:international_phone=>[:country_code, :national_number]},
         :last_name,
         :phone,
         :website,
@@ -111,6 +114,7 @@ describe Braintree::Customer do
             :country_name,
             :extended_address,
             :first_name,
+            {:international_phone=>[:country_code, :national_number]},
             :last_name,
             :locality,
             :phone_number,
@@ -154,6 +158,7 @@ describe Braintree::Customer do
               :country_name,
               :extended_address,
               :first_name,
+              {:international_phone=>[:country_code, :national_number]},
               :last_name,
               :locality,
               :phone_number,
@@ -176,6 +181,7 @@ describe Braintree::Customer do
         :fax,
         :first_name,
         :id,
+        {:international_phone=>[:country_code, :national_number]},
         :last_name,
         :phone,
         :website,
@@ -215,6 +221,7 @@ describe Braintree::Customer do
             :country_name,
             :extended_address,
             :first_name,
+            {:international_phone=>[:country_code, :national_number]},
             :last_name,
             :locality,
             :phone_number,
@@ -253,6 +260,7 @@ describe Braintree::Customer do
               :country_name,
               :extended_address,
               :first_name,
+              {:international_phone=>[:country_code, :national_number]},
               :last_name,
               :locality,
               :phone_number,

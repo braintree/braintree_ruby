@@ -185,6 +185,10 @@ module Braintree
       KindIsInvalid = "84901"
     end
 
+    module GooglePayCard
+      AndroidPayCardsAreNotAccepted = "83708"
+    end
+
     module PayPalAccount
       AuthExpired = "92911"
       CannotHaveBothAccessTokenAndConsentCode = "82903"

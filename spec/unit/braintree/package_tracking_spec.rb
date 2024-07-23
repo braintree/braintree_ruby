@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
+# NEXT_MAJOR_VERSION Remove paypal_tracking_id assertions, use paypal_tracker_id going forward
 describe "Package Tracking Unit Tests" do
     describe "creates and validates requests" do
         let(:gateway) do
@@ -39,8 +40,8 @@ describe "Package Tracking Unit Tests" do
           transaction = Braintree::Transaction._new(
             :gateway,
             :shipments => [
-              {:id => "id1", :carrier => "UPS", :tracking_number => "tracking_number_1", :paypal_tracking_id => "pp_tracking_number_1"},
-              {:id => "id2", :carrier => "FEDEX", :tracking_number => "tracking_number_2", :paypal_tracking_id => "pp_tracking_number_2"}
+              {:id => "id1", :carrier => "UPS", :tracking_number => "tracking_number_1", :paypal_tracking_id => "pp_tracking_number_1", :paypal_tracker_id => "pp_tracking_number_1"},
+              {:id => "id2", :carrier => "FEDEX", :tracking_number => "tracking_number_2", :paypal_tracking_id => "pp_tracking_number_2", :paypal_tracker_id => "pp_tracking_number_2"}
             ],
           )
           expect(transaction.packages.size).to eq(2)
@@ -48,11 +49,13 @@ describe "Package Tracking Unit Tests" do
           expect(transaction.packages[0].carrier).to eq("UPS")
           expect(transaction.packages[0].tracking_number).to eq("tracking_number_1")
           expect(transaction.packages[0].paypal_tracking_id).to eq("pp_tracking_number_1")
+          expect(transaction.packages[0].paypal_tracker_id).to eq("pp_tracking_number_1")
 
           expect(transaction.packages[1].id).to eq("id2")
           expect(transaction.packages[1].carrier).to eq("FEDEX")
           expect(transaction.packages[1].tracking_number).to eq("tracking_number_2")
           expect(transaction.packages[1].paypal_tracking_id).to eq("pp_tracking_number_2")
+          expect(transaction.packages[1].paypal_tracker_id).to eq("pp_tracking_number_2")
         end
 
         it "doesn't blow up if no shipments are present in the transaction response" do

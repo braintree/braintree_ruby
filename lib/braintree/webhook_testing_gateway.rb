@@ -104,6 +104,8 @@ module Braintree
         _local_payment_reversed_sample_xml
       when Braintree::WebhookNotification::Kind::PaymentMethodCustomerDataUpdated
         _payment_method_customer_data_updated_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::RefundFailed
+        _refund_failed_sample_xml(id)
       else
         _subscription_sample_xml(id)
       end
@@ -1180,6 +1182,22 @@ module Braintree
           <global-id>cGF5bWVudG1ldGhvZF92ZW5tb2FjY291bnQ</global-id>
         </venmo-account>
         XML
+    end
+
+    def _refund_failed_sample_xml(id)
+      <<-XML
+        <transaction>
+          <id>#{id}</id>
+          <amount>100</amount>
+          <credit-card>
+            <number>1234560000001234</number>
+            <cvv>123</cvv>
+            <card-type>MasterCard</card-type>
+          </credit-card>
+          <status>processor_declined</status>
+          <refunded-transaction-id>1</refunded-transaction-id>
+        </transaction>
+      XML
     end
   end
 end

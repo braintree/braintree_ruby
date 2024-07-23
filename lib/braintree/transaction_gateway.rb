@@ -178,7 +178,7 @@ module Braintree
 
     def submit_for_partial_settlement(authorized_transaction_id, amount = nil, options = {})
       raise ArgumentError, "authorized_transaction_id is invalid" unless authorized_transaction_id =~ /\A[0-9a-z]+\z/
-      Util.verify_keys(TransactionGateway._submit_for_settlement_signature, options)
+      Util.verify_keys(TransactionGateway._submit_for_partial_settlement_signature, options)
       transaction_params = {:amount => amount}.merge(options)
       response = @config.http.post("#{@config.base_merchant_path}/transactions/#{authorized_transaction_id}/submit_for_partial_settlement", :transaction => transaction_params)
       _handle_transaction_response(response)
@@ -221,7 +221,7 @@ module Braintree
         :shared_shipping_address_id, :shipping_address_id, :shipping_amount,
         :ships_from_postal_code, :tax_amount, :tax_exempt, :three_d_secure_authentication_id,:three_d_secure_token, #Deprecated
         :transaction_source, :type, :venmo_sdk_payment_method_code, # Deprecated
-        :sca_exemption, :currency_iso_code, :exchange_rate_quote_id,
+        :sca_exemption, :currency_iso_code, :exchange_rate_quote_id, :foreign_retailer,
         {:line_items => [:commodity_code, :description, :discount_amount, :image_url, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :upc_code, :upc_type, :url]},
         {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
         {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, {:payment_reader_card_details => [:encrypted_card_data, :key_serial_number]}, {:network_tokenization_attributes => [:cryptogram, :ecommerce_indicator, :token_requestor_id]}]},
@@ -319,6 +319,12 @@ module Braintree
         :shipping_amount,
         :ships_from_postal_code,
         :line_items => [:commodity_code, :description, :discount_amount, :image_url, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :upc_code, :upc_type, :url],
+      ]
+    end
+
+    def self._submit_for_partial_settlement_signature
+      _submit_for_settlement_signature + [
+        :final_capture
       ]
     end
 

@@ -38,6 +38,7 @@ describe Braintree::Customer do
         :company => "Microsoft",
         :email => "bill@microsoft.com",
         :phone => "312.555.1234",
+        :international_phone => {:country_code => "1", :national_number => "3121234567"},
         :fax => "614.555.5678",
         :website => "www.microsoft.com",
         :tax_identifiers => [{:country_code => "US", :identifier => "987654321"}],
@@ -49,6 +50,8 @@ describe Braintree::Customer do
       expect(result.customer.company).to eq("Microsoft")
       expect(result.customer.email).to eq("bill@microsoft.com")
       expect(result.customer.phone).to eq("312.555.1234")
+      expect(result.customer.international_phone[:country_code]).to eq("1")
+      expect(result.customer.international_phone[:national_number]).to eq("3121234567")
       expect(result.customer.fax).to eq("614.555.5678")
       expect(result.customer.website).to eq("www.microsoft.com")
       expect(result.customer.created_at.between?(Time.now - 10, Time.now)).to eq(true)
@@ -1193,6 +1196,7 @@ describe Braintree::Customer do
         customer.id,
         :first_name => "Mr. Joe",
         :last_name => "Super Cool",
+        :international_phone => {:country_code => "1", :national_number => "3121234567"},
         :custom_fields => {
           :store_me => "a value"
         },
@@ -1201,6 +1205,8 @@ describe Braintree::Customer do
       expect(result.customer.id).to eq(customer.id)
       expect(result.customer.first_name).to eq("Mr. Joe")
       expect(result.customer.last_name).to eq("Super Cool")
+      expect(result.customer.international_phone[:country_code]).to eq("1")
+      expect(result.customer.international_phone[:national_number]).to eq("3121234567")
       expect(result.customer.custom_fields[:store_me]).to eq("a value")
     end
 

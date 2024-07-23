@@ -718,6 +718,49 @@ describe Braintree::Transaction do
       end
     end
 
+    context "foreign_retailer" do
+      it "returns true when foreign_retailer param is true" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2025"
+          },
+          :foreign_retailer => true,
+        )
+        expect(result).to be_success
+        expect(result.transaction.foreign_retailer).to be_truthy
+      end
+
+      it "returns nil when foreign_retailer param is false" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2025"
+          },
+          :foreign_retailer => false,
+        )
+        expect(result).to be_success
+        expect(result.transaction.foreign_retailer).to be_nil
+      end
+
+      it "returns nil when foreign_retailer param is nil" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2025"
+          },
+        )
+        expect(result).to be_success
+        expect(result.transaction.foreign_retailer).to be_nil
+      end
+    end
+
     it "returns a successful result if successful" do
       result = Braintree::Transaction.create(
         :type => "sale",
@@ -5219,6 +5262,7 @@ describe Braintree::Transaction do
           :locality => "Chicago",
           :region => "IL",
           :phone_number => "122-555-1237",
+          :international_phone => {:country_code => "1", :national_number => "3121234567"},
           :postal_code => "60622",
           :country_name => "United States of America"
         },
@@ -5231,6 +5275,7 @@ describe Braintree::Transaction do
           :locality => "Bartlett",
           :region => "IL",
           :phone_number => "122-555-1236",
+          :international_phone => {:country_code => "1", :national_number => "3121234567"},
           :postal_code => "60103",
           :country_name => "United States of America",
           :shipping_method => Braintree::Transaction::AddressDetails::ShippingMethod::Electronic
@@ -5277,6 +5322,9 @@ describe Braintree::Transaction do
       expect(transaction.billing_details.country_code_alpha2).to eq("US")
       expect(transaction.billing_details.country_code_alpha3).to eq("USA")
       expect(transaction.billing_details.country_code_numeric).to eq("840")
+      expect(transaction.billing_details.phone_number).to eq("122-555-1237")
+      expect(transaction.billing_details.international_phone[:country_code]).to eq("1")
+      expect(transaction.billing_details.international_phone[:national_number]).to eq("3121234567")
       expect(transaction.shipping_details.first_name).to eq("Andrew")
       expect(transaction.shipping_details.last_name).to eq("Mason")
       expect(transaction.shipping_details.company).to eq("Braintree")
@@ -5289,6 +5337,9 @@ describe Braintree::Transaction do
       expect(transaction.shipping_details.country_code_alpha2).to eq("US")
       expect(transaction.shipping_details.country_code_alpha3).to eq("USA")
       expect(transaction.shipping_details.country_code_numeric).to eq("840")
+      expect(transaction.shipping_details.phone_number).to eq("122-555-1236")
+      expect(transaction.shipping_details.international_phone[:country_code]).to eq("1")
+      expect(transaction.shipping_details.international_phone[:national_number]).to eq("3121234567")
     end
 
     it "allows merchant account to be specified" do
@@ -6578,6 +6629,39 @@ describe Braintree::Transaction do
 
       result = Braintree::Transaction.submit_for_partial_settlement(transaction.id, Braintree::Test::TransactionAmounts::Authorize, industry_data_flight_params)
       expect(result.success?).to be_truthy
+    end
+
+    it "final_capture indicates the current partial_capture as final" do
+      authorized_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::DefaultMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        },
+      )
+
+      result1 = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100)
+      expect(result1.success?).to eq(true)
+      partial_settlement_transaction1 = result1.transaction
+      expect(partial_settlement_transaction1.amount).to eq(100)
+      expect(partial_settlement_transaction1.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(partial_settlement_transaction1.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(partial_settlement_transaction1.authorized_transaction_id).to eq(authorized_transaction.id)
+      refreshed_authorized_transaction1 = Braintree::Transaction.find(authorized_transaction.id)
+      expect(refreshed_authorized_transaction1.status).to eq(Braintree::Transaction::Status::SettlementPending)
+
+      options = {:final_capture => true}
+      result2 = Braintree::Transaction.submit_for_partial_settlement(authorized_transaction.id, 100, options)
+      expect(result2.success?).to eq(true)
+      partial_settlement_transaction2 = result2.transaction
+      expect(partial_settlement_transaction2.amount).to eq(100)
+      expect(partial_settlement_transaction2.type).to eq(Braintree::Transaction::Type::Sale)
+      expect(partial_settlement_transaction2.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(partial_settlement_transaction2.authorized_transaction_id).to eq(authorized_transaction.id)
+
+      refreshed_authorized_transaction2 = Braintree::Transaction.find(authorized_transaction.id)
+      expect(refreshed_authorized_transaction2.status).to eq(Braintree::Transaction::Status::SettlementPending)
     end
   end
 
