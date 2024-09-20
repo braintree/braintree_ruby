@@ -2,8 +2,11 @@ module Braintree
   class LocalPaymentCompleted
     include BaseModule
 
-    attr_reader :payment_id
+    attr_reader :bic
+    attr_reader :iban_last_chars
     attr_reader :payer_id
+    attr_reader :payer_name
+    attr_reader :payment_id
     attr_reader :payment_method_nonce
     attr_reader :transaction
 

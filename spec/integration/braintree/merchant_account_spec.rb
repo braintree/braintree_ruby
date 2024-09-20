@@ -97,7 +97,7 @@ describe Braintree::MerchantAccount do
 
       result = gateway.merchant.create(
         :email => "name@email.com",
-        :country_code_alpha3 => "USA",
+        :country_code_alpha3 => "GBR",
         :payment_methods => ["credit_card", "paypal"],
       )
 
@@ -109,7 +109,7 @@ describe Braintree::MerchantAccount do
       result = gateway.merchant_account.all
       expect(result).to be_success
       expect(result.merchant_accounts.count).to eq(1)
-      expect(result.merchant_accounts.first.currency_iso_code).to eq("USD")
+      expect(result.merchant_accounts.first.currency_iso_code).to eq("GBP")
       expect(result.merchant_accounts.first.status).to eq("active")
       expect(result.merchant_accounts.first.default).to eq(true)
     end

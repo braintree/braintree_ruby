@@ -1096,8 +1096,11 @@ module Braintree
     def _local_payment_completed_sample_xml(id)
       <<-XML
         <local-payment>
-          <payment-id>PAY-XYZ123</payment-id>
+          <bic>BIC</bic>
+          <iban_last_chars>1234</iban_last_chars>
           <payer-id>ABCPAYER</payer-id>
+          <payer-name>PAYERNAME</payer-name>
+          <payment-id>PAY-XYZ123</payment-id>
           <payment-method-nonce>ee257d98-de40-47e8-96b3-a6954ea7a9a4</payment-method-nonce>
           <transaction>
             <id>#{id}</id>

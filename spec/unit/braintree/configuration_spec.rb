@@ -399,7 +399,7 @@ describe Braintree::Configuration do
 
     it "is qa.braintreegateway.com for qa" do
       Braintree::Configuration.environment = :qa
-      expect(Braintree::Configuration.instantiate.server).to eq("gateway.qa.braintreepayments.com")
+      expect(Braintree::Configuration.instantiate.server).to eq("gateway.qa2.braintreepayments.com")
     end
 
     it "can by changed by configuring the production endpoint" do

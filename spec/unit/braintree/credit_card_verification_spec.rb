@@ -6,6 +6,8 @@ describe Braintree::CreditCardVerification do
       verification = Braintree::CreditCardVerification._new(
         :status => "verified",
         :amount => "12.45",
+        :ani_first_name_response_code => "I",
+        :ani_last_name_response_code => "I",
         :currency_iso_code => "USD",
         :avs_error_response_code => "I",
         :avs_postal_code_response_code => "I",
@@ -17,8 +19,7 @@ describe Braintree::CreditCardVerification do
         :network_response_code => "05",
         :network_response_text => "Do not Honor",
       )
-
-      expect(verification.inspect).to eq(%(#<Braintree::CreditCardVerification status: "verified", processor_response_code: "2000", processor_response_text: "Do Not Honor", amount: "12.45", currency_iso_code: "USD", cvv_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", network_response_code: "05", network_response_text: "Do not Honor", merchant_account_id: "some_id", gateway_rejection_reason: nil, id: nil, credit_card: nil, billing: nil, created_at: nil>))
+      expect(verification.inspect).to eq(%(#<Braintree::CreditCardVerification amount: "12.45", ani_first_name_response_code: "I", ani_last_name_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", billing: nil, created_at: nil, credit_card: nil, currency_iso_code: "USD", cvv_response_code: "I", gateway_rejection_reason: nil, id: nil, merchant_account_id: "some_id", network_response_code: "05", network_response_text: "Do not Honor", processor_response_code: "2000", processor_response_text: "Do Not Honor", status: "verified">))
     end
 
     it "has a status" do
@@ -35,6 +36,16 @@ describe Braintree::CreditCardVerification do
 
       expect(verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
     end
+  end
+
+  it "accepts ani name reponse codes" do
+    verification = Braintree::CreditCardVerification._new(
+      :ani_first_name_response_code => "M",
+      :ani_last_name_response_code => "M",
+    )
+
+    expect(verification.ani_first_name_response_code).to eq("M")
+    expect(verification.ani_last_name_response_code).to eq("M")
   end
 
   it "accepts amount as either a String or BigDecimal" do

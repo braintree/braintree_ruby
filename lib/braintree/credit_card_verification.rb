@@ -26,6 +26,8 @@ module Braintree
     end
 
     attr_reader :amount
+    attr_reader :ani_first_name_response_code
+    attr_reader :ani_last_name_response_code
     attr_reader :avs_error_response_code
     attr_reader :avs_postal_code_response_code
     attr_reader :avs_street_address_response_code
@@ -45,8 +47,8 @@ module Braintree
     attr_reader :processor_response_text
     attr_reader :processor_response_type
     attr_reader :risk_data
-    attr_reader :three_d_secure_info
     attr_reader :status
+    attr_reader :three_d_secure_info
 
     def initialize(attributes)
       set_instance_variables_from_hash(attributes)
@@ -59,23 +61,25 @@ module Braintree
 
     def inspect
       attr_order = [
-        :status,
-        :processor_response_code,
-        :processor_response_text,
         :amount,
-        :currency_iso_code,
-        :cvv_response_code,
+        :ani_first_name_response_code,
+        :ani_last_name_response_code,
         :avs_error_response_code,
         :avs_postal_code_response_code,
         :avs_street_address_response_code,
-        :network_response_code,
-        :network_response_text,
-        :merchant_account_id,
+        :billing,
+        :created_at,
+        :credit_card,
+        :currency_iso_code,
+        :cvv_response_code,
         :gateway_rejection_reason,
         :id,
-        :credit_card,
-        :billing,
-        :created_at
+        :merchant_account_id,
+        :network_response_code,
+        :network_response_text,
+        :processor_response_code,
+        :processor_response_text,
+        :status
       ]
       formatted_attrs = attr_order.map do |attr|
         if attr == :amount

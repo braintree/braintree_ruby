@@ -48,6 +48,25 @@ describe Braintree::CreditCardVerification, "search" do
       expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
     end
 
+    it "creates a new verification for Visa ANI" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2012",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.ani_first_name_response_code).to eq("I")
+      expect(result.credit_card_verification.ani_last_name_response_code).to eq("I")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+    end
+
     it "creates a new verification from external vault param" do
       verification_params = {
         :credit_card => {

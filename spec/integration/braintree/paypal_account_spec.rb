@@ -26,6 +26,7 @@ describe Braintree::PayPalAccount do
       expect(paypal_account.updated_at).not_to be_nil
       expect(paypal_account.customer_id).to eq(customer.id)
       expect(paypal_account.funding_source_description).to be_nil
+      expect(paypal_account.edit_paypal_vault_id).to be_nil
       expect(paypal_account.revoked_at).to be_nil
     end
 

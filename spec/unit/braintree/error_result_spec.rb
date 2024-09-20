@@ -38,7 +38,7 @@ describe Braintree::ErrorResult do
         :verification => {},
         :transaction => nil,
       )
-      expect(result.inspect).to include("credit_card_verification: #<Braintree::CreditCardVerification status: ")
+      expect(result.inspect).to include("credit_card_verification: #<Braintree::CreditCardVerification amount: ")
     end
 
     it "does not include the credit_card_verification if there isn't one" do

@@ -41,4 +41,13 @@ describe Braintree::PayPalAccount do
       expect(paypal_account.updated_at).to eq(now)
     end
   end
+
+  describe "edit_paypal_vault_id" do
+    it "exposes edit_paypal_vault_id" do
+      mock_edit_paypal_vault_id = "ENCR-BA-ID1"
+      paypal_account = Braintree::PayPalAccount._new(:gateway, :edit_paypal_vault_id => mock_edit_paypal_vault_id)
+
+      expect(paypal_account.edit_paypal_vault_id).to eq(mock_edit_paypal_vault_id)
+    end
+  end
 end

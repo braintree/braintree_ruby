@@ -1153,7 +1153,7 @@ describe Braintree::Transaction do
         )
         result = gateway.merchant.create(
           :email => "name@email.com",
-          :country_code_alpha3 => "USA",
+          :country_code_alpha3 => "GBR",
           :payment_methods => ["credit_card", "paypal"],
         )
 
@@ -7933,6 +7933,61 @@ describe Braintree::Transaction do
       )
       expect(result.transaction.merchant_advice_code).to eq("01")
       expect(result.transaction.merchant_advice_code_text).to eq("New account information available")
+    end
+  end
+
+  context "Shipping Tax Amount" do
+    it "accepts shipping-tax-amount field" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :amount => "10.00",
+        :shipping_amount => "1.00",
+        :shipping_tax_amount => "1.00",
+        :discount_amount => "2.00",
+        :ships_from_postal_code => "12345",
+      )
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.shipping_amount).to eq("1.00")
+      expect(result.transaction.shipping_tax_amount).to eq("1.00")
+      expect(result.transaction.discount_amount).to eq("2.00")
+      expect(result.transaction.ships_from_postal_code).to eq("12345")
+    end
+
+    it "submit for settlement succeeds when shipping tax amount  is provided" do
+      result = Braintree::Transaction.sale(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :merchant_account_id => SpecHelper::FakeFirstDataMerchantAccountId,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2029"
+        },
+      )
+      expect(result.success?).to eq(true)
+
+      result = Braintree::Transaction.submit_for_settlement(
+        result.transaction.id,
+        nil,
+        :discount_amount => "2.00",
+        :shipping_amount => "1.23",
+        :shipping_tax_amount => "0.40",
+        :ships_from_postal_code => "90210",
+        :line_items => [
+          {
+            :quantity => 1,
+            :unit_amount => 1,
+            :name => "New line item",
+            :kind => "debit",
+            :total_amount => "18.00",
+            :discount_amount => "12.00",
+            :tax_amount => "0",
+          },
+        ],
+      )
+      expect(result.success?).to eq(true)
+      expect(result.transaction.shipping_tax_amount).to eq("0.40")
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
   end
 end

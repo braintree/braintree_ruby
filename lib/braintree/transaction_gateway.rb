@@ -214,36 +214,45 @@ module Braintree
     # three_d_secure_token has been deprecated in favor of three_d_secure_authentication_id
     def self._create_signature
       [
-        :amount, :billing_address_id, :channel, :customer_id, :device_data, :discount_amount,
+        :amount, :billing_address_id, :channel, :currency_iso_code, :customer_id, :device_data,
+        :discount_amount, :exchange_rate_quote_id, :foreign_retailer,
         :merchant_account_id, :order_id, :payment_method_nonce, :payment_method_token,
         :product_sku, :purchase_order_number, :service_fee_amount, :shared_billing_address_id,
         :shared_customer_id, :shared_payment_method_nonce, :shared_payment_method_token,
-        :shared_shipping_address_id, :shipping_address_id, :shipping_amount,
+        :shared_shipping_address_id, :shipping_address_id, :shipping_amount, :shipping_tax_amount,
         :ships_from_postal_code, :tax_amount, :tax_exempt, :three_d_secure_authentication_id,:three_d_secure_token, #Deprecated
         :transaction_source, :type, :venmo_sdk_payment_method_code, # Deprecated
-        :sca_exemption, :currency_iso_code, :exchange_rate_quote_id, :foreign_retailer,
-        {:line_items => [:commodity_code, :description, :discount_amount, :image_url, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :upc_code, :upc_type, :url]},
-        {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
-        {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, {:payment_reader_card_details => [:encrypted_card_data, :key_serial_number]}, {:network_tokenization_attributes => [:cryptogram, :ecommerce_indicator, :token_requestor_id]}]},
-        {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
+        :sca_exemption,
+        {:apple_pay_card => [:number, :cardholder_name, :cryptogram, :expiration_month, :expiration_year, :eci_indicator]},
         {
           :billing => AddressGateway._shared_signature
         },
-        {
-          :shipping => AddressGateway._shared_signature + [:shipping_method],
-        },
-        {
-          :three_d_secure_pass_thru => [
-            :eci_flag,
-            :cavv,
-            :xid,
-            :three_d_secure_version,
-            :authentication_response,
-            :directory_response,
-            :cavv_algorithm,
-            :ds_transaction_id,
-          ]
-        },
+        {:credit_card => [:token, :cardholder_name, :cvv, :expiration_date, :expiration_month, :expiration_year, :number, {:payment_reader_card_details => [:encrypted_card_data, :key_serial_number]}, {:network_tokenization_attributes => [:cryptogram, :ecommerce_indicator, :token_requestor_id]}]},
+        {:customer => [:id, :company, :email, :fax, :first_name, :last_name, :phone, :website]},
+        {:custom_fields => :_any_key_},
+        {:descriptor => [:name, :phone, :url]},
+        {:external_vault => [
+          :status,
+          :previous_network_transaction_id,
+        ]},
+        {:google_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]},
+        {:industry => [
+          :industry_type,
+          {:data => [
+            :country_code, :date_of_birth, :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
+            :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
+            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone, :ticket_issuer_address, :arrival_date,
+            {:legs => [
+              :conjunction_ticket, :exchange_ticket, :coupon_number, :service_class, :carrier_code, :fare_basis_code, :flight_number, :departure_date, :departure_airport_code, :departure_time,
+              :arrival_airport_code, :arrival_time, :stopover_permitted, :fare_amount, :fee_amount, :tax_amount, :endorsement_or_restrictions,
+            ]},
+            {:additional_charges => [
+              :kind, :amount,
+            ]},
+          ]},
+        ]},
+        {:installments => [:count]},
+        {:line_items => [:commodity_code, :description, :discount_amount, :image_url, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :upc_code, :upc_type, :url]},
         {:options => [
           :hold_in_escrow,
           :store_in_vault,
@@ -265,31 +274,23 @@ module Braintree
           {:credit_card => [:account_type, :process_debit_as_credit]},
         ]
         },
-        {:external_vault => [
-          :status,
-          :previous_network_transaction_id,
-        ]},
-        {:custom_fields => :_any_key_},
-        {:descriptor => [:name, :phone, :url]},
         {:paypal_account => [:email, :token, :paypal_data, :payee_id, :payee_email, :payer_id, :payment_id]},
-        {:industry => [
-          :industry_type,
-          {:data => [
-            :country_code, :date_of_birth, :folio_number, :check_in_date, :check_out_date, :travel_package, :lodging_check_in_date, :lodging_check_out_date, :departure_date, :lodging_name, :room_rate, :room_tax,
-            :passenger_first_name, :passenger_last_name, :passenger_middle_initial, :passenger_title, :issued_date, :travel_agency_name, :travel_agency_code, :ticket_number,
-            :issuing_carrier_code, :customer_code, :fare_amount, :fee_amount, :tax_amount, :restricted_ticket, :no_show, :advanced_deposit, :fire_safe, :property_phone, :ticket_issuer_address, :arrival_date,
-            {:legs => [
-              :conjunction_ticket, :exchange_ticket, :coupon_number, :service_class, :carrier_code, :fare_basis_code, :flight_number, :departure_date, :departure_airport_code, :departure_time,
-              :arrival_airport_code, :arrival_time, :stopover_permitted, :fare_amount, :fee_amount, :tax_amount, :endorsement_or_restrictions,
-            ]},
-            {:additional_charges => [
-              :kind, :amount,
-            ]},
-          ]},
-        ]},
-        {:apple_pay_card => [:number, :cardholder_name, :cryptogram, :expiration_month, :expiration_year, :eci_indicator]},
-        {:google_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]},
-        {:installments => [:count]},
+        {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
+        {
+          :shipping => AddressGateway._shared_signature + [:shipping_method],
+        },
+        {
+          :three_d_secure_pass_thru => [
+            :eci_flag,
+            :cavv,
+            :xid,
+            :three_d_secure_version,
+            :authentication_response,
+            :directory_response,
+            :cavv_algorithm,
+            :ds_transaction_id,
+          ]
+        },
       ]
     end
 
@@ -317,6 +318,7 @@ module Braintree
         :tax_exempt,
         :discount_amount,
         :shipping_amount,
+        :shipping_tax_amount,
         :ships_from_postal_code,
         :line_items => [:commodity_code, :description, :discount_amount, :image_url, :kind, :name, :product_code, :quantity, :tax_amount, :total_amount, :unit_amount, :unit_of_measure, :unit_tax_amount, :upc_code, :upc_type, :url],
       ]

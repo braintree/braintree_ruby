@@ -10,7 +10,7 @@ describe Braintree::ApplePayGateway do
 
     result = gateway.merchant.create(
       :email => "name@email.com",
-      :country_code_alpha3 => "USA",
+      :country_code_alpha3 => "GBR",
       :payment_methods => ["credit_card", "paypal"],
     )
 

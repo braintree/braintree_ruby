@@ -171,6 +171,7 @@ module Braintree
     attr_reader :settlement_batch_id
     attr_reader :shipping_amount
     attr_reader :shipping_details
+    attr_reader :shipping_tax_amount
     attr_reader :ships_from_postal_code
     attr_reader :status                                 # See Transaction::Status
     attr_reader :status_history
