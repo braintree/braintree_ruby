@@ -75,6 +75,7 @@ module Braintree
       CvvIsRequired = "81706"
       CvvVerificationFailed = "81736"
       DuplicateCardExists = "81724"
+      DuplicateCardExistsForCustomer = "81763"
       ExpirationDateConflict = "91708"
       ExpirationDateIsInvalid = "81710"
       ExpirationDateIsRequired = "81709"
@@ -83,6 +84,7 @@ module Braintree
       ExpirationYearIsInvalid = "81713"
       InvalidParamsForCreditCardUpdate = "91745"
       InvalidVenmoSDKPaymentMethodCode = "91727"
+      LimitExceededforDuplicatePaymentMethodCheckForCustomer = "81764"
       NetworkTokenizationAttributeCryptogramIsRequired = "81762"
       NumberIsInvalid = "81715"
       NumberIsProhibited = "81750"
@@ -712,6 +714,7 @@ module Braintree
     module ClientToken
       CustomerDoesNotExist = "92804"
       FailOnDuplicatePaymentMethodRequiresCustomerId = "92803"
+      FailOnDuplicatePaymentMethodForCustomerRequiresCustomerId = "92805"
       InvalidDomainFormat = "92011"
       MakeDefaultRequiresCustomerId = "92801"
       MerchantAccountDoesNotExist = "92807"

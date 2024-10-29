@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.23.0
+
+- Add `fail_on_duplicate_payment_method_for_customer` option to 
+  - `ClientToken`
+  - `PaymentMethod`
+  - `CreditCard`
+- Add `blik_aliases` to LocalPaymentCompleted webhook
+- Deprecate `samsung_pay_card`
+- Updated expiring pinned vendor SSL certificates
+
 ## 4.22.0
 
 - Add `payer_name`, `bic` and `iban_last_chars` to LocalPaymentCompleted webhook

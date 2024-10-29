@@ -8,6 +8,7 @@ module Braintree
     MetaCheckoutToken = "meta_checkout_token"
     PayPalAccount = "paypal_account"
     PayPalHere = "paypal_here"
+    # NEXT_MAJOR_VERSION remove SamsungPayCard
     SamsungPayCard = "samsung_pay_card"
     SepaDirectDebitAccount = "sepa_debit_account"
     UsBankAccount = "us_bank_account"

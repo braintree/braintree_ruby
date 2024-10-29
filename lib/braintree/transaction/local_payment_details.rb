@@ -3,6 +3,7 @@ module Braintree
     class LocalPaymentDetails
       include BaseModule
 
+      attr_reader :blik_aliases
       attr_reader :capture_id
       attr_reader :custom_field
       attr_reader :debug_id

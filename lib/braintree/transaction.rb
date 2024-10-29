@@ -311,6 +311,7 @@ module Braintree
       Configuration.gateway.transaction.void!(*args)
     end
 
+    # NEXT_MAJOR_VERSION remove SamsungPayCardDetails
     def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
@@ -332,7 +333,7 @@ module Braintree
       @payment_receipt = PaymentReceipt.new(attributes[:payment_receipt]) if attributes[:payment_receipt]
       @paypal_details = PayPalDetails.new(@paypal)
       @paypal_here_details = PayPalHereDetails.new(@paypal_here)
-      @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card])
+      @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card]) #Deprecated
       @sca_exemption_requested = attributes[:sca_exemption_requested]
       @sepa_direct_debit_account_details = SepaDirectDebitAccountDetails.new(@sepa_debit_account_detail)
       @service_fee_amount = Util.to_big_decimal(service_fee_amount)

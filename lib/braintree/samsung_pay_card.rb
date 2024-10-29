@@ -1,4 +1,6 @@
 module Braintree
+  # NEXT_MAJOR_VERSION remove this class
+  # SamsungPayCard has been deprecated
   class SamsungPayCard
     include BaseModule
     include Braintree::Util::TokenEquality

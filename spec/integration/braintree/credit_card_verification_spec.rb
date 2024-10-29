@@ -157,7 +157,7 @@ describe Braintree::CreditCardVerification, "search" do
           :number => Braintree::Test::CreditCardNumbers::Hiper
         },
         :options => {
-          :merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+          :merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
           :account_type => "debit",
         },
       )

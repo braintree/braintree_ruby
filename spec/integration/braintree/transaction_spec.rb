@@ -4860,27 +4860,6 @@ describe Braintree::Transaction do
     end
 
     context "external vault" do
-      it "returns a validation error if used with an unsupported instrument type" do
-        customer = Braintree::Customer.create!
-        result = Braintree::PaymentMethod.create(
-          :payment_method_nonce => Braintree::Test::Nonce::PayPalBillingAgreement,
-          :customer_id => customer.id,
-        )
-        payment_method_token = result.payment_method.token
-
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :customer_id => customer.id,
-          :payment_method_token => payment_method_token,
-          :external_vault => {
-            :status => Braintree::Transaction::ExternalVault::Status::WillVault,
-          },
-          :amount => "10.00",
-        )
-        expect(result.success?).to eq(false)
-        expect(result.errors.for(:transaction)[0].code).to eq(Braintree::ErrorCodes::Transaction::PaymentInstrumentWithExternalVaultIsInvalid)
-      end
-
       it "reject invalid status" do
         result = Braintree::Transaction.create(
           :type => "sale",

@@ -69,6 +69,7 @@ module Braintree
       VisaCheckoutDiscover = "fake-visa-checkout-discover-nonce"
       VisaCheckoutMasterCard = "fake-visa-checkout-mastercard-nonce"
       VisaCheckoutVisa = "fake-visa-checkout-visa-nonce"
+      # NEXT_MAJOR_VERSION SamsungPay is deprecated, remove all associated nonces
       SamsungPayAmEx = "tokensam_fake_american_express"
       SamsungPayDiscover = "tokensam_fake_discover"
       SamsungPayMasterCard = "tokensam_fake_mastercard"

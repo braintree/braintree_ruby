@@ -51,6 +51,34 @@ describe Braintree::LocalPaymentCompleted do
       local_payment_completed = Braintree::LocalPaymentCompleted._new(params)
 
       expect(local_payment_completed.bic).to eq("a-bic")
+      expect(local_payment_completed.blik_aliases).to be_nil
+      expect(local_payment_completed.iban_last_chars).to eq("1234")
+      expect(local_payment_completed.payer_id).to eq("a-payer-id")
+      expect(local_payment_completed.payer_name).to eq("John Doe")
+      expect(local_payment_completed.payment_id).to eq("a-payment-id")
+      expect(local_payment_completed.payment_method_nonce).to eq("a-nonce")
+      expect(local_payment_completed.transaction).to be_nil
+    end
+
+    it "initializes the object with the appropriate attributes when blik_aliases is provided" do
+      params = {
+        bic: "a-bic",
+        blik_aliases: [
+          {
+            key: "an-alias-key",
+            label: "an-alias-label"
+          }
+        ],
+        iban_last_chars: "1234",
+        payer_id: "a-payer-id",
+        payer_name: "John Doe",
+        payment_id: "a-payment-id",
+        payment_method_nonce: "a-nonce",
+      }
+      local_payment_completed = Braintree::LocalPaymentCompleted._new(params)
+
+      expect(local_payment_completed.bic).to eq("a-bic")
+      expect(local_payment_completed.blik_aliases).to match_array([{key: "an-alias-key", label: "an-alias-label"}])
       expect(local_payment_completed.iban_last_chars).to eq("1234")
       expect(local_payment_completed.payer_id).to eq("a-payer-id")
       expect(local_payment_completed.payer_name).to eq("John Doe")

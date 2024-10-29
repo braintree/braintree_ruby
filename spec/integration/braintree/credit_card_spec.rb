@@ -622,7 +622,7 @@ describe Braintree::CreditCard do
           :expiration_year => "2099",
           :options => {
             :verify_card => true,
-            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
             :verification_account_type => "debit",
           },
         )
@@ -1113,7 +1113,7 @@ describe Braintree::CreditCard do
           :options => {
             :verify_card => true,
             :verification_account_type => "debit",
-            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
           },
         )
         expect(update_result).to be_success

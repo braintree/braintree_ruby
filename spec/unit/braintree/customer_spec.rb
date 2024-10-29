@@ -209,6 +209,7 @@ describe Braintree::Customer do
             :verification_amount,
             :venmo_sdk_session, # NEXT_MAJOR_VERSION Remove this attribute
             :fail_on_duplicate_payment_method,
+            :fail_on_duplicate_payment_method_for_customer,
             :verification_account_type,
             :verification_currency_iso_code,
             :update_existing_token

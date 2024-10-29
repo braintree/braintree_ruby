@@ -80,6 +80,7 @@ module Braintree
       Configuration.gateway.customer.update!(*args)
     end
 
+    # NEXT_MAJOR_VERSION remove samsung_pay_cards
     def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
@@ -91,7 +92,7 @@ module Braintree
       @us_bank_accounts = (@us_bank_accounts || []).map { |pm| UsBankAccount._new gateway, pm }
       @visa_checkout_cards = (@visa_checkout_cards|| []).map { |pm| VisaCheckoutCard._new gateway, pm }
       @sepa_direct_debit_accounts = (@sepa_debit_accounts || []).map { |pm| SepaDirectDebitAccount._new gateway, pm }
-      @samsung_pay_cards = (@samsung_pay_cards|| []).map { |pm| SamsungPayCard._new gateway, pm }
+      @samsung_pay_cards = (@samsung_pay_cards|| []).map { |pm| SamsungPayCard._new gateway, pm } # Deprecated
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }
       @tax_identifiers = (@tax_identifiers || []).map { |addr| TaxIdentifier._new gateway, addr }
       @custom_fields = attributes[:custom_fields].is_a?(Hash) ? attributes[:custom_fields] : {}

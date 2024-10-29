@@ -23,7 +23,7 @@ module Braintree
     end
 
     context "adding credit_card options with no customer ID" do
-      %w(verify_card fail_on_duplicate_payment_method make_default).each do |option_name|
+      %w(verify_card fail_on_duplicate_payment_method make_default fail_on_duplicate_payment_method_for_customer).each do |option_name|
         it "raises an ArgumentError if #{option_name} is present" do
           expect do
             Braintree::ClientToken.generate(

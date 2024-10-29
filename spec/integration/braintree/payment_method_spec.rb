@@ -427,6 +427,33 @@ describe Braintree::PaymentMethod do
       expect(result.errors.first.code).to eq("81724")
     end
 
+    it "respects fail_on_duplicate_payment_method_for_customer when included outside of the nonce" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => 4111111111111111,
+        :expiration_date => "05/2012",
+      )
+      expect(result).to be_success
+
+      nonce = nonce_for_new_payment_method(
+        :credit_card => {
+          :number => 4111111111111111,
+          :expiration_date => "05/2012"
+        },
+      )
+      result = Braintree::PaymentMethod.create(
+        :payment_method_nonce => nonce,
+        :customer_id => customer.id,
+        :options => {
+          :fail_on_duplicate_payment_method_for_customer => true
+        },
+      )
+
+      expect(result).not_to be_success
+      expect(result.errors.first.code).to eq("81763")
+    end
+
     it "allows passing the billing address outside of the nonce" do
       config = Braintree::Configuration.instantiate
       customer = Braintree::Customer.create.customer
@@ -659,7 +686,7 @@ describe Braintree::PaymentMethod do
           :customer_id => customer.id,
           :options => {
             :verify_card => true,
-            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
             :verification_account_type => "debit",
           },
         )
@@ -776,7 +803,7 @@ describe Braintree::PaymentMethod do
           :expiration_date => "06/2013",
           :options => {
             :verify_card => true,
-            :verification_merchant_account_id => SpecHelper::HiperBRLMerchantAccountId,
+            :verification_merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
             :verification_account_type => "debit",
           },
         )

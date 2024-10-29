@@ -4,6 +4,12 @@ describe Braintree::Transaction::LocalPaymentDetails do
   describe "initialize" do
     let(:params) do
       {
+        blik_aliases: [
+          {
+            key: "a-key",
+            label: "a-label"
+          }
+        ],
         capture_id: "a-capture-id",
         custom_field: "custom-field",
         debug_id: "debug-id",

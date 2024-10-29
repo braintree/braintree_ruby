@@ -62,6 +62,8 @@ module Braintree
 
     def self._create_signature
       credit_card_signature = CreditCardGateway._create_signature - [:customer_id]
+      credit_card_options = credit_card_signature.find { |item| item.respond_to?(:keys) && item.keys == [:options] }
+      credit_card_options[:options].delete_if { |option| option == :fail_on_duplicate_payment_method_for_customer }
       paypal_account_signature = PayPalAccountGateway._create_nested_signature
       paypal_options_shipping_signature = AddressGateway._shared_signature
       options = [

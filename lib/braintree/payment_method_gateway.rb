@@ -204,9 +204,12 @@ module Braintree
       case type
       when :create
         options << :fail_on_duplicate_payment_method
+        options << :fail_on_duplicate_payment_method_for_customer
         signature << :customer_id
         signature << :paypal_refresh_token
       when :update
+        options << :fail_on_duplicate_payment_method
+        options << :fail_on_duplicate_payment_method_for_customer
         billing_address_params << {:options => [:update_existing]}
       else
         raise ArgumentError

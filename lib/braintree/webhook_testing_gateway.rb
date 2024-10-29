@@ -1094,9 +1094,42 @@ module Braintree
     end
 
     def _local_payment_completed_sample_xml(id)
+      if id == "blik_one_click_id"
+        _blik_one_click_local_payment_completed_sample_xml(id)
+      else
+        _default_local_payment_completed_sample_xml(id)
+      end
+    end
+
+    def _default_local_payment_completed_sample_xml(id)
       <<-XML
         <local-payment>
           <bic>BIC</bic>
+          <iban_last_chars>1234</iban_last_chars>
+          <payer-id>ABCPAYER</payer-id>
+          <payer-name>PAYERNAME</payer-name>
+          <payment-id>PAY-XYZ123</payment-id>
+          <payment-method-nonce>ee257d98-de40-47e8-96b3-a6954ea7a9a4</payment-method-nonce>
+          <transaction>
+            <id>#{id}</id>
+            <status>authorized</status>
+            <amount>49.99</amount>
+            <order-id>order4567</order-id>
+          </transaction>
+        </local-payment>
+      XML
+    end
+
+    def _blik_one_click_local_payment_completed_sample_xml(id)
+      <<-XML
+        <local-payment>
+          <bic>BIC</bic>
+          <blik-aliases type='array'>
+            <blik-alias>
+              <key>alias-key-1</key>
+              <label>alias-label-1</label>
+            </blik-alias>
+          </blik-aliases>
           <iban_last_chars>1234</iban_last_chars>
           <payer-id>ABCPAYER</payer-id>
           <payer-name>PAYERNAME</payer-name>

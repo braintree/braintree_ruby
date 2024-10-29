@@ -723,10 +723,31 @@ describe Braintree::WebhookNotification do
       expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::LocalPaymentCompleted)
 
       local_payment_completed = notification.local_payment_completed
-      expect(local_payment_completed.payment_id).to eq("PAY-XYZ123")
+      expect(local_payment_completed.blik_aliases).to be_nil
       expect(local_payment_completed.payer_id).to eq("ABCPAYER")
+      expect(local_payment_completed.payment_id).to eq("PAY-XYZ123")
       expect(local_payment_completed.payment_method_nonce).to eq("ee257d98-de40-47e8-96b3-a6954ea7a9a4")
       expect(local_payment_completed.transaction.id).to eq("my_id")
+      expect(local_payment_completed.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
+      expect(local_payment_completed.transaction.amount).to eq(49.99)
+      expect(local_payment_completed.transaction.order_id).to eq("order4567")
+    end
+
+    it "builds a sample notification for a local_payment webhook when funding source is blik one click" do
+      sample_notification = Braintree::WebhookTesting.sample_notification(
+        Braintree::WebhookNotification::Kind::LocalPaymentCompleted,
+        "blik_one_click_id",
+      )
+
+      notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
+      expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::LocalPaymentCompleted)
+
+      local_payment_completed = notification.local_payment_completed
+      expect(local_payment_completed.blik_aliases).to match_array([{:key => "alias-key-1", :label => "alias-label-1"}])
+      expect(local_payment_completed.payer_id).to eq("ABCPAYER")
+      expect(local_payment_completed.payment_id).to eq("PAY-XYZ123")
+      expect(local_payment_completed.payment_method_nonce).to eq("ee257d98-de40-47e8-96b3-a6954ea7a9a4")
+      expect(local_payment_completed.transaction.id).to eq("blik_one_click_id")
       expect(local_payment_completed.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
       expect(local_payment_completed.transaction.amount).to eq(49.99)
       expect(local_payment_completed.transaction.order_id).to eq("order4567")

@@ -1,5 +1,7 @@
 module Braintree
   class Transaction
+    # NEXT_MAJOR_VERSION remove this class
+    # SamsungPayCard has been deprecated
     class SamsungPayCardDetails
       include BaseModule
 

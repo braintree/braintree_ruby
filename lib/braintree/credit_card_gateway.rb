@@ -97,6 +97,7 @@ module Braintree
       # The old venmo SDK class has been deprecated
       options = [
         :fail_on_duplicate_payment_method,
+        :fail_on_duplicate_payment_method_for_customer,
         :make_default,
         :skip_advanced_fraud_checking,
         :venmo_sdk_session, # Deprecated

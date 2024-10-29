@@ -17,6 +17,7 @@ module Braintree
       elsif attributes[:visa_checkout_card]
         VisaCheckoutCard._new(gateway, attributes[:visa_checkout_card])
       elsif attributes[:samsung_pay_card]
+        warn "[DEPRECATED] SamsungPayCard is no longer a supported payment method type"
         SamsungPayCard._new(gateway, attributes[:samsung_pay_card])
       elsif attributes[:sepa_debit_account]
         SepaDirectDebitAccount._new(gateway, attributes[:sepa_debit_account])
