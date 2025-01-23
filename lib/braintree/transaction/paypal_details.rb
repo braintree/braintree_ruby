@@ -20,6 +20,8 @@ module Braintree
       attr_reader :payer_last_name
       attr_reader :payer_status
       attr_reader :payment_id
+      attr_reader :recipient_email
+      attr_reader :recipient_phone
       attr_reader :refund_from_transaction_fee_amount
       attr_reader :refund_from_transaction_fee_currency_iso_code
       attr_reader :refund_id

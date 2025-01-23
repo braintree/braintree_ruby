@@ -5765,6 +5765,32 @@ describe Braintree::Transaction do
         expect(result.success?).to eq(false)
         expect(result.errors.for(:transaction).for(:credit_card).map { |e| e.code }.sort).to eq [Braintree::ErrorCodes::CreditCard::NetworkTokenizationAttributeCryptogramIsRequired]
       end
+
+      it "Works with missing cryptogram and specified previous_network_transaction_id" do
+        params = {
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009",
+            :network_tokenization_attributes => {
+              :ecommerce_indicator => "05",
+              :token_requestor_id => "45310020105"
+            },
+          },
+          :external_vault => {
+            :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
+            :previous_network_transaction_id => "123456789012345"
+          },
+          :transaction_source => "recurring"
+        }
+        result = Braintree::Transaction.sale(params)
+        expect(result.success?).to eq true
+        expect(result.transaction.status).to eq Braintree::Transaction::Status::Authorized
+        expect(result.transaction.processed_with_network_token?).to eq true
+
+        network_token_details = result.transaction.network_token_details
+        expect(network_token_details.is_network_tokenized?).to eq true
+      end
     end
 
     xit "Amex Pay with Points" do
@@ -7137,6 +7163,18 @@ describe Braintree::Transaction do
       expect(result.success?).to eq(true)
       expect(result.transaction.id).to eq(transaction.id)
       expect(result.transaction.status).to eq(Braintree::Transaction::Status::Voided)
+    end
+
+    it "returns a successful result if contact details passed in" do
+      result = Braintree::Transaction.sale(
+        :payment_method_nonce => Braintree::Test::Nonce::PayPalOneTimePayment,
+        :amount => "10",
+        :options => {
+          :paypal => {}
+        },
+      )
+      expect(result.success?).to eq(true)
+      expect(result.transaction.paypal_details.recipient_email).to eq("test@paypal.com")
     end
 
     it "returns an error result if unsuccessful" do
