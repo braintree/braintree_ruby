@@ -38,6 +38,10 @@ module Braintree
       CustomerGateway.new(self)
     end
 
+    def customer_session
+      CustomerSessionGateway.new(self, graphql_client)
+    end
+
     def discount
       DiscountGateway.new(self)
     end

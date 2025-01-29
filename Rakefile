@@ -22,6 +22,7 @@ namespace :test do
   task :unit, [:file_name, :test_name] => [:lint] do |_task, args|
     if args.file_name.nil?
       sh "rspec --pattern spec/unit/**/*_spec.rb"
+      sh "rspec --pattern spec/unit/braintree/graphql/*_spec.rb"
     elsif args.test_name.nil?
       sh "rspec --pattern spec/unit/**/#{args.file_name}.rb --format documentation --color"
     else

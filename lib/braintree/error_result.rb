@@ -12,7 +12,7 @@ module Braintree
 
     def initialize(gateway, data)
       @gateway = gateway
-      @params = data[:params]
+      @params = data[:params] if data[:params]
       @credit_card_verification = CreditCardVerification._new(data[:verification]) if data[:verification]
       @merchant_account = MerchantAccount._new(gateway, data[:merchant_account]) if data[:merchant_account]
       @message = data[:message]

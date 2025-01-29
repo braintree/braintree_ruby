@@ -30,5 +30,21 @@ module Braintree
       body = Zlib::GzipReader.new(StringIO.new(body)).read if response.header["Content-Encoding"] == "gzip"
       JSON.parse(body, :symbolize_names => true)
     end
+
+    def self.get_validation_errors(response)
+      return nil unless response.key?(:errors) && response[:errors].is_a?(Array)
+      validation_errors = response[:errors].map do |error|
+        {
+          :attribute => "",
+          :code => get_validation_error_code(error),
+          :message => error[:message]
+        }
+      end
+      {errors: validation_errors}
+    end
+
+    def self.get_validation_error_code(error)
+      error[:extensions] && error[:extensions][:legacyCode] rescue nil
+    end
   end
 end

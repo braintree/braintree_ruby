@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 gem "builder", "3.2.4"
 gem "libxml-ruby", "3.2.0"
+gem "require_all", "3.0.0"
 
 group :development do
   gem "pry", "0.13.1"

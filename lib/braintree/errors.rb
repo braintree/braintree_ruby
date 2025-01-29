@@ -3,7 +3,8 @@ module Braintree
     include Enumerable
 
     def initialize(data = {})
-      @errors = ValidationErrorCollection.new(data.merge(:errors => []))
+      data = data.merge(:errors => []) unless data
+      @errors = ValidationErrorCollection.new(data)
     end
 
     def each(&block)
