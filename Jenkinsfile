@@ -3,63 +3,45 @@
 def FAILED_STAGE
 
 pipeline {
-  agent none
-
+  agent {
+    node {
+      label "ec2"
+      customWorkspace "workspace/braintree-ruby"
+    }
+  }
   environment {
-    REPO_NAME = "braintree-ruby"
     SLACK_CHANNEL = "#auto-team-sdk-builds"
   }
 
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '50'))
+    timestamps()
+    timeout(time: 120, unit: 'MINUTES')
+  }
+
   stages {
-    stage("Audit") {
-      parallel {
-
-        // Runs a static code analysis scan and posts results to the PayPal Polaris server
-        stage("Polaris") {
-          agent {
-            node {
-              label ""
-              customWorkspace "workspace/${REPO_NAME}"
-            }
-          }
-
-          steps {
-            polarisAudit()
-          }
-
-          post {
-            failure {
-              script {
-                FAILED_STAGE = env.STAGE_NAME
-              }
-            }
-          }
-        }
-
-
-        // Runs a software composition analysis scan and posts results to the PayPal Black Duck server
-        stage("Black Duck") {
-          agent {
-            node {
-              label ""
-              customWorkspace "workspace/${REPO_NAME}"
-            }
-          }
-
-          steps {
-            blackduckAudit()
-          }
-
-          post {
-            failure {
-              script {
-                FAILED_STAGE = env.STAGE_NAME
-              }
-            }
-          }         
+    stage("CodeQL") {
+      steps {
+        script {
+          codeQLv2(ruby: true)
         }
       }
-    } 
+
+      post {
+        failure {
+          script {
+            FAILED_STAGE = env.STAGE_NAME
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    unsuccessful {
+      slackSend color: "danger",
+        channel: "${env.SLACK_CHANNEL}",
+        message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} Failure after ${currentBuild.durationString} at stage \"${FAILED_STAGE}\"(<${env.BUILD_URL}|Open>)"
+    }
   }
 }
-

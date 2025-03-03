@@ -24,6 +24,7 @@ module Braintree
       attr_reader :last_4
       attr_reader :payroll
       attr_reader :prepaid
+      attr_reader :prepaid_reloadable
       attr_reader :product_id
       attr_reader :token
       attr_reader :unique_number_identifier
@@ -73,11 +74,11 @@ module Braintree
 
       def self._attributes # :nodoc:
         [
-          :bin, :card_type, :cardholder_name, :created_at,
-          :customer_id, :customer_location, :expiration_month, :expiration_year,
-          :last_4, :token, :updated_at, :prepaid, :payroll, :product_id,
-          :commercial, :debit, :durbin_regulated, :healthcare, :ecommerce_indicator,
-          :country_of_issuance, :issuing_bank, :image_url, :container_id, :cryptogram
+          :bin, :card_type, :cardholder_name, :commercial, :container_id, :country_of_issuance,
+          :created_at, :cryptogram, :customer_id, :customer_location, :debit, :durbin_regulated,
+          :ecommerce_indicator, :expiration_month, :expiration_year, :healthcare, :image_url,
+          :issuing_bank, :last_4, :payroll, :prepaid, :prepaid_reloadable, :product_id, :token,
+          :updated_at
         ]
       end
 

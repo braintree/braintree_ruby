@@ -78,6 +78,10 @@ module Braintree
       PayPalAccountGateway.new(self)
     end
 
+    def paypal_payment_resource
+      PayPalPaymentResourceGateway.new(self)
+    end
+
     def us_bank_account
       UsBankAccountGateway.new(self)
     end

@@ -266,4 +266,9 @@ describe Braintree::CreditCard do
       end
     end
   end
+
+  it "initializes prepaid reloadable correctly" do
+    card = Braintree::CreditCard._new(:gateway, {:prepaid_reloadable => "No"})
+    expect(card.prepaid_reloadable).to eq("No")
+  end
 end

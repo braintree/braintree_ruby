@@ -267,6 +267,19 @@ describe Braintree::Transaction do
         expect(result.transaction.credit_card_details.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
         expect(result.transaction.payment_instrument_type).to eq(Braintree::PaymentInstrumentType::CreditCard)
       end
+
+      it "sets the prepaid_reloadable field if the card is prepaid reloadable" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => 1_00,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::PrepaidReloadable,
+            :expiration_date => "05/2009"
+          },
+        )
+        expect(result.transaction.credit_card_details.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Yes)
+        expect(result.transaction.payment_instrument_type).to eq(Braintree::PaymentInstrumentType::CreditCard)
+      end
     end
 
     describe "sca_exemption" do
@@ -2183,6 +2196,7 @@ describe Braintree::Transaction do
         meta_checkout_card_details.last_4.should == "1881"
         meta_checkout_card_details.masked_number.should == "401288******1881"
         meta_checkout_card_details.prepaid.should == "No"
+        meta_checkout_card_details.prepaid_reloadable.should == "Unknown"
       end
 
       it "can create a transaction with a fake meta checkout token nonce" do
@@ -2213,6 +2227,7 @@ describe Braintree::Transaction do
         meta_checkout_token_details.last_4.should == "1881"
         meta_checkout_token_details.masked_number.should == "401288******1881"
         meta_checkout_token_details.prepaid.should == "No"
+        meta_checkout_token_details.prepaid_reloadable.should == "Unknown"
       end
 
       it "can create a transaction with a fake apple pay nonce" do

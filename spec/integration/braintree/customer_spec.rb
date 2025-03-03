@@ -991,18 +991,19 @@ describe Braintree::Customer do
       expect(found_customer.apple_pay_cards).not_to be_nil
       apple_pay_card = found_customer.apple_pay_cards.first
       expect(apple_pay_card).to be_a Braintree::ApplePayCard
-      expect(apple_pay_card.token).not_to be_nil
-      expect(apple_pay_card.expiration_year).not_to be_nil
-      expect(apple_pay_card.payment_instrument_name).to eq("AmEx 41002")
       expect(apple_pay_card.commercial).not_to be_nil
       expect(apple_pay_card.country_of_issuance).not_to be_nil
       expect(apple_pay_card.debit).not_to be_nil
       expect(apple_pay_card.durbin_regulated).not_to be_nil
+      expect(apple_pay_card.expiration_year).not_to be_nil
       expect(apple_pay_card.healthcare).not_to be_nil
       expect(apple_pay_card.issuing_bank).not_to be_nil
+      expect(apple_pay_card.payment_instrument_name).to eq("AmEx 41002")
       expect(apple_pay_card.payroll).not_to be_nil
       expect(apple_pay_card.prepaid).not_to be_nil
+      expect(apple_pay_card.prepaid_reloadable).not_to be_nil
       expect(apple_pay_card.product_id).not_to be_nil
+      expect(apple_pay_card.token).not_to be_nil
     end
 
     it "returns associated google pay proxy cards" do
@@ -1016,18 +1017,19 @@ describe Braintree::Customer do
       expect(found_customer.payment_methods.size).to eq(1)
       google_pay_card = found_customer.google_pay_cards.first
       expect(google_pay_card).to be_a Braintree::GooglePayCard
-      expect(google_pay_card.token).not_to be_nil
-      expect(google_pay_card.expiration_year).not_to be_nil
-      expect(google_pay_card.is_network_tokenized?).to eq(false)
       expect(google_pay_card.commercial).not_to be_nil
       expect(google_pay_card.country_of_issuance).not_to be_nil
       expect(google_pay_card.debit).not_to be_nil
       expect(google_pay_card.durbin_regulated).not_to be_nil
+      expect(google_pay_card.expiration_year).not_to be_nil
       expect(google_pay_card.healthcare).not_to be_nil
+      expect(google_pay_card.is_network_tokenized?).to eq(false)
       expect(google_pay_card.issuing_bank).not_to be_nil
       expect(google_pay_card.payroll).not_to be_nil
       expect(google_pay_card.prepaid).not_to be_nil
+      expect(google_pay_card.prepaid_reloadable).not_to be_nil
       expect(google_pay_card.product_id).not_to be_nil
+      expect(google_pay_card.token).not_to be_nil
     end
 
     it "returns associated google pay network tokens" do
@@ -1052,6 +1054,7 @@ describe Braintree::Customer do
       expect(google_pay_card.issuing_bank).not_to be_nil
       expect(google_pay_card.payroll).not_to be_nil
       expect(google_pay_card.prepaid).not_to be_nil
+      expect(google_pay_card.prepaid_reloadable).not_to be_nil
       expect(google_pay_card.product_id).not_to be_nil
     end
 
@@ -1911,5 +1914,18 @@ describe Braintree::Customer do
         expect(customer.default_payment_method.token).to eq(credit_card_token)
       end
     end
+  end
+
+  it "returns prepaid_reloadable from VisaCheckoutCard" do
+    result = Braintree::Customer.create(
+      :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+    )
+    expect(result.success?).to eq(true)
+
+    found_customer = Braintree::Customer.find(result.customer.id)
+    expect(found_customer.visa_checkout_cards).not_to be_nil
+    visa_checkout_card = found_customer.visa_checkout_cards.first
+    expect(visa_checkout_card).to be_a Braintree::VisaCheckoutCard
+    expect(visa_checkout_card.prepaid_reloadable).not_to be_nil
   end
 end

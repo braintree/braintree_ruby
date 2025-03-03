@@ -3,6 +3,7 @@ module Braintree
     module CreditCardNumbers
       module CardTypeIndicators
         Prepaid           = "4111111111111210"
+        PrepaidReloadable = "4229989900000002"
         Commercial        = "4111111111131010"
         Payroll           = "4111111114101010"
         Healthcare        = "4111111510101010"

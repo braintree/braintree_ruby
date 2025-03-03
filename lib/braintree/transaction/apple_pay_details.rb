@@ -21,6 +21,7 @@ module Braintree
       attr_reader :payment_instrument_name
       attr_reader :payroll
       attr_reader :prepaid
+      attr_reader :prepaid_reloadable
       attr_reader :product_id
       attr_reader :source_card_last4
       attr_reader :source_description

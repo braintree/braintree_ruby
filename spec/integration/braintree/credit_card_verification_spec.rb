@@ -322,6 +322,30 @@ describe Braintree::CreditCardVerification, "search" do
         found_verification = Braintree::CreditCardVerification.find(verification_id)
         expect(found_verification.credit_card[:prepaid]).to eq(Braintree::CreditCard::Prepaid::Yes)
       end
+
+      it "returns prepaid_reloadable on a prepaid card" do
+        cardholder_name = "Tom #{rand(1_000_000)} Smith"
+
+        Braintree::Customer.create(
+          :credit_card => {
+          :cardholder_name => cardholder_name,
+          :expiration_date => "05/2012",
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::PrepaidReloadable,
+          :cvv => "200",
+          :options => {
+            :verify_card => true
+        }
+        })
+
+        search_results = Braintree::CreditCardVerification.search do |search|
+          search.credit_card_cardholder_name.is cardholder_name
+        end
+
+        verification_id = search_results.first.id
+
+        found_verification = Braintree::CreditCardVerification.find(verification_id)
+        expect(found_verification.credit_card[:prepaid_reloadable]).to eq(Braintree::CreditCard::PrepaidReloadable::Yes)
+      end
     end
   end
 

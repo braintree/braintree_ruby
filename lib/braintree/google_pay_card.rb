@@ -18,6 +18,7 @@ module Braintree
     attr_reader :issuing_bank
     attr_reader :payroll
     attr_reader :prepaid
+    attr_reader :prepaid_reloadable
     attr_reader :product_id
     attr_reader :source_card_last_4
     attr_reader :source_card_type

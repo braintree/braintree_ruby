@@ -24,6 +24,7 @@ module Braintree
         attr_reader :last_4
         attr_reader :payroll
         attr_reader :prepaid
+        attr_reader :prepaid_reloadable
         attr_reader :product_id
         attr_reader :token
         attr_reader :unique_number_identifier
@@ -38,8 +39,11 @@ module Braintree
         end
 
         def inspect
-          attr_order = [:container_id, :cryptogram, :ecommerce_indicator, :token, :bin, :last_4, :card_type, :expiration_date, :cardholder_name, :customer_location, :prepaid,
-          :healthcare, :durbin_regulated, :debit, :commercial, :payroll, :product_id, :country_of_issuance, :issuing_bank, :is_network_tokenized, :image_url]
+          attr_order = [
+            :bin, :card_type, :cardholder_name, :commercial, :container_id, :country_of_issuance,
+            :cryptogram, :customer_location, :debit, :durbin_regulated, :ecommerce_indicator,
+            :expiration_date, :healthcare, :image_url, :is_network_tokenized, :issuing_bank, :last_4,
+            :payroll, :prepaid, :prepaid_reloadable, :product_id, :token]
           formatted_attrs = attr_order.map do |attr|
             "#{attr}: #{send(attr).inspect}"
           end

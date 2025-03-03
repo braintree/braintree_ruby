@@ -230,6 +230,16 @@ describe Braintree::PaymentMethodNonce do
       expect(nonce.bin_data.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
     end
 
+    it "returns bin_data with prepaid_reloadable set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-prepaid-reloadable-nonce")
+
+      nonce = result.payment_method_nonce
+
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Yes)
+    end
+
     it "returns bin_data with unknown indicators" do
       result = Braintree::PaymentMethodNonce.find("fake-valid-unknown-indicators-nonce")
 
@@ -245,6 +255,7 @@ describe Braintree::PaymentMethodNonce do
       expect(nonce.bin_data.issuing_bank).to eq(Braintree::CreditCard::IssuingBank::Unknown)
       expect(nonce.bin_data.payroll).to eq(Braintree::CreditCard::Payroll::Unknown)
       expect(nonce.bin_data.prepaid).to eq(Braintree::CreditCard::Prepaid::Unknown)
+      expect(nonce.bin_data.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Unknown)
       expect(nonce.bin_data.product_id).to eq(Braintree::CreditCard::ProductId::Unknown)
     end
 

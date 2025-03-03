@@ -39,6 +39,7 @@ describe Braintree::ApplePayCard do
       :payment_instrument_name => nil,
       :payroll => "No",
       :prepaid => "No",
+      :prepaid_reloadable => "No",
       :product_id => "MAC",
       :source_card_last4 => "1234",
       :source_description => "blah",

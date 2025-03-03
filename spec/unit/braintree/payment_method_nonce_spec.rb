@@ -15,7 +15,8 @@ describe Braintree::PaymentMethodNonce do
         :liability_shifted => false
       },
       :bin_data => {
-        :country_of_issuance => "USA"
+        :country_of_issuance => "USA",
+        :prepaid_reloadable => "Yes"
       },
     )
   }
@@ -29,6 +30,8 @@ describe Braintree::PaymentMethodNonce do
       expect(payment_method_nonce.three_d_secure_info.liability_shift_possible).to be false
       expect(payment_method_nonce.three_d_secure_info.liability_shifted).to be false
       expect(payment_method_nonce.bin_data.country_of_issuance).to eq("USA")
+      expect(payment_method_nonce.bin_data.prepaid_reloadable).to eq("Yes")
+
     end
   end
 

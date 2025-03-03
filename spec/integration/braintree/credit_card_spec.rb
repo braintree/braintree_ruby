@@ -449,6 +449,18 @@ describe Braintree::CreditCard do
         expect(credit_card.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
       end
 
+      it "sets the prepaid reloadable field if the card is prepaid reloadable" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::PrepaidReloadable,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true},
+        )
+        credit_card = result.credit_card
+        expect(credit_card.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Yes)
+      end
+
       it "sets the healthcare field if the card is healthcare" do
         customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(

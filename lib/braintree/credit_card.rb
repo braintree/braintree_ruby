@@ -45,8 +45,8 @@ module Braintree
       Unknown = "Unknown"
     end
 
-    Commercial = Debit = DurbinRegulated = Healthcare = Payroll = Prepaid = ProductId =
-      IssuingBank = CountryOfIssuance = CardTypeIndicator
+    Commercial = CountryOfIssuance = Debit = DurbinRegulated = Healthcare =
+      IssuingBank = Payroll = Prepaid = PrepaidReloadable = ProductId = CardTypeIndicator
 
     attr_reader :billing_address
     attr_reader :bin
@@ -66,6 +66,7 @@ module Braintree
     attr_reader :last_4
     attr_reader :payroll
     attr_reader :prepaid
+    attr_reader :prepaid_reloadable
     attr_reader :product_id
     attr_reader :subscriptions
     attr_reader :token
@@ -199,9 +200,9 @@ module Braintree
 
     def self._attributes
       [
-        :billing_address, :bin, :card_type, :cardholder_name, :created_at, :customer_id, :expiration_month,
-        :expiration_year, :last_4, :token, :updated_at, :prepaid, :payroll, :product_id, :commercial, :debit, :durbin_regulated,
-        :healthcare, :country_of_issuance, :issuing_bank, :image_url, :is_network_tokenized?
+        :billing_address, :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance, :created_at, :customer_id,
+        :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare, :image_url, :is_network_tokenized?,
+        :issuing_bank, :last_4, :payroll, :prepaid, :prepaid_reloadable, :product_id, :token, :updated_at
       ]
     end
 

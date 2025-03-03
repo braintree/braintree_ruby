@@ -24,6 +24,7 @@ describe Braintree::Transaction::CreditCardDetails do
         :customer_location => "US",
         :healthcare => "No",
         :prepaid => "Yes",
+        :prepaid_reloadable => "Yes",
         :durbin_regulated => "No",
         :debit => "Yes",
         :commercial => "Unknown",
@@ -34,7 +35,7 @@ describe Braintree::Transaction::CreditCardDetails do
         :image_url => "example.com/visa.png",
         :unique_number_identifier => "abc123",
       )
-      expect(details.inspect).to eq(%(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", expiration_date: "05/2012", cardholder_name: "The Cardholder", customer_location: "US", prepaid: "Yes", healthcare: "No", durbin_regulated: "No", debit: "Yes", commercial: "Unknown", payroll: "Unknown", product_id: "Unknown", country_of_issuance: "Lilliput", issuing_bank: "Gulliver Bank", image_url: "example.com/visa.png", unique_number_identifier: "abc123">))
+      expect(details.inspect).to eq(%(#<token: "token", bin: "123456", last_4: "6789", card_type: "Visa", commercial: "Unknown", country_of_issuance: "Lilliput", customer_location: "US", debit: "Yes", durbin_regulated: "No", expiration_date: "05/2012", healthcare: "No", image_url: "example.com/visa.png", issuing_bank: "Gulliver Bank", payroll: "Unknown", prepaid: "Yes", prepaid_reloadable: "Yes", product_id: "Unknown", cardholder_name: "The Cardholder", unique_number_identifier: "abc123">))
     end
   end
 

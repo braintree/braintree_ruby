@@ -17,6 +17,7 @@ describe Braintree::MetaCheckoutToken do
         :last_4 => "1234",
         :payroll => "NO",
         :prepaid => "NO",
+        :prepaid_reloadable => "NO",
         :token => "token1",
         :unique_number_identifier => "abc1234",
         :updated_at => "2023-05-05T21:28:37Z",
@@ -40,6 +41,7 @@ describe Braintree::MetaCheckoutToken do
             card.debit == "NO"
             card.payroll == "NO"
             card.prepaid == "NO"
+            card.prepaid_reloadable == "NO"
             card.healthcare == "NO"
             card.token == "token1"
             card.unique_number_identifier == "abc1234"

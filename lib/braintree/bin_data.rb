@@ -10,6 +10,7 @@ module Braintree
     attr_reader :issuing_bank
     attr_reader :payroll
     attr_reader :prepaid
+    attr_reader :prepaid_reloadable
     attr_reader :product_id
 
     def initialize(attributes)
@@ -26,7 +27,7 @@ module Braintree
     def self._attributes
       [
         :commercial, :country_of_issuance, :debit, :durbin_regulated, :healthcare,
-        :issuing_bank, :payroll, :prepaid, :product_id
+        :issuing_bank, :payroll, :prepaid, :prepaid_reloadable, :product_id
       ]
     end
   end

@@ -119,6 +119,7 @@ describe Braintree::Transaction do
           :expiration_year => "2009",
           :customer_location => "US",
           :prepaid => "Yes",
+          :prepaid_reloadable => "Yes",
           :healthcare => "Yes",
           :durbin_regulated => "Yes",
           :debit => "Yes",
@@ -137,6 +138,7 @@ describe Braintree::Transaction do
       expect(transaction.credit_card_details.expiration_year).to eq("2009")
       expect(transaction.credit_card_details.customer_location).to eq("US")
       expect(transaction.credit_card_details.prepaid).to eq(Braintree::CreditCard::Prepaid::Yes)
+      expect(transaction.credit_card_details.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Yes)
       expect(transaction.credit_card_details.healthcare).to eq(Braintree::CreditCard::Healthcare::Yes)
       expect(transaction.credit_card_details.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Yes)
       expect(transaction.credit_card_details.debit).to eq(Braintree::CreditCard::Debit::Yes)
