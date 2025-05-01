@@ -58,10 +58,6 @@ module Braintree
         _partner_merchant_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::OAuthAccessRevoked
         _oauth_access_revoked_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::SubMerchantAccountApproved
-        _merchant_account_approved_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined
-        _merchant_account_declined_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionDisbursed
         _transaction_disbursed_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionReviewed
@@ -70,8 +66,6 @@ module Braintree
         _transaction_settled_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionSettlementDeclined
         _transaction_settlement_declined_sample_xml(id)
-      when Braintree::WebhookNotification::Kind::DisbursementException
-        _disbursement_exception_sample_xml(id)
       when Braintree::WebhookNotification::Kind::Disbursement
         _disbursement_sample_xml(id)
       when Braintree::WebhookNotification::Kind::SubscriptionBillingSkipped
@@ -959,33 +953,7 @@ module Braintree
       XML
     end
 
-    def _disbursement_exception_sample_xml(id)
-
-      <<-XML
-        <disbursement>
-          <id>#{id}</id>
-          <transaction-ids type="array">
-            <item>afv56j</item>
-            <item>kj8hjk</item>
-          </transaction-ids>
-          <success type="boolean">false</success>
-          <retry type="boolean">false</retry>
-          <merchant-account>
-            <id>merchant_account_token</id>
-            <currency-iso-code>USD</currency-iso-code>
-            <sub-merchant-account type="boolean">false</sub-merchant-account>
-            <status>active</status>
-          </merchant-account>
-          <amount>100.00</amount>
-          <disbursement-date type="date">2014-02-10</disbursement-date>
-          <exception-message>bank_rejected</exception-message>
-          <follow-up-action>update_funding_information</follow-up-action>
-        </disbursement>
-      XML
-    end
-
     def _disbursement_sample_xml(id)
-
       <<-XML
         <disbursement>
           <id>#{id}</id>
@@ -1010,7 +978,6 @@ module Braintree
     end
 
     def _account_updater_daily_report_sample_xml(id)
-
       <<-XML
         <account-updater-daily-report>
           <report-date type="date">2016-01-14</report-date>

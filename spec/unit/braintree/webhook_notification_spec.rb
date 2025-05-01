@@ -310,25 +310,6 @@ describe Braintree::WebhookNotification do
         expect(notification.transaction.disbursement_details.disbursement_date).to eq(Date.parse("2013-07-09"))
       end
 
-      it "builds a sample notification for a disbursement_exception webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::DisbursementException,
-          "my_id",
-        )
-
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-
-        expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::DisbursementException)
-        expect(notification.disbursement.id).to eq("my_id")
-        expect(notification.disbursement.transaction_ids).to eq(%W{ afv56j kj8hjk })
-        expect(notification.disbursement.retry).to be(false)
-        expect(notification.disbursement.success).to be(false)
-        expect(notification.disbursement.exception_message).to eq("bank_rejected")
-        expect(notification.disbursement.disbursement_date).to eq(Date.parse("2014-02-10"))
-        expect(notification.disbursement.follow_up_action).to eq("update_funding_information")
-        expect(notification.disbursement.merchant_account.id).to eq("merchant_account_token")
-      end
-
       it "builds a sample notification for a disbursement webhook" do
         sample_notification = Braintree::WebhookTesting.sample_notification(
           Braintree::WebhookNotification::Kind::Disbursement,
@@ -400,40 +381,6 @@ describe Braintree::WebhookNotification do
         expect(notification.transaction.us_bank_account_details.account_holder_name).to eq("Dan Schulman")
         expect(notification.transaction.us_bank_account_details.routing_number).to eq("123456789")
         expect(notification.transaction.us_bank_account_details.last_4).to eq("1234")
-      end
-    end
-
-    context "merchant account" do
-      it "builds a sample notification for a merchant account approved webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::SubMerchantAccountApproved,
-          "my_id",
-        )
-
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-
-        expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::SubMerchantAccountApproved)
-        expect(notification.merchant_account.id).to eq("my_id")
-        expect(notification.merchant_account.status).to eq(Braintree::MerchantAccount::Status::Active)
-        expect(notification.merchant_account.master_merchant_account.id).to eq("master_ma_for_my_id")
-        expect(notification.merchant_account.master_merchant_account.status).to eq(Braintree::MerchantAccount::Status::Active)
-      end
-
-      it "builds a sample notification for a merchant account declined webhook" do
-        sample_notification = Braintree::WebhookTesting.sample_notification(
-          Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined,
-          "my_id",
-        )
-
-        notification = Braintree::WebhookNotification.parse(sample_notification[:bt_signature], sample_notification[:bt_payload])
-
-        expect(notification.kind).to eq(Braintree::WebhookNotification::Kind::SubMerchantAccountDeclined)
-        expect(notification.merchant_account.id).to eq("my_id")
-        expect(notification.merchant_account.status).to eq(Braintree::MerchantAccount::Status::Suspended)
-        expect(notification.merchant_account.master_merchant_account.id).to eq("master_ma_for_my_id")
-        expect(notification.merchant_account.master_merchant_account.status).to eq(Braintree::MerchantAccount::Status::Suspended)
-        expect(notification.message).to eq("Credit score is too low")
-        expect(notification.errors.for(:merchant_account).on(:base).first.code).to eq(Braintree::ErrorCodes::MerchantAccount::DeclinedOFAC)
       end
     end
 

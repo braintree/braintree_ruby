@@ -31,16 +31,6 @@ module Braintree
       return_object_or_raise(:transaction) { cancel_release(*args) }
     end
 
-    def hold_in_escrow(transaction_id)
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/hold_in_escrow")
-      _handle_transaction_response(response)
-    end
-
-    def hold_in_escrow!(*args)
-      return_object_or_raise(:transaction) { hold_in_escrow(*args) }
-    end
-
     def _handle_transaction_response(response)
       if response[:transaction]
         SuccessfulResult.new(:transaction => Transaction._new(@gateway, response[:transaction]))
@@ -133,16 +123,6 @@ module Braintree
       else
         raise UnexpectedError, "expected :search_results"
       end
-    end
-
-    def release_from_escrow(transaction_id)
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
-      response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/release_from_escrow")
-      _handle_transaction_response(response)
-    end
-
-    def release_from_escrow!(*args)
-      return_object_or_raise(:transaction) { release_from_escrow(*args) }
     end
 
     def submit_for_settlement(transaction_id, amount = nil, options = {})
@@ -275,6 +255,15 @@ module Braintree
         ]
         },
         {:paypal_account => [:email, :token, :paypal_data, :payee_id, :payee_email, :payer_id, :payment_id]},
+        {:payment_facilitator => [
+          :payment_facilitator_id,
+          {:sub_merchant => [:reference_number, :tax_id, :legal_name,
+            {:address => [ :street_address, :locality, :region, :country_code_alpha2, :postal_code,
+              {:international_phone => [:country_code, :national_number
+              ]}
+            ]}
+          ]}
+        ]},
         {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
         {
           :shipping => AddressGateway._shared_signature + [:shipping_method],

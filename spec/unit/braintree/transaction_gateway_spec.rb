@@ -94,6 +94,25 @@ describe Braintree::TransactionGateway do
         ]
         },
         {:paypal_account => [:email, :token, :paypal_data, :payee_id, :payee_email, :payer_id, :payment_id]},
+        {:payment_facilitator => [
+          :payment_facilitator_id,
+          {:sub_merchant => [
+            :reference_number,
+            :tax_id,
+            :legal_name,
+            {:address => [
+              :street_address,
+              :locality,
+              :region,
+              :country_code_alpha2,
+              :postal_code,
+              {:international_phone => [
+                :country_code,
+                :national_number
+              ]}
+            ]}
+          ]}
+        ]},
         {:risk_data => [:customer_browser, :customer_device_id, :customer_ip, :customer_location_zip, :customer_tenure]},
         {
           :shipping => Braintree::AddressGateway._shared_signature + [:shipping_method],

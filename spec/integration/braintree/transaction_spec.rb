@@ -1987,108 +1987,6 @@ describe Braintree::Transaction do
       end
     end
 
-    context "service fees" do
-      it "allows specifying service fees" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/12",
-          },
-          :service_fee_amount => "1.00",
-        )
-        expect(result.success?).to eq(true)
-        expect(result.transaction.service_fee_amount).to eq(BigDecimal("1.00"))
-      end
-
-      it "raises an error if transaction merchant account is a master" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/12",
-          },
-          :service_fee_amount => "1.00",
-        )
-        expect(result.success?).to eq(false)
-        expected_error_code = Braintree::ErrorCodes::Transaction::ServiceFeeAmountNotAllowedOnMasterMerchantAccount
-        expect(result.errors.for(:transaction).on(:service_fee_amount)[0].code).to eq(expected_error_code)
-      end
-
-      it "raises an error if no service fee is present on a sub merchant account transaction" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/12",
-          },
-        )
-        expect(result.success?).to eq(false)
-        expected_error_code = Braintree::ErrorCodes::Transaction::SubMerchantAccountRequiresServiceFeeAmount
-        expect(result.errors.for(:transaction).on(:merchant_account_id)[0].code).to eq(expected_error_code)
-      end
-
-      it "raises an error if service fee amount is negative" do
-        result = Braintree::Transaction.create(
-          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :service_fee_amount => "-1.00",
-        )
-        expect(result.success?).to eq(false)
-        expect(result.errors.for(:transaction).on(:service_fee_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ServiceFeeAmountCannotBeNegative)
-      end
-
-      it "raises an error if service fee amount is invalid" do
-        result = Braintree::Transaction.create(
-          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :service_fee_amount => "invalid amount",
-        )
-        expect(result.success?).to eq(false)
-        expect(result.errors.for(:transaction).on(:service_fee_amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::ServiceFeeAmountFormatIsInvalid)
-      end
-    end
-
-    context "escrow" do
-      it "allows specifying transactions to be held for escrow" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/12",
-          },
-          :service_fee_amount => "10.00",
-          :options => {:hold_in_escrow => true},
-        )
-
-        expect(result.success?).to eq(true)
-        expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::HoldPending)
-      end
-
-      it "raises an error if transaction merchant account is a master" do
-        result = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "12/12",
-          },
-          :service_fee_amount => "1.00",
-          :options => {:hold_in_escrow => true},
-        )
-        expect(result.success?).to eq(false)
-        expected_error_code = Braintree::ErrorCodes::Transaction::CannotHoldInEscrow
-        expect(result.errors.for(:transaction).on(:base)[0].code).to eq(expected_error_code)
-      end
-    end
-
     context "client API" do
       it "can create a transaction with a shared card nonce" do
         nonce = nonce_for_new_payment_method(
@@ -5739,7 +5637,6 @@ describe Braintree::Transaction do
       end
     end
 
-
     context "3rd party Card on File Network Token" do
       it "Works with all params" do
         params = {
@@ -6132,24 +6029,6 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.submit_for_settlement(transaction.id)
       expect(result.success?).to eq(false)
       expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotSubmitForSettlement)
-    end
-
-    context "service fees" do
-      it "returns an error result if amount submitted for settlement is less than service fee amount" do
-        transaction = Braintree::Transaction.create(
-          :type => "sale",
-          :amount => Braintree::Test::TransactionAmounts::Authorize,
-          :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-          :credit_card => {
-            :number => Braintree::Test::CreditCardNumbers::Visa,
-            :expiration_date => "06/2009"
-          },
-          :service_fee_amount => "1.00",
-        ).transaction
-        result = Braintree::Transaction.submit_for_settlement(transaction.id, "0.01")
-        expect(result.success?).to eq(false)
-        expect(result.errors.for(:transaction).on(:amount)[0].code).to eq(Braintree::ErrorCodes::Transaction::SettlementAmountIsLessThanServiceFeeAmount)
-      end
     end
 
     it "succeeds when industry data is provided" do
@@ -6715,101 +6594,6 @@ describe Braintree::Transaction do
     end
   end
 
-  describe "self.release_from_escrow" do
-    it "returns the transaction if successful" do
-      original_transaction = create_escrowed_transcation
-
-      result = Braintree::Transaction.release_from_escrow(original_transaction.id)
-      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
-    end
-
-    it "returns an error result if escrow_status is not HeldForEscrow" do
-      transaction = Braintree::Transaction.sale!(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
-        },
-        :service_fee_amount => "1.00",
-      )
-
-      expect(transaction.escrow_status).to be_nil
-
-      result = Braintree::Transaction.release_from_escrow(transaction.id)
-      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotReleaseFromEscrow)
-    end
-  end
-
-  describe "self.release_from_escrow!" do
-    it "returns the transaction when successful" do
-      original_transaction = create_escrowed_transcation
-
-      transaction = Braintree::Transaction.release_from_escrow!(original_transaction.id)
-      expect(transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
-    end
-
-    it "raises an error when transaction is not successful" do
-      transaction = Braintree::Transaction.sale!(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
-        },
-        :service_fee_amount => "1.00",
-      )
-
-      expect(transaction.escrow_status).to be_nil
-
-      expect do
-        Braintree::Transaction.release_from_escrow!(transaction.id)
-      end.to raise_error(Braintree::ValidationsFailed)
-    end
-  end
-
-  describe "self.cancel_release" do
-    it "returns the transaction if successful" do
-      transaction = create_escrowed_transcation
-      result = Braintree::Transaction.release_from_escrow(transaction.id)
-      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
-
-      result = Braintree::Transaction.cancel_release(transaction.id)
-
-      expect(result.success?).to be(true)
-      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::Held)
-    end
-
-    it "returns an error result if escrow_status is not ReleasePending" do
-      transaction = create_escrowed_transcation
-
-      result = Braintree::Transaction.cancel_release(transaction.id)
-
-      expect(result.success?).to be(false)
-      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotCancelRelease)
-    end
-  end
-
-  describe "self.cancel_release!" do
-    it "returns the transaction when release is cancelled" do
-      transaction = create_escrowed_transcation
-      result = Braintree::Transaction.release_from_escrow(transaction.id)
-      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::ReleasePending)
-
-      transaction = Braintree::Transaction.cancel_release!(transaction.id)
-
-      expect(transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::Held)
-    end
-
-    it "raises an error when release cannot be cancelled" do
-      transaction = create_escrowed_transcation
-
-      expect {
-        transaction = Braintree::Transaction.cancel_release!(transaction.id)
-      }.to raise_error(Braintree::ValidationsFailed)
-    end
-  end
-
   describe "self.credit" do
     it "returns a successful result with type=credit if successful" do
       result = Braintree::Transaction.credit(
@@ -7095,76 +6879,6 @@ describe Braintree::Transaction do
     end
   end
 
-  describe "self.hold_in_escrow" do
-    it "returns the transaction if successful" do
-      result = Braintree::Transaction.create(
-        :type => "sale",
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "12/12",
-        },
-        :service_fee_amount => "10.00",
-      )
-
-      expect(result.transaction.escrow_status).to be_nil
-      result = Braintree::Transaction.hold_in_escrow(result.transaction.id)
-
-      expect(result.success?).to be(true)
-      expect(result.transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::HoldPending)
-    end
-
-    it "returns an error result if the transaction cannot be held in escrow" do
-      transaction = Braintree::Transaction.sale!(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
-        },
-      )
-
-      result = Braintree::Transaction.hold_in_escrow(transaction.id)
-      expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotHoldInEscrow)
-    end
-  end
-
-  describe "self.hold_in_escrow!" do
-    it "returns the transaction if successful" do
-      result = Braintree::Transaction.create(
-        :type => "sale",
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "12/12",
-        },
-        :service_fee_amount => "10.00",
-      )
-
-      expect(result.transaction.escrow_status).to be_nil
-      transaction = Braintree::Transaction.hold_in_escrow!(result.transaction.id)
-
-      expect(transaction.escrow_status).to eq(Braintree::Transaction::EscrowStatus::HoldPending)
-    end
-
-    it "raises an error if the transaction cannot be held in escrow" do
-      transaction = Braintree::Transaction.sale!(
-        :amount => Braintree::Test::TransactionAmounts::Authorize,
-        :merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
-        :credit_card => {
-          :number => Braintree::Test::CreditCardNumbers::Visa,
-          :expiration_date => "05/2009"
-        },
-      )
-
-      expect do
-        Braintree::Transaction.hold_in_escrow!(transaction.id)
-      end.to raise_error(Braintree::ValidationsFailed)
-    end
-  end
-
   describe "self.void" do
     it "returns a successful result if successful" do
       transaction = Braintree::Transaction.sale!(
@@ -7371,24 +7085,6 @@ describe Braintree::Transaction do
 
     config = Braintree::Configuration.instantiate
     config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
-    Braintree::Transaction.find(transaction.id)
-  end
-
-  def create_escrowed_transcation
-    transaction = Braintree::Transaction.sale!(
-      :amount => Braintree::Test::TransactionAmounts::Authorize,
-      :merchant_account_id => SpecHelper::NonDefaultSubMerchantAccountId,
-      :credit_card => {
-        :number => Braintree::Test::CreditCardNumbers::Visa,
-        :expiration_date => "05/2009"
-      },
-      :service_fee_amount => "1.00",
-      :options => {:hold_in_escrow => true},
-    )
-
-    config = Braintree::Configuration.instantiate
-    config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
-    config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/escrow")
     Braintree::Transaction.find(transaction.id)
   end
 

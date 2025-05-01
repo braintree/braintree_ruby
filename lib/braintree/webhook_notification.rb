@@ -13,7 +13,6 @@ module Braintree
       ConnectedMerchantPayPalStatusChanged = "connected_merchant_paypal_status_changed"
       ConnectedMerchantStatusTransitioned = "connected_merchant_status_transitioned"
       Disbursement = "disbursement"
-      DisbursementException = "disbursement_exception"
 
       DisputeAccepted = "dispute_accepted"
       DisputeAutoAccepted = "dispute_auto_accepted"
@@ -56,9 +55,6 @@ module Braintree
       SubscriptionTrialEnded = "subscription_trial_ended"
       SubscriptionWentActive = "subscription_went_active"
       SubscriptionWentPastDue = "subscription_went_past_due"
-
-      SubMerchantAccountApproved = "sub_merchant_account_approved"
-      SubMerchantAccountDeclined = "sub_merchant_account_declined"
 
       TransactionDisbursed = "transaction_disbursed"
       TransactionReviewed = "transaction_reviewed"

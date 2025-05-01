@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.27.0
+
+- Remove marketplace features
+- Add support for capturing payment facilitator and sub-merchant details with transactions 
+
 ## 4.26.0
 
 - Add `prepaid_reloadable` from the bin data to credit card responses

@@ -116,7 +116,6 @@ module Braintree
         VerificationAmountFormatIsInvalid = "91740"
         VerificationAmountIsTooLarge = "91752"
         VerificationAmountNotSupportedByProcessor = "91741"
-        VerificationMerchantAccountCannotBeSubMerchantAccount = "91755"
         VerificationMerchantAccountIdIsInvalid = "91728"
         VerificationMerchantAccountIsForbidden = "91743"
         VerificationMerchantAccountIsSuspended = "91742"
@@ -189,6 +188,10 @@ module Braintree
 
     module GooglePayCard
       AndroidPayCardsAreNotAccepted = "83708"
+    end
+
+    module PaymentFacilitator
+      PaymentFacilitatorNotApplicable = "97405"
     end
 
     module PayPalAccount
@@ -337,21 +340,16 @@ module Braintree
       BillingAddressConflict = "91530"
       BillingPhoneNumberIsInvalid = "915206"
       CannotBeVoided = "91504"
-      CannotCancelRelease = "91562"
       CannotCloneCredit = "91543"
-      CannotCloneMarketplaceTransaction = "915137"
       CannotCloneTransactionWithPayPalAccount = "91573"
       CannotCloneTransactionWithVaultCreditCard = "91540"
       CannotCloneUnsuccessfulTransaction = "91542"
       CannotCloneVoiceAuthorizations = "91541"
-      CannotHoldInEscrow = "91560"
-      CannotPartiallyRefundEscrowedTransaction = "91563"
       CannotRefundCredit = "91505"
       CannotRefundSettlingTransaction = "91574"
       CannotRefundUnlessSettled = "91506"
       CannotRefundWithPendingMerchantAccount = "91559"
       CannotRefundWithSuspendedMerchantAccount = "91538"
-      CannotReleaseFromEscrow = "91561"
       CannotSimulateTransactionSettlement = "91575"
       CannotSubmitForSettlement = "91507"
       CannotUpdateTransactionDetailsNotSubmittedForSettlement = "915129"
@@ -434,7 +432,6 @@ module Braintree
       ShipsFromPostalCodeInvalidCharacters = "915167"
       ShipsFromPostalCodeIsInvalid = "915166"
       ShipsFromPostalCodeIsTooLong = "915165"
-      SubMerchantAccountRequiresServiceFeeAmount = "91553"
       SubscriptionDoesNotBelongToCustomer = "91529"
       SubscriptionIdIsInvalid = "91528"
       SubscriptionStatusMustBePastDue = "91531"
@@ -467,6 +464,7 @@ module Braintree
       UnsupportedVoiceAuthorization = "91539"
       UsBankAccountNonceMustBePlaidVerified = "915171"
       UsBankAccountNotVerified = "915172"
+
 
       module Options
         SubmitForSettlementIsRequiredForCloning = "91544"
@@ -639,110 +637,14 @@ module Braintree
     end
 
     module MerchantAccount
-      CannotBeUpdated = "82674"
-      Declined = "82626"
-      DeclinedFailedKYC = "82623"
-      DeclinedMasterCardMatch = "82622"
-      DeclinedOFAC = "82621"
-      DeclinedSsnInvalid = "82624"
-      DeclinedSsnMatchesDeceased = "82625"
-      IdCannotBeUpdated = "82675"
-      IdFormatIsInvalid = "82603"
-      IdIsInUse = "82604"
-      IdIsNotAllowed = "82605"
-      IdIsTooLong = "82602"
-      MasterMerchantAccountIdCannotBeUpdated = "82676"
-      MasterMerchantAccountIdIsInvalid = "82607"
-      MasterMerchantAccountIdIsRequired = "82606"
-      MasterMerchantAccountMustBeActive = "82608"
-      TosAcceptedIsRequired = "82610"
 
       module ApplicantDetails
-        AccountNumberIsInvalid = "82670"
-        AccountNumberIsRequired = "82614"
-        CompanyNameIsInvalid = "82631"
-        CompanyNameIsRequiredWithTaxId = "82633"
-        DateOfBirthIsInvalid = "82663"
-        DateOfBirthIsRequired = "82612"
         Declined = "82626"                   # Keep for backwards compatibility
         DeclinedFailedKYC = "82623"          # Keep for backwards compatibility
         DeclinedMasterCardMatch = "82622"    # Keep for backwards compatibility
         DeclinedOFAC = "82621"               # Keep for backwards compatibility
         DeclinedSsnInvalid = "82624"         # Keep for backwards compatibility
         DeclinedSsnMatchesDeceased = "82625" # Keep for backwards compatibility
-        EmailAddressIsInvalid = "82616"
-        EmailAddressIsRequired = "82665"
-        FirstNameIsInvalid = "82627"
-        FirstNameIsRequired = "82609"
-        LastNameIsInvalid = "82628"
-        LastNameIsRequired = "82611"
-        PhoneIsInvalid = "82636"
-        RoutingNumberIsInvalid = "82635"
-        RoutingNumberIsRequired = "82613"
-        SsnIsInvalid = "82615"
-        TaxIdIsInvalid = "82632"
-        TaxIdIsRequiredWithCompanyName = "82634"
-        TaxIdMustBeBlank = "82673"
-
-        module Address
-          LocalityIsRequired = "82618"
-          PostalCodeIsInvalid = "82630"
-          PostalCodeIsRequired = "82619"
-          RegionIsInvalid = "82664"
-          RegionIsRequired = "82620"
-          StreetAddressIsInvalid = "82629"
-          StreetAddressIsRequired = "82617"
-        end
-      end
-
-      module Individual
-        DateOfBirthIsInvalid = "82666"
-        DateOfBirthIsRequired = "82639"
-        EmailIsInvalid = "82643"
-        EmailIsRequired = "82667"
-        FirstNameIsInvalid = "82644"
-        FirstNameIsRequired = "82637"
-        LastNameIsInvalid = "82645"
-        LastNameIsRequired = "82638"
-        PhoneIsInvalid = "82656"
-        SsnIsInvalid = "82642"
-
-        module Address
-          LocalityIsRequired = "82658"
-          PostalCodeIsInvalid = "82662"
-          PostalCodeIsRequired = "82659"
-          RegionIsInvalid = "82668"
-          RegionIsRequired = "82660"
-          StreetAddressIsInvalid = "82661"
-          StreetAddressIsRequired = "82657"
-        end
-      end
-
-      module Business
-        DbaNameIsInvalid = "82646"
-        LegalNameIsInvalid = "82677"
-        LegalNameIsRequiredWithTaxId = "82669"
-        TaxIdIsInvalid = "82647"
-        TaxIdIsRequiredWithLegalName = "82648"
-        TaxIdMustBeBlank = "82672"
-        module Address
-          PostalCodeIsInvalid = "82686"
-          RegionIsInvalid = "82684"
-          StreetAddressIsInvalid = "82685"
-        end
-      end
-
-      module Funding
-        AccountNumberIsInvalid = "82671"
-        AccountNumberIsRequired = "82641"
-        DestinationIsInvalid = "82679"
-        DestinationIsRequired = "82678"
-        EmailIsInvalid = "82681"
-        EmailIsRequired = "82680"
-        MobilePhoneIsInvalid = "82683"
-        MobilePhoneIsRequired = "82682"
-        RoutingNumberIsInvalid = "82649"
-        RoutingNumberIsRequired = "82640"
       end
     end
 
@@ -808,7 +710,6 @@ module Braintree
         AmountFormatIsInvalid = "94202"
         AmountIsTooLarge = "94207"
         AmountNotSupportedByProcessor = "94203"
-        MerchantAccountCannotBeSubMerchantAccount = "94208"
         MerchantAccountIdIsInvalid = "94204"
         MerchantAccountIsForbidden = "94206"
         MerchantAccountIsSuspended = "94205"
