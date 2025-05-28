@@ -19,16 +19,13 @@ module Braintree
       GRAPHQL
 
       GET_CUSTOMER_RECOMMENDATIONS = <<~GRAPHQL
-        query CustomerRecommendations($input: CustomerRecommendationsInput!) {
-          customerRecommendations(input: $input) {
+        mutation GenerateCustomerRecommendations($input: GenerateCustomerRecommendationsInput!) {
+          generateCustomerRecommendations(input: $input) {
+            sessionId
             isInPayPalNetwork
-            recommendations {
-              ... on PaymentRecommendations {
-                paymentOptions {
+            paymentRecommendations {
                   paymentOption
                   recommendedPriority
-                }
-              }
             }
           }
         }
@@ -143,7 +140,11 @@ module Braintree
             SuccessfulResult.new(:customer_recommendations => extract_customer_recommendations_payload(response))
           end
         rescue StandardError => e
-          raise UnexpectedError, e.message
+          if e.message.include?("Authorization failed")
+            raise AuthorizationError, e.message
+          else
+            raise ServerError, e.message
+          end
         end
       end
 
@@ -187,8 +188,8 @@ module Braintree
       end
 
       def extract_customer_recommendations_payload(data)
-        customer_recommendations_hash = get_value(data, "data.customerRecommendations")
-        Braintree::CustomerRecommendationsPayload._new(customer_recommendations_hash)
+        customer_recommendations_hash = get_value(data, "data.generateCustomerRecommendations")
+        Braintree::CustomerRecommendationsPayload._new({:response => {"generateCustomerRecommendations" => customer_recommendations_hash}})
       end
     end
   end

@@ -461,6 +461,54 @@ describe Braintree::CreditCard do
         expect(credit_card.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Yes)
       end
 
+      it "sets the business field if the card is business" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Business,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true},
+        )
+        credit_card = result.credit_card
+        expect(credit_card.business).to eq(Braintree::CreditCard::Business::Yes)
+      end
+
+      it "sets the consumer field if the card is consumer" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Consumer,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true},
+        )
+        credit_card = result.credit_card
+        expect(credit_card.consumer).to eq(Braintree::CreditCard::Consumer::Yes)
+      end
+
+      it "sets the corporate field if the card is corporate" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Corporate,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true},
+        )
+        credit_card = result.credit_card
+        expect(credit_card.corporate).to eq(Braintree::CreditCard::Corporate::Yes)
+      end
+
+      it "sets the purchase field if the card is purchase" do
+        customer = Braintree::Customer.create!
+        result = Braintree::CreditCard.create(
+          :customer_id => customer.id,
+          :number => Braintree::Test::CreditCardNumbers::CardTypeIndicators::Purchase,
+          :expiration_date => "05/2014",
+          :options => {:verify_card => true},
+        )
+        credit_card = result.credit_card
+        expect(credit_card.purchase).to eq(Braintree::CreditCard::Purchase::Yes)
+      end
+
       it "sets the healthcare field if the card is healthcare" do
         customer = Braintree::Customer.create!
         result = Braintree::CreditCard.create(
@@ -1450,4 +1498,57 @@ describe Braintree::CreditCard do
       expect(credit_card_vaulted.is_network_tokenized?).to eq(false)
     end
   end
+
+  describe "account information inquiry" do
+    it "includes ani response when account information inquiry is sent in options" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :cardholder_name => "John Doe",
+        :customer_id => customer.id,
+        :cvv => "123",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2027",
+        :billing_address => {
+          :first_name => "John",
+          :last_name => "Doe",
+        },
+        :options => {
+          :account_information_inquiry => "send_data",
+          :verify_card => true,
+        },
+      )
+
+      expect(result).to be_success
+      verification = result.credit_card.verification
+      expect(verification.ani_first_name_response_code).not_to be_nil
+      expect(verification.ani_last_name_response_code).not_to be_nil
+    end
+
+    it "includes ani response  after updating the options with account information inquiry" do
+      customer = Braintree::Customer.create!
+      credit_card = Braintree::CreditCard.create!(
+        :cardholder_name => "Original Holder",
+        :customer_id => customer.id,
+        :cvv => "123",
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2027",
+      )
+      updated_result = Braintree::CreditCard.update(credit_card.token,
+        :options => {
+          :verify_card => true,
+          :account_information_inquiry => "send_data",
+        },
+      )
+
+      expect(updated_result).to be_success
+      verification = updated_result.credit_card.verification
+      expect(verification.ani_first_name_response_code).not_to be_nil
+      expect(verification.ani_last_name_response_code).not_to be_nil
+    end
+  end
 end
+
+
+
+
+

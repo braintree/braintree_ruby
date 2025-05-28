@@ -3,7 +3,7 @@
 #Experimental
 # This class is experimental and may change in future releases.
 module Braintree
-    class PaymentOptions
+    class PaymentRecommendations
         include BaseModule
 
         attr_reader :attrs

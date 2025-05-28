@@ -25,7 +25,7 @@ describe Braintree::CreditCard do
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
         {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, # NEXT_MAJOR_VERSION Remove this attribute
-          :fail_on_duplicate_payment_method, :fail_on_duplicate_payment_method_for_customer, :verification_account_type, :verification_currency_iso_code])},
+          :account_information_inquiry, :fail_on_duplicate_payment_method, :fail_on_duplicate_payment_method_for_customer, :verification_account_type, :verification_currency_iso_code])},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -73,7 +73,7 @@ describe Braintree::CreditCard do
         :payment_method_nonce,
         {:external_vault=>[:network_transaction_id]},
         {:options => match_array([:make_default, :skip_advanced_fraud_checking, :verification_merchant_account_id, :verify_card, :verification_amount, :venmo_sdk_session, # NEXT_MAJOR_VERSION Remove this attribute
-          :fail_on_duplicate_payment_method, :fail_on_duplicate_payment_method_for_customer, :verification_account_type, :verification_currency_iso_code])},
+          :account_information_inquiry, :fail_on_duplicate_payment_method, :fail_on_duplicate_payment_method_for_customer, :verification_account_type, :verification_currency_iso_code])},
         {:billing_address => [
           :company,
           :country_code_alpha2,
@@ -270,5 +270,25 @@ describe Braintree::CreditCard do
   it "initializes prepaid reloadable correctly" do
     card = Braintree::CreditCard._new(:gateway, {:prepaid_reloadable => "No"})
     expect(card.prepaid_reloadable).to eq("No")
+  end
+
+  it "initializes business correctly" do
+    card = Braintree::CreditCard._new(:gateway, {:business => "No"})
+    expect(card.business).to eq("No")
+  end
+
+  it "initializes consumer correctly" do
+    card = Braintree::CreditCard._new(:gateway, {:consumer => "No"})
+    expect(card.consumer).to eq("No")
+  end
+
+  it "initializes corporate correctly" do
+    card = Braintree::CreditCard._new(:gateway, {:corporate => "No"})
+    expect(card.corporate).to eq("No")
+  end
+
+  it "initializes purchase correctly" do
+    card = Braintree::CreditCard._new(:gateway, {:purchase => "No"})
+    expect(card.purchase).to eq("No")
   end
 end

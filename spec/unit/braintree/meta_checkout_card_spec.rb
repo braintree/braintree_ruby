@@ -4,10 +4,13 @@ describe Braintree::MetaCheckoutCard do
   let(:attributes) do {
 
     :bin => "abc1234",
+    :business => "NO",
     :card_type => "Visa",
     :cardholder_name => "Meta Checkout Card CardHolder",
     :commercial => "NO",
+    :consumer => "NO",
     :container_id => "a-container-id",
+    :corporate => "NO",
     :country_of_issuance => "US",
     :created_at => "2023-05-05T21:28:37Z",
     :debit => "NO",
@@ -19,6 +22,7 @@ describe Braintree::MetaCheckoutCard do
     :payroll => "NO",
     :prepaid => "NO",
     :prepaid_reloadable => "NO",
+    :purchase => "NO",
     :token => "token1",
     :unique_number_identifier => "abc1234",
     :updated_at => "2023-05-05T21:28:37Z"
@@ -30,10 +34,13 @@ describe Braintree::MetaCheckoutCard do
       card = Braintree::MetaCheckoutCard._new(:gateway, attributes)
 
       card.bin.should == "abc1234"
+      card.business.should == "NO"
       card.card_type.should == "Visa"
       card.cardholder_name.should == "Meta Checkout Card CardHolder"
       card.commercial == "NO"
+      card.consumer == "NO"
       card.container_id.should == "a-container-id"
+      card.corporate == "NO"
       card.country_of_issuance == "US"
       card.created_at == "2023-05-05T21:28:37Z"
       card.debit == "NO"
@@ -44,6 +51,7 @@ describe Braintree::MetaCheckoutCard do
       card.payroll == "NO"
       card.prepaid == "NO"
       card.prepaid_reloadable == "NO"
+      card.purchase == "NO"
       card.token == "token1"
       card.unique_number_identifier == "abc1234"
       card.updated_at == "2023-05-05T21:28:37Z"

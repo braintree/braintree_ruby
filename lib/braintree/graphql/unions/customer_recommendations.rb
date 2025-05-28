@@ -1,34 +1,47 @@
 # A union of all possible customer recommendations associated with a PayPal customer session.
 
+#Experimental
+# This class is experimental and may change in future releases.
 module Braintree
-    class CustomerRecommendations
-        include BaseModule
+  class CustomerRecommendations
+    include BaseModule
 
-        attr_reader :attrs
-        attr_reader :payment_options
+    attr_reader :payment_options, :payment_recommendations
 
-        def initialize(attributes)
-            @attrs = [:payment_options]
-            if attributes.nil?
-                @payment_options = []
-            else
-                @payment_options = (attributes[:paymentOptions] || []).map { |payment_options_hash| PaymentOptions._new(payment_options_hash) }
-            end
-        end
+    def initialize(attributes = {})
+      @payment_recommendations = initialize_payment_recommendations(attributes[:payment_recommendations])
 
-        def inspect
-            inspected_attributes = @attrs.map { |attr| "#{attr}:#{send(attr).inspect}" }
-            "#<#{self.class} #{inspected_attributes.join(" ")}>"
-        end
-
-        class << self
-            protected :new
-        end
-
-        def self._new(*args)
-            self.new(*args)
-        end
+      # Always derive payment_options from payment_recommendations
+      @payment_options = @payment_recommendations.map do |recommendation|
+        PaymentOptions._new(
+          paymentOption: recommendation.payment_option,
+          recommendedPriority: recommendation.recommended_priority,
+        )
+      end
     end
+
+    def inspect
+      "#<#{self.class} payment_options: #{payment_options.inspect}, payment_recommendations: #{payment_recommendations.inspect}>"
+    end
+
+    private
+
+    def initialize_payment_recommendations(payment_recommendations)
+      return [] if payment_recommendations.nil?
+
+      payment_recommendations.map do |recommendation_hash|
+        if recommendation_hash.is_a?(PaymentRecommendations)
+          recommendation_hash
+        else
+          PaymentRecommendations._new(recommendation_hash)
+        end
+      end
+    end
+
+    class << self
+      def _new(attributes = {})
+        new(attributes)
+      end
+    end
+  end
 end
-
-

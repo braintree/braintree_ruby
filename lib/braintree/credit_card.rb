@@ -45,14 +45,18 @@ module Braintree
       Unknown = "Unknown"
     end
 
-    Commercial = CountryOfIssuance = Debit = DurbinRegulated = Healthcare =
-      IssuingBank = Payroll = Prepaid = PrepaidReloadable = ProductId = CardTypeIndicator
+    Business = Commercial = Consumer = Corporate = CountryOfIssuance = Debit =
+      DurbinRegulated = Healthcare = IssuingBank = Payroll = Prepaid = PrepaidReloadable =
+      ProductId = Purchase = CardTypeIndicator
 
     attr_reader :billing_address
     attr_reader :bin
+    attr_reader :business
     attr_reader :card_type
     attr_reader :cardholder_name
     attr_reader :commercial
+    attr_reader :consumer
+    attr_reader :corporate
     attr_reader :country_of_issuance
     attr_reader :created_at
     attr_reader :customer_id
@@ -68,6 +72,7 @@ module Braintree
     attr_reader :prepaid
     attr_reader :prepaid_reloadable
     attr_reader :product_id
+    attr_reader :purchase
     attr_reader :subscriptions
     attr_reader :token
     attr_reader :unique_number_identifier
@@ -200,9 +205,10 @@ module Braintree
 
     def self._attributes
       [
-        :billing_address, :bin, :card_type, :cardholder_name, :commercial, :country_of_issuance, :created_at, :customer_id,
-        :debit, :durbin_regulated, :expiration_month, :expiration_year, :healthcare, :image_url, :is_network_tokenized?,
-        :issuing_bank, :last_4, :payroll, :prepaid, :prepaid_reloadable, :product_id, :token, :updated_at
+        :billing_address, :bin, :business, :card_type, :cardholder_name, :commercial, :consumer, :corporate,
+        :country_of_issuance, :created_at, :customer_id, :debit, :durbin_regulated, :expiration_month,
+        :expiration_year, :healthcare, :image_url, :is_network_tokenized?, :issuing_bank, :last_4, :payroll,
+        :prepaid, :prepaid_reloadable, :product_id, :purchase, :token, :updated_at
       ]
     end
 

@@ -32,7 +32,7 @@ The Braintree Ruby SDK is tested against Ruby versions 2.6, 2.7 and 3.0.
 _The Ruby core development community has released [End-of-Life branches](https://www.ruby-lang.org/en/downloads/branches/) for Ruby versions lower than 2.6, which are no longer receiving security updates. As a result, Braintree no longer supports these versions of Ruby. **We have updated our gem specifications to reflect these updates.**_
 
 ## Versions
-> :warning: **The SSL certificates for Ruby SDK versions older than 4.23.0 are set to expire by June 31, 2025. If you do not update your SDK to the latest version with the updated certificates by June 31, 2025, 100% of your impacted traffic will fail**
+> :warning: **The SSL certificates for Ruby SDK versions older than 2.82.0 are set to expire by March 30, 2026. If you do not update your SDK to the latest version with the updated certificates by March 30, 2026, 100% of your impacted traffic will fail**
 
 Braintree employs a deprecation policy for our SDKs. For more information on the statuses of an SDK check our [developer docs](https://developer.paypal.com/braintree/docs/reference/general/server-sdk-deprecation-policy). [Minimum supported versions](https://developer.paypal.com/braintree/docs/reference/general/best-practices/ruby#server-sdk-versions) are also available in our developer docs.
 

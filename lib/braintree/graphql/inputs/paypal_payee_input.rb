@@ -1,15 +1,12 @@
-# Phone number input for PayPal customer session.
-
 #Experimental
 # This class is experimental and may change in future releases.
 module Braintree
-    class PhoneInput
+    class PayPalPayeeInput
         include BaseModule
 
         attr_reader :attrs
-        attr_reader :country_phone_code
-        attr_reader :phone_number
-        attr_reader :extension_number
+        attr_reader :email_address
+        attr_reader :client_id
 
         def initialize(attributes)
             @attrs = attributes.keys
@@ -23,12 +20,9 @@ module Braintree
 
         def to_graphql_variables
             variables = {}
-            variables["countryPhoneCode"] = country_phone_code if country_phone_code
-            variables["phoneNumber"] = phone_number if phone_number
-            variables["extensionNumber"] = extension_number if extension_number
+            variables["emailAddress"] = email_address if email_address
+            variables["clientId"] = client_id if client_id
             variables
         end
     end
 end
-
-

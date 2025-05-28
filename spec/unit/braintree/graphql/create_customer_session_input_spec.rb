@@ -9,7 +9,19 @@ describe Braintree::CreateCustomerSessionInput do
     customer: {
       email: "test@example.com" ,
     },
-    domain: "example.com"
+    domain: "example.com",
+    purchase_units: [
+      {
+        amount: {
+          value: "100.00",
+          currency_code: "USD"
+        },
+        payee: {
+          email_address: "merchant@example.com",
+          client_id: "client-123"
+        }
+      }
+    ]
   }
   end
 
@@ -23,6 +35,10 @@ describe Braintree::CreateCustomerSessionInput do
       expect(input.customer).to be_a(Braintree::CustomerSessionInput)
       expect(input.customer.email).to eq("test@example.com")
       expect(input.domain).to eq("example.com")
+      expect(input.purchase_units).to be_a(Array)
+      expect(input.purchase_units.first).to be_a(Braintree::PayPalPurchaseUnitInput)
+      expect(input.purchase_units.first.amount.value).to eq("100.00")
+      expect(input.purchase_units.first.payee.email_address).to eq("merchant@example.com")
     end
 
     it "handles nil customer" do
@@ -36,9 +52,8 @@ describe Braintree::CreateCustomerSessionInput do
   describe "#inspect" do
       it "returns a string representation of the object" do
         input = Braintree::CreateCustomerSessionInput.new(input_data)
-        expected_string = "#<Braintree::CreateCustomerSessionInput merchant_account_id:\"merchant-account-id\" session_id:\"session-id\" customer:#<Braintree::CustomerSessionInput email:\"test@example.com\"> domain:\"example.com\">"
+        expected_string = "#<Braintree::CreateCustomerSessionInput merchant_account_id:\"merchant-account-id\" session_id:\"session-id\" customer:#<Braintree::CustomerSessionInput email:\"test@example.com\"> domain:\"example.com\" purchase_units:[#<Braintree::PayPalPurchaseUnitInput amount:#<Braintree::MonetaryAmountInput value:\"100.00\" currency_code:\"USD\"> payee:#<Braintree::PayPalPayeeInput email_address:\"merchant@example.com\" client_id:\"client-123\">>]>"
         expect(input.inspect).to eq(expected_string)
-
       end
 
       it "handles nil values" do
@@ -62,7 +77,13 @@ describe Braintree::CreateCustomerSessionInput do
         "merchantAccountId" => "merchant-account-id",
         "sessionId" => "session-id",
         "domain" => "example.com",
-        "customer" => {"email" => "test@example.com"}
+        "customer" => {"email" => "test@example.com"},
+        "purchaseUnits" => [
+          {
+            "amount" => {"value" => "100.00", "currencyCode" => "USD"},
+            "payee" => {"emailAddress" => "merchant@example.com", "clientId" => "client-123"}
+          }
+        ]
       }
 
       expect(input.to_graphql_variables).to eq(expected_variables)

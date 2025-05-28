@@ -148,6 +148,16 @@ describe Braintree::PaymentMethodNonce do
       expect(nonce.details.bin).to eq("401288")
     end
 
+    it "returns bin_data with business set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-business-nonce")
+
+      nonce = result.payment_method_nonce
+
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.business).to eq(Braintree::CreditCard::Business::Yes)
+    end
+
     it "returns bin_data with commercial set to Yes" do
       result = Braintree::PaymentMethodNonce.find("fake-valid-commercial-nonce")
 
@@ -156,6 +166,26 @@ describe Braintree::PaymentMethodNonce do
       expect(result).to be_success
       expect(nonce.bin_data).not_to be_nil
       expect(nonce.bin_data.commercial).to eq(Braintree::CreditCard::Commercial::Yes)
+    end
+
+    it "returns bin_data with consumer set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-consumer-nonce")
+
+      nonce = result.payment_method_nonce
+
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.consumer).to eq(Braintree::CreditCard::Consumer::Yes)
+    end
+
+    it "returns bin_data with corporate set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-corporate-nonce")
+
+      nonce = result.payment_method_nonce
+
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.corporate).to eq(Braintree::CreditCard::Corporate::Yes)
     end
 
     it "returns bin_data with country_of_issuance set to CAN" do
@@ -240,6 +270,16 @@ describe Braintree::PaymentMethodNonce do
       expect(nonce.bin_data.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Yes)
     end
 
+    it "returns bin_data with purchase set to Yes" do
+      result = Braintree::PaymentMethodNonce.find("fake-valid-purchase-nonce")
+
+      nonce = result.payment_method_nonce
+
+      expect(result).to be_success
+      expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.purchase).to eq(Braintree::CreditCard::Purchase::Yes)
+    end
+
     it "returns bin_data with unknown indicators" do
       result = Braintree::PaymentMethodNonce.find("fake-valid-unknown-indicators-nonce")
 
@@ -247,7 +287,10 @@ describe Braintree::PaymentMethodNonce do
 
       expect(result).to be_success
       expect(nonce.bin_data).not_to be_nil
+      expect(nonce.bin_data.business).to eq(Braintree::CreditCard::Business::Unknown)
       expect(nonce.bin_data.commercial).to eq(Braintree::CreditCard::Commercial::Unknown)
+      expect(nonce.bin_data.consumer).to eq(Braintree::CreditCard::Consumer::Unknown)
+      expect(nonce.bin_data.corporate).to eq(Braintree::CreditCard::Corporate::Unknown)
       expect(nonce.bin_data.country_of_issuance).to eq(Braintree::CreditCard::CountryOfIssuance::Unknown)
       expect(nonce.bin_data.debit).to eq(Braintree::CreditCard::Debit::Unknown)
       expect(nonce.bin_data.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Unknown)
@@ -257,6 +300,7 @@ describe Braintree::PaymentMethodNonce do
       expect(nonce.bin_data.prepaid).to eq(Braintree::CreditCard::Prepaid::Unknown)
       expect(nonce.bin_data.prepaid_reloadable).to eq(Braintree::CreditCard::PrepaidReloadable::Unknown)
       expect(nonce.bin_data.product_id).to eq(Braintree::CreditCard::ProductId::Unknown)
+      expect(nonce.bin_data.purchase).to eq(Braintree::CreditCard::Purchase::Unknown)
     end
 
     it "correctly raises and exception for a non existent token" do

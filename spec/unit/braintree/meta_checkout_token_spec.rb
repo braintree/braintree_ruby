@@ -3,10 +3,13 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 describe Braintree::MetaCheckoutToken do
     let(:attributes) do {
         :bin => "abc1234",
+        :business => "NO",
         :container_id => "a-container-id",
         :card_type => "Visa",
         :cardholder_name => "Meta Checkout Card CardHolder",
         :commercial => "NO",
+        :consumer => "NO",
+        :corporate => "NO",
         :country_of_issuance => "US",
         :created_at => "2023-05-05T21:28:37Z",
         :debit => "NO",
@@ -18,6 +21,7 @@ describe Braintree::MetaCheckoutToken do
         :payroll => "NO",
         :prepaid => "NO",
         :prepaid_reloadable => "NO",
+        :purchase => "NO",
         :token => "token1",
         :unique_number_identifier => "abc1234",
         :updated_at => "2023-05-05T21:28:37Z",

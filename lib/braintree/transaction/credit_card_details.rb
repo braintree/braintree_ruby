@@ -5,9 +5,12 @@ module Braintree
 
       attr_reader :account_type
       attr_reader :bin
+      attr_reader :business
       attr_reader :card_type
       attr_reader :cardholder_name
       attr_reader :commercial
+      attr_reader :consumer
+      attr_reader :corporate
       attr_reader :country_of_issuance
       attr_reader :customer_location
       attr_reader :debit
@@ -22,6 +25,7 @@ module Braintree
       attr_reader :prepaid
       attr_reader :prepaid_reloadable
       attr_reader :product_id
+      attr_reader :purchase
       attr_reader :token
       attr_reader :unique_number_identifier
 
@@ -36,9 +40,12 @@ module Braintree
       def inspect
         attr_order = [
           :bin,
+          :business,
           :card_type,
           :cardholder_name,
           :commercial,
+          :consumer,
+          :corporate,
           :country_of_issuance,
           :customer_location,
           :debit,
@@ -52,6 +59,7 @@ module Braintree
           :prepaid,
           :prepaid_reloadable,
           :product_id,
+          :purchase,
           :token,
           :unique_number_identifier,
         ]

@@ -34,6 +34,7 @@ describe Braintree::CreditCardVerificationGateway do
       expect(result.inspect).to include("status")
       expect(result.inspect).to include("intended_transaction_source")
       expect(result.inspect).to include("options")
+      expect(result.inspect).to include("account_information_inquiry")
       expect(result.inspect).to include("account_type")
       expect(result.inspect).to include("amount")
       expect(result.inspect).to include("merchant_account_id")

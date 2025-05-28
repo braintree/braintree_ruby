@@ -25,6 +25,18 @@ describe Braintree::PaymentMethod do
       expect(result.payment_method.token).to eq(1234)
       expect(result.payment_method).to be_instance_of(Braintree::UnknownPaymentMethod)
     end
+
+    it "handles an payment method type for account information inquiry" do
+      unknown_response = {:unknown_payment_method => {:token => 1234, :default => true}}
+      http_instance = double(:put => unknown_response)
+      allow(Braintree::Http).to receive(:new).and_return(http_instance)
+      result = Braintree::PaymentMethod.update(:unknown,
+                                               {:options => {:verify_card => true, :accountInformationInquiry => "send_data"}})
+
+      expect(result).to be_success
+      expect(result.payment_method.token).to eq(1234)
+      expect(result.payment_method).to be_instance_of(Braintree::UnknownPaymentMethod)
+    end
   end
 
   describe "delete" do

@@ -671,6 +671,30 @@ describe Braintree::PaymentMethod do
       end
     end
 
+      it "includes ani response when account information inquiry is sent in options" do
+          customer = Braintree::Customer.create!
+          nonce = nonce_for_new_payment_method(
+            :credit_card => {
+              :cvv => "123",
+              :number => Braintree::Test::CreditCardNumbers::Visa,
+              :expiration_date => "05/2029",
+            },
+          )
+          result = Braintree::PaymentMethod.create(
+            :payment_method_nonce => nonce,
+            :customer_id => customer.id,
+            :options => {
+              :verify_card => true,
+              :account_information_inquiry => "send_data",
+            },
+          )
+
+          expect(result).to be_success
+          verification = result.payment_method.verification
+          expect(verification.ani_first_name_response_code).not_to be_nil
+          expect(verification.ani_last_name_response_code).not_to be_nil
+      end
+
     context "account_type" do
       it "verifies card with account_type debit" do
         nonce = nonce_for_new_payment_method(
@@ -1587,6 +1611,29 @@ describe Braintree::PaymentMethod do
           expect(verification.risk_data).to be_nil
         end
       end
+
+      it "includes ani response after updating the options with account information inquiry" do
+        customer = Braintree::Customer.create!
+        credit_card = Braintree::CreditCard.create!(
+          :customer_id => customer.id,
+          :cvv => "123",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2032",
+        )
+        update_result = Braintree::PaymentMethod.update(
+          credit_card.token,
+          :options => {
+            :verify_card => true,
+            :account_information_inquiry => "send_data",
+          },
+        )
+
+        expect(update_result).to be_success
+        verification = update_result.payment_method.verification
+        expect(verification.ani_first_name_response_code).not_to be_nil
+        expect(verification.ani_last_name_response_code).not_to be_nil
+      end
+
 
       context "verification_currency_iso_code" do
         it "validates verification_currency_iso_code and updates the credit card " do

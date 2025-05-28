@@ -88,32 +88,33 @@ describe Braintree::CustomerSessionGateway do
   end
 
   describe "#get_customer_recommendations" do
-    let(:customer_recommendations_input) { double(:customer_recommendations_input, to_graphql_variables: {"sessionId" => "session_id", recommendations: ["PAYMENT_RECOMMENDATIONS"]}) }
+    let(:customer_recommendations_input) { double(:customer_recommendations_input, to_graphql_variables: {"sessionId" => "session_id"}) }
     let(:response) do
       {
         data: {
-          customerRecommendations: {
+          generateCustomerRecommendations: {
+              sessionId: "session_id",
               isInPayPalNetwork: true,
-              recommendations: {
-                paymentOptions: [
-                  {paymentOption: "PAYPAL", recommendedPriority: 1}
+              paymentRecommendations:[
+                  {paymentOption: "PAYPAL", recommendedPriority: 1},
+                  {paymentOption: "VENMO", recommendedPriority: 2}
                 ]
-              }
+
           }
         }
       }
     end
 
     it "fetches customer recommendations" do
-      expected_variables = {"input" => {"sessionId" => "session_id", recommendations: ["PAYMENT_RECOMMENDATIONS"]}}
+      expected_variables = {"input" => {"sessionId" => "session_id"}}
       expect(graphql_client).to receive(:query).with(Braintree::CustomerSessionGateway::GET_CUSTOMER_RECOMMENDATIONS, expected_variables).and_return(response)
       expect(Braintree::GraphQLClient).to receive(:get_validation_errors).with(response).and_return(nil)
 
       result = customer_session_gateway.get_customer_recommendations(customer_recommendations_input)
       expect(result).to be_a(Braintree::SuccessfulResult)
       expect(result.customer_recommendations.is_in_paypal_network).to eq(true)
-      expect(result.customer_recommendations.recommendations.payment_options[0].payment_option).to eq("PAYPAL")
-      expect(result.customer_recommendations.recommendations.payment_options[0].recommended_priority).to eq(1)
+      expect(result.customer_recommendations.recommendations.payment_recommendations[0].payment_option).to eq("PAYPAL")
+      expect(result.customer_recommendations.recommendations.payment_recommendations[0].recommended_priority).to eq(1)
     end
   end
 

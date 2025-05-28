@@ -96,6 +96,7 @@ module Braintree
       # NEXT_MAJOR_VERSION Remove venmo_sdk_session
       # The old venmo SDK class has been deprecated
       options = [
+        :account_information_inquiry,
         :fail_on_duplicate_payment_method,
         :fail_on_duplicate_payment_method_for_customer,
         :make_default,

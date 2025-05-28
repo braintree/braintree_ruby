@@ -61,6 +61,7 @@ module Braintree
         ]},
         :intended_transaction_source,
         {:options => [
+          :account_information_inquiry,
           :account_type,
           :amount,
           :merchant_account_id,

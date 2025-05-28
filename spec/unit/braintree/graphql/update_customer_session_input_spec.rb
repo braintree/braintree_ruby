@@ -3,11 +3,25 @@ require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Braintree::UpdateCustomerSessionInput do
   let(:input_data) do
-  {
-    merchant_account_id: "merchant-account-id",
-    session_id: "session-id",
-    customer: {email: "test@example.com"}
-  }
+    {
+      merchant_account_id: "merchant-account-id",
+      session_id: "session-id",
+      customer: {
+        email: "test@example.com"
+      },
+      purchase_units: [
+        {
+          amount: {
+            value: "100.00",
+            currency_code: "USD"
+          },
+          payee: {
+            email_address: "merchant@example.com",
+            client_id: "client-123"
+          }
+        }
+      ]
+    }
   end
   describe "#initialize" do
     it "initializes with attributes" do
@@ -44,9 +58,8 @@ describe Braintree::UpdateCustomerSessionInput do
   describe "#inspect" do
       it "returns a string representation of the object" do
         input = Braintree::UpdateCustomerSessionInput.new(input_data)
-        expected_string = "#<Braintree::UpdateCustomerSessionInput merchant_account_id:\"merchant-account-id\" session_id:\"session-id\" customer:#<Braintree::CustomerSessionInput email:\"test@example.com\">>"
+        expected_string = "#<Braintree::UpdateCustomerSessionInput merchant_account_id:\"merchant-account-id\" session_id:\"session-id\" customer:#<Braintree::CustomerSessionInput email:\"test@example.com\"> purchase_units:[#<Braintree::PayPalPurchaseUnitInput amount:#<Braintree::MonetaryAmountInput value:\"100.00\" currency_code:\"USD\"> payee:#<Braintree::PayPalPayeeInput email_address:\"merchant@example.com\" client_id:\"client-123\">>]>"
         expect(input.inspect).to eq(expected_string)
-
       end
 
       it "handles nil values" do
@@ -69,6 +82,7 @@ describe Braintree::UpdateCustomerSessionInput do
         "merchantAccountId" => "merchant-account-id",
         "sessionId" => "session-id",
         "customer" => {"email" => "test@example.com"},
+        "purchaseUnits" => [{"amount"=>{"currencyCode"=>"USD", "value"=>"100.00"}, "payee"=>{"clientId"=>"client-123", "emailAddress"=>"merchant@example.com"}}],
       }
 
       expect(input.to_graphql_variables).to eq(expected_variables)

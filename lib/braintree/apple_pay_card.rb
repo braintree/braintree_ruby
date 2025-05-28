@@ -12,9 +12,12 @@ module Braintree
 
     attr_reader :billing_address
     attr_reader :bin
+    attr_reader :business
     attr_reader :card_type
     attr_reader :cardholder_name
     attr_reader :commercial
+    attr_reader :consumer
+    attr_reader :corporate
     attr_reader :country_of_issuance
     attr_reader :created_at
     attr_reader :customer_id
@@ -34,6 +37,7 @@ module Braintree
     attr_reader :prepaid
     attr_reader :prepaid_reloadable
     attr_reader :product_id
+    attr_reader :purchase
     attr_reader :source_card_last4
     attr_reader :source_description
     attr_reader :subscriptions

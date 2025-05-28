@@ -991,7 +991,10 @@ describe Braintree::Customer do
       expect(found_customer.apple_pay_cards).not_to be_nil
       apple_pay_card = found_customer.apple_pay_cards.first
       expect(apple_pay_card).to be_a Braintree::ApplePayCard
+      expect(apple_pay_card.business).not_to be_nil
       expect(apple_pay_card.commercial).not_to be_nil
+      expect(apple_pay_card.consumer).not_to be_nil
+      expect(apple_pay_card.corporate).not_to be_nil
       expect(apple_pay_card.country_of_issuance).not_to be_nil
       expect(apple_pay_card.debit).not_to be_nil
       expect(apple_pay_card.durbin_regulated).not_to be_nil
@@ -1003,6 +1006,7 @@ describe Braintree::Customer do
       expect(apple_pay_card.prepaid).not_to be_nil
       expect(apple_pay_card.prepaid_reloadable).not_to be_nil
       expect(apple_pay_card.product_id).not_to be_nil
+      expect(apple_pay_card.purchase).not_to be_nil
       expect(apple_pay_card.token).not_to be_nil
     end
 
@@ -1017,7 +1021,10 @@ describe Braintree::Customer do
       expect(found_customer.payment_methods.size).to eq(1)
       google_pay_card = found_customer.google_pay_cards.first
       expect(google_pay_card).to be_a Braintree::GooglePayCard
+      expect(google_pay_card.business).not_to be_nil
       expect(google_pay_card.commercial).not_to be_nil
+      expect(google_pay_card.consumer).not_to be_nil
+      expect(google_pay_card.corporate).not_to be_nil
       expect(google_pay_card.country_of_issuance).not_to be_nil
       expect(google_pay_card.debit).not_to be_nil
       expect(google_pay_card.durbin_regulated).not_to be_nil
@@ -1029,6 +1036,7 @@ describe Braintree::Customer do
       expect(google_pay_card.prepaid).not_to be_nil
       expect(google_pay_card.prepaid_reloadable).not_to be_nil
       expect(google_pay_card.product_id).not_to be_nil
+      expect(google_pay_card.purchase).not_to be_nil
       expect(google_pay_card.token).not_to be_nil
     end
 
@@ -1043,19 +1051,23 @@ describe Braintree::Customer do
       expect(found_customer.payment_methods.size).to eq(1)
       google_pay_card = found_customer.google_pay_cards.first
       expect(google_pay_card).to be_a Braintree::GooglePayCard
-      expect(google_pay_card.token).not_to be_nil
-      expect(google_pay_card.expiration_year).not_to be_nil
-      expect(google_pay_card.is_network_tokenized?).to eq(true)
+      expect(google_pay_card.business).not_to be_nil
       expect(google_pay_card.commercial).not_to be_nil
+      expect(google_pay_card.consumer).not_to be_nil
+      expect(google_pay_card.corporate).not_to be_nil
       expect(google_pay_card.country_of_issuance).not_to be_nil
       expect(google_pay_card.debit).not_to be_nil
       expect(google_pay_card.durbin_regulated).not_to be_nil
+      expect(google_pay_card.expiration_year).not_to be_nil
       expect(google_pay_card.healthcare).not_to be_nil
+      expect(google_pay_card.is_network_tokenized?).to eq(true)
       expect(google_pay_card.issuing_bank).not_to be_nil
       expect(google_pay_card.payroll).not_to be_nil
       expect(google_pay_card.prepaid).not_to be_nil
       expect(google_pay_card.prepaid_reloadable).not_to be_nil
       expect(google_pay_card.product_id).not_to be_nil
+      expect(google_pay_card.purchase).not_to be_nil
+      expect(google_pay_card.token).not_to be_nil
     end
 
     it "returns associated venmo accounts" do
@@ -1750,6 +1762,57 @@ describe Braintree::Customer do
     end
   end
 
+  describe "account information inquiry" do
+    it "includes ani response when account information inquiry is sent in options" do
+      result = Braintree::Customer.create(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2027",
+          :cvv => "100",
+          :billing_address => {
+            :first_name => "John",
+            :last_name => "Doe",
+          },
+          :options => {
+            :account_information_inquiry => "send_data",
+            :verify_card => true,
+          },
+        },
+      )
+
+      expect(result).to be_success
+      verification = result.customer.credit_cards.first.verification
+      expect(verification.ani_first_name_response_code).not_to be_nil
+      expect(verification.ani_last_name_response_code).not_to be_nil
+    end
+
+    it "includes ani response after updating the options with account information inquiry" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+      updated_result = Braintree::Customer.update(
+        customer.id,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/2029",
+          :billing_address => {
+            :first_name => "John",
+            :last_name => "Doe",
+          },
+          :options => {
+            :account_information_inquiry => "send_data",
+            :verify_card => true,
+          },
+        },
+      )
+
+      expect(updated_result).to be_success
+      verification = updated_result.customer.credit_cards.first.verification
+      expect(verification.ani_first_name_response_code).not_to be_nil
+      expect(verification.ani_last_name_response_code).not_to be_nil
+    end
+  end
+
   describe "paypal" do
     context "future" do
       it "creates a customer with a future paypal account" do
@@ -1916,7 +1979,7 @@ describe Braintree::Customer do
     end
   end
 
-  it "returns prepaid_reloadable from VisaCheckoutCard" do
+  it "returns bin fields from VisaCheckoutCard" do
     result = Braintree::Customer.create(
       :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
     )
@@ -1926,6 +1989,10 @@ describe Braintree::Customer do
     expect(found_customer.visa_checkout_cards).not_to be_nil
     visa_checkout_card = found_customer.visa_checkout_cards.first
     expect(visa_checkout_card).to be_a Braintree::VisaCheckoutCard
+    expect(visa_checkout_card.business).not_to be_nil
+    expect(visa_checkout_card.consumer).not_to be_nil
+    expect(visa_checkout_card.corporate).not_to be_nil
     expect(visa_checkout_card.prepaid_reloadable).not_to be_nil
+    expect(visa_checkout_card.purchase).not_to be_nil
   end
 end

@@ -1,12 +1,16 @@
 # Customer identifying information for a PayPal customer session.
 
+#Experimental
+# This class is experimental and may change in future releases.
 module Braintree
     class CustomerSessionInput
         include BaseModule
 
         attr_reader :attrs
         attr_reader :email
+        attr_reader :hashed_email
         attr_reader :phone
+        attr_reader :hashed_phone
         attr_reader :device_fingerprint_id
         attr_reader :paypal_app_installed
         attr_reader :venmo_app_installed
@@ -26,7 +30,9 @@ module Braintree
         def to_graphql_variables
             variables = {}
             variables["email"] = email if email
+            variables["hashedEmail"] = hashed_email if hashed_email
             variables["phone"] = phone.to_graphql_variables if phone
+            variables["hashedPhone"] = hashed_phone if hashed_phone
             variables["deviceFingerprintId"] = device_fingerprint_id if device_fingerprint_id
             variables["paypalAppInstalled"] = paypal_app_installed if paypal_app_installed
             variables["venmoAppInstalled"] = venmo_app_installed if venmo_app_installed

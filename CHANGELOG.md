@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.28.0
+
+- Add `account_information_inquiry` to
+  - `CreditCardVerification#create`
+  - `PaymentMethod#create` and `PaymentMethod#update`
+  - `CreditCard#create` and `CreditCard#update`
+- Enhancements to PayPal customer recommendations
+  - Create a session and get recommendations in one call
+  - Hash customer email and phone number
+- Add `business`, `consumer`, `corporate`, and `purchase` from the bin data to credit card responses
+
 ## 4.27.0
 
 - Remove marketplace features

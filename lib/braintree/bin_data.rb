@@ -2,7 +2,10 @@ module Braintree
   class BinData
     include BaseModule
 
+    attr_reader :business
     attr_reader :commercial
+    attr_reader :consumer
+    attr_reader :corporate
     attr_reader :country_of_issuance
     attr_reader :debit
     attr_reader :durbin_regulated
@@ -12,6 +15,7 @@ module Braintree
     attr_reader :prepaid
     attr_reader :prepaid_reloadable
     attr_reader :product_id
+    attr_reader :purchase
 
     def initialize(attributes)
       set_instance_variables_from_hash attributes unless attributes.nil?
@@ -26,8 +30,9 @@ module Braintree
 
     def self._attributes
       [
-        :commercial, :country_of_issuance, :debit, :durbin_regulated, :healthcare,
-        :issuing_bank, :payroll, :prepaid, :prepaid_reloadable, :product_id
+        :business, :commercial, :consumer, :corporate, :country_of_issuance, :debit,
+        :durbin_regulated, :healthcare, :issuing_bank, :payroll, :prepaid,
+        :prepaid_reloadable, :product_id, :purchase
       ]
     end
   end

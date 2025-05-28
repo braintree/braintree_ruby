@@ -160,6 +160,7 @@ module Braintree
       # NEXT_MAJOR_VERSION Remove venmo_sdk_session
       # The old venmo SDK class has been deprecated
       options = [
+        :account_information_inquiry,
         :make_default,
         :skip_advanced_fraud_checking,
         :us_bank_account_verification_method,
@@ -205,11 +206,13 @@ module Braintree
       when :create
         options << :fail_on_duplicate_payment_method
         options << :fail_on_duplicate_payment_method_for_customer
+        options << :accountInformationInquiry
         signature << :customer_id
         signature << :paypal_refresh_token
       when :update
         options << :fail_on_duplicate_payment_method
         options << :fail_on_duplicate_payment_method_for_customer
+        options << :accountInformationInquiry
         billing_address_params << {:options => [:update_existing]}
       else
         raise ArgumentError

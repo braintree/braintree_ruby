@@ -123,9 +123,13 @@ describe Braintree::Transaction do
           :healthcare => "Yes",
           :durbin_regulated => "Yes",
           :debit => "Yes",
+          :business => "Yes",
           :commercial => "No",
+          :consumer => "No",
+          :corporate => "No",
           :payroll => "Unknown",
           :product_id => "Unknown",
+          :purchase => "No",
           :country_of_issuance => "Narnia",
           :issuing_bank => "Mr Tumnus"
         },
@@ -142,9 +146,13 @@ describe Braintree::Transaction do
       expect(transaction.credit_card_details.healthcare).to eq(Braintree::CreditCard::Healthcare::Yes)
       expect(transaction.credit_card_details.durbin_regulated).to eq(Braintree::CreditCard::DurbinRegulated::Yes)
       expect(transaction.credit_card_details.debit).to eq(Braintree::CreditCard::Debit::Yes)
+      expect(transaction.credit_card_details.business).to eq(Braintree::CreditCard::Business::Yes)
       expect(transaction.credit_card_details.commercial).to eq(Braintree::CreditCard::Commercial::No)
+      expect(transaction.credit_card_details.consumer).to eq(Braintree::CreditCard::Consumer::No)
+      expect(transaction.credit_card_details.corporate).to eq(Braintree::CreditCard::Corporate::No)
       expect(transaction.credit_card_details.payroll).to eq(Braintree::CreditCard::Payroll::Unknown)
       expect(transaction.credit_card_details.product_id).to eq(Braintree::CreditCard::ProductId::Unknown)
+      expect(transaction.credit_card_details.purchase).to eq(Braintree::CreditCard::Purchase::No)
       expect(transaction.credit_card_details.country_of_issuance).to eq("Narnia")
       expect(transaction.credit_card_details.issuing_bank).to eq("Mr Tumnus")
     end
