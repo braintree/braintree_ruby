@@ -113,6 +113,7 @@ describe Braintree::CustomerSessionGateway do
       result = customer_session_gateway.get_customer_recommendations(customer_recommendations_input)
       expect(result).to be_a(Braintree::SuccessfulResult)
       expect(result.customer_recommendations.is_in_paypal_network).to eq(true)
+      expect(result.customer_recommendations.session_id).to eq("session_id")
       expect(result.customer_recommendations.recommendations.payment_recommendations[0].payment_option).to eq("PAYPAL")
       expect(result.customer_recommendations.recommendations.payment_recommendations[0].recommended_priority).to eq(1)
     end

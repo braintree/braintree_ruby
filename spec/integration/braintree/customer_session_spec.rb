@@ -102,6 +102,7 @@ describe Braintree::CustomerSessionGateway do
 
       expect(result.success?).to eq(true)
       payload = result.customer_recommendations
+      expect(payload.session_id).to eq("94f0b2db-5323-4d86-add3-paypal000000")
       expect(payload.is_in_paypal_network).to eq(true)
 
       recommendation = payload.recommendations.payment_recommendations[0]

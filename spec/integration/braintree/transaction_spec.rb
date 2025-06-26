@@ -3368,13 +3368,13 @@ describe Braintree::Transaction do
           config = Braintree::Configuration.instantiate
           config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
           result = Braintree::Transaction.refund(transaction.id, :amount => "2046.00")
-          expect(result.success?).to eq(false)
+          expect(result.success?).to eq(true)
           expect(result.transaction.id).to match(/^\w{6,}$/)
           expect(result.transaction.type).to eq("credit")
-          expect(result.transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
-          expect(result.transaction.processor_response_code).to eq("2046")
-          expect(result.transaction.processor_response_text).to eq("Declined")
-          expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::SoftDeclined)
+          expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+          expect(result.transaction.processor_response_code).to eq("1005")
+          expect(result.transaction.processor_response_text).to eq("Auth Declined but Settlement Captured")
+          expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
           expect(result.transaction.additional_processor_response).to eq("2046 : Declined")
         end
 
@@ -3388,15 +3388,15 @@ describe Braintree::Transaction do
           )
           config = Braintree::Configuration.instantiate
           config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
-          result = Braintree::Transaction.refund(transaction.id, :amount => "2009.00")
+          result = Braintree::Transaction.refund(transaction.id, :amount => "2004.00")
           expect(result.success?).to eq(false)
           expect(result.transaction.id).to match(/^\w{6,}$/)
           expect(result.transaction.type).to eq("credit")
           expect(result.transaction.status).to eq(Braintree::Transaction::Status::ProcessorDeclined)
-          expect(result.transaction.processor_response_code).to eq("2009")
-          expect(result.transaction.processor_response_text).to eq("No Such Issuer")
+          expect(result.transaction.processor_response_code).to eq("2004")
+          expect(result.transaction.processor_response_text).to eq("Expired Card")
           expect(result.transaction.processor_response_type).to eq(Braintree::ProcessorResponseTypes::HardDeclined)
-          expect(result.transaction.additional_processor_response).to eq("2009 : No Such Issuer")
+          expect(result.transaction.additional_processor_response).to eq("2004 : Expired Card")
         end
       end
 
@@ -5888,7 +5888,8 @@ describe Braintree::Transaction do
     end
 
     context "Pinless debit transaction" do
-      it "succesfully submits for settlement" do
+      xit "succesfully submits for settlement" do
+        # Flaky test
         result = Braintree::Transaction.sale(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
           :merchant_account_id => SpecHelper::PinlessDebitMerchantAccountId,

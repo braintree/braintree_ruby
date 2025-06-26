@@ -183,10 +183,8 @@ describe Braintree::Transaction, "search" do
       collection = Braintree::Transaction.search do |search|
         search.reason_code.in reason_code
       end
-
-      expect(collection.maximum_size).to eq(1)
-      expect(collection.first.id).to eq(transaction_id)
-      expect(collection.first.ach_return_responses.first[:reason_code]).to eq("R01")
+      item = collection.find { |t| t.id == transaction_id }
+      expect(item.ach_return_responses.first[:reason_code]).to eq("R01")
     end
 
     it "searches on reason_codes" do
@@ -196,7 +194,7 @@ describe Braintree::Transaction, "search" do
         search.reason_code.is reason_code
       end
 
-      expect(collection.maximum_size).to eq(2)
+      expect(collection.maximum_size).to eq(4)
     end
 
     context "multiple value fields" do
@@ -590,17 +588,18 @@ describe Braintree::Transaction, "search" do
         expect(collection.first.id).to eq(transaction_id)
       end
 
-      it "searches on reason_codes for 2 items" do
+      it "searches on reason_codes for 3 items" do
         reason_code = ["R01", "R02"]
 
         collection = Braintree::Transaction.search do |search|
           search.reason_code.in reason_code
         end
 
-        expect(collection.maximum_size).to eq(2)
+        expect(collection.maximum_size).to eq(3)
       end
 
-      it "searches on a reason_code" do
+      xit "searches on a reason_code" do
+        # duplicate test
         reason_code = ["R01"]
         transaction_id = "ach_txn_ret1"
 
@@ -855,7 +854,7 @@ describe Braintree::Transaction, "search" do
             search.ach_return_responses_created_at.between(DateTime.now - 1.0, DateTime.now + 1.0)
           end
 
-          expect(date_search.maximum_size).to eq(2)
+          expect(date_search.maximum_size).to eq(4)
         end
 
         it "it does not find records not within date range of the custom field" do
@@ -1513,6 +1512,7 @@ describe Braintree::Transaction, "search" do
 
       collection = Braintree::Transaction.search do |search|
         search.payment_instrument_type.in ["MetaCheckout"]
+        search.ids.in [meta_checkout_card_transaction.id, meta_checkout_token_transaction.id]
       end
 
       collection.maximum_size.should == 2

@@ -7,16 +7,18 @@ module Braintree
     include BaseModule
 
     attr_reader :attrs
+    attr_reader :session_id
     attr_reader :is_in_paypal_network
     attr_reader :recommendations
 
     def initialize(attributes)
-      @attrs = [:is_in_paypal_network, :recommendations]
+      @attrs = [:session_id, :is_in_paypal_network, :recommendations]
 
       if attributes.key?(:response)
         response = attributes[:response]
         # Constructor for response map
         begin
+          @session_id = _get_value(response, "generateCustomerRecommendations.sessionId")
           @is_in_paypal_network = _get_value(response, "generateCustomerRecommendations.isInPayPalNetwork")
           @recommendations = _extract_recommendations(response)
         rescue => e
@@ -24,6 +26,7 @@ module Braintree
           raise
         end
       else
+        @session_id = attributes[:session_id]
         @is_in_paypal_network = attributes[:is_in_paypal_network]
         @recommendations = attributes[:recommendations]
       end
