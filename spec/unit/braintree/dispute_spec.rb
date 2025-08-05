@@ -40,6 +40,7 @@ describe Braintree::Dispute do
           :timestamp => Time.utc(2009, 3, 9, 10, 50, 39),
         }
       ],
+      :remaining_file_evidence_storage => 341029,
       :transaction => {
         :amount => "31.00",
         :id => "open_disputed_transaction",
@@ -435,6 +436,11 @@ describe Braintree::Dispute do
       dispute = Braintree::Dispute._new(attributes)
 
       expect(dispute.pre_dispute_program).to eq(Braintree::Dispute::PreDisputeProgram::VisaRdr)
+    end
+
+    it "checks that the remaining_file_evidence_storage field is set correctly" do
+      dispute = Braintree::Dispute._new(attributes)
+      dispute.remaining_file_evidence_storage.should == 341029
     end
   end
 

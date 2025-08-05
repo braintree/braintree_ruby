@@ -32,6 +32,7 @@ module Braintree
     attr_reader :reply_by_date
     attr_reader :status
     attr_reader :status_history
+    attr_reader :remaining_file_evidence_storage
     attr_reader :transaction
     attr_reader :transaction_details
     attr_reader :updated_at

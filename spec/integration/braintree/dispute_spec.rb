@@ -32,8 +32,8 @@ describe Braintree::Dispute do
 
       expect(result.success?).to eq(true)
 
-      refreshed_dispute = Braintree::Dispute.find(dispute.id)
-      expect(refreshed_dispute.status).to eq(Braintree::Dispute::Status::Accepted)
+      updated_dispute = Braintree::Dispute.find(dispute.id)
+      expect(updated_dispute.status).to eq(Braintree::Dispute::Status::Accepted)
 
       dispute_from_transaction = Braintree::Transaction.find(dispute.transaction.id).disputes[0]
       expect(dispute_from_transaction.status).to eq(Braintree::Dispute::Status::Accepted)
@@ -98,6 +98,17 @@ describe Braintree::Dispute do
       expect(result.success?).to eq(true)
       expect(result.evidence.category).to eq("GENERAL")
       expect(result.evidence.url).to include("bt_logo.png")
+    end
+
+    it "reflects the updated remaining_file_evidence_storage" do
+      initial_storage = dispute.remaining_file_evidence_storage
+      expect(initial_storage).not_to be_nil
+
+      Braintree::Dispute.add_file_evidence(dispute.id, document_upload.id)
+
+      refreshed_dispute = Braintree::Dispute.find(dispute.id)
+      updated_storage = refreshed_dispute.remaining_file_evidence_storage
+      expect(updated_storage).to be < initial_storage
     end
   end
 

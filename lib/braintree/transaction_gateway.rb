@@ -280,6 +280,11 @@ module Braintree
             :ds_transaction_id,
           ]
         },
+        {
+          :transfer => [
+            :type,
+          ]
+        },
       ]
     end
 

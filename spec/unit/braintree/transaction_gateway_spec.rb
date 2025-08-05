@@ -129,6 +129,11 @@ describe Braintree::TransactionGateway do
             :ds_transaction_id,
           ]
         },
+        {
+          :transfer => [
+            :type,
+          ]
+        },
       ])
     end
 

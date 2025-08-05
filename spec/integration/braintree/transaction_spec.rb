@@ -7755,4 +7755,13 @@ describe Braintree::Transaction do
       expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
     end
   end
+
+  describe "upcoming_retry_date" do
+    it "returns the upcoming retry date for ACH transactions" do
+      transaction = Braintree::Transaction.find("first_attempted_ach_transaction")
+
+      tomorrow = Date.today + 1
+      expect(transaction.upcoming_retry_date).to eq(tomorrow.to_s)
+    end
+  end
 end

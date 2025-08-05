@@ -57,6 +57,7 @@ module Braintree
       SubscriptionWentPastDue = "subscription_went_past_due"
 
       TransactionDisbursed = "transaction_disbursed"
+      TransactionRetried = "transaction_retried"
       TransactionReviewed = "transaction_reviewed"
       TransactionSettlementDeclined = "transaction_settlement_declined"
       TransactionSettled = "transaction_settled"

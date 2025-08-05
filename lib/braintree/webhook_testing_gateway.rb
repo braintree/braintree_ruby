@@ -60,6 +60,8 @@ module Braintree
         _oauth_access_revoked_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionDisbursed
         _transaction_disbursed_sample_xml(id)
+      when Braintree::WebhookNotification::Kind::TransactionRetried
+        _transaction_retried_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionReviewed
         _transaction_reviewed_sample_xml(id)
       when Braintree::WebhookNotification::Kind::TransactionSettled
@@ -265,6 +267,20 @@ module Braintree
           <disbursement-details>
             <disbursement-date type="date">2013-07-09</disbursement-date>
           </disbursement-details>
+        </transaction>
+      XML
+    end
+
+    def _transaction_retried_sample_xml(id)
+
+      <<-XML
+        <transaction>
+          <id>#{id}</id>
+          <amount>100</amount>
+          <status>submitted_for_settlement</status>
+          <type>sale</type>
+          <currency-iso-code>USD</currency-iso-code>
+          <retried-transaction-id>original_txn_id</retried-transaction-id>
         </transaction>
       XML
     end

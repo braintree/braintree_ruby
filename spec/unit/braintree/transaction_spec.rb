@@ -267,6 +267,14 @@ describe Braintree::Transaction do
       expect(transaction.retried_transaction_id).to eq("original_retried_tranction_id")
     end
 
+    it "accepts upcoming_retry_date attribute in a transaction" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :upcoming_retry_date => "2024-12-25",
+      )
+      expect(transaction.upcoming_retry_date).to eq("2024-12-25")
+    end
+
     it "handles receiving custom as an empty string" do
       Braintree::Transaction._new(
         :gateway,
