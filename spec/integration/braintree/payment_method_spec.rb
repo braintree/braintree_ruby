@@ -108,6 +108,7 @@ describe Braintree::PaymentMethod do
       expect(apple_pay_card.payroll).not_to be_nil
       expect(apple_pay_card.prepaid).not_to be_nil
       expect(apple_pay_card.product_id).not_to be_nil
+      expect(apple_pay_card.is_device_token).to eq(true)
     end
 
     it "creates a payment method from a fake apple pay mpan nonce" do
@@ -143,6 +144,7 @@ describe Braintree::PaymentMethod do
       expect(apple_pay_card.prepaid).not_to be_nil
       expect(apple_pay_card.product_id).not_to be_nil
       expect(apple_pay_card.merchant_token_identifier).not_to be_nil
+      expect(apple_pay_card.is_device_token).not_to be_nil
       expect(apple_pay_card.source_card_last4).not_to be_nil
     end
 
@@ -1254,6 +1256,7 @@ describe Braintree::PaymentMethod do
         expect(apple_pay_card.expiration_year.to_i).to be > 0
         expect(apple_pay_card.source_description).to eq("Visa 2006")
         expect(apple_pay_card.customer_id).to eq(customer.id)
+        expect(apple_pay_card.is_device_token).to eq(false)
         apple_pay_card.merchant_token_identifier == "DNITHE302308980427388297"
         apple_pay_card.source_card_last4 == "2006"
       end

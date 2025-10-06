@@ -84,6 +84,11 @@ module Braintree
     def self._update_signature
       _create_signature
     end
+
+    def self._address_attributes
+      [:street_address, :extended_address, :locality, :region, :postal_code, :country_code_alpha2,
+       {:international_phone => [:country_code, :national_number]}]
+    end
   end
 end
 

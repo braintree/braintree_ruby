@@ -26,6 +26,10 @@ module Braintree
       ApplePayGateway.new(self)
     end
 
+    def bank_account_instant_verification
+      BankAccountInstantVerificationGateway.new(self)
+    end
+
     def client_token
       ClientTokenGateway.new(self)
     end

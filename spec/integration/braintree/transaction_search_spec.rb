@@ -176,6 +176,16 @@ describe Braintree::Transaction, "search" do
       expect(collection.first.id).to eq(transaction_id)
     end
 
+    it "searches on reason_codes for 3 items" do
+      reason_code = ["R01", "R02"]
+
+      collection = Braintree::Transaction.search do |search|
+        search.reason_code.in reason_code
+      end
+
+      expect(collection.maximum_size).to eq(3)
+    end
+
     it "searches on reason_code" do
       transaction_id = "ach_txn_ret1"
       reason_code = "R01"
@@ -184,7 +194,22 @@ describe Braintree::Transaction, "search" do
         search.reason_code.in reason_code
       end
       item = collection.find { |t| t.id == transaction_id }
+      expect(item.ach_return_code).to eq("R01")
       expect(item.ach_return_responses.first[:reason_code]).to eq("R01")
+    end
+
+    it "searches on rejections reason_code" do
+      transaction_id = "ach_txn_ret3"
+      reason_code = "RJCT"
+
+      collection = Braintree::Transaction.search do |search|
+        search.reason_code.in reason_code
+      end
+      item = collection.find { |t| t.id == transaction_id }
+      expect(item.ach_return_code).to eq("RJCT")
+      expect(item.ach_reject_reason).to eq("Bank accounts located outside of the U.S. are not supported.")
+      expect(item.ach_return_responses.first[:reason_code]).to eq("RJCT")
+      expect(item.ach_return_responses.first[:reject_reason]).to eq("Bank accounts located outside of the U.S. are not supported.")
     end
 
     it "searches on reason_codes" do
@@ -194,7 +219,7 @@ describe Braintree::Transaction, "search" do
         search.reason_code.is reason_code
       end
 
-      expect(collection.maximum_size).to eq(4)
+      expect(collection.maximum_size).to eq(6)
     end
 
     context "multiple value fields" do
@@ -582,29 +607,6 @@ describe Braintree::Transaction, "search" do
         collection = Braintree::Transaction.search do |search|
           search.id.is transaction_id
           search.store_ids.in store_ids
-        end
-
-        expect(collection.maximum_size).to eq(1)
-        expect(collection.first.id).to eq(transaction_id)
-      end
-
-      it "searches on reason_codes for 3 items" do
-        reason_code = ["R01", "R02"]
-
-        collection = Braintree::Transaction.search do |search|
-          search.reason_code.in reason_code
-        end
-
-        expect(collection.maximum_size).to eq(3)
-      end
-
-      xit "searches on a reason_code" do
-        # duplicate test
-        reason_code = ["R01"]
-        transaction_id = "ach_txn_ret1"
-
-        collection = Braintree::Transaction.search do |search|
-          search.reason_code.in reason_code
         end
 
         expect(collection.maximum_size).to eq(1)

@@ -18,6 +18,7 @@ module Braintree
       attr_reader :global_id
       attr_reader :healthcare
       attr_reader :image_url
+      attr_reader :is_device_token
       attr_reader :issuing_bank
       attr_reader :last_4
       attr_reader :merchant_token_identifier

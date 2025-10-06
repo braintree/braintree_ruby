@@ -77,6 +77,13 @@ unless defined?(SPEC_HELPER_LOADED)
       :billing_day_of_month => 5
     }
 
+    SdwoSupportedTransferTypes = [
+      "account_to_account",
+      "boleto_ticket",
+      "person_to_person",
+      "wallet_transfer"
+    ]
+
     AddOnIncrease10 = "increase_10"
     AddOnIncrease20 = "increase_20"
     AddOnIncrease30 = "increase_30"

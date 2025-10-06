@@ -2214,6 +2214,37 @@ describe Braintree::Transaction do
         expect(apple_pay_details.commercial).not_to be_nil
         expect(apple_pay_details.payroll).not_to be_nil
         expect(apple_pay_details.product_id).not_to be_nil
+        expect(apple_pay_details.is_device_token).to eq(true)
+      end
+
+      it "can create a transaction with a fake apple pay mpan nonce" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :payment_method_nonce => Braintree::Test::Nonce::ApplePayMpan,
+        )
+        expect(result.success?).to eq(true)
+        expect(result.transaction).not_to be_nil
+        apple_pay_details = result.transaction.apple_pay_details
+        expect(apple_pay_details).not_to be_nil
+        expect(apple_pay_details.bin).not_to be_nil
+        expect(apple_pay_details.card_type).to eq(Braintree::ApplePayCard::CardType::Visa)
+        expect(apple_pay_details.payment_instrument_name).to eq("Visa 2006")
+        expect(apple_pay_details.source_description).to eq("Visa 2006")
+        expect(apple_pay_details.expiration_month.to_i).to be > 0
+        expect(apple_pay_details.expiration_year.to_i).to be > 0
+        expect(apple_pay_details.cardholder_name).not_to be_nil
+        expect(apple_pay_details.image_url).not_to be_nil
+        expect(apple_pay_details.token).to be_nil
+        expect(apple_pay_details.prepaid).not_to be_nil
+        expect(apple_pay_details.healthcare).not_to be_nil
+        expect(apple_pay_details.debit).not_to be_nil
+        expect(apple_pay_details.durbin_regulated).not_to be_nil
+        expect(apple_pay_details.commercial).not_to be_nil
+        expect(apple_pay_details.payroll).not_to be_nil
+        expect(apple_pay_details.product_id).not_to be_nil
+        expect(apple_pay_details.merchant_token_identifier).not_to be_nil
+        expect(apple_pay_details.is_device_token).to eq(false)
       end
 
       it "can create a vaulted transaction with a fake apple pay nonce" do
@@ -2304,9 +2335,9 @@ describe Braintree::Transaction do
         expect(google_pay_details).not_to be_nil
         expect(google_pay_details.card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
         expect(google_pay_details.virtual_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
-        expect(google_pay_details.last_4).to eq("4444")
-        expect(google_pay_details.virtual_card_last_4).to eq("4444")
-        expect(google_pay_details.source_description).to eq("MasterCard 4444")
+        expect(google_pay_details.last_4).to eq("0005")
+        expect(google_pay_details.virtual_card_last_4).to eq("0005")
+        expect(google_pay_details.source_description).to eq("MasterCard 0005")
         expect(google_pay_details.expiration_month.to_i).to be > 0
         expect(google_pay_details.expiration_year.to_i).to be > 0
         expect(google_pay_details.google_transaction_id).to eq("google_transaction_id")

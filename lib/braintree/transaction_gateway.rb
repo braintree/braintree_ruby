@@ -283,6 +283,30 @@ module Braintree
         {
           :transfer => [
             :type,
+            {
+              :sender => [
+                :first_name,
+                :last_name,
+                :account_reference_number,
+                :tax_id,
+                {:address => AddressGateway._address_attributes}
+              ]
+            },
+            {
+              :receiver => [
+                :first_name,
+                :last_name,
+                :account_reference_number,
+                :tax_id,
+                {:address => AddressGateway._address_attributes}
+              ]
+            },
+          ]
+        },
+        {
+          :us_bank_account => [
+            :ach_mandate_text,
+            :ach_mandate_accepted_at,
           ]
         },
       ]

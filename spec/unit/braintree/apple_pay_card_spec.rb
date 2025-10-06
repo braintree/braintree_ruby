@@ -36,6 +36,7 @@ describe Braintree::ApplePayCard do
       :expired => false,
       :healthcare => "No",
       :image_url => nil,
+      :is_device_token => false,
       :issuing_bank => "Big Bad Bank",
       :last_4 => "9876",
       :merchant_token_identifier => "merchant-token-123",
@@ -93,6 +94,7 @@ describe Braintree::ApplePayCard do
       card = Braintree::ApplePayCard._new(:gateway, attributes)
 
       expect(card.merchant_token_identifier).to_not be_nil
+      expect(card.is_device_token).to_not be_nil
       expect(card.source_card_last4).to_not be_nil
     end
   end

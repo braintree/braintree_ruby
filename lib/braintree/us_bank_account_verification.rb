@@ -15,11 +15,12 @@ module Braintree
 
     module VerificationMethod
       IndependentCheck = "independent_check"
+      InstantVerificationAccountValidation = "instant_verification_account_validation"
       NetworkCheck = "network_check"
       TokenizedCheck = "tokenized_check"
       MicroTransfers = "micro_transfers"
 
-      All = [IndependentCheck, NetworkCheck, TokenizedCheck, MicroTransfers]
+      All = [IndependentCheck, InstantVerificationAccountValidation, NetworkCheck, TokenizedCheck, MicroTransfers]
     end
 
     module VerificationAddOns
@@ -42,6 +43,7 @@ module Braintree
 
     def initialize(attributes)
       set_instance_variables_from_hash(attributes)
+      @us_bank_account = UsBankAccount._new(nil, attributes[:us_bank_account]) if attributes[:us_bank_account]
     end
 
     def inspect

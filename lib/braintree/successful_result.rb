@@ -23,6 +23,7 @@ module Braintree
     attr_reader :subscription
     attr_reader :supported_networks
     attr_reader :transaction
+    attr_reader :bank_account_instant_verification_jwt
     attr_reader :us_bank_account_verification
     attr_reader :session_id
     attr_reader :customer_recommendations

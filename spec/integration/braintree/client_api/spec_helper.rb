@@ -147,6 +147,87 @@ def generate_invalid_us_bank_account_nonce
   nonce + "_xxx"
 end
 
+def generate_us_bank_account_nonce_via_open_banking
+
+  config = Braintree::Configuration.new(
+    :environment => :development,
+    :merchant_id => "integration_merchant_id",
+    :public_key => "integration_public_key",
+    :private_key => "integration_private_key",
+  )
+
+  request_body = {
+    :account_details => {
+      :account_number => "567891234",
+      :account_type => "CHECKING",
+      :classification => "PERSONAL",
+      :tokenized_account => true,
+      :last_4 => "1234"
+    },
+    :institution_details => {
+      :bank_id => {
+        :bank_code => "021000021",
+        :country_code => "US"
+      }
+    },
+    :account_holders => [
+      {
+        :ownership => "PRIMARY",
+        :full_name => {
+          :name => "Dan Schulman"
+        },
+        :name => {
+          :given_name => "Dan",
+          :surname => "Schulman",
+          :full_name => "Dan Schulman"
+        }
+      }
+    ]
+  }
+
+  graphql_base_url = config.graphql_base_url
+  atmosphere_base_url = graphql_base_url.gsub("/graphql", "")
+  url = "#{atmosphere_base_url}/v1/open-finance/tokenize-bank-account-details"
+
+  uri = URI.parse(url)
+  connection = Net::HTTP.new(uri.host, uri.port)
+
+  if uri.scheme == "https"
+    connection.use_ssl = true
+    connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
+    connection.ca_file = config.ca_file if config.ca_file
+  end
+
+  response = connection.start do |http|
+    request = Net::HTTP::Post.new(uri.path)
+    request["Content-Type"] = "application/json"
+    request["Accept"] = "application/json"
+    request["Braintree-Version"] = "2019-01-01"
+    request["User-Agent"] = "Braintree Ruby Library #{Braintree::Version::String}"
+    request["X-ApiVersion"] = config.api_version
+
+    # Basic auth like Node.js
+    auth_string = "#{config.public_key}:#{config.private_key}"
+    request["Authorization"] = "Basic #{Base64.strict_encode64(auth_string)}"
+
+    request.body = request_body.to_json
+
+    http.request(request)
+  end
+
+  if response.code.to_i != 200
+    raise "HTTP #{response.code}: #{response.body}"
+  end
+
+  result = JSON.parse(response.body)
+
+  unless result["tenant_token"]
+    raise "Open Banking tokenization failed: #{result.inspect}"
+  end
+
+  result["tenant_token"]
+end
+
 def _cosmos_post(token, url, payload)
   uri = URI::parse(url)
   connection = Net::HTTP.new(uri.host, uri.port)

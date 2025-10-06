@@ -459,6 +459,8 @@ module Braintree
       TransactionIsNotEligibleForAdjustment = "915219"
       TransactionMustBeInStateAuthorized = "915218"
       TransactionSourceIsInvalid = "915133"
+      TransactionTransferDetailsAreMandatory = "97510"
+      TransactionTransferTypeIsInvalid = "97501"
       TypeIsInvalid = "91523"
       TypeIsRequired = "91524"
       UnsupportedVoiceAuthorization = "91539"

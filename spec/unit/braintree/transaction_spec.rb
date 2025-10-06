@@ -317,6 +317,16 @@ describe Braintree::Transaction do
       expect(transaction.ach_return_code).to eq("R01")
     end
 
+    it "accepts ach_reject_reason" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :ach_return_code => "RJCT",
+        :ach_reject_reason => "some reject reason",
+      )
+      expect(transaction.ach_return_code).to eq("RJCT")
+      expect(transaction.ach_reject_reason).to eq("some reject reason")
+    end
+
     it "accepts network_response code and network_response_text" do
       transaction = Braintree::Transaction._new(
         :gateway,
