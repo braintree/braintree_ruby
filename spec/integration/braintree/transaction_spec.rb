@@ -5301,6 +5301,61 @@ describe Braintree::Transaction do
       expect(transaction.shipping_details.international_phone[:national_number]).to eq("3121234567")
     end
 
+    it "accepts processing_merchant_category_code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_date => "05/2028"
+        },
+        :processing_merchant_category_code => "5411",
+      )
+
+      expect(result.success?).to eq(true)
+    end
+
+    it "returns validation error for a too long processing_merchant_category_code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_date => "05/2028"
+        },
+        :processing_merchant_category_code => "54111",
+      )
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:processing_merchant_category_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::ProcessingMerchantCategoryCodeIsInvalid)
+    end
+
+    it "returns validation error for an alphanumeric processing_merchant_category_code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_date => "05/2028"
+        },
+        :processing_merchant_category_code => "541A",
+      )
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:processing_merchant_category_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::ProcessingMerchantCategoryCodeIsInvalid)
+    end
+
+    it "returns validation error for a too short processing_merchant_category_code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_date => "05/2028"
+        },
+        :processing_merchant_category_code => "541",
+      )
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:processing_merchant_category_code)[0].code).to eq(Braintree::ErrorCodes::Transaction::ProcessingMerchantCategoryCodeIsInvalid)
+    end
+
     it "allows merchant account to be specified" do
       result = Braintree::Transaction.sale(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -6813,6 +6868,34 @@ describe Braintree::Transaction do
       transaction = Braintree::Transaction.find("transactionwithacquirerreferencenumber")
 
       expect(transaction.acquirer_reference_number).to eq("123456789 091019")
+    end
+
+    it "finds a transaction and returns a payment_account_reference if the transaction has one" do
+      transaction = Braintree::Transaction.find("aft_txn")
+
+      expect(transaction.credit_card_details).not_to be_nil
+      expect(transaction.credit_card_details).to respond_to(:payment_account_reference)
+    end
+
+    it "finds a transaction and returns a payment_account_reference in apple_pay_details if the transaction has one" do
+      transaction = Braintree::Transaction.find("apple_pay_transaction")
+
+      expect(transaction.apple_pay_details).not_to be_nil
+      expect(transaction.apple_pay_details).to respond_to(:payment_account_reference)
+    end
+
+    it "finds a transaction and returns a payment_account_reference in google_pay_details if the transaction has one" do
+      transaction = Braintree::Transaction.find("android_pay_card_transaction")
+
+      expect(transaction.google_pay_details).not_to be_nil
+      expect(transaction.google_pay_details).to respond_to(:payment_account_reference)
+    end
+
+    it "finds a transaction and returns a payment_account_reference in google_pay_details for network token if the transaction has one" do
+      transaction = Braintree::Transaction.find("android_pay_network_token_transaction")
+
+      expect(transaction.google_pay_details).not_to be_nil
+      expect(transaction.google_pay_details).to respond_to(:payment_account_reference)
     end
 
     context "disbursement_details" do

@@ -39,7 +39,7 @@ describe Braintree::Transaction::CreditCardDetails do
         :image_url => "example.com/visa.png",
         :unique_number_identifier => "abc123",
       )
-      expect(details.inspect).to eq(%(#<token: "token", bin: "123456", business: "No", last_4: "6789", card_type: "Visa", commercial: "Unknown", consumer: "Unknown", corporate: "Unknown", country_of_issuance: "Lilliput", customer_location: "US", debit: "Yes", durbin_regulated: "No", expiration_date: "05/2012", healthcare: "No", image_url: "example.com/visa.png", issuing_bank: "Gulliver Bank", payroll: "Unknown", prepaid: "Yes", prepaid_reloadable: "Yes", product_id: "Unknown", purchase: "Unknown", cardholder_name: "The Cardholder", unique_number_identifier: "abc123">))
+      expect(details.inspect).to eq(%(#<token: "token", bin: "123456", business: "No", last_4: "6789", card_type: "Visa", commercial: "Unknown", consumer: "Unknown", corporate: "Unknown", country_of_issuance: "Lilliput", customer_location: "US", debit: "Yes", durbin_regulated: "No", expiration_date: "05/2012", healthcare: "No", image_url: "example.com/visa.png", issuing_bank: "Gulliver Bank", payroll: "Unknown", prepaid: "Yes", prepaid_reloadable: "Yes", product_id: "Unknown", purchase: "Unknown", cardholder_name: "The Cardholder", unique_number_identifier: "abc123", payment_account_reference: nil>))
     end
   end
 
@@ -65,6 +65,15 @@ describe Braintree::Transaction::CreditCardDetails do
         :is_network_tokenized => false,
       )
       expect(details.is_network_tokenized?).to eq(false)
+    end
+  end
+
+  describe "payment_account_reference" do
+    it "returns the payment account reference when present" do
+      details = Braintree::Transaction::CreditCardDetails.new(
+        :payment_account_reference => "V0010013019339005665779448477",
+      )
+      expect(details.payment_account_reference).to eq("V0010013019339005665779448477")
     end
   end
 end

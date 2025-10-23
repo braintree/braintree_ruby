@@ -21,6 +21,7 @@ module Braintree
       attr_reader :image_url
       attr_reader :issuing_bank
       attr_reader :last_4
+      attr_reader :payment_account_reference
       attr_reader :payroll
       attr_reader :prepaid
       attr_reader :prepaid_reloadable
@@ -55,6 +56,7 @@ module Braintree
           :image_url,
           :issuing_bank,
           :last_4,
+          :payment_account_reference,
           :payroll,
           :prepaid,
           :prepaid_reloadable,

@@ -257,6 +257,13 @@ describe Braintree::CreditCardVerification, "search" do
         Braintree::CreditCardVerification.find("invalid-id")
       end.to raise_error(Braintree::NotFoundError, 'verification with id "invalid-id" not found')
     end
+
+    it "finds a verification and returns a payment_account_reference if the verification has one" do
+      verification = Braintree::CreditCardVerification.find("threedsecuredverification")
+
+      expect(verification.credit_card).not_to be_nil
+      expect(verification.credit_card).to have_key(:payment_account_reference)
+    end
   end
 
   describe "self.search" do

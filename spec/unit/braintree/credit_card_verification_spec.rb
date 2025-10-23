@@ -159,4 +159,21 @@ describe Braintree::CreditCardVerification do
       expect(verification.network_response_text).to eq("Successful approval/completion or V.I.P. PIN verification is successful")
     end
   end
+
+  describe "credit_card with payment_account_reference" do
+    it "includes payment_account_reference in credit_card hash when present" do
+      verification = Braintree::CreditCardVerification._new(
+        :status => "verified",
+        :credit_card => {
+          :bin => "401288",
+          :last_4 => "1881",
+          :card_type => "Visa",
+          :payment_account_reference => "V0010013019339005665779448477"
+        },
+      )
+
+      expect(verification.credit_card).to be_a(Hash)
+      expect(verification.credit_card[:payment_account_reference]).to eq("V0010013019339005665779448477")
+    end
+  end
 end

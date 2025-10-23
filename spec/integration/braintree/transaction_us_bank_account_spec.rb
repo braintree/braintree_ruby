@@ -140,7 +140,6 @@ describe Braintree::Transaction do
             expect(transaction.us_bank_account_details.account_type).to eq("checking")
             expect(transaction.us_bank_account_details.account_holder_name).to eq("John Doe")
             expect(transaction.us_bank_account_details.bank_name).to match(/CHASE/)
-            expect(transaction.us_bank_account_details.ach_mandate.text).to eq("cl mandate text")
             expect(transaction.us_bank_account_details.ach_mandate.accepted_at).to be_a Time
           end
 

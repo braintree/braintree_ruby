@@ -25,4 +25,13 @@ describe Braintree::ApplePayDetails do
     card = Braintree::ApplePayDetails._new(:gateway, {:purchase => "No"})
     expect(card.purchase).to eq("No")
   end
+
+  describe "payment_account_reference" do
+    it "returns the payment account reference when present" do
+      details = Braintree::Transaction::ApplePayDetails.new(
+        :payment_account_reference => "V0010013019339005665779448477",
+      )
+      expect(details.payment_account_reference).to eq("V0010013019339005665779448477")
+    end
+  end
 end

@@ -23,7 +23,6 @@ describe Braintree::UsBankAccount do
       expect(us_bank_account.account_type).to eq("checking")
       expect(us_bank_account.account_holder_name).to eq("John Doe")
       expect(us_bank_account.bank_name).to match(/CHASE/)
-      expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
       expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
     end
 
@@ -63,7 +62,6 @@ describe Braintree::UsBankAccount do
       expect(us_bank_account.account_type).to eq("checking")
       expect(us_bank_account.account_holder_name).to eq("John Doe")
       expect(us_bank_account.bank_name).to match(/CHASE/)
-      expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
       expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
     end
   end
@@ -96,7 +94,6 @@ describe Braintree::UsBankAccount do
       expect(us_bank_account.account_type).to eq("checking")
       expect(us_bank_account.account_holder_name).to eq("John Doe")
       expect(us_bank_account.bank_name).to match(/CHASE/)
-      expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
       expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
     end
 

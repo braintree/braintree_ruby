@@ -22,6 +22,7 @@ module Braintree
       attr_reader :issuing_bank
       attr_reader :last_4
       attr_reader :merchant_token_identifier
+      attr_reader :payment_account_reference
       attr_reader :payment_instrument_name
       attr_reader :payroll
       attr_reader :prepaid

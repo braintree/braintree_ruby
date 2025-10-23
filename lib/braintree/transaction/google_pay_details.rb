@@ -20,6 +20,7 @@ module Braintree
       attr_reader :image_url
       attr_reader :issuing_bank
       attr_reader :last_4
+      attr_reader :payment_account_reference
       attr_reader :payroll
       attr_reader :prepaid
       attr_reader :prepaid_reloadable

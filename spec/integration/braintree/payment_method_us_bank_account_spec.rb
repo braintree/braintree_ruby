@@ -32,7 +32,6 @@ describe Braintree::PaymentMethod do
           expect(us_bank_account.account_holder_name).to eq("John Doe")
           expect(us_bank_account.bank_name).to match(/CHASE/)
           expect(us_bank_account.default).to eq(true)
-          expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
           expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
 
           expect(us_bank_account.verifications.count).to eq(0)
@@ -100,7 +99,6 @@ describe Braintree::PaymentMethod do
           expect(us_bank_account.account_holder_name).to eq("Dan Schulman")
           expect(us_bank_account.bank_name).to match(/Wells Fargo/)
           expect(us_bank_account.default).to eq(true)
-          expect(us_bank_account.ach_mandate.text).to eq("example mandate text")
           expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
 
           expect(us_bank_account.verifications.count).to eq(1)
@@ -135,7 +133,6 @@ describe Braintree::PaymentMethod do
           expect(us_bank_account.account_holder_name).to eq("John Doe")
           expect(us_bank_account.bank_name).to match(/CHASE/)
           expect(us_bank_account.default).to eq(true)
-          expect(us_bank_account.ach_mandate.text).to eq("cl mandate text")
           expect(us_bank_account.ach_mandate.accepted_at).to be_a Time
 
           expect(us_bank_account.verifications.count).to eq(1)

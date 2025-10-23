@@ -25,4 +25,13 @@ describe Braintree::GooglePayDetails do
     card = Braintree::GooglePayDetails._new(:gateway, {:purchase => "No"})
     expect(card.purchase).to eq("No")
   end
+
+  context "payment_account_reference" do
+    it "returns the payment account reference when present" do
+      details = Braintree::Transaction::GooglePayDetails.new(
+        :payment_account_reference => "V0010013019339005665779448477",
+      )
+      expect(details.payment_account_reference).to eq("V0010013019339005665779448477")
+    end
+  end
 end

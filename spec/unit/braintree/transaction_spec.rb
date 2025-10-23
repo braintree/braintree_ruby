@@ -157,6 +157,44 @@ describe Braintree::Transaction do
       expect(transaction.credit_card_details.issuing_bank).to eq("Mr Tumnus")
     end
 
+    describe "payment_account_reference in transaction details" do
+      it "exposes payment_account_reference in credit_card_details" do
+        transaction = Braintree::Transaction._new(
+          :gateway,
+          :credit_card => {
+            :bin => "401288",
+            :last_4 => "1881",
+            :card_type => "Visa",
+            :payment_account_reference => "V0010013019339005665779448477"
+          },
+        )
+        expect(transaction.credit_card_details.payment_account_reference).to eq("V0010013019339005665779448477")
+      end
+
+      it "exposes payment_account_reference in apple_pay_details" do
+        transaction = Braintree::Transaction._new(
+          :gateway,
+          :apple_pay => {
+            :payment_instrument_name => "Apple Pay",
+            :payment_account_reference => "V0010013019339005665779448477"
+          },
+        )
+        expect(transaction.apple_pay_details.payment_account_reference).to eq("V0010013019339005665779448477")
+      end
+
+      it "exposes payment_account_reference in google_pay_details" do
+        transaction = Braintree::Transaction._new(
+          :gateway,
+          :android_pay_card => {
+            :virtual_card_type => "Visa",
+            :payment_account_reference => "V0010013019339005665779448477"
+          },
+        )
+        expect(transaction.google_pay_details.payment_account_reference).to eq("V0010013019339005665779448477")
+      end
+
+    end
+
     it "sets up network token attributes in network_token_details" do
       transaction = Braintree::Transaction._new(
         :gateway,

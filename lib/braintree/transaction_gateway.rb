@@ -196,7 +196,7 @@ module Braintree
       [
         :amount, :billing_address_id, :channel, :currency_iso_code, :customer_id, :device_data,
         :discount_amount, :exchange_rate_quote_id, :foreign_retailer,
-        :merchant_account_id, :order_id, :payment_method_nonce, :payment_method_token,
+        :merchant_account_id, :order_id, :payment_method_nonce, :payment_method_token, :processing_merchant_category_code,
         :product_sku, :purchase_order_number, :service_fee_amount, :shared_billing_address_id,
         :shared_customer_id, :shared_payment_method_nonce, :shared_payment_method_token,
         :shared_shipping_address_id, :shipping_address_id, :shipping_amount, :shipping_tax_amount,
