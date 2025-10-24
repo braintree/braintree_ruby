@@ -18,10 +18,10 @@ module Braintree
       end
 
       def self._determine_parser
-        # If LibXML is not available, we fall back to REXML
-        # This allows us to be compatible with JRuby, which LibXML does not support
-        if defined?(::LibXML::XML) && ::LibXML::XML.respond_to?(:default_keep_blanks=)
-          ::Braintree::Xml::Libxml
+        # If Nokogiri is available, use it for better performance
+        # Otherwise fall back to REXML for JRuby compatibility
+        if defined?(::Nokogiri)
+          ::Braintree::Xml::Nokogiri
         else
           ::Braintree::Xml::Rexml
         end

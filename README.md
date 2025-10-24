@@ -16,16 +16,13 @@ Or add to your Gemfile:
 ```ruby
 gem 'braintree'
 ```
-
-Optionally, you may also include LibXML for more performant XML parsing. If LibXML is not present, REXML will be used instead.
-
-```ruby
-gem 'libxml-ruby'
-```
+Optionally, you may also include Nokogiri for more performant XML parsing. If Nokogiri is not present, REXML will be used instead.
+The gem uses Nokogiri for XML parsing.
 
 ## Dependencies
 
 * builder
+* nokogiri
 
 The Braintree Ruby SDK is tested against Ruby versions 2.6, 2.7 and 3.0.
 

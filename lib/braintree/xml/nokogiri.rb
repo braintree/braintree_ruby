@@ -2,22 +2,20 @@
 # under the MIT license, copyright (c) 2005-2009 David Heinemeier Hansson
 module Braintree
   module Xml
-    module Libxml
-      LIB_XML_LIMIT = 30000000
+    module Nokogiri
+      NOKOGIRI_XML_LIMIT = 30000000
 
       def self.parse(xml_string)
-        old_keep_blanks_setting = ::LibXML::XML.default_keep_blanks
-        ::LibXML::XML.default_keep_blanks = false
-        root_node = LibXML::XML::Parser.string(xml_string.strip).parse.root
-        _node_to_hash(root_node)
-      ensure
-        ::LibXML::XML.default_keep_blanks = old_keep_blanks_setting
+        require "nokogiri" unless defined?(::Nokogiri)
+        doc = ::Nokogiri::XML(xml_string.strip)
+        _node_to_hash(doc.root)
       end
 
       def self._node_to_hash(node, hash = {})
-        if node.text?
-          raise ::LibXML::XML::Error if node.content.length >= LIB_XML_LIMIT
-          hash[CONTENT_ROOT] = node.content
+        if node.text? || (node.children.size == 1 && node.children.first.text?)
+          content = node.text? ? node.content : node.children.first.content
+          raise "Content too large" if content.length >= NOKOGIRI_XML_LIMIT
+          hash[CONTENT_ROOT] = content
         else
           sub_hash = _build_sub_hash(hash, node.name)
           _attributes_to_hash(node, sub_hash)
@@ -44,25 +42,27 @@ module Braintree
       end
 
       def self._children_to_hash(node, hash={})
-        node.each { |child| _node_to_hash(child, hash) }
+        node.children.each { |child| _node_to_hash(child, hash) unless child.text? && child.content.strip.empty? }
         _attributes_to_hash(node, hash)
         hash
       end
 
       def self._attributes_to_hash(node, hash={})
-        node.each_attr { |attr| hash[attr.name] = attr.value }
+        node.attributes.each { |name, attr| hash[name] = attr.value }
         hash
       end
 
       def self._children_array_to_hash(node, hash={})
-        hash[node.child.name] = node.map do |child|
+        first_child = node.children.find { |child| !child.text? }
+        hash[first_child.name] = node.children.select { |child| !child.text? }.map do |child|
           _children_to_hash(child, {})
         end
         hash
       end
 
       def self._array?(node)
-        node.child? && node.child.next? && node.child.name == node.child.next.name
+        non_text_children = node.children.select { |child| !child.text? }
+        non_text_children.size > 1 && non_text_children.first.name == non_text_children[1].name
       end
     end
   end

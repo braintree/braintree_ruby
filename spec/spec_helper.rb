@@ -3,7 +3,6 @@ unless defined?(SPEC_HELPER_LOADED)
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
   require "bundler/setup"
-  require "libxml"
   require "rspec"
   require "pry"
 
@@ -195,10 +194,10 @@ unless defined?(SPEC_HELPER_LOADED)
       end
 
       def matches?(xml_string)
-        @libxml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string)
-        if @libxml_parse != @expected_hash
-          @results = @libxml_parse
-          @failed_parser = "libxml"
+        @xml_parse = Braintree::Xml::Parser.hash_from_xml(xml_string)
+        if @xml_parse != @expected_hash
+          @results = @xml_parse
+          @failed_parser = "xml"
           false
         else
           true
