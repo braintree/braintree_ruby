@@ -81,5 +81,62 @@ describe Braintree::Xml::Parser do
       END
       expect(xml).to parse_to(:root => {:paypal_details => {:deets => [{:secret_code => "1234"}], :payer_email => "abc@test.com", :payment_id => "1234567890"}})
     end
+
+    it "does not collapse nested structures with single-child elements" do
+      xml = "<api-error-response><message>Test</message><errors><errors type=\"array\"></errors></errors></api-error-response>"
+      expect(xml).to parse_to({:api_error_response=>{:message=>"Test", :errors=>{:errors=>[]}}})
+    end
+
+    it "preserves hash structure when one key has array value" do
+      xml = <<-END
+        <root>
+          <message>Error message</message>
+          <items type="array">
+            <item>Value1</item>
+          </items>
+        </root>
+      END
+      expect(xml).to parse_to({:root => {:message => "Error message", :items => ["Value1"]}})
+    end
+
+    it "handles error response with nested errors correctly" do
+      xml = <<-END
+        <api-error-response>
+          <message>Validation failed</message>
+          <errors>
+            <errors type="array">
+              <error>
+                <code>81234</code>
+                <message>Field is required</message>
+              </error>
+            </errors>
+          </errors>
+        </api-error-response>
+      END
+      expect(xml).to parse_to({
+        :api_error_response => {
+          :message => "Validation failed",
+          :errors => {
+            :errors => [{:code => "81234", :message => "Field is required"}]
+          }
+        }
+      })
+    end
+
+    it "handles client token error response structure" do
+      xml = <<-END
+        <api-error-response>
+          <message>Invalid request</message>
+          <errors>
+            <errors type="array"></errors>
+          </errors>
+        </api-error-response>
+      END
+      result = Braintree::Xml::Parser.hash_from_xml(xml)
+      expect(result[:api_error_response]).to be_a(Hash)
+      expect(result[:api_error_response][:message]).to eq("Invalid request")
+      expect(result[:api_error_response][:errors]).to be_a(Hash)
+      expect(result[:api_error_response][:errors][:errors]).to eq([])
+    end
   end
 end
