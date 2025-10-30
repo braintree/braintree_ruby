@@ -33,5 +33,16 @@ module Braintree
         end
       end
     end
+
+    describe "error response handling" do
+      it "correctly parses error response with nested structure" do
+        error_xml = "<api-error-response><message>Invalid request</message><errors><errors type=\"array\"></errors></errors></api-error-response>"
+        result = Braintree::Xml::Parser.hash_from_xml(error_xml)
+
+        expect(result[:api_error_response]).to be_a(Hash)
+        expect(result[:api_error_response][:message]).to eq("Invalid request")
+        expect(result[:api_error_response][:errors]).to be_a(Hash)
+      end
+    end
   end
 end

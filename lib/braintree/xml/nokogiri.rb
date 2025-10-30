@@ -12,12 +12,14 @@ module Braintree
       end
 
       def self._node_to_hash(node, hash = {})
+        sub_hash = node.text? ? hash : _build_sub_hash(hash, node.name)
+
         if node.text? || (node.children.size == 1 && node.children.first.text?)
           content = node.text? ? node.content : node.children.first.content
           raise "Content too large" if content.length >= NOKOGIRI_XML_LIMIT
-          hash[CONTENT_ROOT] = content
+          sub_hash[CONTENT_ROOT] = content
+          _attributes_to_hash(node, sub_hash) unless node.text?
         else
-          sub_hash = _build_sub_hash(hash, node.name)
           _attributes_to_hash(node, sub_hash)
           if _array?(node)
             _children_array_to_hash(node, sub_hash)

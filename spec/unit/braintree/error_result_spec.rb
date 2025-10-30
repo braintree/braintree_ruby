@@ -14,6 +14,34 @@ describe Braintree::ErrorResult do
         )
       end.to_not raise_error
     end
+
+    it "handles parsed XML error response structure correctly" do
+      data = {
+        :message => "Validation failed",
+        :errors => {
+          :errors => [{:code => "81234", :message => "Field is required"}]
+        }
+      }
+
+      expect do
+        result = Braintree::ErrorResult.new(:gateway, data)
+        expect(result.message).to eq("Validation failed")
+        expect(result.errors.inspect).to eq("#<Braintree::Errors :[(81234) Field is required]>")
+      end.to_not raise_error
+    end
+
+    it "handles empty error array in parsed XML response" do
+      data = {
+        :message => "Invalid request",
+        :errors => {:errors => []}
+      }
+
+      expect do
+        result = Braintree::ErrorResult.new(:gateway, data)
+        expect(result.message).to eq("Invalid request")
+        expect(result.errors).to be_a(Braintree::Errors)
+      end.to_not raise_error
+    end
   end
 
   describe "inspect" do

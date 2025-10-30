@@ -3,6 +3,9 @@
 ## Unreleased
 - Add gems that are no longer standard libraries / default gems to Gemfile and gemspec
 
+## 4.33.1
+- Bug fix for Nokogiri XML parsing
+
 ## 4.33.0
 - Switch from libxml-ruby to Nokogiri to allow use with JRuby. 
 
