@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Add gems that are no longer standard libraries / default gems to Gemfile and gemspec
+
 ## 4.33.1
 - Bug fix for Nokogiri XML parsing
 
