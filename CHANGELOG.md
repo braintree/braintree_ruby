@@ -1,6 +1,10 @@
 # Changelog
 
+## 4.34.0 
+- Re-releasing as 4.34.0
+
 ## 4.33.2
+- Version 4.33.2 was meant to be a released as 4.34.0
 - Add `middle_name` to `sender` and `receiver`, and `date_of_birth` to `sender` in transfer on `Transaction`
 - Add `rspec-retry` gem to Gemfile
 - Update `pry` gem to 0.14.0
