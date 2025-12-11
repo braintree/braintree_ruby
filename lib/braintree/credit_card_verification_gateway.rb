@@ -18,7 +18,8 @@ module Braintree
       search = CreditCardVerificationSearch.new
       block.call(search) if block
 
-      response = @config.http.post("#{@config.base_merchant_path}/verifications/advanced_search_ids", {:search => search.to_hash})
+      search_params = search.to_hash.merge({:verification_type => ["credit_card"]})
+      response = @config.http.post("#{@config.base_merchant_path}/verifications/advanced_search_ids", {:search => search_params})
       ResourceCollection.new(response) { |ids| _fetch_verifications(search, ids) }
     end
 
@@ -39,7 +40,8 @@ module Braintree
 
     def _fetch_verifications(search, ids)
       search.ids.in ids
-      response = @config.http.post("#{@config.base_merchant_path}/verifications/advanced_search", {:search => search.to_hash})
+      search_params = search.to_hash.merge({:verification_type => ["credit_card"]})
+      response = @config.http.post("#{@config.base_merchant_path}/verifications/advanced_search", {:search => search_params})
       attributes = response[:credit_card_verifications]
       Util.extract_attribute_as_array(attributes, :verification).map { |attrs| CreditCardVerification._new(attrs) }
     end

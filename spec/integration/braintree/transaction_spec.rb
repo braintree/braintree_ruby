@@ -1216,27 +1216,32 @@ describe Braintree::Transaction do
           :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
           :logger => Logger.new("/dev/null"),
         )
-        result = gateway.merchant.create(
-          :email => "name@email.com",
-          :country_code_alpha3 => "GBR",
-          :payment_methods => ["credit_card", "paypal"],
+
+        code = Braintree::OAuthTestHelper.create_grant(gateway, {
+          :merchant_public_id => "partner_merchant_id",
+          :scope => "read_write"
+        })
+
+        result = gateway.oauth.create_token_from_code(
+          :code => code,
+          :scope => "read_write",
         )
 
-        gateway = Braintree::Gateway.new(
+        merchant_gateway = Braintree::Gateway.new(
           :access_token => result.credentials.access_token,
           :logger => Logger.new("/dev/null"),
         )
 
-        result = gateway.transaction.create(
+        transaction_result = merchant_gateway.transaction.create(
           :type => "sale",
-          :amount => "4000.00",
+          :amount => "5001.00",
           :credit_card => {
             :number => Braintree::Test::CreditCardNumbers::Visa,
             :expiration_date => "05/2020"
           },
         )
-        expect(result.success?).to eq(false)
-        expect(result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete)
+        expect(transaction_result.success?).to eq(false)
+        expect(transaction_result.transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::ApplicationIncomplete)
       end
 
       it "exposes the avs gateway rejection reason" do
@@ -2335,8 +2340,9 @@ describe Braintree::Transaction do
         expect(google_pay_details).not_to be_nil
         expect(google_pay_details.card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
         expect(google_pay_details.virtual_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
-        expect(google_pay_details.last_4).to eq("0005")
-        expect(google_pay_details.virtual_card_last_4).to eq("0005")
+        expect(google_pay_details.last_4).to eq("4444")
+        expect(google_pay_details.virtual_card_last_4).to eq("4444")
+        expect(google_pay_details.source_card_last_4).to eq("0005")
         expect(google_pay_details.source_description).to eq("MasterCard 0005")
         expect(google_pay_details.expiration_month.to_i).to be > 0
         expect(google_pay_details.expiration_year.to_i).to be > 0
@@ -3038,8 +3044,9 @@ describe Braintree::Transaction do
             :ds_transaction_id => "some_ds_id",
           },
         )
+
         expect(result.success?).to eq(false)
-        expect(result.errors.for(:transaction).for(:three_d_secure_pass_thru).on(:cavv_algorithm)[0].code).to eq(Braintree::ErrorCodes::Transaction::ThreeDSecureCavvAlgorithmIsInvalid)
+        expect(result.errors.for(:transaction).for(:credit_card).on(:cvv)[0].code).to eq(Braintree::ErrorCodes::CreditCard::CvvIsRequired)
       end
     end
 
@@ -7768,7 +7775,7 @@ describe Braintree::Transaction do
 
         expect(adjustment_transaction.success?).to eq(false)
         expect(adjustment_transaction.transaction.amount).to eq(BigDecimal("75.50"))
-        expect(adjustment_transaction.errors.for(:authorization_adjustment).on(:amount).first.code).to eq(Braintree::ErrorCodes::Transaction::AdjustmentAmountMustBeGreaterThanZero)
+        expect(adjustment_transaction.errors.for(:transaction).on(:amount).first.code).to eq(Braintree::ErrorCodes::Transaction::AmountMustBeGreaterThanZero)
       end
 
       it "returns failure response, when adjusted amount submitted same as authorized amount" do

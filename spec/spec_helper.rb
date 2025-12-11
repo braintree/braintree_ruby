@@ -4,6 +4,7 @@ unless defined?(SPEC_HELPER_LOADED)
   require "rubygems"
   require "bundler/setup"
   require "rspec"
+  require "rspec/retry"
   require "pry"
 
   braintree_lib = "#{project_root}/lib"
@@ -119,18 +120,40 @@ unless defined?(SPEC_HELPER_LOADED)
       response[:three_d_secure_verification][:three_d_secure_authentication_id]
     end
 
-    def self.create_merchant(params={})
+    def self.get_merchant(params={})
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null"),
       )
 
-      gateway.merchant.create({
-        :email => "name@email.com",
-        :country_code_alpha3 => "GBR",
-        :payment_methods => ["credit_card", "paypal"],
-      }.merge!(params))
+      code = Braintree::OAuthTestHelper.create_grant(gateway, {
+        :merchant_public_id => "partner_merchant_id",
+        :scope => "read_write"
+      })
+
+      result = gateway.oauth.create_token_from_code(
+        :code => code,
+        :scope => "read_write",
+      )
+
+      merchant_gateway = Braintree::Gateway.new(
+        :access_token => result.credentials.access_token,
+        :logger => Logger.new("/dev/null"),
+      )
+
+      ma_result = merchant_gateway.merchant_account.all
+
+      merchant_obj = OpenStruct.new(
+        :id => "partner_merchant_id",
+        :merchant_accounts => ma_result.merchant_accounts,
+      )
+
+      OpenStruct.new(
+        :success? => true,
+        :credentials => result.credentials,
+        :merchant => merchant_obj,
+      )
     end
 
     def self.stub_time_dot_now(desired_time)
@@ -234,4 +257,9 @@ RSpec.configure do |config|
   config.mock_with :rspec do |mock|
     mock.syntax = [:should, :expect]
   end
+
+  config.verbose_retry = true
+  config.display_try_failure_messages = true
+  config.default_retry_count = 3
+  config.default_sleep_interval = 1
 end

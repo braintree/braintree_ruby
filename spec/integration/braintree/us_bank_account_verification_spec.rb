@@ -50,7 +50,7 @@ describe Braintree::UsBankAccountVerification do
         expect(response).to be_success
         expect(response.us_bank_account_verification.status).to eq(Braintree::UsBankAccountVerification::Status::Verified)
 
-        us_bank_account = Braintree::UsBankAccount.find(response.us_bank_account_verification.us_bank_account[:token])
+        us_bank_account = Braintree::UsBankAccount.find(response.us_bank_account_verification.us_bank_account.token)
 
         expect(us_bank_account.verified).to be_truthy
       end

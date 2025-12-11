@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.33.2
+- Add `middle_name` to `sender` and `receiver`, and `date_of_birth` to `sender` in transfer on `Transaction`
+- Add `rspec-retry` gem to Gemfile
+- Update `pry` gem to 0.14.0
+- Filter `Braintree::CreditCardVerification.search` to only return credit card verifications
+
 ## 4.33.1
 - Bug fix for Nokogiri XML parsing
 
@@ -11,7 +17,7 @@
 - Add `processing_merchant_category_code` in `Transaction`
 - Add missing `transfer` validation error codes in `Transaction`
 - Replace libxml-ruby with nokogiri to address JRuby incompatability
- 
+
 ## 4.31.0
 
 - Add Bank Account Instant Verification Gateway with JWT creation support

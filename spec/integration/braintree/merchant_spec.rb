@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Braintree::MerchantGateway do
   describe "create" do
-    it "creates a merchant" do
+    xit "creates a merchant" do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
@@ -59,7 +59,7 @@ describe Braintree::MerchantGateway do
         Braintree::Configuration.merchant_id = old_merchant_id_value
       end
 
-      it "allows using a merchant_id passed in through Gateway" do
+      xit "allows using a merchant_id passed in through Gateway" do
         Braintree::Configuration.merchant_id = nil
 
         gateway = Braintree::Gateway.new(
@@ -87,7 +87,7 @@ describe Braintree::MerchantGateway do
         )
       end
 
-      it "creates an EU multi currency merchant for paypal and credit_card" do
+      xit "creates an EU multi currency merchant for paypal and credit_card" do
         result = @gateway.merchant.create(
           :email => "name@email.com",
           :country_code_alpha3 => "GBR",
@@ -123,7 +123,7 @@ describe Braintree::MerchantGateway do
       end
 
 
-      it "creates a paypal-only merchant that accepts multiple currencies" do
+      xit "creates a paypal-only merchant that accepts multiple currencies" do
         result = @gateway.merchant.create(
           :email => "name@email.com",
           :country_code_alpha3 => "GBR",

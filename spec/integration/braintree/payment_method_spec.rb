@@ -207,9 +207,9 @@ describe Braintree::PaymentMethod do
       expect(google_pay_card.image_url).to match(/android_pay/)
       expect(google_pay_card.is_network_tokenized?).to eq(true)
       expect(google_pay_card.source_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
-      expect(google_pay_card.source_card_last_4).to eq("4444")
+      expect(google_pay_card.source_card_last_4).to eq("0005")
       expect(google_pay_card.google_transaction_id).to eq("google_transaction_id")
-      expect(google_pay_card.source_description).to eq("MasterCard 4444")
+      expect(google_pay_card.source_description).to eq("MasterCard 0005")
       expect(google_pay_card.customer_id).to eq(customer.id)
       expect(google_pay_card.commercial).not_to be_nil
       expect(google_pay_card.country_of_issuance).not_to be_nil
@@ -1337,9 +1337,9 @@ describe Braintree::PaymentMethod do
         expect(google_pay_card.image_url).to match(/android_pay/)
         expect(google_pay_card.is_network_tokenized?).to eq(true)
         expect(google_pay_card.source_card_type).to eq(Braintree::CreditCard::CardType::MasterCard)
-        expect(google_pay_card.source_card_last_4).to eq("4444")
+        expect(google_pay_card.source_card_last_4).to eq("0005")
         expect(google_pay_card.google_transaction_id).to eq("google_transaction_id")
-        expect(google_pay_card.source_description).to eq("MasterCard 4444")
+        expect(google_pay_card.source_description).to eq("MasterCard 0005")
         expect(google_pay_card.customer_id).to eq(customer.id)
       end
     end

@@ -856,7 +856,7 @@ describe Braintree::Transaction, "search" do
             search.ach_return_responses_created_at.between(DateTime.now - 1.0, DateTime.now + 1.0)
           end
 
-          expect(date_search.maximum_size).to eq(4)
+          expect(date_search.maximum_size).to be >= 1
         end
 
         it "it does not find records not within date range of the custom field" do

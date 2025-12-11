@@ -2,20 +2,19 @@ require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Braintree::ApplePayGateway do
   before(:each) do
-    gateway = Braintree::Gateway.new(
+    oauth_gateway = Braintree::Gateway.new(
       :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
       :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
       :logger => Logger.new("/dev/null"),
     )
 
-    result = gateway.merchant.create(
-      :email => "name@email.com",
-      :country_code_alpha3 => "GBR",
-      :payment_methods => ["credit_card", "paypal"],
-    )
+    access_token = Braintree::OAuthTestHelper.create_token(oauth_gateway, {
+      :merchant_public_id => "integration_merchant_id",
+      :scope => "read_write"
+    }).credentials.access_token
 
     @gateway = Braintree::Gateway.new(
-      :access_token => result.credentials.access_token,
+      :access_token => access_token,
       :logger => Logger.new("/dev/null"),
     )
   end

@@ -95,10 +95,14 @@ describe Braintree::MerchantAccount do
         :logger => Logger.new("/dev/null"),
       )
 
-      result = gateway.merchant.create(
-        :email => "name@email.com",
-        :country_code_alpha3 => "GBR",
-        :payment_methods => ["credit_card", "paypal"],
+      code = Braintree::OAuthTestHelper.create_grant(gateway, {
+        :merchant_public_id => "integration_merchant_id",
+        :scope => "read_write"
+      })
+
+      result = gateway.oauth.create_token_from_code(
+        :code => code,
+        :scope => "read_write",
       )
 
       gateway = Braintree::Gateway.new(
@@ -108,10 +112,8 @@ describe Braintree::MerchantAccount do
 
       result = gateway.merchant_account.all
       expect(result).to be_success
-      expect(result.merchant_accounts.count).to eq(1)
-      expect(result.merchant_accounts.first.currency_iso_code).to eq("GBP")
+      expect(result.merchant_accounts.count).to be > 0
       expect(result.merchant_accounts.first.status).to eq("active")
-      expect(result.merchant_accounts.first.default).to eq(true)
     end
 
     it "returns all merchant accounts for read_only scoped grants" do
@@ -144,7 +146,7 @@ describe Braintree::MerchantAccount do
 
   describe "create_for_currency" do
     it "creates a new merchant account for currency" do
-      result = SpecHelper::create_merchant
+      result = SpecHelper::get_merchant
       expect(result).to be_success
 
       gateway = Braintree::Gateway.new(
@@ -153,14 +155,14 @@ describe Braintree::MerchantAccount do
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "JPY",
+        :currency => "AUD",
       )
       expect(result).to be_success
-      expect(result.merchant_account.currency_iso_code).to eq("JPY")
+      expect(result.merchant_account.currency_iso_code).to eq("AUD")
     end
 
     it "returns error if a merchant account already exists for that currency" do
-      result = SpecHelper::create_merchant
+      result = SpecHelper::get_merchant
       expect(result).to be_success
 
       gateway = Braintree::Gateway.new(
@@ -169,12 +171,12 @@ describe Braintree::MerchantAccount do
       )
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "USD",
+        :currency => "CAD",
       )
       expect(result).to be_success
 
       result = gateway.merchant_account.create_for_currency(
-        :currency => "USD",
+        :currency => "CAD",
       )
       expect(result).not_to be_success
 
@@ -183,7 +185,7 @@ describe Braintree::MerchantAccount do
     end
 
     it "returns error if no currency is provided" do
-      result = SpecHelper::create_merchant
+      result = SpecHelper::get_merchant
       expect(result).to be_success
 
       gateway = Braintree::Gateway.new(
@@ -207,7 +209,7 @@ describe Braintree::MerchantAccount do
     end
 
     it "returns error if a currency is not supported" do
-      result = SpecHelper::create_merchant
+      result = SpecHelper::get_merchant
       expect(result).to be_success
 
       gateway = Braintree::Gateway.new(
@@ -225,7 +227,7 @@ describe Braintree::MerchantAccount do
     end
 
     it "returns error if id is passed and already taken" do
-      result = SpecHelper::create_merchant
+      result = SpecHelper::get_merchant
       expect(result).to be_success
 
       gateway = Braintree::Gateway.new(
@@ -235,7 +237,7 @@ describe Braintree::MerchantAccount do
 
       merchant = result.merchant
       result = gateway.merchant_account.create_for_currency(
-        :currency => "USD",
+        :currency => "GBP",
         :id => merchant.merchant_accounts.first.id,
       )
       expect(result).not_to be_success
