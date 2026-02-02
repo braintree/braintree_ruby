@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.35.0
+- Add `accept_partial_authorization` to `Transaction Gateway` and `partially_authorized` to `Transaction`
+- Deprecate transactions for `visa_checkout_card` and maintain search functionality
+- Add `ach_type` to `options` -> `us_bank_account` in `Transaction.create`
+- Add `ach_type` and `requested_ach_type` to `Transaction`
+
 ## 4.34.0 
 - Re-releasing as 4.34.0
 

@@ -347,6 +347,15 @@ describe Braintree::Transaction do
       expect(transaction.network_transaction_id).to eq("123456789012345")
     end
 
+    it "sets partially_authorized to true if processor_response_code is 1004" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :processor_response_code => "1004",
+      )
+      expect(transaction.processor_response_code).to eq("1004")
+      expect(transaction.partially_authorized).to eq(true)
+    end
+
     it "accepts ach_return_code" do
       transaction = Braintree::Transaction._new(
         :gateway,
@@ -363,6 +372,16 @@ describe Braintree::Transaction do
       )
       expect(transaction.ach_return_code).to eq("RJCT")
       expect(transaction.ach_reject_reason).to eq("some reject reason")
+    end
+
+    it "accepts ach_type" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :ach_type => "standard",
+        :requested_ach_type => "standard",
+      )
+      expect(transaction.ach_type).to eq("standard")
+      expect(transaction.requested_ach_type).to eq("standard")
     end
 
     it "accepts network_response code and network_response_text" do

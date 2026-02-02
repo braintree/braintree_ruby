@@ -65,6 +65,7 @@ module Braintree
       PayPalFuturePaymentRefreshToken = "fake-paypal-future-refresh-token-nonce"
       GatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce"
       GatewayRejectedRiskThresholds = "fake-gateway-rejected-risk-thresholds-nonce"
+      # NEXT_MAJOR_VERSION VisaCheckoutCard is deprecated, remove associated nonces
       VisaCheckoutAmEx = "fake-visa-checkout-amex-nonce"
       VisaCheckoutDiscover = "fake-visa-checkout-discover-nonce"
       VisaCheckoutMasterCard = "fake-visa-checkout-mastercard-nonce"

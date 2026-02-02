@@ -33,7 +33,7 @@ describe Braintree::TransactionGateway do
     # three_d_secure_token has been deprecated in favor of three_d_secure_authentication_id
     it "creates a transaction gateway signature" do
       expect(Braintree::TransactionGateway._create_signature).to match([
-        :amount, :billing_address_id, :channel, :currency_iso_code, :customer_id, :device_data,
+        :accept_partial_authorization, :amount, :billing_address_id, :channel, :currency_iso_code, :customer_id, :device_data,
         :discount_amount, :exchange_rate_quote_id, :foreign_retailer,
         :merchant_account_id, :order_id, :payment_method_nonce, :payment_method_token, :processing_merchant_category_code,
         :product_sku, :purchase_order_number, :service_fee_amount, :shared_billing_address_id,
@@ -89,6 +89,7 @@ describe Braintree::TransactionGateway do
           :store_shipping_address_in_vault,
           :submit_for_settlement,
           {:three_d_secure => [:required]},
+          {:us_bank_account => [:ach_type]},
           {:venmo => [:profile_id]},
           :venmo_sdk_session, # Deprecated
         ]

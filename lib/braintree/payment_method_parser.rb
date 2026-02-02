@@ -15,6 +15,7 @@ module Braintree
       elsif attributes[:venmo_account]
         VenmoAccount._new(gateway, attributes[:venmo_account])
       elsif attributes[:visa_checkout_card]
+        warn "[DEPRECATED] VisaCheckoutCard is no longer a supported payment method type"
         VisaCheckoutCard._new(gateway, attributes[:visa_checkout_card])
       elsif attributes[:samsung_pay_card]
         warn "[DEPRECATED] SamsungPayCard is no longer a supported payment method type"

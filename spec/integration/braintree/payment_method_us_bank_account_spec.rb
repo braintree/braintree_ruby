@@ -96,7 +96,7 @@ describe Braintree::PaymentMethod do
           expect(us_bank_account.routing_number).to eq("123456789")
           expect(us_bank_account.last_4).to eq("0000")
           expect(us_bank_account.account_type).to eq("checking")
-          expect(us_bank_account.account_holder_name).to eq("Dan Schulman")
+          expect(us_bank_account.account_holder_name).to eq("Marty McFly")
           expect(us_bank_account.bank_name).to match(/Wells Fargo/)
           expect(us_bank_account.default).to eq(true)
           expect(us_bank_account.ach_mandate.accepted_at).to be_a Time

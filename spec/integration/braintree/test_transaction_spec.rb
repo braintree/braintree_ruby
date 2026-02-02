@@ -6,7 +6,7 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settled" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
         :options => {
         :submit_for_settlement => true
       },
@@ -22,7 +22,7 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settlement_confirmed" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
         :options => {
           :submit_for_settlement => true
         },
@@ -38,7 +38,7 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settlement_declined" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
         :options => {
           :submit_for_settlement => true
         },
@@ -54,7 +54,7 @@ describe Braintree::TestTransaction do
     it "changes transaction status to settlement_pending" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
         :options => {
           :submit_for_settlement => true
         },
@@ -70,7 +70,7 @@ describe Braintree::TestTransaction do
     it "returns a validation error when invalid transition is specified" do
       sale_result = Braintree::Transaction.sale(
         :amount => "100",
-        :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
       )
       expect(sale_result.success?).to eq(true)
 
@@ -110,7 +110,7 @@ describe Braintree::TestTransaction do
 
           sale_result = transaction_gateway.sale(
             :amount => "100",
-            :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
+            :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
           )
           testing_gateway.settle(sale_result.transaction.id)
         end

@@ -1,4 +1,6 @@
 module Braintree
+  # DEPRECATED: Visa Checkout is no longer supported for creating new transactions.
+  # This class is retained for search functionality and historical transaction data only.
   class VisaCheckoutCard
     include BaseModule
     include Braintree::Util::TokenEquality

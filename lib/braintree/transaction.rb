@@ -86,6 +86,7 @@ module Braintree
     attr_reader :ach_reject_reason
     attr_reader :ach_return_code
     attr_reader :ach_return_responses
+    attr_reader :ach_type
     attr_reader :acquirer_reference_number
     attr_reader :add_ons
     attr_reader :additional_processor_response          # The raw response from the processor.
@@ -133,6 +134,7 @@ module Braintree
     attr_reader :order_id
     attr_reader :packages
     attr_reader :partial_settlement_transaction_ids
+    attr_reader :partially_authorized
     attr_reader :payment_instrument_type
     attr_reader :payment_receipt
     attr_reader :paypal_details
@@ -150,6 +152,7 @@ module Braintree
     attr_reader :refund_ids
     attr_reader :refunded_installments
     attr_reader :refunded_transaction_id
+    attr_reader :requested_ach_type
     attr_reader :retried
     attr_reader :retried_transaction_id                 # the primary/parent transaction id of any retried transaction
     attr_reader :retrieval_reference_number
@@ -310,7 +313,7 @@ module Braintree
       @payment_receipt = PaymentReceipt.new(attributes[:payment_receipt]) if attributes[:payment_receipt]
       @paypal_details = PayPalDetails.new(@paypal)
       @paypal_here_details = PayPalHereDetails.new(@paypal_here)
-      @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card]) #Deprecated
+      @samsung_pay_card_details = SamsungPayCardDetails.new(attributes[:samsung_pay_card]) # Deprecated
       @sca_exemption_requested = attributes[:sca_exemption_requested]
       @sepa_direct_debit_account_details = SepaDirectDebitAccountDetails.new(@sepa_debit_account_detail)
       @service_fee_amount = Util.to_big_decimal(service_fee_amount)
@@ -318,9 +321,10 @@ module Braintree
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @subscription_details = SubscriptionDetails.new(@subscription)
+      @partially_authorized = %w[1004].include?(processor_response_code)
       @tax_amount = Util.to_big_decimal(tax_amount)
       @venmo_account_details = VenmoAccountDetails.new(@venmo_account)
-      @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card])
+      @visa_checkout_card_details = VisaCheckoutCardDetails.new(attributes[:visa_checkout_card]) # Deprecated
 
       @facilitated_details = FacilitatedDetails.new(attributes[:facilitated_details]) if attributes[:facilitated_details]
       @facilitator_details = FacilitatorDetails.new(attributes[:facilitator_details]) if attributes[:facilitator_details]

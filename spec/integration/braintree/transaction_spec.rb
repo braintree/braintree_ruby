@@ -812,6 +812,22 @@ describe Braintree::Transaction do
         expect(result.transaction.foreign_retailer).to be_nil
       end
 
+      it "returns true for partial_authorization if the processor_response_code is 1004" do
+        result = Braintree::Transaction.create(
+          :type => "sale",
+          :amount => Braintree::Test::TransactionAmounts::PartiallyAuthorized,
+          :accept_partial_authorization => true,
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2029"
+          },
+        )
+
+        expect(result.success?).to eq(true)
+        expect(result.transaction.processor_response_code).to eq("1004")
+        expect(result.transaction.partially_authorized).to eq(true)
+      end
+
       it "returns nil when foreign_retailer param is nil" do
         result = Braintree::Transaction.create(
           :type => "sale",

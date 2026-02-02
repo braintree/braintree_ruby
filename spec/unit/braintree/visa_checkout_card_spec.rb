@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
+# DEPRECATED: Visa Checkout Transactions are no longer supported
 describe Braintree::VisaCheckoutCard do
   it "initializes prepaid reloadable correctly" do
     card = Braintree::VisaCheckoutCard._new(:gateway, {:prepaid_reloadable => "No"})

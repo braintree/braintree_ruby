@@ -90,7 +90,7 @@ module Braintree
       @google_pay_cards = (@google_pay_cards || []).map { |pm| GooglePayCard._new gateway, pm }
       @venmo_accounts = (@venmo_accounts || []).map { |pm| VenmoAccount._new gateway, pm }
       @us_bank_accounts = (@us_bank_accounts || []).map { |pm| UsBankAccount._new gateway, pm }
-      @visa_checkout_cards = (@visa_checkout_cards|| []).map { |pm| VisaCheckoutCard._new gateway, pm }
+      @visa_checkout_cards = (@visa_checkout_cards|| []).map { |pm| VisaCheckoutCard._new gateway, pm } # Deprecated
       @sepa_direct_debit_accounts = (@sepa_debit_accounts || []).map { |pm| SepaDirectDebitAccount._new gateway, pm }
       @samsung_pay_cards = (@samsung_pay_cards|| []).map { |pm| SamsungPayCard._new gateway, pm } # Deprecated
       @addresses = (@addresses || []).map { |addr| Address._new gateway, addr }

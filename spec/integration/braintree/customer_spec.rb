@@ -1979,20 +1979,4 @@ describe Braintree::Customer do
     end
   end
 
-  it "returns bin fields from VisaCheckoutCard" do
-    result = Braintree::Customer.create(
-      :payment_method_nonce => Braintree::Test::Nonce::VisaCheckoutVisa,
-    )
-    expect(result.success?).to eq(true)
-
-    found_customer = Braintree::Customer.find(result.customer.id)
-    expect(found_customer.visa_checkout_cards).not_to be_nil
-    visa_checkout_card = found_customer.visa_checkout_cards.first
-    expect(visa_checkout_card).to be_a Braintree::VisaCheckoutCard
-    expect(visa_checkout_card.business).not_to be_nil
-    expect(visa_checkout_card.consumer).not_to be_nil
-    expect(visa_checkout_card.corporate).not_to be_nil
-    expect(visa_checkout_card.prepaid_reloadable).not_to be_nil
-    expect(visa_checkout_card.purchase).not_to be_nil
-  end
 end

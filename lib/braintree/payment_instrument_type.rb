@@ -13,6 +13,7 @@ module Braintree
     SepaDirectDebitAccount = "sepa_debit_account"
     UsBankAccount = "us_bank_account"
     VenmoAccount = "venmo_account"
+    # NEXT_MAJOR_VERSION remove VisaCheckoutCard
     VisaCheckoutCard = "visa_checkout_card"
   end
 end

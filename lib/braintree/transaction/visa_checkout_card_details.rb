@@ -1,5 +1,7 @@
 module Braintree
   class Transaction
+    # DEPRECATED: Visa Checkout is no longer supported for creating new transactions.
+    # This class is retained for search functionality and historical transaction data only.
     class VisaCheckoutCardDetails
       include BaseModule
 
