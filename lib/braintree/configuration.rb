@@ -239,7 +239,8 @@ module Braintree
       when :production
         "#{endpoint}.braintreegateway.com"
       when :qa
-        "gateway.qa.braintreepayments.com"
+        ENV['GATEWAY_HOST'] || "localhost"
+        # "gateway.qa.braintreepayments.com"
       when :sandbox
         "api.sandbox.braintreegateway.com"
       end
@@ -252,7 +253,8 @@ module Braintree
       when :production
         "payments.braintree-api.com"
       when :qa
-        "payments-qa.dev.braintree-api.com"
+        ENV['GRAPHQL_HOST'] || "graphql.bt.local"
+        # "payments-qa.dev.braintree-api.com"
       when :sandbox
         "payments.sandbox.braintree-api.com"
       end
