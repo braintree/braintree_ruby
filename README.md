@@ -24,7 +24,7 @@ The gem uses Nokogiri for XML parsing.
 * builder
 * nokogiri
 
-The Braintree Ruby SDK is tested against Ruby versions 2.6, 2.7 and 3.0.
+The Braintree Ruby SDK is tested against Ruby versions 2.6, 2.7, 3.0, 3.4, and 4.0
 
 _The Ruby core development community has released [End-of-Life branches](https://www.ruby-lang.org/en/downloads/branches/) for Ruby versions lower than 2.6, which are no longer receiving security updates. As a result, Braintree no longer supports these versions of Ruby. **We have updated our gem specifications to reflect these updates.**_
 

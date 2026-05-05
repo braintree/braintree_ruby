@@ -33,5 +33,48 @@ module Braintree
         raise "expected :response or :api_error_response"
       end
     end
+
+    def self._card_signature(type)
+      billing_address_params = AddressGateway._shared_signature
+
+      options = [
+        :verification_account_type,
+        :verification_amount,
+        :verification_merchant_account_id,
+        :verify_card
+      ]
+
+      signature = [
+        :cardholder_name,
+        :cryptogram,
+        :eci_indicator,
+        :expiration_month,
+        :expiration_year,
+        :network_transaction_id,
+        :number,
+        :token,
+        {:billing_address => billing_address_params},
+        {:options => options}
+      ]
+
+      case type
+      when :create
+        nil
+      when :update
+        options << :make_default
+      else
+        raise ArgumentError, "Invalid signature type: #{type}"
+      end
+
+      signature
+    end
+
+    def self._create_card_signature
+      _card_signature(:create)
+    end
+
+    def self._update_card_signature
+      _card_signature(:update)
+    end
   end
 end

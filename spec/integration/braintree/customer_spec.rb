@@ -338,6 +338,153 @@ describe Braintree::Customer do
       result.customer.credit_cards[0].verification.currency_iso_code == "USD"
     end
 
+    it "errors when verification amount is negative for apple pay" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => "-10.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountCannotBeNegative
+    end
+
+    it "errors when verification amount format is invalid for apple pay" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => "0.001",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountFormatIsInvalid
+    end
+
+    it "errors when verification amount is not supported for processor on apple pay" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => "0.01",
+            :verification_merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountNotSupportedByProcessor
+    end
+
+    it "errors when verification amount is too large on apple pay" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => ((2**31) / 100.0).to_s,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountIsTooLarge
+    end
+
+    it "errors when verification merchant account is invalid" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => "BAD_MERCHANT_ACCOUNT",
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_merchant_account_id)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationMerchantAccountIdIsInvalid
+    end
+
+    it "errors when verification merchant account is suspended" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::SuspendedAccount,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_merchant_account_id)[1].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationMerchantAccountIsSuspended
+    end
+
+    it "errors when network_transaction_id is present for an apple pay verification" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :network_transaction_id => "test123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).on(:network_transaction_id_not_allowed)[0].code).to eq Braintree::ErrorCodes::ApplePay::NetworkTransactionIdNotAllowed
+    end
+
+    it "errors with invalid account_type for apple pay" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_account_type => "ach",
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).on(:verification_account_type)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAccountTypeIsInvalid
+    end
+
+    it "errors when account_type not supported by merchant on apple_pay" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_account_type => "credit",
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_account_type)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAccountTypeNotSupported
+    end
+
     it "errors when verification_currency_iso_code is not supported by merchant account" do
       result = Braintree::Customer.create(
         :first_name => "Mike",
@@ -599,6 +746,100 @@ describe Braintree::Customer do
       expect(result.success?).to eq(true)
       expect(result.customer.payment_methods).not_to be_empty
       expect(result.customer.payment_methods.first.token).not_to be_nil
+    end
+
+    it "verifies the apple pay card with all verification options" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_amount => "10.00"
+          }
+        },
+      )
+
+      expect(result).to be_success
+      expect(result.customer.payment_methods.first).to be_a(Braintree::ApplePayCard)
+
+      verification = result.customer.payment_methods.first.verification
+      expect(verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(verification.amount).to eq(BigDecimal("10.00"))
+      expect(verification.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
+    end
+
+    it "verifies the apple pay card when only verify_card set to true is provided" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => true,
+          }
+        },
+      )
+
+      expect(result).to be_success
+      expect(result.customer.payment_methods.first).to be_a(Braintree::ApplePayCard)
+      verification = result.customer.payment_methods.first.verification
+      expect(verification).not_to be_nil
+    end
+
+    it "does not verify the apple pay card when verify_card is false" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::ApplePayVisa,
+        :apple_pay_card => {
+          :options => {
+            :verify_card => false,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_amount => "10.00",
+          }
+        },
+      )
+
+      expect(result).to be_success
+      expect(result.customer.payment_methods.first).to be_a(Braintree::ApplePayCard)
+
+      verification = result.customer.payment_methods.first.verification
+      expect(verification).to be_nil
+    end
+
+    it "creates customer with raw apple pay card parameters and verification" do
+      result = Braintree::Customer.create(
+        :first_name => "John",
+        :last_name => "Doe",
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :eci_indicator => "7",
+          :cardholder_name => "John Doe",
+          :billing_address => {
+            :first_name => "John",
+            :last_name => "Doe",
+            :street_address => "123 Apple Street",
+            :locality => "Cupertino",
+            :region => "CA",
+            :postal_code => "95014",
+            :country_name => "United States of America"
+          },
+          :options => {
+            :verify_card => true,
+            :verification_amount => "15.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+          }
+        },
+      )
+
+      apple_pay_card = result.customer.payment_methods.first
+      verification = apple_pay_card.verification
+
+      expect(result).to be_success
+      expect(apple_pay_card).to be_a(Braintree::ApplePayCard)
+      expect(verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(verification.amount).to eq(BigDecimal("15.00"))
+      expect(verification.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
     end
 
     it "can create a customer with an unknown payment method" do
@@ -1422,6 +1663,315 @@ describe Braintree::Customer do
         },
       )
       expect(result.success?).to eq(true)
+    end
+
+    it "can update the customer with apple pay card verification" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :first_name => "Updated Joe",
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :eci_indicator => "07",
+          :cardholder_name => "Updated Joe Cardholder",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "3.50",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId
+          }
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      expect(result.customer.first_name).to eq("Updated Joe")
+
+      apple_pay_card = result.customer.payment_methods.find { |pm| pm.is_a?(Braintree::ApplePayCard) }
+      expect(apple_pay_card).not_to be_nil
+      expect(apple_pay_card.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(apple_pay_card.cardholder_name).to eq("Updated Joe Cardholder")
+
+      verification = apple_pay_card.verification
+      expect(verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(verification.amount).to eq(BigDecimal("3.50"))
+      expect(verification.merchant_account_id).to eq(SpecHelper::NonDefaultMerchantAccountId)
+    end
+
+    it "verifies the apple pay card when only verify_card set to true is provided" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+          }
+        },
+      )
+
+      expect(result).to be_success
+      expect(result.customer.payment_methods.first).to be_a(Braintree::ApplePayCard)
+      verification = result.customer.payment_methods.first.verification
+      expect(verification).not_to be_nil
+    end
+
+    it "does not verify the apple pay card when verify_card is false" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => false,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_amount => "10.00",
+          }
+        },
+      )
+
+      expect(result).to be_success
+      expect(result.customer.payment_methods.first).to be_a(Braintree::ApplePayCard)
+
+      verification = result.customer.payment_methods.first.verification
+      expect(verification).to be_nil
+    end
+
+    it "returns an error when verification_amount is negative during apple pay card update" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+        :last_name => "Cool",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :first_name => "Updated Joe",
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "05",
+          :expiration_year => "2025",
+          :cryptogram => "some_cryptogram",
+          :eci_indicator => "7",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "-1.00"
+          }
+        },
+      )
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountCannotBeNegative
+    end
+
+    it "errors when verification amount format is invalid for apple pay" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "0.001",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountFormatIsInvalid
+    end
+
+    it "errors when verification amount is not supported for processor on apple pay" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "0.01",
+            :verification_merchant_account_id => SpecHelper::CardProcessorBRLMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountNotSupportedByProcessor
+    end
+
+    it "errors when verification amount is too large on apple pay" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => ((2**31) / 100.0).to_s,
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_amount)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAmountIsTooLarge
+    end
+
+    it "errors when verification merchant account is invalid" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => "BAD_MERCHANT_ACCOUNT",
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_merchant_account_id)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationMerchantAccountIdIsInvalid
+    end
+
+    it "errors when verification merchant account is suspended" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::SuspendedAccount,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_merchant_account_id)[1].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationMerchantAccountIsSuspended
+    end
+
+    it "errors when network_transaction_id is present for an apple pay verification" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+        customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :network_transaction_id => "test123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).on(:network_transaction_id_not_allowed)[0].code).to eq Braintree::ErrorCodes::ApplePay::NetworkTransactionIdNotAllowed
+    end
+
+    it "errors with invalid account_type for apple pay" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+      customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_account_type => "ach",
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).on(:verification_account_type)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAccountTypeIsInvalid
+    end
+
+    it "errors when account_type not supported by merchant on apple_pay" do
+      customer = Braintree::Customer.create!(
+        :first_name => "Joe",
+      )
+
+      result = Braintree::Customer.update(
+      customer.id,
+        :apple_pay_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_month => "12",
+          :expiration_year => "2025",
+          :cryptogram => "ApplePayCryptogram123",
+          :options => {
+            :verify_card => true,
+            :verification_amount => "10.00",
+            :verification_merchant_account_id => SpecHelper::NonDefaultMerchantAccountId,
+            :verification_account_type => "credit",
+          }
+        },
+      )
+
+      expect(result).to_not be_success
+      expect(result.errors.for(:apple_pay).for(:options).on(:verification_account_type)[0].code).to eq Braintree::ErrorCodes::ApplePay::Options::VerificationAccountTypeNotSupported
     end
 
     it "includes risk data when skip_advanced_fraud_checking is false" do

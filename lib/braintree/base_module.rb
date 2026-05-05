@@ -35,6 +35,15 @@ module Braintree
       def singleton_class
         class << self; self; end
       end
+
+      private
+
+      def _format_hash(hash)
+        formatted_pairs = hash.map do |key, value|
+          ":#{key}=>#{value.inspect}"
+        end
+        "{#{formatted_pairs.join(", ")}}"
+      end
     end
 
     def self.included(klass)

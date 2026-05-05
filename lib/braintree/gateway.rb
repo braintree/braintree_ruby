@@ -46,6 +46,10 @@ module Braintree
       CustomerSessionGateway.new(self, graphql_client)
     end
 
+    def local_payment_context
+      LocalPaymentContextGateway.new(self, graphql_client)
+    end
+
     def discount
       DiscountGateway.new(self)
     end

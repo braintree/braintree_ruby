@@ -41,6 +41,31 @@ pipeline {
             }
           }
         }
+
+        stage("SonarQube") {
+          agent {
+            node {
+              label ""
+              customWorkspace "workspace/${REPO_NAME}"
+            }
+          }
+
+          steps {
+            script {
+              sh "docker build -t braintree-ruby ."
+              sh "docker run --rm -e COVERAGE=1 -v \"\$(pwd):\$(pwd)\" -w \"\$(pwd)\" braintree-ruby /bin/bash -l -c 'bundle install && bundle exec rspec --pattern spec/unit/**/*_spec.rb'"
+              executeSonarQubeScan()
+            }
+          }
+
+          post {
+            failure {
+              script {
+                FAILED_STAGE = env.STAGE_NAME
+              }
+            }
+          }
+        }
       }
     }
 
@@ -96,7 +121,7 @@ pipeline {
           }
         }
 
-        stage("Ruby 3.0 Buster") {
+        stage("Ruby 2.7.7 Bullseye") {
           agent {
             node {
               label ""
@@ -105,7 +130,7 @@ pipeline {
           }
 
           steps {
-            build job: 'ruby_3.0-buster_server_sdk_master', wait: true
+            build job: 'ruby_2.7.7-bullseye_server_sdk_master', wait: true
           }
 
           post {
@@ -116,6 +141,49 @@ pipeline {
             }
           }
         }
+
+        stage("Ruby 3.0.6 Bullseye") {
+          agent {
+            node {
+              label ""
+              customWorkspace "workspace/${REPO_NAME}"
+            }
+          }
+
+          steps {
+            build job: 'ruby_3.0.6-bullseye_server_sdk_master', wait: true
+          }
+
+          post {
+            failure {
+              script {
+                FAILED_STAGE = env.STAGE_NAME
+              }
+            }
+          }
+        }
+
+        stage("Ruby 3.4 Bookworm") {
+          agent {
+            node {
+              label ""
+              customWorkspace "workspace/${REPO_NAME}"
+            }
+          }
+
+          steps {
+            build job: 'ruby_3.4-bookworm_server_sdk_master', wait: true
+          }
+
+          post {
+            failure {
+              script {
+                FAILED_STAGE = env.STAGE_NAME
+              }
+            }
+          }
+        }
+
       }
     }
   }

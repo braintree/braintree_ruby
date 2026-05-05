@@ -64,10 +64,10 @@ describe Braintree::Transaction::PaymentReceipt do
       expect(details.merchant_identification_number).to eq("merchant-id-number")
       expect(details.merchant_name).to eq("merchant-name")
       expect(details.pin_verified).to be_truthy
-      expect(details.processor_authorization_code).to be("processor-auth-code")
-      expect(details.processor_response_text).to be("processor-response-text")
-      expect(details.terminal_identification_number).to be("terminal-id")
-      expect(details.type).to be("sale")
+      expect(details.processor_authorization_code).to eq("processor-auth-code")
+      expect(details.processor_response_text).to eq("processor-response-text")
+      expect(details.terminal_identification_number).to eq("terminal-id")
+      expect(details.type).to eq("sale")
     end
   end
 end

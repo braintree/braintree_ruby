@@ -1,6 +1,7 @@
 module Braintree
   class TransactionSearch < AdvancedSearch
     text_fields(
+      :acquirer_reference_number,
       :billing_company,
       :billing_country_name,
       :billing_extended_address,

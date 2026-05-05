@@ -28,7 +28,8 @@ describe Braintree::Customer do
       expect(output).to include(%q(first_name: "Patrick"))
       expect(output).to include(%q(last_name: "Smith"))
       expect(output).to include(%q(phone: "802-483-5932"))
-      expect(output).to include(%q(international_phone: {:country_code=>"1", :national_number=>"3121234567"}))
+      international_phone_hash = {:country_code => "1", :national_number => "3121234567"}.inspect
+      expect(output).to include("international_phone: #{international_phone_hash}")
       expect(output).to include(%q(website: "patrick.smith.com"))
       expect(output).to include(%q(addresses: []))
       expect(output).to include(%q(credit_cards: []))
@@ -91,6 +92,38 @@ describe Braintree::Customer do
         :device_data,
         :payment_method_nonce,
         {:risk_data => [:customer_browser, :customer_ip]},
+        {:apple_pay_card => [
+          :cardholder_name,
+          :cryptogram,
+          :eci_indicator,
+          :expiration_month,
+          :expiration_year,
+          :network_transaction_id,
+          :number,
+          :token,
+          {:billing_address => [
+            :company,
+            :country_code_alpha2,
+            :country_code_alpha3,
+            :country_code_numeric,
+            :country_name,
+            :extended_address,
+            :first_name,
+            {:international_phone=>[:country_code, :national_number]},
+            :last_name,
+            :locality,
+            :phone_number,
+            :postal_code,
+            :region,
+            :street_address
+          ]},
+          {:options => match_array([
+            :verification_account_type,
+            :verification_amount,
+            :verification_merchant_account_id,
+            :verify_card
+          ])},
+        ]},
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,
@@ -188,6 +221,39 @@ describe Braintree::Customer do
         :device_data,
         :payment_method_nonce,
         :default_payment_method_token,
+        {:apple_pay_card => [
+          :cardholder_name,
+          :cryptogram,
+          :eci_indicator,
+          :expiration_month,
+          :expiration_year,
+          :network_transaction_id,
+          :number,
+          :token,
+          {:billing_address => [
+            :company,
+            :country_code_alpha2,
+            :country_code_alpha3,
+            :country_code_numeric,
+            :country_name,
+            :extended_address,
+            :first_name,
+            {:international_phone=>[:country_code, :national_number]},
+            :last_name,
+            :locality,
+            :phone_number,
+            :postal_code,
+            :region,
+            :street_address
+          ]},
+          {:options => match_array([
+            :make_default,
+            :verification_account_type,
+            :verification_amount,
+            :verification_merchant_account_id,
+            :verify_card
+          ])},
+        ]},
         {:credit_card => [
           :billing_address_id,
           :cardholder_name,

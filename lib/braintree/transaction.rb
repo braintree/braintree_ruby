@@ -172,6 +172,7 @@ module Braintree
     attr_reader :status_history
     attr_reader :subscription_details
     attr_reader :subscription_id
+    attr_reader :surcharge_amount
     attr_reader :tax_amount
     attr_reader :tax_exempt
     attr_reader :three_d_secure_info
@@ -321,6 +322,7 @@ module Braintree
       @shipping_details = AddressDetails.new(@shipping)
       @status_history = attributes[:status_history] ? attributes[:status_history].map { |s| StatusDetails.new(s) } : []
       @subscription_details = SubscriptionDetails.new(@subscription)
+      @surcharge_amount = Util.to_big_decimal(surcharge_amount)
       @partially_authorized = %w[1004].include?(processor_response_code)
       @tax_amount = Util.to_big_decimal(tax_amount)
       @venmo_account_details = VenmoAccountDetails.new(@venmo_account)

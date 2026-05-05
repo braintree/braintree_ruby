@@ -19,7 +19,7 @@ describe Braintree::CreditCardVerification do
         :network_response_code => "05",
         :network_response_text => "Do not Honor",
       )
-      expect(verification.inspect).to eq(%(#<Braintree::CreditCardVerification amount: "12.45", ani_first_name_response_code: "I", ani_last_name_response_code: "I", avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", billing: nil, created_at: nil, credit_card: nil, currency_iso_code: "USD", cvv_response_code: "I", gateway_rejection_reason: nil, id: nil, merchant_account_id: "some_id", network_response_code: "05", network_response_text: "Do not Honor", processor_response_code: "2000", processor_response_text: "Do Not Honor", status: "verified">))
+      expect(verification.inspect).to eq(%(#<Braintree::CreditCardVerification amount: "12.45", ani_first_name_response_code: "I", ani_last_name_response_code: "I", apple_pay: nil, avs_error_response_code: "I", avs_postal_code_response_code: "I", avs_street_address_response_code: "I", billing: nil, created_at: nil, credit_card: nil, currency_iso_code: "USD", cvv_response_code: "I", gateway_rejection_reason: nil, id: nil, merchant_account_id: "some_id", network_response_code: "05", network_response_text: "Do not Honor", processor_response_code: "2000", processor_response_text: "Do Not Honor", status: "verified">))
     end
 
     it "has a status" do

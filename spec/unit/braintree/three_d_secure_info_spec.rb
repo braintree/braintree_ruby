@@ -51,7 +51,9 @@ describe Braintree::ThreeDSecureInfo do
 
   describe "inspect" do
     it "prints the attributes" do
-      expect(three_d_secure_info.inspect).to eq(%(#<ThreeDSecureInfo acs_transaction_id: "acs_id", authentication: {:trans_status=>"authstatus", :trans_status_reason=>"authstatusreason"}, cavv: "cavvvalue", ds_transaction_id: "dstrxid", eci_flag: "06", enrolled: "Y", liability_shift_possible: true, liability_shifted: true, lookup: {:trans_status=>"lookupstatus", :trans_status_reason=>"lookupstatusreason"}, pares_status: "Y", status: "authenticate_successful", three_d_secure_authentication_id: "auth_id", three_d_secure_transaction_id: "trans_id", three_d_secure_version: "1.0.2", xid: "xidvalue">))
+      authentication_hash = {trans_status: "authstatus", trans_status_reason: "authstatusreason"}.inspect
+      lookup_hash = {trans_status: "lookupstatus", trans_status_reason: "lookupstatusreason"}.inspect
+      expect(three_d_secure_info.inspect).to eq(%(#<ThreeDSecureInfo acs_transaction_id: "acs_id", authentication: #{authentication_hash}, cavv: "cavvvalue", ds_transaction_id: "dstrxid", eci_flag: "06", enrolled: "Y", liability_shift_possible: true, liability_shifted: true, lookup: #{lookup_hash}, pares_status: "Y", status: "authenticate_successful", three_d_secure_authentication_id: "auth_id", three_d_secure_transaction_id: "trans_id", three_d_secure_version: "1.0.2", xid: "xidvalue">))
     end
   end
 

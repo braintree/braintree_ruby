@@ -3,6 +3,7 @@ unless defined?(SPEC_HELPER_LOADED)
   project_root = File.expand_path(File.dirname(__FILE__) + "/..")
   require "rubygems"
   require "bundler/setup"
+
   require "rspec"
   require "rspec/retry"
   require "pry"
@@ -42,6 +43,7 @@ unless defined?(SPEC_HELPER_LOADED)
     HiperBRLMerchantAccountId = "hiper_brl"
     NonDefaultMerchantAccountId = "sandbox_credit_card_non_default"
     PinlessDebitMerchantAccountId = "pinless_debit"
+    SuspendedAccount = "suspended_account"
     ThreeDSecureMerchantAccountId = "three_d_secure_merchant_account"
     UsBankMerchantAccountId = "us_bank_merchant_account"
 

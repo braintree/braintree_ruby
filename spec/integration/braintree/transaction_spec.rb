@@ -5324,6 +5324,64 @@ describe Braintree::Transaction do
       expect(transaction.shipping_details.international_phone[:national_number]).to eq("3121234567")
     end
 
+    it "accepts customer international_phone" do
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2011",
+        },
+        :customer => {
+          :first_name => "Dan",
+          :last_name => "Smith",
+          :international_phone => {:country_code => "1", :national_number => "3121234567"},
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      transaction = result.transaction
+      expect(transaction.customer_details.first_name).to eq("Dan")
+      expect(transaction.customer_details.last_name).to eq("Smith")
+      expect(transaction.customer_details.international_phone[:country_code]).to eq("1")
+      expect(transaction.customer_details.international_phone[:national_number]).to eq("3121234567")
+    end
+
+    it "returns validation error for an invalid international_phone country code" do
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2011",
+        },
+        :customer => {
+          :first_name => "Dan",
+          :last_name => "Smith",
+          :international_phone => {:country_code => "1111", :national_number => "3121234567"},
+        },
+      )
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.map(&:code)).to include(Braintree::ErrorCodes::Customer::InternationalPhoneCountryCodeIsInvalid)
+    end
+
+    it "returns validation error for an invalid international_phone national number" do
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :credit_card => {
+          :number => "5105105105105100",
+          :expiration_date => "05/2011",
+        },
+        :customer => {
+          :first_name => "Dan",
+          :last_name => "Smith",
+          :international_phone => {:country_code => "1", :national_number => "31212345611111"},
+        },
+      )
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.map(&:code)).to include(Braintree::ErrorCodes::Customer::InternationalPhoneNationalNumberIsInvalid)
+    end
+
     it "accepts processing_merchant_category_code" do
       result = Braintree::Transaction.sale(
         :amount => "100.00",
@@ -7899,6 +7957,23 @@ describe Braintree::Transaction do
 
       tomorrow = Date.today + 1
       expect(transaction.upcoming_retry_date).to eq(tomorrow.to_s)
+    end
+  end
+
+  context "Surcharge Amount" do
+    it "accepts surcharge_amount field" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => "10.00",
+        :surcharge_amount => "1.00",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2029"
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.surcharge_amount).to eq(BigDecimal("1.00"))
     end
   end
 end

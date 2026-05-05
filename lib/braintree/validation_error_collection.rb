@@ -39,7 +39,7 @@ module Braintree
     end
 
     def for_index(index)
-      self.for("index_#{index}".to_sym)
+      self.for(:"index_#{index}")
     end
 
     def inspect

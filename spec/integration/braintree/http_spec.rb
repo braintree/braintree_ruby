@@ -258,7 +258,7 @@ describe Braintree::Http do
         context = OpenSSL::X509::StoreContext.new(OpenSSL::X509::Store.new)
         context.error = 19
         expect(Braintree::Configuration.instantiate.http._verify_ssl_certificate(false, context)).to eq(false)
-        expect(output.string).to include("SSL Verification failed -- Preverify: false, Error: self signed certificate in certificate chain (19)")
+        expect(output.string).to match(/SSL Verification failed -- Preverify: false, Error: self[ -]?signed certificate in certificate chain \(19\)/)
       ensure
         Braintree::Configuration.logger = old_logger
       end

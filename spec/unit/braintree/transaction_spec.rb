@@ -576,4 +576,16 @@ describe Braintree::Transaction do
       expect(transaction.gateway_rejection_reason).to eq(Braintree::Transaction::GatewayRejectionReason::ExcessiveRetry)
     end
   end
+
+  describe "request includes surcharge amount" do
+    it "if the surcharge_amount is present" do
+      transaction = Braintree::Transaction._new(:gateway, :surcharge_amount => "1.00")
+      expect(transaction.surcharge_amount).to eq(BigDecimal("1.00"))
+    end
+
+    it "is set to nil if the surcharge_amount is not present" do
+      transaction = Braintree::Transaction._new(:gateway, {})
+      expect(transaction.surcharge_amount).to be_nil
+    end
+  end
 end

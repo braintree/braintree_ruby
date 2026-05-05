@@ -1,186 +1,22 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Braintree::MerchantGateway do
+  # NEXT_MAJOR_VERSION remove this test
   describe "create" do
-    xit "creates a merchant" do
+    it "raises a server error because the endpoint has been disabled" do
       gateway = Braintree::Gateway.new(
         :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
         :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
         :logger => Logger.new("/dev/null"),
       )
 
-      result = gateway.merchant.create(
-        :email => "name@email.com",
-        :country_code_alpha3 => "GBR",
-        :payment_methods => ["credit_card", "paypal"],
-      )
-
-      expect(result).to be_success
-
-      merchant = result.merchant
-      expect(merchant.id).not_to be_nil
-      expect(merchant.email).to eq("name@email.com")
-      expect(merchant.company_name).to eq("name@email.com")
-      expect(merchant.country_code_alpha3).to eq("GBR")
-      expect(merchant.country_code_alpha2).to eq("GB")
-      expect(merchant.country_code_numeric).to eq("826")
-      expect(merchant.country_name).to eq("United Kingdom")
-
-      credentials = result.credentials
-      expect(credentials.access_token).not_to be_nil
-      expect(credentials.refresh_token).not_to be_nil
-      expect(credentials.expires_at).not_to be_nil
-      expect(credentials.token_type).to eq("bearer")
-    end
-
-    it "gives an error when using invalid payment_methods" do
-      gateway = Braintree::Gateway.new(
-        :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
-        :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-        :logger => Logger.new("/dev/null"),
-      )
-
-      result = gateway.merchant.create(
-        :email => "name@email.com",
-        :country_code_alpha3 => "GBR",
-        :payment_methods => ["fake_money"],
-      )
-
-      expect(result).not_to be_success
-      errors = result.errors.for(:merchant).on(:payment_methods)
-
-      expect(errors[0].code).to eq(Braintree::ErrorCodes::Merchant::PaymentMethodsAreInvalid)
-    end
-
-    context "credentials" do
-      around(:each) do |example|
-        old_merchant_id_value = Braintree::Configuration.merchant_id
-        example.run
-        Braintree::Configuration.merchant_id = old_merchant_id_value
-      end
-
-      xit "allows using a merchant_id passed in through Gateway" do
-        Braintree::Configuration.merchant_id = nil
-
-        gateway = Braintree::Gateway.new(
-          :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
-          :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-          :merchant_id => "integration_merchant_id",
-          :logger => Logger.new("/dev/null"),
-        )
-        result = gateway.merchant.create(
+      expect do
+        gateway.merchant.create(
           :email => "name@email.com",
           :country_code_alpha3 => "GBR",
           :payment_methods => ["credit_card", "paypal"],
         )
-
-        expect(result).to be_success
-      end
-    end
-
-    context "multiple currencies" do
-      before(:each) do
-        @gateway = Braintree::Gateway.new(
-          :client_id => "client_id$#{Braintree::Configuration.environment}$integration_client_id",
-          :client_secret => "client_secret$#{Braintree::Configuration.environment}$integration_client_secret",
-          :logger => Logger.new("/dev/null"),
-        )
-      end
-
-      xit "creates an EU multi currency merchant for paypal and credit_card" do
-        result = @gateway.merchant.create(
-          :email => "name@email.com",
-          :country_code_alpha3 => "GBR",
-          :payment_methods => ["credit_card", "paypal"],
-          :currencies => ["GBP", "USD"],
-        )
-
-        merchant = result.merchant
-        expect(merchant.id).not_to be_nil
-        expect(merchant.email).to eq("name@email.com")
-        expect(merchant.company_name).to eq("name@email.com")
-        expect(merchant.country_code_alpha3).to eq("GBR")
-        expect(merchant.country_code_alpha2).to eq("GB")
-        expect(merchant.country_code_numeric).to eq("826")
-        expect(merchant.country_name).to eq("United Kingdom")
-
-        credentials = result.credentials
-        expect(credentials.access_token).not_to be_nil
-        expect(credentials.refresh_token).not_to be_nil
-        expect(credentials.expires_at).not_to be_nil
-        expect(credentials.token_type).to eq("bearer")
-
-        merchant_accounts = merchant.merchant_accounts
-        expect(merchant_accounts.count).to eq(2)
-
-        merchant_account = merchant_accounts.detect { |ma| ma.id == "GBP" }
-        expect(merchant_account.default).to eq(true)
-        expect(merchant_account.currency_iso_code).to eq("GBP")
-
-        merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
-        expect(merchant_account.default).to eq(false)
-        expect(merchant_account.currency_iso_code).to eq("USD")
-      end
-
-
-      xit "creates a paypal-only merchant that accepts multiple currencies" do
-        result = @gateway.merchant.create(
-          :email => "name@email.com",
-          :country_code_alpha3 => "GBR",
-          :payment_methods => ["paypal"],
-          :currencies => ["GBP", "USD"],
-          :paypal_account => {
-            :client_id => "paypal_client_id",
-            :client_secret => "paypal_client_secret",
-          },
-        )
-
-        expect(result).to be_success
-
-        merchant = result.merchant
-        expect(merchant.id).not_to be_nil
-        expect(merchant.email).to eq("name@email.com")
-        expect(merchant.company_name).to eq("name@email.com")
-        expect(merchant.country_code_alpha3).to eq("GBR")
-        expect(merchant.country_code_alpha2).to eq("GB")
-        expect(merchant.country_code_numeric).to eq("826")
-        expect(merchant.country_name).to eq("United Kingdom")
-
-        credentials = result.credentials
-        expect(credentials.access_token).not_to be_nil
-        expect(credentials.refresh_token).not_to be_nil
-        expect(credentials.expires_at).not_to be_nil
-        expect(credentials.token_type).to eq("bearer")
-
-        merchant_accounts = merchant.merchant_accounts
-        expect(merchant_accounts.count).to eq(2)
-
-        merchant_account = merchant_accounts.detect { |ma| ma.id == "USD" }
-        expect(merchant_account.default).to eq(false)
-        expect(merchant_account.currency_iso_code).to eq("USD")
-
-        merchant_account = merchant_accounts.detect { |ma| ma.id == "GBP" }
-        expect(merchant_account.default).to eq(true)
-        expect(merchant_account.currency_iso_code).to eq("GBP")
-      end
-
-      it "returns error if invalid currency is passed" do
-        result = @gateway.merchant.create(
-          :email => "name@email.com",
-          :country_code_alpha3 => "GBR",
-          :payment_methods => ["paypal"],
-          :currencies => ["FAKE", "GBP"],
-          :paypal_account => {
-            :client_id => "paypal_client_id",
-            :client_secret => "paypal_client_secret",
-          },
-        )
-
-        expect(result).not_to be_success
-        errors = result.errors.for(:merchant).on(:currencies)
-
-        expect(errors[0].code).to eq(Braintree::ErrorCodes::Merchant::CurrenciesAreInvalid)
-      end
+      end.to raise_error(Braintree::ServerError)
     end
   end
 

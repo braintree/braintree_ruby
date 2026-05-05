@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.36.0
+- Add Local Payment Context support with `LocalPaymentContextGateway.create` and `LocalPaymentContextGateway.find` methods
+- Add support for MBWAY and CRYPTO payment types
+- Add `acquirerReferenceNumber` to transaction search object
+- Add `international_phone` to `Customer` in `Transaction`
+- Deprecate merchant create functionality
+- Add `apiRequestKey` (idempotency) for sale, credit, refund, void and settlement operations.
+- Add support for Ruby version 3.4.0, 4.0 and updated rubocop to 1.85.1 for Ruby versions 2.7 and later
+- Add `surcharge_amount` to transaction object
+- Add support for apple pay card verifications
+
 ## 4.35.0
 - Add `accept_partial_authorization` to `Transaction Gateway` and `partially_authorized` to `Transaction`
 - Deprecate transactions for `visa_checkout_card` and maintain search functionality

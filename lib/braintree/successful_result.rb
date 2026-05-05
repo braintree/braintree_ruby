@@ -27,6 +27,7 @@ module Braintree
     attr_reader :us_bank_account_verification
     attr_reader :session_id
     attr_reader :customer_recommendations
+    attr_reader :payment_context
 
     def initialize(attributes = {})
       @attrs = attributes.keys

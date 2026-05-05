@@ -129,7 +129,7 @@ module Braintree
     def inspect
       first = [:id]
       last = [:addresses, :credit_cards, :paypal_accounts, :tax_identifiers]
-      order = first + (self.class._attributes - first - last) + last
+      order = (first + ((self.class._attributes - first) - last)) + last
       nice_attributes = order.map do |attr|
         "#{attr}: #{send(attr).inspect}"
       end

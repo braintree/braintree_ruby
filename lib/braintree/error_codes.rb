@@ -51,6 +51,7 @@ module Braintree
       MerchantKeysAlreadyConfigured = "93515"
       MerchantKeysNotConfigured = "93516"
       MerchantNotConfigured = "93514"
+      NetworkTransactionIdNotAllowed = "93532"
       NumberIsRequired = "93508"
       PaymentMethodNonceCardTypeIsNotAccepted = "83518"
       PaymentMethodNonceConsumed = "93504"
@@ -58,6 +59,17 @@ module Braintree
       PaymentMethodNonceUnknown = "93505"
       PrivateKeyMismatch = "93521"
       TokenIsInUse = "93503"
+
+      module Options
+        VerificationAccountTypeIsInvalid = "93538"
+        VerificationAccountTypeNotSupported = "93543"
+        VerificationAmountCannotBeNegative = "93535"
+        VerificationAmountFormatIsInvalid = "93534"
+        VerificationAmountIsTooLarge = "93537"
+        VerificationAmountNotSupportedByProcessor = "93536"
+        VerificationMerchantAccountIdIsInvalid = "93540"
+        VerificationMerchantAccountIsSuspended = "93541"
+      end
     end
 
     module CreditCard
@@ -136,6 +148,8 @@ module Braintree
       IdIsNotAllowed = "91611"
       IdIsRequired = "91613"
       IdIsTooLong = "91612"
+      InternationalPhoneCountryCodeIsInvalid = "91625"
+      InternationalPhoneNationalNumberIsInvalid = "91626"
       LastNameIsTooLong = "81613"
       PhoneIsTooLong = "81614"
       VaultedPaymentInstrumentNonceBelongsToDifferentCustomer = "91617"
@@ -365,6 +379,12 @@ module Braintree
       DiscountAmountFormatIsInvalid = "915159"
       DiscountAmountIsTooLarge = "915161"
       ExchangeRateQuoteIdTooLong = "915229"
+      ApiRequestKeyTooLong = "915230"
+      ApiRequestKeyNotAllowed = "915231"
+      ApiRequestKeyCanBeReusedOnlyWithTheSameRequest = "915232"
+      ApiRequestKeyIsInFlight = "915233"
+      ApiRequestKeyWithFailedRequest = "915234"
+      ApiRequestKeyServerError = "915235"
       FailedAuthAdjustmentAllowRetry = "95603"
       FailedAuthAdjustmentHardDecline = "95602"
       FinalAuthSubmitForSettlementForDifferentAmount = "95601"

@@ -157,7 +157,8 @@ describe Braintree::Transaction do
               },
             )
             expect(result.success?).to eq(true)
-            expect(result.transaction.ach_type).to eq("same_day")
+            # if the test is ran before 2pm - it returns 'same_day', otherwise 'standard'
+            expect(result.transaction.ach_type).to eq("same_day").or eq("standard")
             expect(result.transaction.requested_ach_type).to eq("same_day")
           end
 

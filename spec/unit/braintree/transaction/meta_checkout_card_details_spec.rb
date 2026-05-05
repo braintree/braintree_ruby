@@ -1,28 +1,28 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Braintree::MetaCheckoutCardDetails do
   it "initializes prepaid reloadable correctly" do
-    card = Braintree::MetaCheckoutCardDetails._new(:gateway, {:prepaid_reloadable => "No"})
+    card = Braintree::MetaCheckoutCardDetails.new({:prepaid_reloadable => "No"})
     expect(card.prepaid_reloadable).to eq("No")
   end
 
   it "initializes business correctly" do
-    card = Braintree::MetaCheckoutCardDetails._new(:gateway, {:business => "No"})
+    card = Braintree::MetaCheckoutCardDetails.new({:business => "No"})
     expect(card.business).to eq("No")
   end
 
   it "initializes consumer correctly" do
-    card = Braintree::MetaCheckoutCardDetails._new(:gateway, {:consumer => "No"})
+    card = Braintree::MetaCheckoutCardDetails.new({:consumer => "No"})
     expect(card.consumer).to eq("No")
   end
 
   it "initializes corporate correctly" do
-    card = Braintree::MetaCheckoutCardDetails._new(:gateway, {:corporate => "No"})
+    card = Braintree::MetaCheckoutCardDetails.new({:corporate => "No"})
     expect(card.corporate).to eq("No")
   end
 
   it "initializes purchase correctly" do
-    card = Braintree::MetaCheckoutCardDetails._new(:gateway, {:purchase => "No"})
+    card = Braintree::MetaCheckoutCardDetails.new({:purchase => "No"})
     expect(card.purchase).to eq("No")
   end
 end

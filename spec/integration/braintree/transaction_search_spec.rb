@@ -69,6 +69,7 @@ describe Braintree::Transaction, "search" do
       credit_card = Braintree::CreditCard.find(token)
 
       search_criteria = {
+        :acquirer_reference_number => transaction.acquirer_reference_number,
         :billing_company => "Braintree",
         :billing_country_name => "United States of America",
         :billing_extended_address => "Suite 123",
@@ -207,9 +208,9 @@ describe Braintree::Transaction, "search" do
       end
       item = collection.find { |t| t.id == transaction_id }
       expect(item.ach_return_code).to eq("RJCT")
-      expect(item.ach_reject_reason).to eq("Bank accounts located outside of the U.S. are not supported.")
+      expect(item.ach_reject_reason).to eq("Bank accounts located outside of the U.S. are not supported")
       expect(item.ach_return_responses.first[:reason_code]).to eq("RJCT")
-      expect(item.ach_return_responses.first[:reject_reason]).to eq("Bank accounts located outside of the U.S. are not supported.")
+      expect(item.ach_return_responses.first[:reject_reason]).to eq("Bank accounts located outside of the U.S. are not supported")
     end
 
     it "searches on reason_codes" do

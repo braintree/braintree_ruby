@@ -44,12 +44,19 @@ module Braintree
     attr_reader :subscriptions
     attr_reader :token
     attr_reader :updated_at
+    attr_reader :verification
 
     def initialize(gateway, attributes)
       @gateway = gateway
       set_instance_variables_from_hash(attributes)
       @billing_address = attributes[:billing_address] ? Address._new(@gateway, attributes[:billing_address]) : nil
       @subscriptions = (@subscriptions || []).map { |subscription_hash| Subscription._new(@gateway, subscription_hash) }
+      @verification = _most_recent_verification(attributes)
+    end
+
+    def _most_recent_verification(attributes)
+      sorted_verifications = (attributes[:verifications] || []).sort_by { |verification| verification[:created_at] }.reverse.first
+      CreditCardVerification._new(sorted_verifications) if sorted_verifications
     end
 
     def default?
