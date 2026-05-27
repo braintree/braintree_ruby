@@ -122,6 +122,7 @@ module Braintree
     attr_reader :installment_count
     attr_reader :installments
     attr_reader :local_payment_details
+    attr_reader :mastercard_transaction_link_id
     attr_reader :merchant_account_id
     attr_reader :merchant_advice_code
     attr_reader :merchant_advice_code_text

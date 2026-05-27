@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.37.0
+- Add `mastercard_transaction_link_id` to `Transaction` and `CreditCardVerification`
+
 ## 4.36.0
 - Add Local Payment Context support with `LocalPaymentContextGateway.create` and `LocalPaymentContextGateway.find` methods
 - Add support for MBWAY and CRYPTO payment types

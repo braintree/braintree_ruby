@@ -577,6 +577,16 @@ describe Braintree::Transaction do
     end
   end
 
+  describe "mastercard transaction link id" do
+    it "is correctly set" do
+      transaction = Braintree::Transaction._new(
+        :gateway,
+        :mastercard_transaction_link_id => "ZairABg6CIFekPMsnK0cJ2",
+      )
+      expect(transaction.mastercard_transaction_link_id).to eq("ZairABg6CIFekPMsnK0cJ2")
+    end
+  end
+
   describe "request includes surcharge amount" do
     it "if the surcharge_amount is present" do
       transaction = Braintree::Transaction._new(:gateway, :surcharge_amount => "1.00")

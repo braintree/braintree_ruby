@@ -48,6 +48,42 @@ describe Braintree::CreditCardVerification, "search" do
       expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
     end
 
+    it "returns mastercard transaction link id in response" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2032",
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        },
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+      expect(result.credit_card_verification.mastercard_transaction_link_id).to match(/\A[a-zA-Z0-9]{22}\z/)
+    end
+
+    it "doesnot return mastercard transaction link id in response for a non mastercard" do
+      verification_params = {
+        :credit_card => {
+          :expiration_date => "05/2032",
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+        },
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+      expect(result.credit_card_verification.mastercard_transaction_link_id).to be_nil
+    end
+
     it "creates a new verification for Visa ANI" do
       verification_params = {
         :credit_card => {

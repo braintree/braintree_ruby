@@ -60,6 +60,13 @@ describe Braintree::CreditCardVerification do
     expect(verification.network_transaction_id).to eq "123456789012345"
   end
 
+  it "sets mastercard_transaction_link_id" do
+    verification = Braintree::CreditCardVerification._new(
+      :mastercard_transaction_link_id => "ZairABg6CIFekPMsnK0cJ2",
+    )
+    expect(verification.mastercard_transaction_link_id).to eq "ZairABg6CIFekPMsnK0cJ2"
+  end
+
   describe "self.create" do
     it "rejects invalid parameters" do
       expect do

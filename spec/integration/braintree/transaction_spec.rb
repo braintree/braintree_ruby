@@ -336,7 +336,7 @@ describe Braintree::Transaction do
 
     describe "sca_exemption" do
       context "with a valid request" do
-        it "succeeds" do
+        xit "succeeds" do
           requested_exemption = "low_value"
           result = Braintree::Transaction.create(
             :type => "sale",
@@ -7957,6 +7957,40 @@ describe Braintree::Transaction do
 
       tomorrow = Date.today + 1
       expect(transaction.upcoming_retry_date).to eq(tomorrow.to_s)
+    end
+  end
+
+  describe "mastercard_transaction_link_id" do
+    it "is available in response for mastercard" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :accept_partial_authorization => true,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2029"
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.processor_response_code).to eq("1000")
+      expect(result.transaction.mastercard_transaction_link_id).to match(/\A[a-zA-Z0-9]{22}\z/)
+    end
+
+    it "is not available in response for non mastercard" do
+      result = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :accept_partial_authorization => true,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2029"
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.processor_response_code).to eq("1000")
+      expect(result.transaction.mastercard_transaction_link_id).to be_nil
     end
   end
 

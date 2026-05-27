@@ -40,6 +40,7 @@ module Braintree
     attr_reader :gateway_rejection_reason
     attr_reader :graphql_id
     attr_reader :id
+    attr_reader :mastercard_transaction_link_id
     attr_reader :merchant_account_id
     attr_reader :network_response_code
     attr_reader :network_response_text
