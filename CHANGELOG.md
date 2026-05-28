@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.38.0 
+- Fix `submit_for_settlement` to accept inline `shipping` address fields (`country_code_alpha3`, `postal_code`, etc.) and `shipping_address_id` by adding both to `_submit_for_settlement_signature`
+
 ## 4.37.0
 - Add `mastercard_transaction_link_id` to `Transaction` and `CreditCardVerification`
 

@@ -43,6 +43,12 @@ describe Braintree::Transaction do
         Braintree::Transaction.submit_for_settlement("invalid-transaction-id")
       end.to raise_error(ArgumentError, "transaction_id is invalid")
     end
+
+    it "raises an ArgumentError if options hash includes an invalid key" do
+      expect do
+        Braintree::Transaction.submit_for_settlement("validtxnid1", nil, :invalid_key => "foo")
+      end.to raise_error(ArgumentError, "invalid keys: invalid_key")
+    end
   end
 
   describe "self.adjust_authorization" do

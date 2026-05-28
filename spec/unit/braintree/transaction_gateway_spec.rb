@@ -185,6 +185,8 @@ describe Braintree::TransactionGateway do
         :tax_amount,
         :tax_exempt,
         :discount_amount,
+        {:shipping => Braintree::AddressGateway._shared_signature},
+        :shipping_address_id,
         :shipping_amount,
         :shipping_tax_amount,
         :ships_from_postal_code,

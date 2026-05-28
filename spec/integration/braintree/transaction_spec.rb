@@ -6206,6 +6206,90 @@ describe Braintree::Transaction do
       end.to raise_error(ArgumentError)
     end
 
+    it "succeeds when a vaulted shipping_address_id is passed" do
+      customer = Braintree::Customer.create!(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        },
+      )
+      address = Braintree::Address.create!(
+        :customer_id => customer.id,
+        :street_address => "1 Main St",
+        :locality => "Chicago",
+        :region => "IL",
+        :postal_code => "60601",
+      )
+      transaction = Braintree::Transaction.create(
+        :type => "sale",
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :customer_id => customer.id,
+        :payment_method_token => customer.credit_cards.first.token,
+        :options => {
+          :submit_for_settlement => false
+        },
+      ).transaction
+
+      result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, {
+        :shipping_address_id => address.id,
+      })
+
+      expect(result.success?).to be_truthy
+      expect(result.transaction.shipping_details.street_address).to eq("1 Main St")
+      expect(result.transaction.shipping_details.postal_code).to eq("60601")
+    end
+
+    it "raises an ArgumentError if an invalid shipping sub-key is passed" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        },
+      )
+
+      expect do
+        Braintree::Transaction.submit_for_settlement(transaction.id, nil, {
+          :shipping => {:invalid_field => "bad"}
+        })
+      end.to raise_error(ArgumentError)
+    end
+
+    it "succeeds when shipping address data is passed" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "06/2009"
+        },
+        :options => {
+          :submit_for_settlement => false
+        },
+      )
+
+      result = Braintree::Transaction.submit_for_settlement(transaction.id, nil, {
+        :discount_amount => "12.33",
+        :shipping_amount => "5.00",
+        :ships_from_postal_code => "90210",
+        :shipping => {
+          :first_name => "Andrew",
+          :last_name => "Mason",
+          :company => "Braintree",
+          :street_address => "456 W Main St",
+          :extended_address => "Apt 2F",
+          :locality => "Bartlett",
+          :region => "IL",
+          :postal_code => "60103",
+          :country_name => "United States of America",
+        },
+      })
+
+      expect(result.success?).to be_truthy
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::SubmittedForSettlement)
+      expect(result.transaction.shipping_details.first_name).to eq("Andrew")
+      expect(result.transaction.shipping_details.postal_code).to eq("60103")
+    end
+
     it "returns an error result if settlement is too large" do
       transaction = Braintree::Transaction.sale!(
         :amount => Braintree::Test::TransactionAmounts::Authorize,
