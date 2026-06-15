@@ -16,6 +16,8 @@ describe Braintree::Transaction do
         :transfer => {
           :type => "wallet_transfer",
           :receiver => {
+            :account_reference_number => "test123",
+            :account_reference_number_type => "SOCIAL_NETWORK_PROFILE_ID",
             :first_name => "John",
             :last_name => "Smith",
             :middle_name => "D",
@@ -27,7 +29,8 @@ describe Braintree::Transaction do
             }
           },
           :sender => {
-            :account_reference_number => "123456789",
+            :account_reference_number => "test@example.com",
+            :account_reference_number_type => "EMAIL_ADDRESS",
             :date_of_birth => Date.new(2002, 1, 2),
             :first_name => "Lisa",
             :last_name => "Ray",
@@ -46,6 +49,73 @@ describe Braintree::Transaction do
       expect(result.success?).to eq(true)
       expect(result.transaction.account_funding_transaction).to eq(true)
       expect(result.transaction.status).to eq(Braintree::Transaction::Status::Authorized)
+    end
+
+    it "should fail on transaction with invalid sender account reference number type" do
+      transaction_params = {
+        :type => "sale",
+        :amount => "100.00",
+        :merchant_account_id => "aft_first_data_wallet_transfer",
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_date => "06/2026",
+          :cvv => "123"
+        },
+        :transfer => {
+          :type => "wallet_transfer",
+          :sender => {
+            :account_reference_number => "test@example.com",
+            :account_reference_number_type => "INVALID_ACCOUNT_REFERENCE_NUMBER_TYPE",
+            :date_of_birth => Date.new(2002, 1, 2),
+            :first_name => "Lisa",
+            :last_name => "Ray",
+            :middle_name => "D",
+            :address => {
+              :country_code_alpha2 => "US",
+              :locality => "LA",
+              :region => "CA",
+              :street_address => "12th Main"
+            }
+          },
+        }
+      }
+
+      result = Braintree::Transaction.sale(transaction_params)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:account_funding_transaction).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionTransferSenderAccountReferenceNumberTypeIsInvalid)
+    end
+
+    it "should fail on transaction with invalid receiver account reference number type" do
+      transaction_params = {
+        :type => "sale",
+        :amount => "100.00",
+        :merchant_account_id => "aft_first_data_wallet_transfer",
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_date => "06/2026",
+          :cvv => "123"
+        },
+        :transfer => {
+          :type => "wallet_transfer",
+          :receiver => {
+            :account_reference_number => "test@example.com",
+            :account_reference_number_type => "INVALID_ACCOUNT_REFERENCE_NUMBER_TYPE",
+            :first_name => "Lisa",
+            :last_name => "Ray",
+            :middle_name => "D",
+            :address => {
+              :country_code_alpha2 => "US",
+              :locality => "LA",
+              :region => "CA",
+              :street_address => "12th Main"
+            }
+          },
+        }
+      }
+
+      result = Braintree::Transaction.sale(transaction_params)
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:account_funding_transaction).first.code).to eq(Braintree::ErrorCodes::Transaction::TransactionTransferReceiverAccountReferenceNumberTypeIsInvalid)
     end
 
     it "should fail on transaction with non brazil merchant" do

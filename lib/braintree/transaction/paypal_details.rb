@@ -7,6 +7,8 @@ module Braintree
       attr_reader :billing_agreement_id
       attr_reader :capture_id
       attr_reader :custom_field
+      # NEXT_MAJOR_VERSION Remove this attribute
+      # DEPRECATED debug_id is deprecated and will be removed in a future version
       attr_reader :debug_id
       attr_reader :description
       attr_reader :image_url

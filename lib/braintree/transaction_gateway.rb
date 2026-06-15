@@ -291,6 +291,7 @@ module Braintree
             {
               :sender => [
                 :account_reference_number,
+                :account_reference_number_type,
                 :date_of_birth,
                 :first_name,
                 :last_name,
@@ -302,6 +303,7 @@ module Braintree
             {
               :receiver => [
                 :account_reference_number,
+                :account_reference_number_type,
                 :first_name,
                 :last_name,
                 :middle_name,

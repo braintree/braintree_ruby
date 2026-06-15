@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.39.0
+- Deprecate `debug_id` on `PayPalDetails`, `LocalPaymentDetails`, and `SepaDirectDebitAccountDetails`
+- Add `account_reference_number_type` to sender and receiver in transfer on `Transaction`
+- Add `CannotCloneThirdPartyCofNetworkTokenTransaction (915274)` transaction validation error code
+
 ## 4.38.0 
 - Fix `submit_for_settlement` to accept inline `shipping` address fields (`country_code_alpha3`, `postal_code`, etc.) and `shipping_address_id` by adding both to `_submit_for_settlement_signature`
 

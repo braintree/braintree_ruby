@@ -5,6 +5,8 @@ module Braintree
 
       attr_reader :bank_reference_token
       attr_reader :capture_id
+      # NEXT_MAJOR_VERSION Remove this attribute
+      # DEPRECATED debug_id is deprecated and will be removed in a future version
       attr_reader :debug_id
       attr_reader :global_id
       attr_reader :last_4
