@@ -312,6 +312,99 @@ describe Braintree::CreditCard do
       expect(result.success?).to eq(true)
     end
 
+    it "accepts a three_d_secure_pass_thru network specified in the request" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
+          :network => Braintree::ThreeDSecurePassThru::Network::Visa,
+        },
+        :options => {:verify_card => true},
+      )
+      expect(result.success?).to eq(true)
+    end
+
+    it "rejects invalid network value in 3ds pass thru params" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
+          :network => "DISCOVER",
+        },
+        :options => {:verify_card => true},
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkIsInvalid)
+      expect(error.message).to eq("Network is invalid. Supported networks are eftpos, Visa, and Mastercard.")
+    end
+
+    it "rejects request where 3ds pass thru network does not match the payment instrument (VISA nonce, Mastercard network)" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
+          :network => Braintree::ThreeDSecurePassThru::Network::MasterCard,
+        },
+        :options => {:verify_card => true},
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkDoesNotMatchPaymentInstrument)
+      expect(error.message).to eq("Network does not match the payment instrument.")
+    end
+
+    it "rejects request where 3ds pass thru network does not support the merchant account currency" do
+      customer = Braintree::Customer.create!
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
+          :network => Braintree::ThreeDSecurePassThru::Network::Eftpos,
+        },
+        :options => {:verify_card => true},
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkDoesNotSupportMerchantAccountCurrency)
+      expect(error.message).to eq("Network does not support the currency of the merchant account.")
+    end
+
     it "returns 3DS info on cc verification" do
       customer = Braintree::Customer.create!
       result = Braintree::CreditCard.create(
@@ -1263,8 +1356,7 @@ describe Braintree::CreditCard do
   end
 
   describe "self.expiring_between" do
-    #Disabling this test until we have a more stable CI
-    xit "finds payment methods expiring between the given dates" do
+    it "finds payment methods expiring between the given dates" do
       next_year = Time.now.year + 1
       collection = Braintree::CreditCard.expiring_between(Time.mktime(next_year, 1), Time.mktime(next_year, 12))
       expect(collection.maximum_size).to be > 0

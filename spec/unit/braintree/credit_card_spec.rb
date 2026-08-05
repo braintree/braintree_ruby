@@ -51,6 +51,7 @@ describe Braintree::CreditCard do
           :directory_response,
           :cavv_algorithm,
           :ds_transaction_id,
+          :network,
         ]},
         :customer_id,
       ])
@@ -100,6 +101,7 @@ describe Braintree::CreditCard do
           :directory_response,
           :cavv_algorithm,
           :ds_transaction_id,
+          :network,
         ]},
       ])
     end

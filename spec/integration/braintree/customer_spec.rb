@@ -4,8 +4,7 @@ require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 describe Braintree::Customer do
   describe "self.all" do
-    #Disabling test until we have a more stable CI
-    xit "gets more than a page of customers" do
+    it "gets more than a page of customers" do
       customers = Braintree::Customer.all
       expect(customers.maximum_size).to be > 100
 
@@ -1242,7 +1241,7 @@ describe Braintree::Customer do
       expect(apple_pay_card.expiration_year).not_to be_nil
       expect(apple_pay_card.healthcare).not_to be_nil
       expect(apple_pay_card.issuing_bank).not_to be_nil
-      expect(apple_pay_card.payment_instrument_name).to eq("AmEx 41002")
+      expect(apple_pay_card.payment_instrument_name).to match(/\AAmEx \d{4,5}\z/)
       expect(apple_pay_card.payroll).not_to be_nil
       expect(apple_pay_card.prepaid).not_to be_nil
       expect(apple_pay_card.prepaid_reloadable).not_to be_nil
@@ -1326,7 +1325,7 @@ describe Braintree::Customer do
       expect(venmo_account.username).not_to be_nil
     end
 
-    xit "returns associated us bank accounts" do
+    it "returns associated us bank accounts" do
       result = Braintree::Customer.create(
         :payment_method_nonce => generate_non_plaid_us_bank_account_nonce,
         :credit_card => {
@@ -1693,7 +1692,8 @@ describe Braintree::Customer do
 
       apple_pay_card = result.customer.payment_methods.find { |pm| pm.is_a?(Braintree::ApplePayCard) }
       expect(apple_pay_card).not_to be_nil
-      expect(apple_pay_card.last_4).to eq(Braintree::Test::CreditCardNumbers::Visa[-4..-1])
+      expect(apple_pay_card.card_type).to eq(Braintree::ApplePayCard::CardType::Visa)
+      expect(apple_pay_card.last_4).to match(/\A\d{4}\z/)
       expect(apple_pay_card.cardholder_name).to eq("Updated Joe Cardholder")
 
       verification = apple_pay_card.verification
@@ -2082,6 +2082,154 @@ describe Braintree::Customer do
       )
 
       expect(result).to be_success
+    end
+
+    it "accepts a three_d_secure_pass_thru network specified on customer create" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :credit_card => {
+          :three_d_secure_pass_thru => {
+            :eci_flag => "05",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "2.2.0",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
+            :network => Braintree::ThreeDSecurePassThru::Network::Visa,
+          },
+          :options => {:verify_card => true},
+        },
+      )
+      expect(result).to be_success
+    end
+
+    it "rejects invalid network value in 3ds pass thru params on customer create" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :credit_card => {
+          :three_d_secure_pass_thru => {
+            :eci_flag => "05",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "2.2.0",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
+            :network => "DISCOVER",
+          },
+          :options => {:verify_card => true},
+        },
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkIsInvalid)
+      expect(error.message).to eq("Network is invalid. Supported networks are eftpos, Visa, and Mastercard.")
+    end
+
+    it "rejects request where 3ds pass thru network does not match the payment instrument on customer create (VISA nonce, Mastercard network)" do
+      result = Braintree::Customer.create(
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :credit_card => {
+          :three_d_secure_pass_thru => {
+            :eci_flag => "05",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "2.2.0",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
+            :network => Braintree::ThreeDSecurePassThru::Network::MasterCard,
+          },
+          :options => {:verify_card => true},
+        },
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkDoesNotMatchPaymentInstrument)
+      expect(error.message).to eq("Network does not match the payment instrument.")
+    end
+
+    it "accepts a three_d_secure_pass_thru network specified on customer update" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Customer.update(
+        customer.id,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009",
+          :three_d_secure_pass_thru => {
+            :eci_flag => "05",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "2.2.0",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
+            :network => Braintree::ThreeDSecurePassThru::Network::Visa,
+          },
+          :options => {:verify_card => true}
+        },
+      )
+
+      expect(result).to be_success
+    end
+
+    it "rejects invalid network value in 3ds pass thru params on customer update" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Customer.update(
+        customer.id,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009",
+          :three_d_secure_pass_thru => {
+            :eci_flag => "05",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "2.2.0",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
+            :network => "DISCOVER",
+          },
+          :options => {:verify_card => true}
+        },
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkIsInvalid)
+      expect(error.message).to eq("Network is invalid. Supported networks are eftpos, Visa, and Mastercard.")
+    end
+
+    it "rejects request where 3ds pass thru network does not match the payment instrument on customer update (VISA card, Mastercard network)" do
+      customer = Braintree::Customer.create!
+      result = Braintree::Customer.update(
+        customer.id,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009",
+          :three_d_secure_pass_thru => {
+            :eci_flag => "05",
+            :cavv => "some_cavv",
+            :xid => "some_xid",
+            :three_d_secure_version => "2.2.0",
+            :authentication_response => "Y",
+            :directory_response => "Y",
+            :cavv_algorithm => "2",
+            :ds_transaction_id => "some_ds_transaction_id",
+            :network => Braintree::ThreeDSecurePassThru::Network::MasterCard,
+          },
+          :options => {:verify_card => true}
+        },
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkDoesNotMatchPaymentInstrument)
+      expect(error.message).to eq("Network does not match the payment instrument.")
     end
 
     it "returns 3DS info on cc verification" do

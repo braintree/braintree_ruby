@@ -283,6 +283,7 @@ module Braintree
             :directory_response,
             :cavv_algorithm,
             :ds_transaction_id,
+            :network,
           ]
         },
         {

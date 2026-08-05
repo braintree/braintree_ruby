@@ -58,6 +58,20 @@ describe Braintree::Address do
         Braintree::Address.update("customer_id", "address_id", :street_address => "456 E Main", :invalid_key => "foo")
       end.to raise_error(ArgumentError, "invalid keys: invalid_key")
     end
+
+    it "raises an error if address_id contains invalid characters" do
+      expect do
+        Braintree::Address.update("customer_id", "../../foo", :street_address => "456 E Main")
+      end.to raise_error(ArgumentError, "address_id contains invalid characters")
+    end
+  end
+
+  describe "self.delete" do
+    it "raises an error if address_id contains invalid characters" do
+      expect do
+        Braintree::Address.delete("customer_id", "../../foo")
+      end.to raise_error(ArgumentError, "address_id contains invalid characters")
+    end
   end
 
   describe "self.find" do
@@ -84,6 +98,24 @@ describe Braintree::Address do
       expect do
         Braintree::Address.find("customer_id", 8675309)
       end.to_not raise_error
+    end
+
+    it "raises an error if address_id contains invalid characters" do
+      expect do
+        Braintree::Address.find("customer_id", "../../foo")
+      end.to raise_error(ArgumentError, "address_id contains invalid characters")
+    end
+
+    it "raises an error if address_id is a lone dot segment" do
+      expect do
+        Braintree::Address.find("customer_id", ".")
+      end.to raise_error(ArgumentError, "address_id contains invalid characters")
+    end
+
+    it "raises an error if address_id contains a dot" do
+      expect do
+        Braintree::Address.find("customer_id", "foo.bar")
+      end.to raise_error(ArgumentError, "address_id contains invalid characters")
     end
   end
 

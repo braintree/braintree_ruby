@@ -278,6 +278,44 @@ describe Braintree::Dispute do
     end
   end
 
+  describe "path traversal" do
+    [
+      :accept,
+      :finalize,
+      :find,
+    ].each do |method_name|
+      it "self.#{method_name} raises an exception if the dispute_id is a traversal segment" do
+        expect do
+          Braintree::Dispute.public_send(method_name, "../../foo")
+        end.to raise_error(ArgumentError, "dispute_id contains invalid characters")
+      end
+    end
+
+    it "self.add_file_evidence raises an exception if the dispute_id is a traversal segment" do
+      expect do
+        Braintree::Dispute.add_file_evidence("../../foo", "document_id")
+      end.to raise_error(ArgumentError, "dispute_id contains invalid characters")
+    end
+
+    it "self.add_text_evidence raises an exception if the dispute_id is a traversal segment" do
+      expect do
+        Braintree::Dispute.add_text_evidence("../../foo", "text evidence")
+      end.to raise_error(ArgumentError, "dispute_id contains invalid characters")
+    end
+
+    it "self.remove_evidence raises an exception if the dispute_id is a traversal segment" do
+      expect do
+        Braintree::Dispute.remove_evidence("../../foo", "evidence_id")
+      end.to raise_error(ArgumentError, "dispute_id contains invalid characters")
+    end
+
+    it "self.remove_evidence raises an exception if the evidence_id is a traversal segment" do
+      expect do
+        Braintree::Dispute.remove_evidence("dispute_id", "../../foo")
+      end.to raise_error(ArgumentError, "evidence_id contains invalid characters")
+    end
+  end
+
   describe "initialize" do
     it "converts string amount_dispute and amount_won" do
       dispute = Braintree::Dispute._new(attributes)

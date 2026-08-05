@@ -630,5 +630,38 @@ describe Braintree::CreditCardVerification, "search" do
       expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
       expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
+
+    it "can create a verification with a three_d_secure_pass_thru network specified" do
+      verification_params = {
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "12/12",
+        },
+        :options => {
+          :amount => "10.00",
+        },
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_id",
+          :network => Braintree::ThreeDSecurePassThru::Network::Visa,
+        },
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+      expect(result.credit_card_verification.status).to eq(Braintree::CreditCardVerification::Status::Verified)
+      expect(result.credit_card_verification.processor_response_code).to eq("1000")
+      expect(result.credit_card_verification.processor_response_text).to eq("Approved")
+      expect(result.credit_card_verification.processor_response_type).to eq(Braintree::ProcessorResponseTypes::Approved)
+      expect(result.credit_card_verification.network_transaction_id).not_to be_nil
+    end
   end
 end

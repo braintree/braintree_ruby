@@ -216,6 +216,8 @@ module Braintree
       CannotVaultOneTimeUsePayPalAccount = "82902"
       ConsentCodeOrAccessTokenIsRequired = "82901"
       CustomerIdIsRequiredForVaulting = "82905"
+      EmailFormatIsInvalid = "92963"
+      EmailIsTooLong = "92964"
       IncompletePayPalAccount = "82901"
       InvalidFundingSourceSelection = "92913"
       InvalidParamsForPayPalAccountUpdate = "92915"
@@ -472,6 +474,10 @@ module Braintree
       ThreeDSecureEciFlagIsInvalid = "915114"
       ThreeDSecureEciFlagIsRequired = "915113"
       ThreeDSecureMerchantAccountDoesNotSupportCardType = "915131"
+      ThreeDSecureNetworkDoesNotMatchPaymentInstrument = "915139"
+      ThreeDSecureNetworkDoesNotSupportCurrency = "915239"
+      ThreeDSecureNetworkDoesNotSupportMerchantAccountCurrency = "915243"
+      ThreeDSecureNetworkIsInvalid = "915128"
       ThreeDSecureThreeDSecureVersionIsInvalid = "915119"
       ThreeDSecureTokenIsInvalid = "91568"
       ThreeDSecureTransactionDataDoesntMatchVerify = "91570"
@@ -502,6 +508,7 @@ module Braintree
 
 
       module Options
+        SubmitForSettlementIsNotSupportedForNetwork = "915261"
         SubmitForSettlementIsRequiredForCloning = "91544"
         SubmitForSettlementIsRequiredForPayPalUnilateral = "91582"
         VaultIsDisabled = "91525"
@@ -768,6 +775,10 @@ module Braintree
         DirectoryResponseIsInvalid = "942121"
         EciFlagIsInvalid = "942114"
         EciFlagIsRequired = "942113"
+        NetworkDoesNotMatchPaymentInstrument = "942139"
+        NetworkDoesNotSupportCurrency = "942129"
+        NetworkDoesNotSupportMerchantAccountCurrency = "942130"
+        NetworkIsInvalid = "942128"
         ThreeDSecureVersionIsInvalid = "942119"
         ThreeDSecureVersionIsRequired = "942117"
       end

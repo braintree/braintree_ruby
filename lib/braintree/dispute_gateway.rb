@@ -7,7 +7,7 @@ module Braintree
     end
 
     def accept(dispute_id)
-      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id contains invalid characters" if Util.invalid_path_segment?(dispute_id)
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
 
       response = @config.http.put("#{@config.base_merchant_path}/disputes/#{dispute_id}/accept")
@@ -21,7 +21,7 @@ module Braintree
     end
 
     def add_file_evidence(dispute_id, document_id_or_request)
-      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id contains invalid characters" if Util.invalid_path_segment?(dispute_id)
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
       raise ArgumentError, "document_id_or_request cannot be blank" if document_id_or_request.nil?
 
@@ -51,7 +51,7 @@ module Braintree
     end
 
     def add_text_evidence(dispute_id, content_or_request)
-      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id contains invalid characters" if Util.invalid_path_segment?(dispute_id)
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
       raise ArgumentError, "content_or_request cannot be blank" if content_or_request.nil?
 
@@ -84,7 +84,7 @@ module Braintree
     end
 
     def finalize(dispute_id)
-      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id contains invalid characters" if Util.invalid_path_segment?(dispute_id)
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
 
       response = @config.http.put("#{@config.base_merchant_path}/disputes/#{dispute_id}/finalize")
@@ -98,7 +98,7 @@ module Braintree
     end
 
     def find(dispute_id)
-      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id contains invalid characters" if Util.invalid_path_segment?(dispute_id)
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
       response = @config.http.get("#{@config.base_merchant_path}/disputes/#{dispute_id}")
       Dispute._new(response[:dispute])
@@ -107,9 +107,9 @@ module Braintree
     end
 
     def remove_evidence(dispute_id, evidence_id)
-      raise ArgumentError, "dispute_id contains invalid characters" unless dispute_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "dispute_id contains invalid characters" if Util.invalid_path_segment?(dispute_id)
       raise ArgumentError, "dispute_id cannot be blank" if dispute_id.nil? || dispute_id.to_s.strip == ""
-      raise ArgumentError, "evidence_id contains invalid characters" unless evidence_id.to_s =~ /\A[\w-]+\z/
+      raise ArgumentError, "evidence_id contains invalid characters" if Util.invalid_path_segment?(evidence_id)
       raise ArgumentError, "evidence_id cannot be blank" if evidence_id.nil? || evidence_id.to_s.strip == ""
 
       response = @config.http.delete("#{@config.base_merchant_path}/disputes/#{dispute_id}/evidence/#{evidence_id}")

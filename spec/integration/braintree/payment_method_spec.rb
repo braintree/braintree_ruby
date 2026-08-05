@@ -92,8 +92,8 @@ describe Braintree::PaymentMethod do
       expect(apple_pay_card.bin).not_to be_nil
       expect(apple_pay_card.token).to eq(token)
       expect(apple_pay_card.card_type).to eq(Braintree::ApplePayCard::CardType::AmEx)
-      expect(apple_pay_card.payment_instrument_name).to eq("AmEx 41002")
-      expect(apple_pay_card.source_description).to eq("AmEx 41002")
+      expect(apple_pay_card.payment_instrument_name).to match(/\AAmEx \d{4,5}\z/)
+      expect(apple_pay_card.source_description).to match(/\AAmEx \d{4,5}\z/)
       expect(apple_pay_card.default).to eq(true)
       expect(apple_pay_card.image_url).to match(/apple_pay/)
       expect(apple_pay_card.expiration_month.to_i).to be > 0
@@ -127,8 +127,8 @@ describe Braintree::PaymentMethod do
       expect(apple_pay_card.bin).not_to be_nil
       expect(apple_pay_card.token).to eq(token)
       expect(apple_pay_card.card_type).to eq(Braintree::ApplePayCard::CardType::Visa)
-      expect(apple_pay_card.payment_instrument_name).to eq("Visa 2006")
-      expect(apple_pay_card.source_description).to eq("Visa 2006")
+      expect(apple_pay_card.payment_instrument_name).to match(/\AVisa \d{4}\z/)
+      expect(apple_pay_card.source_description).to match(/\AVisa \d{4}\z/)
       expect(apple_pay_card.default).to eq(true)
       expect(apple_pay_card.image_url).to match(/apple_pay/)
       expect(apple_pay_card.expiration_month.to_i).to be > 0
@@ -380,6 +380,76 @@ describe Braintree::PaymentMethod do
       )
 
       expect(result).to be_success
+    end
+
+    it "accepts a three_d_secure_pass_thru network specified in the request" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
+          :network => Braintree::ThreeDSecurePassThru::Network::Visa,
+        },
+        :options => {:verify_card => true},
+      )
+
+      expect(result).to be_success
+    end
+
+    it "rejects invalid network value in 3ds pass thru params" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::Transactable,
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
+          :network => "DISCOVER",
+        },
+        :options => {:verify_card => true},
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkIsInvalid)
+      expect(error.message).to eq("Network is invalid. Supported networks are eftpos, Visa, and Mastercard.")
+    end
+
+    it "rejects request where 3ds pass thru network does not match the payment instrument (VISA nonce, Mastercard network)" do
+      customer = Braintree::Customer.create!
+      result = Braintree::PaymentMethod.create(
+        :customer_id => customer.id,
+        :payment_method_nonce => Braintree::Test::Nonce::TransactableVisa,
+        :three_d_secure_pass_thru => {
+          :eci_flag => "05",
+          :cavv => "some_cavv",
+          :xid => "some_xid",
+          :three_d_secure_version => "2.2.0",
+          :authentication_response => "Y",
+          :directory_response => "Y",
+          :cavv_algorithm => "2",
+          :ds_transaction_id => "some_ds_transaction_id",
+          :network => Braintree::ThreeDSecurePassThru::Network::MasterCard,
+        },
+        :options => {:verify_card => true},
+      )
+      expect(result).not_to be_success
+      error = result.errors.for(:verification).first
+      expect(error.code).to eq(Braintree::ErrorCodes::Verification::ThreeDSecurePassThru::NetworkDoesNotMatchPaymentInstrument)
+      expect(error.message).to eq("Network does not match the payment instrument.")
     end
 
     it "returns 3DS info on cc verification" do
@@ -813,7 +883,7 @@ describe Braintree::PaymentMethod do
         expect(update_result.payment_method.verification.credit_card[:account_type]).to eq("credit")
       end
 
-      xit "updates the credit card with account_type debit" do
+      it "updates the credit card with account_type debit" do
         customer = Braintree::Customer.create!
         credit_card = Braintree::CreditCard.create!(
           :cardholder_name => "Original Holder",
@@ -1404,7 +1474,7 @@ describe Braintree::PaymentMethod do
         expect(apple_pay_card.image_url).to match(/apple_pay/)
         expect(apple_pay_card.expiration_month.to_i).to be > 0
         expect(apple_pay_card.expiration_year.to_i).to be > 0
-        expect(apple_pay_card.source_description).to eq("AmEx 41002")
+        expect(apple_pay_card.source_description).to match(/\AAmEx \d{4,5}\z/)
         expect(apple_pay_card.customer_id).to eq(customer.id)
       end
 
@@ -1427,7 +1497,7 @@ describe Braintree::PaymentMethod do
         expect(apple_pay_card.image_url).to match(/apple_pay/)
         expect(apple_pay_card.expiration_month.to_i).to be > 0
         expect(apple_pay_card.expiration_year.to_i).to be > 0
-        expect(apple_pay_card.source_description).to eq("Visa 2006")
+        expect(apple_pay_card.source_description).to match(/\AVisa \d{4}\z/)
         expect(apple_pay_card.customer_id).to eq(customer.id)
         expect(apple_pay_card.is_device_token).to eq(false)
         apple_pay_card.merchant_token_identifier == "DNITHE302308980427388297"

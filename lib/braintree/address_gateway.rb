@@ -13,7 +13,7 @@ module Braintree
       unless attributes[:customer_id]
         raise ArgumentError, "Expected hash to contain a :customer_id"
       end
-      unless attributes[:customer_id] =~ /\A[0-9A-Za-z_-]+\z/
+      if Util.invalid_path_segment?(attributes[:customer_id])
         raise ArgumentError, ":customer_id contains invalid characters"
       end
       response = @config.http.post("#{@config.base_merchant_path}/customers/#{attributes.delete(:customer_id)}/addresses", :address => attributes)
@@ -32,13 +32,14 @@ module Braintree
 
     def delete(customer_or_customer_id, address_id)
       customer_id = _determine_customer_id(customer_or_customer_id)
+      address_id = _determine_address_id(address_id)
       @config.http.delete("#{@config.base_merchant_path}/customers/#{customer_id}/addresses/#{address_id}")
       SuccessfulResult.new
     end
 
     def find(customer_or_customer_id, address_id)
       customer_id = _determine_customer_id(customer_or_customer_id)
-      raise ArgumentError if address_id.nil? || address_id.to_s.strip == ""
+      address_id = _determine_address_id(address_id)
       response = @config.http.get("#{@config.base_merchant_path}/customers/#{customer_id}/addresses/#{address_id}")
       Address._new(@gateway, response[:address])
     rescue NotFoundError
@@ -48,6 +49,7 @@ module Braintree
     def update(customer_or_customer_id, address_id, attributes)
       Util.verify_keys(AddressGateway._update_signature, attributes)
       customer_id = _determine_customer_id(customer_or_customer_id)
+      address_id = _determine_address_id(address_id)
       response = @config.http.put("#{@config.base_merchant_path}/customers/#{customer_id}/addresses/#{address_id}", :address => attributes)
       if response[:address]
         SuccessfulResult.new(:address => Address._new(@gateway, response[:address]))
@@ -64,10 +66,18 @@ module Braintree
 
     def _determine_customer_id(customer_or_customer_id)
       customer_id = customer_or_customer_id.is_a?(Customer) ? customer_or_customer_id.id : customer_or_customer_id
-      unless customer_id =~ /\A[\w_-]+\z/
+      if Util.invalid_path_segment?(customer_id)
         raise ArgumentError, "customer_id contains invalid characters"
       end
       customer_id
+    end
+
+    def _determine_address_id(address_id)
+      address_id = address_id.to_s
+      if Util.invalid_path_segment?(address_id)
+        raise ArgumentError, "address_id contains invalid characters"
+      end
+      address_id
     end
 
     def self._create_signature

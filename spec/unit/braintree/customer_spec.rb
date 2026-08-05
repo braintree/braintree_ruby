@@ -164,6 +164,7 @@ describe Braintree::Customer do
             :directory_response,
             :cavv_algorithm,
             :ds_transaction_id,
+            :network,
           ]},
         ]},
         {:paypal_account => [
@@ -307,6 +308,7 @@ describe Braintree::Customer do
             :directory_response,
             :cavv_algorithm,
             :ds_transaction_id,
+            :network,
           ]},
         ]},
         {:tax_identifiers => [

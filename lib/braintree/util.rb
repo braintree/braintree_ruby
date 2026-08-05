@@ -1,5 +1,10 @@
 module Braintree
   module Util
+    # Allowlist of the characters that make up a Braintree id/token.
+    def self.invalid_path_segment?(value)
+      !value.to_s.match?(/\A[A-Za-z0-9_-]+\z/)
+    end
+
     def self.extract_attribute_as_array(hash, attribute)
       raise UnexpectedError.new("Unprocessable entity due to an invalid request") if hash.nil?
       value = hash.has_key?(attribute) ? hash.delete(attribute) : []

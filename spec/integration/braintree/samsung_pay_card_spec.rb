@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/client_api/spec_helper")
 
 # NEXT_MAJOR_VERSION remove these tests
 # SamsungPayCard has been deprecated
-xdescribe Braintree::SamsungPayCard do
+describe Braintree::SamsungPayCard do
   it "can create from payment method nonce" do
     customer = Braintree::Customer.create!
 

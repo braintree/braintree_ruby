@@ -128,6 +128,7 @@ describe Braintree::TransactionGateway do
             :directory_response,
             :cavv_algorithm,
             :ds_transaction_id,
+            :network,
           ]
         },
         {

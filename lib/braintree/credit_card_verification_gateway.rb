@@ -81,6 +81,7 @@ module Braintree
           :directory_response,
           :ds_transaction_id,
           :eci_flag,
+          :network,
           :three_d_secure_version,
           :xid,
         ]},

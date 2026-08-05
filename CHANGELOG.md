@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.40.0
+- Add `EmailFormatIsInvalid (92963)` and `EmailIsTooLong (92964)` validation error codes to `PayPalAccount`
+- Add `network` to `three_d_secure_pass_thru` across `Transaction.sale`, `CreditCard`, `Customer`, `PaymentMethod`, and `CreditCardVerification`, with `ThreeDSecurePassThru::Network` constants (`Eftpos`, `Mastercard`, `Visa`)
+- Fix path traversal vulnerability in `Dispute` and `Address` gateways by validating that IDs used in request paths do not contain path separators or relative-path segments
+
 ## 4.39.0
 - Deprecate `debug_id` on `PayPalDetails`, `LocalPaymentDetails`, and `SepaDirectDebitAccountDetails`
 - Add `account_reference_number_type` to sender and receiver in transfer on `Transaction`
