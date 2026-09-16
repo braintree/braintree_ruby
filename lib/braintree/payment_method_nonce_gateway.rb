@@ -9,6 +9,8 @@ module Braintree
     end
 
     def create(payment_method_token, args = {payment_method_nonce: {}})
+      raise ArgumentError, "payment_method_token contains invalid characters" if Util.invalid_path_segment?(payment_method_token)
+
       Util.verify_keys(PaymentMethodNonceGateway._create_signature, args)
 
       response = @config.http.post("#{@config.base_merchant_path}/payment_methods/#{payment_method_token}/nonces", args)
@@ -30,6 +32,8 @@ module Braintree
     end
 
     def find(payment_method_nonce)
+      raise ArgumentError, "payment_method_nonce contains invalid characters" if Util.invalid_path_segment?(payment_method_nonce)
+
       response = @config.http.get("#{@config.base_merchant_path}/payment_method_nonces/#{payment_method_nonce}")
       payment_method_nonce = PaymentMethodNonce._new(@gateway, response.fetch(:payment_method_nonce))
       SuccessfulResult.new(:payment_method_nonce => payment_method_nonce)

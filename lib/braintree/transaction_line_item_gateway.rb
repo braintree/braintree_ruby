@@ -7,7 +7,9 @@ module Braintree
     end
 
     def find_all(transaction_id)
-      raise ArgumentError, "transaction_id cannot be blank" if transaction_id.nil? || transaction_id.strip.to_s == ""
+      raise ArgumentError, "transaction_id cannot be blank" if transaction_id.nil? || transaction_id.to_s.strip == ""
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
+
       response = @config.http.get("#{@config.base_merchant_path}/transactions/#{transaction_id}/line_items")
       response[:line_items].map do |line_item_params|
         TransactionLineItem._new(@gateway, line_item_params)

@@ -144,4 +144,24 @@ describe Braintree::PaymentMethod do
       end.to_not raise_error
     end
   end
+
+  describe "path traversal" do
+    it "self.find raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::PaymentMethod.find("../customers/some_id/transaction_ids")
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+
+    it "self.update raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::PaymentMethod.update("../customers/some_id/transaction_ids", {})
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+
+    it "self.delete raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::PaymentMethod.delete("../customers/some_id/transaction_ids")
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+  end
 end

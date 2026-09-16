@@ -2677,4 +2677,47 @@ describe Braintree::Customer do
     end
   end
 
+  describe "path traversal" do
+    it "self.update rejects a traversal customer_id and does not void the victim transaction" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {:submit_for_settlement => false},
+      )
+      traversal_id = "../transactions/#{transaction.id}/void"
+
+      expect do
+        Braintree::Customer.update(traversal_id, :first_name => "HackerOne")
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
+
+      unaffected_transaction = Braintree::Transaction.find(transaction.id)
+      expect(unaffected_transaction.status).to eq(Braintree::Transaction::Status::Authorized)
+    end
+
+    it "self.delete rejects a traversal customer_id and does not delete the victim payment method" do
+      create_result = Braintree::Customer.create(:first_name => "Victim")
+      expect(create_result.success?).to eq(true)
+      customer = create_result.customer
+
+      credit_card_result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::Visa,
+        :expiration_date => "05/2009",
+      )
+      expect(credit_card_result.success?).to eq(true)
+      token = credit_card_result.credit_card.token
+      traversal_id = "../payment_methods/any/#{token}"
+
+      expect do
+        Braintree::Customer.delete(traversal_id)
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
+
+      unaffected_credit_card = Braintree::CreditCard.find(token)
+      expect(unaffected_credit_card.token).to eq(token)
+    end
+  end
+
 end

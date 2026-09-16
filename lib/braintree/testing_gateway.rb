@@ -10,6 +10,7 @@ module Braintree
 
     def settle(transaction_id)
       check_environment
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
 
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/settle")
       @transaction_gateway._handle_transaction_response(response)
@@ -17,6 +18,7 @@ module Braintree
 
     def settlement_confirm(transaction_id)
       check_environment
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
 
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/settlement_confirm")
       @transaction_gateway._handle_transaction_response(response)
@@ -24,6 +26,7 @@ module Braintree
 
     def settlement_decline(transaction_id)
       check_environment
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
 
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/settlement_decline")
       @transaction_gateway._handle_transaction_response(response)
@@ -31,6 +34,7 @@ module Braintree
 
     def settlement_pending(transaction_id)
       check_environment
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
 
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/settlement_pending")
       @transaction_gateway._handle_transaction_response(response)

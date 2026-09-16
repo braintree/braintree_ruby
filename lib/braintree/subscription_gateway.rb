@@ -9,6 +9,8 @@ module Braintree
     end
 
     def cancel(subscription_id)
+      raise ArgumentError, "subscription_id contains invalid characters" if Util.invalid_path_segment?(subscription_id)
+
       response = @config.http.put("#{@config.base_merchant_path}/subscriptions/#{subscription_id}/cancel")
       if response[:subscription]
         SuccessfulResult.new(:subscription => Subscription._new(@gateway, response[:subscription]))
@@ -36,6 +38,8 @@ module Braintree
 
     def find(id)
       raise ArgumentError if id.nil? || id.to_s.strip == ""
+      raise ArgumentError, "id contains invalid characters" if Util.invalid_path_segment?(id)
+
       response = @config.http.get("#{@config.base_merchant_path}/subscriptions/#{id}")
       Subscription._new(@gateway, response[:subscription])
     rescue NotFoundError
@@ -55,6 +59,8 @@ module Braintree
     end
 
     def update(subscription_id, attributes)
+      raise ArgumentError, "subscription_id contains invalid characters" if Util.invalid_path_segment?(subscription_id)
+
       Util.verify_keys(SubscriptionGateway._update_signature, attributes)
       response = @config.http.put("#{@config.base_merchant_path}/subscriptions/#{subscription_id}", :subscription => attributes)
       if response[:subscription]

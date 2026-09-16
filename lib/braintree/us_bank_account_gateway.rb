@@ -8,6 +8,8 @@ module Braintree
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       response = @config.http.get("#{@config.base_merchant_path}/payment_methods/us_bank_account/#{token}")
       UsBankAccount._new(@gateway, response[:us_bank_account])
     rescue NotFoundError

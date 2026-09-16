@@ -8,6 +8,8 @@ module Braintree
 
     def find(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       response = @config.http.get("#{@config.base_merchant_path}/payment_methods/sepa_debit_account/#{token}")
       SepaDirectDebitAccount._new(@gateway, response[:sepa_debit_account])
     rescue NotFoundError
@@ -16,6 +18,8 @@ module Braintree
 
     def delete(token)
       raise ArgumentError if token.nil? || token.to_s.strip == ""
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       @config.http.delete("#{@config.base_merchant_path}/payment_methods/sepa_debit_account/#{token}")
       SuccessfulResult.new
     rescue NotFoundError

@@ -23,15 +23,19 @@ module Braintree
     end
 
     def delete(customer_id)
+      raise ArgumentError, "customer_id contains invalid characters" if Util.invalid_path_segment?(customer_id)
+
       @config.http.delete("#{@config.base_merchant_path}/customers/#{customer_id}")
       SuccessfulResult.new
     end
 
     def find(customer_id, options = {})
-      raise ArgumentError, "customer_id contains invalid characters" unless customer_id.to_s =~ /\A[\w-]+\z/
-      raise ArgumentError, "customer_id cannot be blank" if customer_id.nil?|| customer_id.to_s.strip == ""
+      raise ArgumentError, "customer_id contains invalid characters" if Util.invalid_path_segment?(customer_id)
 
-      query_params = options[:association_filter_id].nil? ? "" : "?association_filter_id=#{options[:association_filter_id]}"
+      association_filter_id = options[:association_filter_id]
+      raise ArgumentError, "association_filter_id contains invalid characters" if association_filter_id && Util.invalid_path_segment?(association_filter_id)
+
+      query_params = association_filter_id.nil? ? "" : "?association_filter_id=#{association_filter_id}"
       response = @config.http.get("#{@config.base_merchant_path}/customers/#{customer_id}#{query_params}")
       Customer._new(@gateway, response[:customer])
     rescue NotFoundError
@@ -47,11 +51,15 @@ module Braintree
     end
 
     def transactions(customer_id, options = {})
+      raise ArgumentError, "customer_id contains invalid characters" if Util.invalid_path_segment?(customer_id)
+
       response = @config.http.post("#{@config.base_merchant_path}/customers/#{customer_id}/transaction_ids")
       ResourceCollection.new(response) { |ids| _fetch_transactions(customer_id, ids) }
     end
 
     def update(customer_id, attributes)
+      raise ArgumentError, "customer_id contains invalid characters" if Util.invalid_path_segment?(customer_id)
+
       Util.verify_keys(CustomerGateway._update_signature, attributes)
       _do_update(:put, "/customers/#{customer_id}", :customer => attributes)
     end

@@ -3,6 +3,12 @@ module Braintree
     include BaseModule
     include Braintree::Util::IdEquality
 
+    module AchType
+      SameDay  = "same_day"
+      Standard = "standard"
+      All = constants.map { |c| const_get(c) }
+    end
+
     module CreatedUsing
       FullInformation = "full_information"
       Token = "token"

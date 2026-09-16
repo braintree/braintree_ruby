@@ -40,8 +40,8 @@ describe Braintree::Transaction do
   describe "self.submit_for_settlement" do
     it "raises an ArgumentError if transaction_id is an invalid format" do
       expect do
-        Braintree::Transaction.submit_for_settlement("invalid-transaction-id")
-      end.to raise_error(ArgumentError, "transaction_id is invalid")
+        Braintree::Transaction.submit_for_settlement("invalid/transaction/id")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
     end
 
     it "raises an ArgumentError if options hash includes an invalid key" do
@@ -54,16 +54,16 @@ describe Braintree::Transaction do
   describe "self.adjust_authorization" do
     it "raises an ArgumentError if transaction_id is an invalid format" do
       expect do
-        Braintree::Transaction.adjust_authorization("invalid-transaction-id", "10.00")
-      end.to raise_error(ArgumentError, "transaction_id is invalid")
+        Braintree::Transaction.adjust_authorization("invalid/transaction/id", "10.00")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
     end
   end
 
   describe "self.update_details" do
     it "raises an ArgumentError if transaction_id is an invalid format" do
       expect do
-        Braintree::Transaction.update_details("invalid-transaction-id")
-      end.to raise_error(ArgumentError, "transaction_id is invalid")
+        Braintree::Transaction.update_details("invalid/transaction/id")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
     end
   end
 
@@ -602,6 +602,68 @@ describe Braintree::Transaction do
     it "is set to nil if the surcharge_amount is not present" do
       transaction = Braintree::Transaction._new(:gateway, {})
       expect(transaction.surcharge_amount).to be_nil
+    end
+  end
+
+  describe "path traversal" do
+    it "self.clone_transaction raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.clone_transaction("../customers/some_id", :amount => "10.00")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.find raises an exception if the id is a traversal segment" do
+      expect do
+        Braintree::Transaction.find("../customers/some_id")
+      end.to raise_error(ArgumentError, "id contains invalid characters")
+    end
+
+    it "self.refund raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.refund("../customers/some_id")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.void raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.void("../transactions/victim_id")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.cancel_release raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.cancel_release("../transactions/victim_id/void")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.package_tracking raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.package_tracking("../transactions/victim_id/void", {})
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.submit_for_settlement raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.submit_for_settlement("../transactions/victim_id/void")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.adjust_authorization raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.adjust_authorization("../transactions/victim_id/void", "10.00")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.update_details raises an exception if the transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.update_details("../transactions/victim_id/void")
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+    end
+
+    it "self.submit_for_partial_settlement raises an exception if the authorized_transaction_id is a traversal segment" do
+      expect do
+        Braintree::Transaction.submit_for_partial_settlement("../transactions/victim_id/void")
+      end.to raise_error(ArgumentError, "authorized_transaction_id contains invalid characters")
     end
   end
 end

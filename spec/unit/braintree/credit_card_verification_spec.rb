@@ -183,4 +183,12 @@ describe Braintree::CreditCardVerification do
       expect(verification.credit_card[:payment_account_reference]).to eq("V0010013019339005665779448477")
     end
   end
+
+  describe "path traversal" do
+    it "self.find raises an exception if the id is a traversal segment" do
+      expect do
+        Braintree::CreditCardVerification.find("../verifications/victim_id")
+      end.to raise_error(ArgumentError, "id contains invalid characters")
+    end
+  end
 end

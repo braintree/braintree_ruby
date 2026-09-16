@@ -5233,6 +5233,28 @@ describe Braintree::Transaction do
         transaction = Braintree::Transaction.find(transaction.id)
         expect(transaction.refund_ids.sort).to eq([transaction_1.id, transaction_2.id].sort)
       end
+
+      it "allows partial refund with surcharge_amount" do
+        transaction = Braintree::Transaction.sale!(
+          :amount => Braintree::Test::TransactionAmounts::Authorize,
+          :surcharge_amount => "1.00",
+          :credit_card => {
+            :number => Braintree::Test::CreditCardNumbers::Visa,
+            :expiration_date => "05/2009"
+          },
+          :options => {
+            :submit_for_settlement => true
+          },
+        )
+        config = Braintree::Configuration.instantiate
+        config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+        transaction = Braintree::Transaction.find(transaction.id)
+
+        result = Braintree::Transaction.refund(transaction.id, :amount => transaction.amount / 2, :surcharge_amount => "0.50")
+        expect(result.success?).to eq(true)
+        expect(result.transaction.type).to eq("credit")
+        expect(result.transaction.surcharge_amount).to eq(BigDecimal("0.50"))
+      end
     end
 
     it "returns a successful result if successful" do
@@ -5271,6 +5293,28 @@ describe Braintree::Transaction do
       result = Braintree::Transaction.refund(transaction.id)
       expect(result.success?).to eq(false)
       expect(result.errors.for(:transaction).on(:base)[0].code).to eq(Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled)
+    end
+
+    it "accepts surcharge_amount field in refund" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :surcharge_amount => "1.00",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :submit_for_settlement => true
+        },
+      )
+      config = Braintree::Configuration.instantiate
+      config.http.put("#{config.base_merchant_path}/transactions/#{transaction.id}/settle")
+      transaction = Braintree::Transaction.find(transaction.id)
+
+      result = Braintree::Transaction.refund(transaction.id, :surcharge_amount => "1.00")
+      expect(result.success?).to eq(true)
+      expect(result.transaction.type).to eq("credit")
+      expect(result.transaction.surcharge_amount).to eq(BigDecimal("1.00"))
     end
   end
 
@@ -8179,7 +8223,7 @@ describe Braintree::Transaction do
   end
 
   context "Surcharge Amount" do
-    it "accepts surcharge_amount field" do
+    it "accepts surcharge_amount field for sale transactions" do
       result = Braintree::Transaction.create(
         :type => "sale",
         :amount => "10.00",
@@ -8192,6 +8236,42 @@ describe Braintree::Transaction do
 
       expect(result.success?).to eq(true)
       expect(result.transaction.surcharge_amount).to eq(BigDecimal("1.00"))
+    end
+
+    it "accepts surcharge_amount field for blind credit" do
+      result = Braintree::Transaction.create(
+        :type => "credit",
+        :amount => "10.00",
+        :surcharge_amount => "1.00",
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2029"
+        },
+      )
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.surcharge_amount).to eq(BigDecimal("1.00"))
+    end
+  end
+
+  describe "path traversal" do
+    it "self.void rejects a traversal transaction_id and does not void the victim transaction" do
+      victim_transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {:submit_for_settlement => false},
+      )
+      traversal_id = "../transactions/#{victim_transaction.id}"
+
+      expect do
+        Braintree::Transaction.void(traversal_id)
+      end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
+
+      unaffected_transaction = Braintree::Transaction.find(victim_transaction.id)
+      expect(unaffected_transaction.status).to eq(Braintree::Transaction::Status::Authorized)
     end
   end
 end

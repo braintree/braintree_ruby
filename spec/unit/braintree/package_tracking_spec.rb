@@ -24,8 +24,8 @@ describe "Package Tracking Unit Tests" do
 
           it "raises an ArgumentError if transaction_id is an invalid format" do
             expect do
-              Braintree::Transaction.package_tracking("invalid-transaction-id", {})
-            end.to raise_error(ArgumentError, "transaction_id is invalid")
+              Braintree::Transaction.package_tracking("invalid/transaction/id", {})
+            end.to raise_error(ArgumentError, "transaction_id contains invalid characters")
           end
 
           it "raises an exception if attributes contain an invalid key" do

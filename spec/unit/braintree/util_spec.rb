@@ -417,4 +417,41 @@ describe Braintree::Util do
       expect(Braintree::Util.url_decode("foo%3Fbar")).to eq("foo?bar")
     end
   end
+
+  describe "self.invalid_path_segment?" do
+    [
+      "customer123",
+      "CUSTOMER_123",
+      "a-b_c-D9",
+      "1234567890",
+      "a",
+      123,
+    ].each do |valid_segment|
+      it "returns false for a valid segment #{valid_segment.inspect}" do
+        expect(Braintree::Util.invalid_path_segment?(valid_segment)).to eq(false)
+      end
+    end
+
+    [
+      "",
+      "   ",
+      ".",
+      "..",
+      "foo/bar",
+      "foo\\bar",
+      "foo%bar",
+      "..%2f..%2fvictim",
+      "%2e%2e",
+      "../../victim_customer/addresses/victim_address",
+      "abc.def",
+      "abc def",
+      nil,
+      {},
+      [],
+    ].each do |invalid_segment|
+      it "returns true for an invalid segment #{invalid_segment.inspect}" do
+        expect(Braintree::Util.invalid_path_segment?(invalid_segment)).to eq(true)
+      end
+    end
+  end
 end

@@ -10,4 +10,12 @@ describe Braintree::UsBankAccount do
       expect(Braintree::UsBankAccount._new(:gateway, :default => false).default?).to eq(false)
     end
   end
+
+  describe "path traversal" do
+    it "self.find raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::UsBankAccount.find("../payment_methods/credit_card/victim_token")
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+  end
 end

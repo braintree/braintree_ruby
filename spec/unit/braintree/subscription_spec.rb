@@ -77,4 +77,24 @@ describe Braintree::Subscription do
       expect(subscription).not_to eq("not a subscription")
     end
   end
+
+  describe "path traversal" do
+    it "self.cancel raises an exception if the subscription_id is a traversal segment" do
+      expect do
+        Braintree::Subscription.cancel("../transactions/some_id/void")
+      end.to raise_error(ArgumentError, "subscription_id contains invalid characters")
+    end
+
+    it "self.find raises an exception if the id is a traversal segment" do
+      expect do
+        Braintree::Subscription.find("../transactions/some_id/void")
+      end.to raise_error(ArgumentError, "id contains invalid characters")
+    end
+
+    it "self.update raises an exception if the subscription_id is a traversal segment" do
+      expect do
+        Braintree::Subscription.update("../transactions/some_id/void", {})
+      end.to raise_error(ArgumentError, "subscription_id contains invalid characters")
+    end
+  end
 end

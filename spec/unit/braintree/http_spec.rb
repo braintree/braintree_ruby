@@ -183,6 +183,50 @@ END
     end
   end
 
+  describe "#delete" do
+    it "appends the query string to the path when query_params are present" do
+      http = Braintree::Http.new(Braintree::Configuration.new)
+      response = double("response", :code => "200")
+
+      expect(http).to receive(:_http_do).with(Net::HTTP::Delete, "/customers?id=123").and_return(response)
+
+      http.delete("/customers", :id => 123)
+    end
+
+    it "does not append a query string when query_params are empty" do
+      http = Braintree::Http.new(Braintree::Configuration.new)
+      response = double("response", :code => "200")
+
+      expect(http).to receive(:_http_do).with(Net::HTTP::Delete, "/customers").and_return(response)
+
+      http.delete("/customers")
+    end
+  end
+
+  describe "#get" do
+    it "appends the query string to the path when query_params are present" do
+      http = Braintree::Http.new(Braintree::Configuration.new)
+      response = double("response", :code => "200")
+      allow(http).to receive(:_body).with(response).and_return("")
+      allow(Braintree::Xml).to receive(:hash_from_xml).with("").and_return({})
+
+      expect(http).to receive(:_http_do).with(Net::HTTP::Get, "/customers?id=123").and_return(response)
+
+      http.get("/customers", :id => 123)
+    end
+
+    it "does not append a query string when query_params are empty" do
+      http = Braintree::Http.new(Braintree::Configuration.new)
+      response = double("response", :code => "200")
+      allow(http).to receive(:_body).with(response).and_return("")
+      allow(Braintree::Xml).to receive(:hash_from_xml).with("").and_return({})
+
+      expect(http).to receive(:_http_do).with(Net::HTTP::Get, "/customers").and_return(response)
+
+      http.get("/customers")
+    end
+  end
+
   describe "_build_query_string" do
     it "returns an empty string for empty query params" do
       expect(Braintree::Http.new(:config)._build_query_string({})).to eq("")

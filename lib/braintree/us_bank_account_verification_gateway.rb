@@ -8,6 +8,8 @@ module Braintree
 
     def confirm_micro_transfer_amounts(id, deposit_amounts)
       raise ArgumentError if id.nil? || id.to_s.strip == "" || !deposit_amounts.kind_of?(Array)
+      raise ArgumentError, "id contains invalid characters" if Util.invalid_path_segment?(id)
+
       response = @config.http.put(
         "#{@config.base_merchant_path}/us_bank_account_verifications/#{id}/confirm_micro_transfer_amounts",
         :us_bank_account_verification => {
@@ -27,6 +29,8 @@ module Braintree
 
     def find(id)
       raise ArgumentError if id.nil? || id.to_s.strip == ""
+      raise ArgumentError, "id contains invalid characters" if Util.invalid_path_segment?(id)
+
       response = @config.http.get("#{@config.base_merchant_path}/us_bank_account_verifications/#{id}")
       UsBankAccountVerification._new(response[:us_bank_account_verification])
     rescue NotFoundError

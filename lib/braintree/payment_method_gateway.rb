@@ -33,6 +33,8 @@ module Braintree
     end
 
     def delete(token, options = {})
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       Util.verify_keys(PaymentMethodGateway._delete_signature, options)
       query_param = "?" + Util.hash_to_query_string(options) if not options.empty?
       @config.http.delete("#{@config.base_merchant_path}/payment_methods/any/#{token}#{query_param}")
@@ -40,7 +42,8 @@ module Braintree
     end
 
     def find(token)
-      raise ArgumentError if token.nil? || token.to_s.strip == ""
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       response = @config.http.get("#{@config.base_merchant_path}/payment_methods/any/#{token}")
       if response.has_key?(:credit_card)
         CreditCard._new(@gateway, response[:credit_card])
@@ -64,6 +67,8 @@ module Braintree
     end
 
     def update(token, attributes)
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       # NEXT_MAJOR_VERSION remove this check
       if attributes.has_key?(:venmo_sdk_payment_method_code) || attributes.has_key?(:venmo_sdk_session)
         warn "[DEPRECATED] The Venmo SDK integration is Unsupported. Please update your integration to use Pay with Venmo instead."

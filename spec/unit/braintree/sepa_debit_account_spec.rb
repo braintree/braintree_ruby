@@ -83,4 +83,18 @@ describe Braintree::SepaDirectDebitAccount do
       it { is_expected.to be false }
     end
   end
+
+  describe "path traversal" do
+    it "self.find raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::SepaDirectDebitAccount.find("../payment_methods/credit_card/victim_token")
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+
+    it "self.delete raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::SepaDirectDebitAccount.delete("../payment_methods/credit_card/victim_token")
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+  end
 end

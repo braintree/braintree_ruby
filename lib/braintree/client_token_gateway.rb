@@ -9,11 +9,20 @@ module Braintree
     end
 
     def generate(options={})
+      options = options.dup
+
       _validate_options(options)
 
       options[:version] ||= ClientToken::DEFAULT_VERSION
 
       Util.verify_keys(ClientTokenGateway._generate_signature, options)
+
+      if options.has_key?(:preferred_payment_method_token)
+        options[:payment_method_id] = options.delete(:preferred_payment_method_token)
+        options.delete("preferred_payment_method_token")
+      elsif options.has_key?("preferred_payment_method_token")
+        options[:payment_method_id] = options.delete("preferred_payment_method_token")
+      end
 
       params = {:client_token => options}
       result = @config.http.post("#{@config.base_merchant_path}/client_token", params)
@@ -27,7 +36,7 @@ module Braintree
 
     def self._generate_signature
       [
-        :address_id, :customer_id, :proxy_merchant_id, :merchant_account_id,
+        :address_id, :customer_id, :merchant_account_id, :preferred_payment_method_token, :proxy_merchant_id,
         :version,
         {:domains => [:_any_key_]},
         {:options => [:fail_on_duplicate_payment_method, :fail_on_duplicate_payment_method_for_customer, :make_default, :verify_card]}

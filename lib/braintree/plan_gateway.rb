@@ -27,6 +27,8 @@ module Braintree
 
     def find(id)
       raise ArgumentError if id.nil? || id.to_s.strip == ""
+      raise ArgumentError, "id contains invalid characters" if Util.invalid_path_segment?(id)
+
       response = @config.http.get("#{@config.base_merchant_path}/plans/#{id}")
       Plan._new(@gateway, response[:plan])
     rescue NotFoundError
@@ -34,6 +36,8 @@ module Braintree
     end
 
     def update(plan_id, attributes)
+      raise ArgumentError, "plan_id contains invalid characters" if Util.invalid_path_segment?(plan_id)
+
       Util.verify_keys(PlanGateway._update_signature, attributes)
       response = @config.http.put("#{@config.base_merchant_path}/plans/#{plan_id}", :plan => attributes)
       if response[:plan]

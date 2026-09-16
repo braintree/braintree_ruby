@@ -50,4 +50,24 @@ describe Braintree::PayPalAccount do
       expect(paypal_account.edit_paypal_vault_id).to eq(mock_edit_paypal_vault_id)
     end
   end
+
+  describe "path traversal" do
+    it "self.find raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::PayPalAccount.find("../payment_methods/credit_card/victim_token")
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+
+    it "self.update raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::PayPalAccount.update("../payment_methods/credit_card/victim_token", {})
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+
+    it "self.delete raises an exception if the token is a traversal segment" do
+      expect do
+        Braintree::PayPalAccount.delete("../payment_methods/credit_card/victim_token")
+      end.to raise_error(ArgumentError, "token contains invalid characters")
+    end
+  end
 end

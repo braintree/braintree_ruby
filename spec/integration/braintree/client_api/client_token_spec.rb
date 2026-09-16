@@ -378,6 +378,20 @@ describe Braintree::ClientToken do
       end
     end
 
+    it "can pass preferred_payment_method_token" do
+      result = Braintree::Customer.create
+      raw_client_token = Braintree::ClientToken.generate(
+        :customer_id => result.customer.id,
+        :preferred_payment_method_token => "a-pmt",
+      )
+      client_token = decode_client_token(raw_client_token)
+
+      expect(client_token["paymentMethodIdJwt"]).not_to be_nil
+      jwt_segment = client_token["paymentMethodIdJwt"].split(".")[1]
+      jwt_payload = JSON.parse(Base64.urlsafe_decode64(jwt_segment + "=" * ((4 - jwt_segment.length % 4) % 4)))
+      expect(jwt_payload["pmid"]).to eq("a-pmt")
+    end
+
     it "can pass merchant_account_id" do
       merchant_account_id = SpecHelper::NonDefaultMerchantAccountId
 

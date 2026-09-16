@@ -20,6 +20,78 @@ module Braintree
           )
         }.to raise_error(ArgumentError, /created_at, public_key/)
       end
+
+      context "with preferred_payment_method_token" do
+        let(:config) { SpecHelper::TestMerchantConfig }
+        let(:gateway) { Gateway.new(config) }
+        let(:http) { double(:http) }
+
+        before do
+          allow(config).to receive(:http).and_return(http)
+          allow(Configuration).to receive(:gateway).and_return(gateway)
+        end
+
+        def expect_client_token_post(options)
+          expect(http).to receive(:post).with(
+            "#{config.base_merchant_path}/client_token",
+            :client_token => options,
+          ).and_return(:client_token => {:value => "client-token"})
+        end
+
+        it "renames preferred_payment_method_token to payment_method_id" do
+          expect_client_token_post(
+            :payment_method_id => "a-pmt",
+            :version => ClientToken::DEFAULT_VERSION,
+          )
+
+          client_token = Braintree::ClientToken.generate(
+            :preferred_payment_method_token => "a-pmt",
+          )
+
+          expect(client_token).to eq("client-token")
+        end
+
+        it "renames string preferred_payment_method_token to payment_method_id" do
+          expect_client_token_post(
+            :payment_method_id => "a-pmt",
+            :version => ClientToken::DEFAULT_VERSION,
+          )
+
+          client_token = Braintree::ClientToken.generate(
+            "preferred_payment_method_token" => "a-pmt",
+          )
+
+          expect(client_token).to eq("client-token")
+        end
+
+        it "renames preferred_payment_method_token when the value is nil" do
+          expect_client_token_post(
+            :payment_method_id => nil,
+            :version => ClientToken::DEFAULT_VERSION,
+          )
+
+          client_token = Braintree::ClientToken.generate(
+            :preferred_payment_method_token => nil,
+          )
+
+          expect(client_token).to eq("client-token")
+        end
+
+        it "does not mutate the caller's options hash" do
+          options = {:preferred_payment_method_token => "a-pmt"}
+          expect(http).to receive(:post).twice.with(
+            "#{config.base_merchant_path}/client_token",
+            :client_token => {
+              :payment_method_id => "a-pmt",
+              :version => ClientToken::DEFAULT_VERSION,
+            },
+          ).and_return(:client_token => {:value => "client-token"})
+
+          expect(Braintree::ClientToken.generate(options)).to eq("client-token")
+          expect(Braintree::ClientToken.generate(options)).to eq("client-token")
+          expect(options).to eq(:preferred_payment_method_token => "a-pmt")
+        end
+      end
     end
 
     context "adding credit_card options with no customer ID" do

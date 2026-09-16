@@ -8,6 +8,8 @@ module Braintree
 
     def find(id)
       raise ArgumentError if id.nil? || id.to_s.strip == ""
+      raise ArgumentError, "id contains invalid characters" if Util.invalid_path_segment?(id)
+
       response = @config.http.get("#{@config.base_merchant_path}/verifications/#{id}")
       CreditCardVerification._new(response[:verification])
     rescue NotFoundError

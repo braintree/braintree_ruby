@@ -47,4 +47,18 @@ describe Braintree::PaymentMethodNonce do
       expect(payment_method_nonce.default?).to be true
     end
   end
+
+  describe "path traversal" do
+    it "self.create raises an exception if the payment_method_token is a traversal segment" do
+      expect do
+        Braintree::PaymentMethodNonce.create("../payment_method_nonces/victim_nonce")
+      end.to raise_error(ArgumentError, "payment_method_token contains invalid characters")
+    end
+
+    it "self.find raises an exception if the payment_method_nonce is a traversal segment" do
+      expect do
+        Braintree::PaymentMethodNonce.find("../payment_method_nonces/victim_nonce")
+      end.to raise_error(ArgumentError, "payment_method_nonce contains invalid characters")
+    end
+  end
 end

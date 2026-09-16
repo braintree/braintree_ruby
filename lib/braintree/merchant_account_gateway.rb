@@ -22,6 +22,8 @@ module Braintree
 
     def find(merchant_account_id)
       raise ArgumentError if merchant_account_id.nil? || merchant_account_id.to_s.strip == ""
+      raise ArgumentError, "merchant_account_id contains invalid characters" if Util.invalid_path_segment?(merchant_account_id)
+
       response = @config.http.get("#{@config.base_merchant_path}/merchant_accounts/#{merchant_account_id}")
       MerchantAccount._new(@gateway, response[:merchant_account])
     rescue NotFoundError

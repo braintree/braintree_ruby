@@ -95,4 +95,18 @@ describe Braintree::UsBankAccountVerification do
       expect(verification).not_to eq(same_id_different_object)
     end
   end
+
+  describe "path traversal" do
+    it "self.find raises an exception if the id is a traversal segment" do
+      expect do
+        Braintree::UsBankAccountVerification.find("../verifications/victim_id")
+      end.to raise_error(ArgumentError, "id contains invalid characters")
+    end
+
+    it "self.confirm_micro_transfer_amounts raises an exception if the id is a traversal segment" do
+      expect do
+        Braintree::UsBankAccountVerification.confirm_micro_transfer_amounts("../verifications/victim_id", ["0.01", "0.02"])
+      end.to raise_error(ArgumentError, "id contains invalid characters")
+    end
+  end
 end

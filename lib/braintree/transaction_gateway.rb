@@ -22,7 +22,7 @@ module Braintree
     end
 
     def cancel_release(transaction_id)
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/cancel_release")
       _handle_transaction_response(response)
     end
@@ -42,6 +42,8 @@ module Braintree
     end
 
     def clone_transaction(transaction_id, attributes)
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
+
       Util.verify_keys(TransactionGateway._clone_signature, attributes)
       _do_create "/transactions/#{transaction_id}/clone", :transaction_clone => attributes
     end
@@ -59,7 +61,9 @@ module Braintree
     end
 
     def find(id)
-      raise ArgumentError, "id can not be empty" if id.nil? || id.strip.to_s == ""
+      raise ArgumentError, "id can not be empty" if id.nil? || id.to_s.strip == ""
+      raise ArgumentError, "id contains invalid characters" if Util.invalid_path_segment?(id)
+
       response = @config.http.get("#{@config.base_merchant_path}/transactions/#{id}")
       Transaction._new(@gateway, response[:transaction])
     rescue NotFoundError
@@ -67,6 +71,8 @@ module Braintree
     end
 
     def refund(transaction_id, amount_or_options = nil)
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
+
       options = if amount_or_options.is_a?(Hash)
                   amount_or_options
                 else
@@ -103,7 +109,7 @@ module Braintree
     end
 
     def package_tracking(transaction_id, package_tracking_request)
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
       Util.verify_keys(TransactionGateway._package_tracking_request_signature, package_tracking_request)
       _do_create "/transactions/#{transaction_id}/shipments", :shipment => package_tracking_request
     end
@@ -126,7 +132,7 @@ module Braintree
     end
 
     def submit_for_settlement(transaction_id, amount = nil, options = {})
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
       Util.verify_keys(TransactionGateway._submit_for_settlement_signature, options)
       transaction_params = {:amount => amount}.merge(options)
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/submit_for_settlement", :transaction => transaction_params)
@@ -138,7 +144,7 @@ module Braintree
     end
 
     def adjust_authorization(transaction_id, amount)
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
       Util.verify_keys(TransactionGateway._adjust_authorization_signature, {})
       transaction_params = {:amount => amount}
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/adjust_authorization", :transaction => transaction_params)
@@ -150,14 +156,14 @@ module Braintree
     end
 
     def update_details(transaction_id, options = {})
-      raise ArgumentError, "transaction_id is invalid" unless transaction_id =~ /\A[0-9a-z]+\z/
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
       Util.verify_keys(TransactionGateway._update_details_signature, options)
       response = @config.http.put("#{@config.base_merchant_path}/transactions/#{transaction_id}/update_details", :transaction => options)
       _handle_transaction_response(response)
     end
 
     def submit_for_partial_settlement(authorized_transaction_id, amount = nil, options = {})
-      raise ArgumentError, "authorized_transaction_id is invalid" unless authorized_transaction_id =~ /\A[0-9a-z]+\z/
+      raise ArgumentError, "authorized_transaction_id contains invalid characters" if Util.invalid_path_segment?(authorized_transaction_id)
       Util.verify_keys(TransactionGateway._submit_for_partial_settlement_signature, options)
       transaction_params = {:amount => amount}.merge(options)
       response = @config.http.post("#{@config.base_merchant_path}/transactions/#{authorized_transaction_id}/submit_for_partial_settlement", :transaction => transaction_params)
@@ -169,6 +175,8 @@ module Braintree
     end
 
     def void(transaction_id, options = {})
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
+
       transaction_params = options.empty? ? nil : options
       response = @config.http.put(
         "#{@config.base_merchant_path}/transactions/#{transaction_id}/void",
@@ -382,6 +390,7 @@ module Braintree
         :api_request_key,
         :merchant_account_id,
         :order_id,
+        :surcharge_amount,
       ]
     end
 

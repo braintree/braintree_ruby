@@ -7,7 +7,8 @@ module Braintree
     end
 
     def find(token)
-      raise ArgumentError if token.nil? || token.to_s.strip == ""
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       response = @config.http.get("#{@config.base_merchant_path}/payment_methods/paypal_account/#{token}")
       PayPalAccount._new(@gateway, response[:paypal_account])
     rescue NotFoundError
@@ -20,11 +21,15 @@ module Braintree
     end
 
     def update(token, attributes)
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       Util.verify_keys(PayPalAccountGateway._update_signature, attributes)
       _do_update(:put, "/payment_methods/paypal_account/#{token}", :paypal_account => attributes)
     end
 
     def delete(token)
+      raise ArgumentError, "token contains invalid characters" if Util.invalid_path_segment?(token)
+
       @config.http.delete("#{@config.base_merchant_path}/payment_methods/paypal_account/#{token}")
     end
 

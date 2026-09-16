@@ -415,4 +415,30 @@ describe Braintree::Customer do
       end.to raise_error(NoMethodError, /protected method .new/)
     end
   end
+
+  describe "path traversal" do
+    it "self.delete raises an exception if the customer_id is a traversal segment" do
+      expect do
+        Braintree::Customer.delete("../transactions/some_id/void")
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
+    end
+
+    it "self.find raises an exception if the customer_id is a traversal segment" do
+      expect do
+        Braintree::Customer.find("../transactions/some_id/void")
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
+    end
+
+    it "self.update raises an exception if the customer_id is a traversal segment" do
+      expect do
+        Braintree::Customer.update("../transactions/some_id/void", :first_name => "HackerOne")
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
+    end
+
+    it "self.transactions raises an exception if the customer_id is a traversal segment" do
+      expect do
+        Braintree::Customer.transactions("../transactions/some_id/void")
+      end.to raise_error(ArgumentError, "customer_id contains invalid characters")
+    end
+  end
 end

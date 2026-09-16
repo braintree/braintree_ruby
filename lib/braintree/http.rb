@@ -8,7 +8,8 @@ module Braintree
     end
 
     def delete(path, query_params = {})
-      response = _http_do Net::HTTP::Delete, path
+      full_path = path + _build_query_string(query_params)
+      response = _http_do Net::HTTP::Delete, full_path
       if response.code.to_i == 200 || response.code.to_i == 204
         true
       elsif response.code.to_i == 422
@@ -19,7 +20,8 @@ module Braintree
     end
 
     def get(path, query_params = {})
-      response = _http_do Net::HTTP::Get, path
+      full_path = path + _build_query_string(query_params)
+      response = _http_do Net::HTTP::Get, full_path
       if response.code.to_i == 200 || response.code.to_i == 422
         Xml.hash_from_xml(_body(response))
       else

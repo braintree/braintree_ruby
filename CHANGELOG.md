@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.41.0
+- Add `preferred_payment_method_token` to `ClientToken.generate`
+- Fix path traversal vulnerability in `CreditCard`, `CreditCardVerification`, `Customer`, `MerchantAccount`, `PayPalAccount`, `PaymentMethod`, `PaymentMethodNonce`, `Plan`, `SepaDirectDebitAccount`, `Subscription`, `Testing`, `Transaction`, `TransactionLineItem`, `UsBankAccount`, and `UsBankAccountVerification` gateways by validating that IDs used in request paths do not contain path separators or relative-path segments
+- Add `ach_type` to transaction search
+- Add `surcharge_amount` to `Transaction.refund`
+
 ## 4.40.0
 - Add `EmailFormatIsInvalid (92963)` and `EmailIsTooLong (92964)` validation error codes to `PayPalAccount`
 - Add `network` to `three_d_secure_pass_thru` across `Transaction.sale`, `CreditCard`, `Customer`, `PaymentMethod`, and `CreditCardVerification`, with `ThreeDSecurePassThru::Network` constants (`Eftpos`, `Mastercard`, `Visa`)

@@ -257,6 +257,93 @@ describe Braintree::Transaction, "search" do
         expect(collection.maximum_size).to eq(0)
       end
 
+      it "searches on ach_type" do
+        same_day_transaction = Braintree::Transaction.find("sameday_ach_sameday_requested")
+        standard_transaction = Braintree::Transaction.find("standard_ach_standard_requested")
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is same_day_transaction.id
+          search.ach_type.is Braintree::Transaction::AchType::SameDay
+        end
+
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(same_day_transaction.id)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is same_day_transaction.id
+          search.ach_type.is Braintree::Transaction::AchType::Standard
+        end
+
+        expect(collection.maximum_size).to eq(0)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is standard_transaction.id
+          search.ach_type.is Braintree::Transaction::AchType::Standard
+        end
+
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(standard_transaction.id)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is standard_transaction.id
+          search.ach_type.is Braintree::Transaction::AchType::SameDay
+        end
+
+        expect(collection.maximum_size).to eq(0)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is same_day_transaction.id
+          search.ach_type.in [
+            Braintree::Transaction::AchType::SameDay,
+            Braintree::Transaction::AchType::Standard
+          ]
+        end
+
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(same_day_transaction.id)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is standard_transaction.id
+          search.ach_type.in [
+            Braintree::Transaction::AchType::SameDay,
+            Braintree::Transaction::AchType::Standard
+          ]
+        end
+
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(standard_transaction.id)
+
+        divergent_transaction = Braintree::Transaction.find("standard_ach_sameday_requested")
+        expect(divergent_transaction.ach_type).to eq(Braintree::Transaction::AchType::Standard)
+        expect(divergent_transaction.requested_ach_type).to eq(Braintree::Transaction::AchType::SameDay)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is divergent_transaction.id
+          search.ach_type.is Braintree::Transaction::AchType::Standard
+        end
+
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(divergent_transaction.id)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is divergent_transaction.id
+          search.ach_type.is Braintree::Transaction::AchType::SameDay
+        end
+
+        expect(collection.maximum_size).to eq(0)
+
+        collection = Braintree::Transaction.search do |search|
+          search.id.is divergent_transaction.id
+          search.ach_type.in [
+            Braintree::Transaction::AchType::SameDay,
+            Braintree::Transaction::AchType::Standard
+          ]
+        end
+
+        expect(collection.maximum_size).to eq(1)
+        expect(collection.first.id).to eq(divergent_transaction.id)
+      end
+
       it "searches on credit_card_customer_location" do
         transaction = Braintree::Transaction.sale!(
           :amount => Braintree::Test::TransactionAmounts::Authorize,
@@ -658,6 +745,14 @@ describe Braintree::Transaction, "search" do
         expect do
           Braintree::Transaction.search do |search|
             search.debit_network.is "invalid_network"
+          end
+        end.to raise_error(ArgumentError)
+      end
+
+      it "raises an exception on invalid ach_type" do
+        expect do
+          Braintree::Transaction.search do |search|
+            search.ach_type.is "invalid_ach_type"
           end
         end.to raise_error(ArgumentError)
       end

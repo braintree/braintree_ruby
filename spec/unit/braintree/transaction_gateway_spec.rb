@@ -200,5 +200,15 @@ describe Braintree::TransactionGateway do
     it "creates transaction gateway submit for partial settlement signature" do
        expect(Braintree::TransactionGateway._submit_for_partial_settlement_signature).to include(:final_capture)
     end
+
+    it "creates a transaction gateway refund signature" do
+      expect(Braintree::TransactionGateway._refund_signature).to match([
+        :amount,
+        :api_request_key,
+        :merchant_account_id,
+        :order_id,
+        :surcharge_amount,
+      ])
+    end
   end
 end
