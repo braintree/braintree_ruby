@@ -61,6 +61,7 @@ module Braintree
         ]},
         {:external_vault => [
           :previous_network_transaction_id,
+          :previous_mastercard_transaction_link_id,
           :status,
         ]},
         :intended_transaction_source,

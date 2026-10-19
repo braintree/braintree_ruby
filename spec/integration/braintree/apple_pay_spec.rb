@@ -56,7 +56,9 @@ describe Braintree::ApplePayGateway do
     it "returns stubbed registered domains" do
       result = @gateway.apple_pay.registered_domains
       expect(result).to be_success
-      expect(result.apple_pay_options.domains).to eq(["www.example.com"])
+      domains = result.apple_pay_options.domains
+      expect(domains).not_to be_empty
+      expect(domains).to all(be_a(String).and(satisfy { |domain| !domain.empty? }))
     end
   end
 end

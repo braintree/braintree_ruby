@@ -5013,6 +5013,23 @@ describe Braintree::Transaction do
           expect(result.transaction.network_transaction_id).not_to be_nil
         end
 
+        it "accepts previous_mastercard_transaction_link_id" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
+              :previous_mastercard_transaction_link_id => "1234567890123456789012",
+            },
+            :amount => "10.00",
+          )
+          expect(result.success?).to eq(true)
+          expect(result.transaction.network_transaction_id).not_to be_nil
+        end
+
         it "rejects non-vaulted status with previous_network_transaction_id" do
           result = Braintree::Transaction.create(
             :type => "sale",
@@ -5028,6 +5045,40 @@ describe Braintree::Transaction do
           )
           expect(result.success?).to eq(false)
           expect(result.errors.for(:transaction).for(:external_vault).on(:status)[0].code).to eq(Braintree::ErrorCodes::Transaction::ExternalVault::StatusWithPreviousNetworkTransactionIdIsInvalid)
+        end
+
+        it "rejects non-vaulted status with previous_mastercard_transaction_link_id" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::WillVault,
+              :previous_mastercard_transaction_link_id => "1234567890123456789012",
+            },
+            :amount => "10.00",
+          )
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).for(:external_vault).on(:status)[0].code).to eq(Braintree::ErrorCodes::Transaction::ExternalVault::StatusWithPreviousMastercardTransactionLinkIdIsInvalid)
+        end
+
+        it "rejects previous_mastercard_transaction_link_id that is not 22 characters" do
+          result = Braintree::Transaction.create(
+            :type => "sale",
+            :credit_card => {
+              :number => Braintree::Test::CreditCardNumbers::MasterCard,
+              :expiration_date => "05/2009"
+            },
+            :external_vault => {
+              :status => Braintree::Transaction::ExternalVault::Status::Vaulted,
+              :previous_mastercard_transaction_link_id => "1234567890123456789012123",
+            },
+            :amount => "10.00",
+          )
+          expect(result.success?).to eq(false)
+          expect(result.errors.for(:transaction).for(:external_vault).on(:previous_mastercard_transaction_link_id)[0].code).to eq(Braintree::ErrorCodes::Transaction::ExternalVault::PreviousMastercardTransactionLinkIdIsInvalid)
         end
       end
 
@@ -7336,6 +7387,85 @@ describe Braintree::Transaction do
         expect(transaction.paypal_details.refund_from_transaction_fee_amount).not_to be_nil
         expect(transaction.paypal_details.refund_from_transaction_fee_currency_iso_code).not_to be_nil
       end
+    end
+  end
+
+  describe "self.reverse" do
+    it "voids a voidable transaction" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+      )
+
+      result = Braintree::Transaction.reverse(transaction.id)
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.id).to eq(transaction.id)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::Voided)
+      expect(result.transaction.refunded_transaction_id).to be_nil
+    end
+
+    it "returns an error when reversing twice without an api request key" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+      )
+
+      expect(Braintree::Transaction.reverse(transaction.id)).to be_success
+      result = Braintree::Transaction.reverse(transaction.id)
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:transaction).on(:base).first.code).to eq(
+        Braintree::ErrorCodes::Transaction::CannotRefundUnlessSettled,
+      )
+    end
+
+    it "voids an explicitly created voidable refund" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :submit_for_settlement => true
+        },
+      )
+      Braintree::TestTransaction.settle(transaction.id)
+      refund = Braintree::Transaction.refund!(transaction.id)
+
+      result = Braintree::Transaction.reverse(refund.id)
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.id).to eq(refund.id)
+      expect(result.transaction.status).to eq(Braintree::Transaction::Status::Voided)
+      expect(result.transaction.refunded_transaction_id).to eq(transaction.id)
+    end
+
+    it "refunds a settled transaction" do
+      transaction = Braintree::Transaction.sale!(
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::Visa,
+          :expiration_date => "05/2009"
+        },
+        :options => {
+          :submit_for_settlement => true
+        },
+      )
+      Braintree::TestTransaction.settle(transaction.id)
+
+      result = Braintree::Transaction.reverse(transaction.id)
+
+      expect(result.success?).to eq(true)
+      expect(result.transaction.type).to eq(Braintree::Transaction::Type::Credit)
+      expect(result.transaction.refunded_transaction_id).to eq(transaction.id)
     end
   end
 

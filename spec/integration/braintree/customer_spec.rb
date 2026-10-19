@@ -102,6 +102,21 @@ describe Braintree::Customer do
       expect(result).to be_success
     end
 
+    it "supports creation with a mastercard_transaction_link_id external_vault param" do
+      result = Braintree::Customer.create(
+        :credit_card => {
+          :number => Braintree::Test::CreditCardNumbers::MasterCard,
+          :expiration_date => "05/2010",
+          :cvv => "100",
+          :external_vault => {
+            :mastercard_transaction_link_id => "1234567890123456789012",
+          },
+        },
+      )
+
+      expect(result).to be_success
+    end
+
     it "supports creation including risk data with customer_browser and customer_ip" do
       result = Braintree::Customer.create(
         :credit_card => {

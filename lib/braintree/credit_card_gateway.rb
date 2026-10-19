@@ -120,7 +120,7 @@ module Braintree
         :billing_address_id, :cardholder_name, :cvv, :expiration_date, :expiration_month,
         :expiration_year, :number, :token, :venmo_sdk_payment_method_code, # Deprecated
         :device_data, :payment_method_nonce,
-        {:external_vault => [:network_transaction_id]},
+        {:external_vault => [:network_transaction_id, :mastercard_transaction_link_id]},
         {:options => options},
         {:billing_address => billing_address_params}
       ]

@@ -120,6 +120,10 @@ module Braintree
       VerificationAccountTypeNotSupported = "91758"
       VerificationNotSupportedOnThisMerchantAccount = "91730"
 
+      module ExternalVault
+        MastercardTransactionLinkIdIsInvalid = "91767"
+      end
+
       module Options
         UpdateExistingTokenIsInvalid = "91723"
         UpdateExistingTokenNotAllowed = "91729"
@@ -367,6 +371,7 @@ module Braintree
       CannotRefundUnlessSettled = "91506"
       CannotRefundWithPendingMerchantAccount = "91559"
       CannotRefundWithSuspendedMerchantAccount = "91538"
+      CannotReverseAtThisTime = "915282"
       CannotSimulateTransactionSettlement = "91575"
       CannotSubmitForSettlement = "91507"
       CannotUpdateTransactionDetailsNotSubmittedForSettlement = "915129"
@@ -613,8 +618,10 @@ module Braintree
       end
 
       module ExternalVault
+        PreviousMastercardTransactionLinkIdIsInvalid = "915279"
         PreviousNetworkTransactionIdIsInvalid = "915179"
         StatusIsInvalid = "915175"
+        StatusWithPreviousMastercardTransactionLinkIdIsInvalid = "915278"
         StatusWithPreviousNetworkTransactionIdIsInvalid = "915177"
       end
     end
@@ -745,6 +752,11 @@ module Braintree
     end
 
     module Verification
+      module ExternalVault
+        PreviousMastercardTransactionLinkIdIsInvalid = "942206"
+        StatusWithPreviousMastercardTransactionLinkIdIsInvalid = "942205"
+      end
+
       module Options
         AccountTypeIsInvalid = "942184"
         AccountTypeNotSupported = "942185"

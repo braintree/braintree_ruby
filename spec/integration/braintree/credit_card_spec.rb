@@ -529,6 +529,37 @@ describe Braintree::CreditCard do
       expect(result.success?).to eq(true)
     end
 
+    it "can set the mastercard transaction link identifier when creating a credit card" do
+      customer = Braintree::Customer.create!
+
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "05/2009",
+        :external_vault => {
+          :mastercard_transaction_link_id => "1234567890123456789012",
+        },
+      )
+
+      expect(result.success?).to eq(true)
+    end
+
+    it "rejects a mastercard transaction link identifier that is not 22 characters" do
+      customer = Braintree::Customer.create!
+
+      result = Braintree::CreditCard.create(
+        :customer_id => customer.id,
+        :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        :expiration_date => "05/2009",
+        :external_vault => {
+          :mastercard_transaction_link_id => "1234567890123456789012123",
+        },
+      )
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:credit_card).for(:external_vault).on(:mastercard_transaction_link_id)[0].code).to eq(Braintree::ErrorCodes::CreditCard::ExternalVault::MastercardTransactionLinkIdIsInvalid)
+    end
+
     context "card type indicators" do
       it "sets the prepaid field if the card is prepaid" do
         customer = Braintree::Customer.create!

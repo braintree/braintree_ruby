@@ -247,6 +247,14 @@ module Braintree
       Configuration.gateway.transaction.refund!(*args)
     end
 
+    def self.reverse(*args)
+      Configuration.gateway.transaction.reverse(*args)
+    end
+
+    def self.reverse!(*args)
+      Configuration.gateway.transaction.reverse!(*args)
+    end
+
     def self.sale(*args)
       Configuration.gateway.transaction.sale(*args)
     end

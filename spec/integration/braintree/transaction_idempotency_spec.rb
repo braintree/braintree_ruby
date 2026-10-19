@@ -277,6 +277,36 @@ describe Braintree::Transaction, "idempotency" do
     end
   end
 
+  describe "reverse" do
+    it "returns original reverse on duplicate request with same api_request_key" do
+      api_request_key = "reverse-idempotency-key-#{rand(1000000)}"
+
+      sale_request = {
+        :amount => Braintree::Test::TransactionAmounts::Authorize,
+        :credit_card => {
+          :number => "4111111111111111",
+          :expiration_date => "05/2035"
+        }
+      }
+
+      sale_result = Braintree::Transaction.sale(sale_request)
+      expect(sale_result).to be_success
+      transaction_id = sale_result.transaction.id
+
+      reverse_options = {
+        :api_request_key => api_request_key
+      }
+
+      reverse_result1 = Braintree::Transaction.reverse(transaction_id, reverse_options)
+      expect(reverse_result1).to be_success
+
+      reverse_result2 = Braintree::Transaction.reverse(transaction_id, reverse_options)
+      expect(reverse_result2).to be_success
+      expect(reverse_result1.transaction.id).to eq(reverse_result2.transaction.id)
+      expect(reverse_result2.transaction.status).to eq(Braintree::Transaction::Status::Voided)
+    end
+  end
+
   describe "refund" do
     it "returns original refund on duplicate request with same api_request_key" do
       api_request_key = "refund-idempotency-key-#{rand(1000000)}"

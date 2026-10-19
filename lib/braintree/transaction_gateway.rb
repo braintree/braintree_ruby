@@ -100,6 +100,22 @@ module Braintree
       _do_create "/transactions", :transaction => attributes
     end
 
+    def reverse(transaction_id, options = {})
+      raise ArgumentError, "transaction_id contains invalid characters" if Util.invalid_path_segment?(transaction_id)
+
+      Util.verify_keys(TransactionGateway._reverse_signature, options)
+      transaction_params = options.empty? ? nil : options
+      response = @config.http.post(
+        "#{@config.base_merchant_path}/transactions/#{transaction_id}/reverse",
+        transaction_params ? {:transaction => transaction_params} : nil,
+      )
+      _handle_transaction_response(response)
+    end
+
+    def reverse!(*args)
+      return_object_or_raise(:transaction) { reverse(*args) }
+    end
+
     def sale(attributes)
       create(attributes.merge(:type => "sale"))
     end
@@ -226,6 +242,7 @@ module Braintree
         {:external_vault => [
           :status,
           :previous_network_transaction_id,
+          :previous_mastercard_transaction_link_id,
         ]},
         {:google_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]},
         {:industry => [
@@ -391,6 +408,12 @@ module Braintree
         :merchant_account_id,
         :order_id,
         :surcharge_amount,
+      ]
+    end
+
+    def self._reverse_signature
+      [
+        :api_request_key,
       ]
     end
 

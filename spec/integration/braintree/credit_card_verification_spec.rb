@@ -147,6 +147,60 @@ describe Braintree::CreditCardVerification, "search" do
       expect(result.credit_card_verification.network_transaction_id).not_to be_nil
     end
 
+    it "creates a new verification with previous_mastercard_transaction_link_id" do
+      verification_params = {
+        :credit_card => {
+            :expiration_date => "05/2029",
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        },
+        :external_vault => {
+            :status => "vaulted",
+            :previous_mastercard_transaction_link_id => "1234567890123456789012",
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result).to be_success
+      expect(result.credit_card_verification.id).to match(/^\w{6,}$/)
+    end
+
+    it "rejects non-vaulted status with previous_mastercard_transaction_link_id" do
+      verification_params = {
+        :credit_card => {
+            :expiration_date => "05/2029",
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        },
+        :external_vault => {
+            :status => "will_vault",
+            :previous_mastercard_transaction_link_id => "1234567890123456789012",
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:verification).for(:external_vault).on(:status)[0].code).to eq(Braintree::ErrorCodes::Verification::ExternalVault::StatusWithPreviousMastercardTransactionLinkIdIsInvalid)
+    end
+
+    it "rejects previous_mastercard_transaction_link_id that is not 22 characters" do
+      verification_params = {
+        :credit_card => {
+            :expiration_date => "05/2029",
+            :number => Braintree::Test::CreditCardNumbers::MasterCard,
+        },
+        :external_vault => {
+            :status => "vaulted",
+            :previous_mastercard_transaction_link_id => "1234567890123456789012123",
+        }
+      }
+
+      result = Braintree::CreditCardVerification.create(verification_params)
+
+      expect(result.success?).to eq(false)
+      expect(result.errors.for(:verification).for(:external_vault).on(:previous_mastercard_transaction_link_id)[0].code).to eq(Braintree::ErrorCodes::Verification::ExternalVault::PreviousMastercardTransactionLinkIdIsInvalid)
+    end
+
     it "creates a new verification from risk data param" do
       verification_params = {
         :credit_card => {

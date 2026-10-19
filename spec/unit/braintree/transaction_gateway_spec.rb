@@ -53,6 +53,7 @@ describe Braintree::TransactionGateway do
         {:external_vault => [
           :status,
           :previous_network_transaction_id,
+          :previous_mastercard_transaction_link_id,
         ]},
         {:google_pay_card => [:number, :cryptogram, :google_transaction_id, :expiration_month, :expiration_year, :source_card_type, :source_card_last_four, :eci_indicator]},
         {:industry => [
@@ -209,6 +210,19 @@ describe Braintree::TransactionGateway do
         :order_id,
         :surcharge_amount,
       ])
+    end
+
+    it "creates a transaction gateway reverse signature" do
+      expect(Braintree::TransactionGateway._reverse_signature).to match([
+        :api_request_key,
+      ])
+    end
+
+    it "rejects invalid transaction IDs when reversing" do
+      transaction = Braintree::TransactionGateway.new(gateway)
+
+      expect { transaction.reverse("../transactions/victim") }
+        .to raise_error(ArgumentError, "transaction_id contains invalid characters")
     end
   end
 end
